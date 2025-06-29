@@ -1,0 +1,611 @@
+<!-- <!DOCTYPE html> -->
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="pragma" content="no-cache">
+<style>
+    body{margin: 0;}
+    #posMap {
+        position: fixed;
+        right: 50px;
+        margin-top: -100px;
+        opacity: 0.8;
+    }
+    .myHUD {
+        position: absolute;
+        bottom: 0;
+        padding: 0.3em;
+        color: #ffffff;
+    }
+    #someCtrl {
+        position: fixed;  
+        top: 0;
+        opacity: 0.5;
+    }
+    #someCtrl button {
+    width: 45px;
+    height: 30px;
+}
+
+/* 模态框 */
+.myHUD-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 100vh;
+    transform: translate(-50%, -50%);
+}
+.myHUD-modalPos {
+    margin-left: 50vw;
+    margin-top: 50vh;
+    transform: translate(-50%, -50%);
+    width: 700px;
+    text-align: center;
+    background-color: rgb(159 51 204 / 55%);
+    padding: 32px;
+    backdrop-filter: blur(2px);
+}
+
+.texture-editorBtn-lab {
+    display: inline-block;
+    background: rgb(32 32 32);
+    color: rgb(255, 255, 255);
+    padding: 5px 5px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+    font-size: 14;
+    color: #bbbbbb;
+}
+canvas {
+  /* 针对苹果系统下的火狐和 Chrome/Safari */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+</style>
+<script src="../src/cannon/cannon29kb.js"></script>
+<img src='./img/texture.jpeg' id=marble hidden>
+<canvas id=c style="width:100vw;height:100vh"></canvas>
+<div id="myHUD" class="myHUD">
+    <div id="fpsInfo"></div>
+    <span id="shiftInfo"></span>
+    <span id="posInfo"></span>
+    <span id="metrics"></span>
+    <span id="cpuInfo"></span>
+    <span id="modListCount"></span>
+    <span id="posIDMVP"></span>
+    <canvas id="posMap" width="100" height="100"></canvas>
+    <canvas id="centerPoint" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);" width="1" height="1"></canvas>
+</div>
+<div id="myHUDModal" class="myHUD-modal" hidden>
+    <div class="myHUD-modalPos">
+        <div>
+            左 <input type="number" id="textureEditorOffsetX" name="offsetX" min="0" max="1" step="0.1">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            右 <input type="number" id="textureEditorOffsetXR" name="offsetXR" min="0" max="1" step="0.1">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            下 <input type="number" id="textureEditorOffsetY" name="offsetY" min="0" max="1" step="0.1">
+            （偏移量，0 ~ 1）
+        </div>
+        <textarea rows="10" cols="50" class="tgeditor-texture" id="textureEditorTG"></textarea>
+        <div><br>
+            <div>
+                <span id="textureEditorInfo"></span><br>
+            </div>
+            <button class="texture-editorBtn" id="textureEditorSave">写入</button>
+            <button class="texture-editorBtn" id="textureEditorCancel">取消</button>
+            <button class="texture-editorBtn" id="textureEditorDownload">下载存档</button>
+            <label for="textureEditorReadfile" class="texture-editorBtn-lab">读取存档 </label>
+            <input  type="file" id="textureEditorReadfile" accept=".json" hidden>
+            <div>
+                <button class="texture-editorBtn" id="textureEditorClear">清空</button>
+                <button class="texture-editorBtn" id="textureEditorNumAux">数字行号辅</button>
+                <button class="texture-editorBtn" id="textureEditorNumAuxRemove">一键去除行号</button>
+            </div>
+            <hr>
+            
+            <button class="texture-editorBtn" id="textureEditorRcover">从浏览器恢复</button>
+        </div>
+    </div>
+    
+</div>
+<div id="someCtrl">
+    <button id="xforward" style="width: 90px;">前</button>
+    <button id="xbackward" style="width: 90px;">城寨入口</button>
+    <button id="xright" style="width: 90px;">坐标原点</button>
+    <button id="xleft" style="width: 90px;">防眩晕</button>
+    <button id="xjump" style="width: 90px;">蹦</button>
+    <button id="xShadow" style="width: 90px;">影</button>
+    <button id="xVIEW1" style="width: 90px;">视1</button>
+    <button id="xStopDY"  style="width: 90px;">小点</button>
+    <span id="xVIEW2" style="font-size: 60px;color: rgb(255, 255, 255);position: absolute;left: 50vw;transform: translate(-50%);width: max-content;">城市</span>
+</div>
+<script type="module">
+import ccgxkApp from '../src/ccgxk.js';
+var k = ccgxkApp;  // 初始化沙盒
+k.initWorld('c');
+var list = k.bodylist;
+
+import calCity from '../src/plugins/calCity.js';
+calCity(k);
+
+// k.W.isOpenShadow = !k.W.isOpenShadow;  // 关闭阴影
+
+// 定义单个立方体对象的多个实例
+const cubeInstances = [];
+var cubeTimes = 1;
+var numCubes = 100 * cubeTimes;
+const spacing = 2.5;
+const areaSpace = 10**1;
+const random = k.genPR(17, numCubes * numCubes * 5);  // 伪随机数
+for (let i = 0; i < numCubes; i++) {
+    for (let j = 0; j < numCubes; j++) {
+        var index = i * numCubes + j;
+        cubeInstances.push({
+            x: Math.floor(random[index] * 99 * areaSpace + 1 - 50 * areaSpace) * cubeTimes,
+            y: Math.floor(random[index + 1] * 50),
+            z: Math.floor(random[index + 2] * 99 * areaSpace + 1 - 50 * areaSpace) * cubeTimes,
+            w: 20,
+            d: 30,
+            h: Math.floor(random[index + 3] * 19 + 1),
+            b:`#${Math.floor(random[index + 4] * 16777216).toString(16).padStart(6, '0')}`,
+        });
+    }
+}
+
+// 实例化物体可视化
+for (let index = 0; index < 1; index++) {
+  k.W.cube({
+    n: 'manyCubes' + index,
+    instances: cubeInstances, // 实例属性的数组
+    t: marble,
+    mix: 0.5,
+    y:50 * index * 10,
+  });
+}
+
+// 为实例化加上简单的物理引擎
+for (let i = 0; i < numCubes; i++) {
+    for (let j = 0; j < numCubes; j++) {
+        var index = i * numCubes + j;
+        k.addTABox({
+            DPZ : 3,
+            isPhysical: true,
+            X: Math.floor(random[index] * 99 * areaSpace + 1 - 50 * areaSpace) * cubeTimes,
+            Y: Math.floor(random[index + 1] * 50),
+            Z: Math.floor(random[index + 2] * 99 * areaSpace + 1 - 50 * areaSpace) * cubeTimes,
+            mass: 0,
+            width: 20,
+            depth: 30,
+            height: Math.floor(random[index + 3] * 19 + 1),
+            background: `#${Math.floor(random[index + 4] * 16777216).toString(16).padStart(6, '0')}`,
+            mixValue: 1,
+            isShadow: false,
+            isVisualMode: false,
+            isFictBody: true,
+            texture: marble,
+        });
+    }
+}
+
+
+// 测试创造一个文字纹理和物体绑定
+k.currTextData = new Map();
+function makeTestObj(indexObj = 8074){
+    const expRatio = 40;
+    const indexOfArr = indexObj * 8;
+    const objWidth  = k.physicsProps[indexOfArr + 1];  // 这样排列写，性能好一点
+    const objHeight = k.physicsProps[indexOfArr + 2];
+    const objDepth  = k.physicsProps[indexOfArr + 3];
+    const objPosX = k.positionsStatus[indexOfArr];
+    const objPosY = k.positionsStatus[indexOfArr + 1];
+    const objPosZ = k.positionsStatus[indexOfArr + 2];
+    const cWidth = objWidth * expRatio;
+    const cHeight = objHeight * expRatio;
+    const imgID = 'T' + indexObj + 'N';
+    const nudge = 0.1;  // 空隙
+
+    const faceConfigs = [  // { 名字, 位置偏移, 旋转角度, 尺寸 }
+        { name: '_forward', X: objPosX, Y: objPosY, Z: objPosZ + objDepth / 2 + nudge, rX: 0,   rY: 0,   width: objWidth, height: objHeight },
+        { name: '_backward', X: objPosX, Y: objPosY, Z: objPosZ - objDepth / 2 - nudge, rX: 0,   rY: 180, width: objWidth, height: objHeight },
+        { name: '_top', X: objPosX, Y: objPosY + objHeight / 2 + nudge, Z: objPosZ, rX: -90,  rY: 0,   width: objWidth, height: objDepth},
+        { name: '_down', X: objPosX, Y: objPosY - objHeight / 2 - nudge, Z: objPosZ, rX: 90,   rY: 0,   width: objWidth, height: objDepth },
+        { name: '_right', X: objPosX + objWidth / 2 + nudge, Y: objPosY, Z: objPosZ, rX: 0,   rY: 90,  width: objDepth, height: objHeight },
+        { name: '_left', X: objPosX - objWidth / 2 - nudge, Y: objPosY, Z: objPosZ, rX: 0,   rY: -90,   width: objDepth, height: objHeight },
+    ];
+
+    faceConfigs.forEach(face => {
+            k.addTABox({  // 创建一个 TA 平面试试
+            DPZ : 3,
+            shape: 'plane',
+            isPhysical: false,
+            // isVisualMode: false,
+            X: face.X, Y: face.Y, Z: face.Z, rX: face.rX, rY: face.rY, rZ: 0,
+            mass: 0, width: face.width, depth: 0, height: face.height,
+            texture: null, 
+            background:'#00000000', mixValue: 0,  // 设置成透明，防止闪烁
+            TGtoolText: true,  // 贴逛使用的参数，如果为 true，则表示可以编辑纹理（文字）
+        });
+    })
+    
+}
+
+
+// 向内存里添加 plane 文字板物体
+let currentIndex_obj = 0;
+const totalTasks = 10000;
+function addPlaneObj2Memory(deadline) {  // 添加物体
+    while (deadline.timeRemaining() > 0 && currentIndex_obj < totalTasks) {
+        makeTestObj(currentIndex_obj);  // 执行任务
+        currentIndex_obj++;
+    }
+    if (currentIndex_obj < totalTasks) {
+        requestIdleCallback(addPlaneObj2Memory);
+    } else {
+        console.log("所有 add obj 步已优雅地完成！");
+    }
+    if(currentIndex_obj % 100 === 0){  // 显示进度
+        xforward.innerHTML = 'obj ' + currentIndex_obj;
+    }
+}
+if(window.requestIdleCallback === undefined){  // safari bug
+    for (let i = 0; i < totalTasks; i++) {
+        makeTestObj(i);
+    }
+} else {
+    requestIdleCallback(addPlaneObj2Memory);
+}
+
+
+
+
+
+// 利用钩子来自定义纹理
+k.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this){
+    const index = drawItem.index;
+    const id = drawItem.id;
+    if('T' + index !== id) return;  // 只支持 T1234 这种格式的图片名
+    const value = k.currTextData.get(id)?.content || '';  //+3 使用文字库 currTextData 里的文字，偏移量
+    const offsetX = k.currTextData.get(id)?.x || 0;
+    const offsetY = k.currTextData.get(id)?.y || 0;
+    const offsetXR = k.currTextData.get(id)?.xr || 0;
+    const typeObj = {};
+    ctx.font = typeObj.font || "25px Arial";                  // 字体大小和类型
+    ctx.fillStyle =  typeObj.fillStyle || "white";            // 填充颜色
+    ctx.strokeStyle = 'transparent';                          // 好像没用（描边颜色）
+    ctx.textAlign =  typeObj.textAlign || "left";             // 水平对齐方式（left/center/right）
+
+    ctx.textBaseline =  typeObj.textBaseline ||"top";         // 垂直对齐方式（top/middle/bottom）
+    var lineHeight = parseInt(ctx.font) || 30;
+    const margin = 10;  // 边距
+    const marginLeft = 10;  // 边距
+    const marginTop = 10;
+    ctx.clearRect(0, 0, width, height);  // 透明色
+    ctx.fillStyle = 'white';
+    
+    // 简单排版函数
+    function wrapText(_ctx, text, x, y, maxWidth, lineHeight) {
+        text = text.split('/*')[0];  // 去掉注释
+        const words = text.split(''); // 按单个字符来拆分，保证中英文都能换行
+        let line = ''; // 当前正在排版的行内容
+        for(let n = 0; n < words.length; n++) {
+            if (words[n] === '\n') {  //+ 处理 \n 来换行的逻辑
+                _ctx.fillText(line, x, y);
+                y += lineHeight; line = '';
+                continue;
+            }
+            if(words[n] === '&'){  // 本行内有 &, 则本行颜色为透明
+                ctx.fillStyle = 'transparent';
+                ctx.font = "25px Arial";
+                lineHeight = 25;
+                words[n] = '';
+            }
+            if(words[n] === '#'){  // 本行内有 @, 则本行颜色为蓝色
+                ctx.fillStyle = 'blue';
+                ctx.font = "40px serif";
+                lineHeight = 43;
+                words[n] = '';
+            }
+            if(words[n] === '%'){  // 本行内有 @, 则本行颜色为红色
+                ctx.fillStyle = 'red';  
+                ctx.font = "40px serif";
+                lineHeight = 43;
+                words[n] = '';
+            }
+            if(words[n] === '@'){  // 本行内有 #, 则本行格式为默认
+                ctx.fillStyle = 'white';
+                ctx.font = typeObj.font || "25px Arial";
+                lineHeight = 25;
+                words[n] = '';
+            }
+            const testLine = line + words[n];  //+ 长度够了，换行的逻辑
+            const metrics = _ctx.measureText(testLine);  // 计算长度
+            const testWidth = metrics.width;
+            if (testWidth > maxWidth && n > 0) {  // 超长了
+                _ctx.fillText(line, x, y);
+                line = words[n];  // 另起一行
+                y += lineHeight;
+            } else {
+                line = testLine;
+            }
+        }
+        _ctx.fillText(line, x, y);  // 最后剩下的一行
+    }
+    wrapText(ctx, value, marginLeft + width * offsetX, marginTop + height * offsetY, (width - margin * 2) * (1 - offsetX - offsetXR), lineHeight);
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// *---[ 少用物的储物柜 ↓ ]--------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+// 从 COOKIE 里取出上一次的位置
+var lastPos = getObjectCookie('lastPos_mvp');
+if(!lastPos){
+    lastPos = {x:33, y:5.00, z:498};
+}
+k.mainVPlayer = k.addBox({  // 创建一个立方体，并设置为主角
+        name: 'mainPlayer', DPZ : 1,
+        colliGroup: 1,
+        isShadow: 'ok',
+        // X:4.25, Y:1.00, Z:12.09,
+        // X:-30.92, Y:1.00, Z:40.17,
+        X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z,
+        rX: 0, rY: 0, rZ: 0, size:1, mixValue:0.7,
+        mass: 50,
+        background : '#333',
+        texture: marble
+    });
+k.W.next['mainPlayer'].h = 0.8;  // 防止穿模，因为纹理和地面的问题.....  后续再想好办法
+
+k.addTABox({  // 创建一个 旋转测试 细长物理体
+    DPZ : 3,
+    colliGroup: 1,
+    name: 'longThin', X: 29, Y: 10, Z: 496,
+    mass: 1, width: 3, depth: 2, height: 2, texture: 'marble'
+});
+
+k.addTABox({  // 创建一个 旋转测试 细长物理体
+    DPZ : 1,
+    colliGroup: 2,
+    name: 'longThin02', X: 20, Y: 10, Z: 546,
+    mass: 10, width: 40, depth: 2, height: 2, background: '#333',
+    texture: 'gourou',
+});
+
+
+
+// 纹理列表
+const drawList = [
+    {func:drawRandomNoise, id:'xnoise'},
+    {func:drawjpflag, id:'jpflag', type: 'jpg'},
+    // {func:drawText, id:'xjapangood', type: 'png'},
+];
+
+var groundPlanesize = 10000;
+
+k.addBox({  // 创建地面
+    DPZ : 1,
+    colliGroup: 1,
+    tiling : 10,
+    // isShadow: 1,
+    name: 'groundPlane', X: 0, Y: -0.5, Z: 0,
+    mass: 0, width: groundPlanesize, depth: groundPlanesize, height: 2,
+    texture: marble, background: '#287A17', mixValue: 0.5,
+});
+
+k.addBox({  // 创建一个参考1米的使用的辅助图片。它会拉低渲染，所以要记得删去
+    DPZ : 1,
+    colliGroup: 1,
+    tiling : 10000,
+    isShadow: 1,
+    shape: 'plane',
+    isPhysical: false,
+    name: 'groundPlaneAux', X: 0, Y: 0.6, Z: 0, rX: -90,
+    mass: 0, width: groundPlanesize, depth: 0, height: groundPlanesize,
+    texture: marble, background: '#171f7a14', mixValue: 0.71,
+});
+
+
+// 日本国旗
+function drawjpflag(ctx, w, h) {
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);
+    const radius = 150;
+    ctx.beginPath();
+    ctx.arc(w / 2, h / 2, radius, 0, Math.PI * 2);
+    ctx.fillStyle = 'red';
+    ctx.fill();
+    ctx.stroke();
+}
+
+
+// 随机噪音
+function drawRandomNoise(ctx, w, h) {
+    ctx.fillStyle = '#8B8B83'; ctx.fillRect(0, 0, w, h);
+    for(let i = 0; i < 50; i++) {
+        const x = Math.random()*w, y = Math.random()*h;
+        const s = Math.random()*30, c = `rgba(10,0,10,${Math.random()*0.3})`;
+        ctx.fillStyle = c; ctx.beginPath();
+        ctx.arc(x, y, s, 0, Math.PI*2); ctx.fill();
+    }
+}
+
+
+// 一个能跑起来的计算角度的函数，凑合用吧
+function calculateNorthAngle(t,a,h){var t=-t*Math.PI/180,a=-a*Math.PI/180,h=h*Math.PI/180,M=Math.cos(t),
+    t=Math.sin(t),o=Math.cos(a),a=Math.sin(a),h=(Math.cos(h),Math.sin(h),a*M),a=-t,t=o*M,o=[0,0,1],M=t,
+    a=Math.sqrt(Math.pow(h,2)+Math.pow(a,2)+Math.pow(t,2));let n=Math.acos(Math.min(1,Math.max(-1,M/a)));
+    return n=(n=h*o[2]-t*o[0]<0?-n:n)>-Math.PI/2&&n<Math.PI/2?2*Math.PI-n:n}
+
+// 是否使用小范围地图 10 倍？？
+const isMapLittle = true;
+
+// 绘制小地图
+const mapUpdatax = setInterval(() => { drawRedDot(posMap); }, 50);
+function drawRedDot(t){var l=t.getContext("2d"),e=t.width/2,i=t.height/2,a=k.mainVPlayer.X/5e3*e,r=k.mainVPlayer.Z/5e3*i,
+    h=(l.clearRect(0,0,t.width,t.height),t.width/10);
+    
+    if(isMapLittle){
+        a=k.mainVPlayer.X/5e2*e,r=k.mainVPlayer.Z/5e2*i
+    }
+    
+    l.fillStyle="#fff",l.fillRect(0,0,t.width,t.height),l.fillStyle="#F5F7FF";
+    for(let e=0;e<10;e++)for(let t=0;t<10;t++)(e+t)%2==0&&l.fillRect(e*h,t*h,h,h);t=e+a,a=i+r,l.beginPath(),l.arc(e,i,2,0,2*Math.PI),
+    l.arc(t,a,1,0,2*Math.PI),l.fillStyle="red",l.fill(),l.strokeStyle="#9AFF4D",l.lineWidth=1,l.beginPath(),l.moveTo(t,a),
+    r=k.W.current.mainPlayer,e=calculateNorthAngle(r.rx,r.ry,r.rz);l.lineTo(t-100*Math.sin(e),a-100*Math.cos(e)),l.stroke()}
+
+window.k = k;
+window.list = list;
+
+
+// 前进
+xforward.addEventListener('mousedown', function(event) {
+    if(k.keys.viewForward === 1){
+        k.keys.viewForward = 0;
+    } else {
+        k.keys.viewForward = 1;
+    }
+});
+
+// 后退
+xbackward.addEventListener('mousedown', function(event) {
+    k.mainVPlayer.body.position.x = 113;
+    k.mainVPlayer.body.position.y = 5;
+    k.mainVPlayer.body.position.z = 495;
+});
+
+
+// 左转
+xleft.addEventListener('mousedown', function(event) {
+    k.antiDizzyMode = !k.antiDizzyMode;
+});
+
+
+// 右转
+xright.addEventListener('mousedown', function(event) {
+    k.mainVPlayer.body.position.x = 7.6;
+    k.mainVPlayer.body.position.y = 5;
+    k.mainVPlayer.body.position.z = 16.5;
+});
+
+
+// 蹦
+xjump.addEventListener('mousedown', function(event) {
+    k.mainVPlayer.body.velocity.y = 10;
+});
+
+// 开关阴影
+xShadow.addEventListener('mousedown', function(event) {
+    k.W.isOpenShadow = !k.W.isOpenShadow
+});
+
+k.viewType = 0;  // 0 是第三视角，1 是第一视角
+// 第一视角
+xVIEW1.addEventListener('mousedown', function(event) {
+    k.mainCamera.pos = {x:0, y:1, z:0}
+    k.viewType = 1;
+});
+
+// 第三视角
+xVIEW2.addEventListener('mousedown', function(event) {
+    // k.mainCamera.pos = {x: 0, y: 2, z: 4}
+    // k.viewType = 0;
+});
+
+
+// 数字转汉字
+function convertFiveDigitNumberToCommonChars(inputNumber) {
+    const COMMON_CHARS = "的一是在不了有和人这中大为上个国我以要他时来用们生到作地于出就分对成会可主发年动同工也能下过子说产种面而方后多定行学法所民得经十三之进着等部度家电力里如水化高自二理起小物现实加量都两体制机当使点从业本去把性好应开它合还因由其些然前外天政四日那社义事平形相全表间样与关各重新线内数正心反你明看原又么利比或但质气第向道命此变条只没结解问意建月公无系军很情者最立代想已通并提直题党程展五果料象员革位入常文总次品式活设及管特件长求老头基资边流路级少图山统接知较将组见计别她手角期根论运农指几九区强放决西被干做必战先回すあいうえお";
+    const rangeSize = COMMON_CHARS.length;
+    const num = parseInt(inputNumber, 10);
+    if (isNaN(num) || num < 0 || num > 99999) {
+        return "输入无效：请输入一个0到99999之间的五位数字。";
+    }
+    const index1 = num % rangeSize;
+    const scrambledNum = (num * 127 + 89);
+    const index2 = scrambledNum % rangeSize;
+    const char1 = COMMON_CHARS[index1];
+    const char2 = COMMON_CHARS[index2];
+    return char1 + char2;
+}
+
+
+// 一秒执行一次
+setInterval(() => {
+    // cookie 储存位置
+    const mainVPlayerBodyPos = k.mainVPlayer.body.position;  //+2 储存主角的位置到 COOKIE
+    setObjectCookie('lastPos_mvp', {x: mainVPlayerBodyPos.x, y: mainVPlayerBodyPos.y, z: mainVPlayerBodyPos.z}); // 存储对象到Cookie
+
+    xVIEW2.innerHTML = k.calCityName(); // 获取当前城市名称
+}, 1000)
+
+// 存储对象到Cookie
+function setObjectCookie(name, obj, days) {
+  const value = encodeURIComponent(JSON.stringify(obj));
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days*24*60*60*1000));
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = `${name}=${value}${expires}; path=/`;
+}
+
+// 从 Cookie 读取对象
+function getObjectCookie(name) {
+  const cookieArr = document.cookie.split('; ');
+  for(let i = 0; i < cookieArr.length; i++) {
+    const cookiePair = cookieArr[i].split('=');
+    if(name === cookiePair[0]) {
+      return JSON.parse(decodeURIComponent(cookiePair[1]));
+    }
+  }
+  return null;
+}
+</script>
+
+

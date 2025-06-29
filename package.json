@@ -1,0 +1,19 @@
+{
+  "name": "myccgxkdev",
+  "version": "1.0.0",
+  "main": "ccgxk.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "compression-webpack-plugin": "^11.1.0",
+    "terser-webpack-plugin": "^5.3.14",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
+  }
+}
