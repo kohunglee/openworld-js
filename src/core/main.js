@@ -8,6 +8,7 @@ export default {
     jumpYVel: 5,            // 跳跃时向上的加速度
     fov:35,                 // 相机视野
     colorClear: "#7A4141",  // 画布背景色
+    displayViewTime:1,      // 显示清晰度
 
     // ccgxk 的 cannon.js 物理世界
     world : null,
@@ -39,8 +40,8 @@ export default {
     // 初始化 W 引擎
     initW : function(c){
         const W = this.W;
-        c.width = window.innerWidth / 1;
-        c.height = window.innerHeight / 1;
+        c.width = window.innerWidth * this.displayViewTime;
+        c.height = window.innerHeight * this.displayViewTime;
         W.reset(c);
         W.ambient(0.7);
         W.light({ x: 0.5, y: -0.3, z: 0.5});
