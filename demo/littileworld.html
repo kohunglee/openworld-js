@@ -66,6 +66,7 @@ canvas {
 <script src="../src/cannon/cannon29kb.js"></script>
 <img src='./img/texture.jpeg' id=marble hidden>
 <canvas id=c style="width:100vw;height:100vh"></canvas>
+
 <div id="myHUD" class="myHUD">
     <div id="fpsInfo"></div>
     <span id="shiftInfo"></span>
@@ -77,6 +78,7 @@ canvas {
     <canvas id="posMap" width="100" height="100"></canvas>
     <canvas id="centerPoint" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);" width="1" height="1"></canvas>
 </div>
+
 <div id="myHUDModal" class="myHUD-modal" hidden>
     <div class="myHUD-modalPos">
         <div>
@@ -107,8 +109,8 @@ canvas {
             <button class="texture-editorBtn" id="textureEditorRcover">从浏览器恢复</button>
         </div>
     </div>
-    
 </div>
+
 <div id="someCtrl">
     <button id="xforward" style="width: 90px;">前</button>
     <button id="xbackward" style="width: 90px;">城寨入口</button>
@@ -120,6 +122,7 @@ canvas {
     <button id="xStopDY"  style="width: 90px;">小点</button>
     <span id="xVIEW2" style="font-size: 60px;color: rgb(255, 255, 255);position: absolute;left: 50vw;transform: translate(-50%);width: max-content;">城市</span>
 </div>
+
 <script type="module">
 import ccgxkApp from '../src/ccgxk.js';
 var k = ccgxkApp;  // 初始化沙盒
@@ -131,10 +134,12 @@ calCity(k);
 
 // k.W.isOpenShadow = !k.W.isOpenShadow;  // 关闭阴影
 
+// AIzaSyDoOziyoAkxusHJpOnGMPoC5Appql2gluM
+console.time('creat10_000');
 // 定义单个立方体对象的多个实例
 const cubeInstances = [];
 var cubeTimes = 1;
-var numCubes = 100 * cubeTimes;
+var numCubes = 3 * cubeTimes;
 const spacing = 2.5;
 const areaSpace = 10**1;
 const random = k.genPR(17, numCubes * numCubes * 5);  // 伪随机数
@@ -148,10 +153,23 @@ for (let i = 0; i < numCubes; i++) {
             w: 20,
             d: 30,
             h: Math.floor(random[index + 3] * 19 + 1),
-            b:`#${Math.floor(random[index + 4] * 16777216).toString(16).padStart(6, '0')}`,
+            b:`${Math.floor(random[index + 4] * 16777216).toString(16).padStart(6, '0')}`,
         });
     }
 }
+
+
+// cubeInstances.push({
+//     x: 10,
+//     y: 10,
+//     z: 10,
+//     w: 20,
+//     d: 30,
+//     h: 60,
+// });
+
+
+/* -------------------------------------------------------- */
 
 // 实例化物体可视化
 for (let index = 0; index < 1; index++) {
@@ -165,100 +183,25 @@ for (let index = 0; index < 1; index++) {
 }
 
 // 为实例化加上简单的物理引擎
-for (let i = 0; i < numCubes; i++) {
-    for (let j = 0; j < numCubes; j++) {
-        var index = i * numCubes + j;
-        k.addTABox({
-            DPZ : 3,
-            isPhysical: true,
-            X: Math.floor(random[index] * 99 * areaSpace + 1 - 50 * areaSpace) * cubeTimes,
-            Y: Math.floor(random[index + 1] * 50),
-            Z: Math.floor(random[index + 2] * 99 * areaSpace + 1 - 50 * areaSpace) * cubeTimes,
-            mass: 0,
-            width: 20,
-            depth: 30,
-            height: Math.floor(random[index + 3] * 19 + 1),
-            background: `#${Math.floor(random[index + 4] * 16777216).toString(16).padStart(6, '0')}`,
-            mixValue: 1,
-            isShadow: false,
-            isVisualMode: false,
-            isFictBody: true,
-            texture: marble,
-        });
-    }
+for (let index = 0; index < cubeInstances.length; index++) {
+    k.addTABox({
+        DPZ : 3,
+        isPhysical: true,
+        X: cubeInstances[index].x,
+        Y: cubeInstances[index].y,
+        Z: cubeInstances[index].z,
+        mass: 0,
+        width: cubeInstances[index].w,
+        depth: cubeInstances[index].d,
+        height: cubeInstances[index].h,
+        background: cubeInstances[index].b,
+        mixValue: 1,
+        isShadow: false,
+        isVisualMode: false,
+        isFictBody: true,
+        texture: marble,
+    });
 }
-
-
-// 测试创造一个文字纹理和物体绑定
-k.currTextData = new Map();
-function makeTestObj(indexObj = 8074){
-    const expRatio = 40;
-    const indexOfArr = indexObj * 8;
-    const objWidth  = k.physicsProps[indexOfArr + 1];  // 这样排列写，性能好一点
-    const objHeight = k.physicsProps[indexOfArr + 2];
-    const objDepth  = k.physicsProps[indexOfArr + 3];
-    const objPosX = k.positionsStatus[indexOfArr];
-    const objPosY = k.positionsStatus[indexOfArr + 1];
-    const objPosZ = k.positionsStatus[indexOfArr + 2];
-    const cWidth = objWidth * expRatio;
-    const cHeight = objHeight * expRatio;
-    const imgID = 'T' + indexObj + 'N';
-    const nudge = 0.1;  // 空隙
-
-    const faceConfigs = [  // { 名字, 位置偏移, 旋转角度, 尺寸 }
-        { name: '_forward', X: objPosX, Y: objPosY, Z: objPosZ + objDepth / 2 + nudge, rX: 0,   rY: 0,   width: objWidth, height: objHeight },
-        { name: '_backward', X: objPosX, Y: objPosY, Z: objPosZ - objDepth / 2 - nudge, rX: 0,   rY: 180, width: objWidth, height: objHeight },
-        { name: '_top', X: objPosX, Y: objPosY + objHeight / 2 + nudge, Z: objPosZ, rX: -90,  rY: 0,   width: objWidth, height: objDepth},
-        { name: '_down', X: objPosX, Y: objPosY - objHeight / 2 - nudge, Z: objPosZ, rX: 90,   rY: 0,   width: objWidth, height: objDepth },
-        { name: '_right', X: objPosX + objWidth / 2 + nudge, Y: objPosY, Z: objPosZ, rX: 0,   rY: 90,  width: objDepth, height: objHeight },
-        { name: '_left', X: objPosX - objWidth / 2 - nudge, Y: objPosY, Z: objPosZ, rX: 0,   rY: -90,   width: objDepth, height: objHeight },
-    ];
-
-    faceConfigs.forEach(face => {
-            k.addTABox({  // 创建一个 TA 平面试试
-            DPZ : 3,
-            shape: 'plane',
-            isPhysical: false,
-            // isVisualMode: false,
-            X: face.X, Y: face.Y, Z: face.Z, rX: face.rX, rY: face.rY, rZ: 0,
-            mass: 0, width: face.width, depth: 0, height: face.height,
-            texture: null, 
-            background:'#00000000', mixValue: 0,  // 设置成透明，防止闪烁
-            TGtoolText: true,  // 贴逛使用的参数，如果为 true，则表示可以编辑纹理（文字）
-        });
-    })
-    
-}
-
-
-// 向内存里添加 plane 文字板物体
-let currentIndex_obj = 0;
-const totalTasks = 10000;
-function addPlaneObj2Memory(deadline) {  // 添加物体
-    while (deadline.timeRemaining() > 0 && currentIndex_obj < totalTasks) {
-        makeTestObj(currentIndex_obj);  // 执行任务
-        currentIndex_obj++;
-    }
-    if (currentIndex_obj < totalTasks) {
-        requestIdleCallback(addPlaneObj2Memory);
-    } else {
-        console.log("所有 add obj 步已优雅地完成！");
-    }
-    if(currentIndex_obj % 100 === 0){  // 显示进度
-        xforward.innerHTML = 'obj ' + currentIndex_obj;
-    }
-}
-if(window.requestIdleCallback === undefined){  // safari bug
-    for (let i = 0; i < totalTasks; i++) {
-        makeTestObj(i);
-    }
-} else {
-    requestIdleCallback(addPlaneObj2Memory);
-}
-
-
-
-
 
 // 利用钩子来自定义纹理
 k.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this){
@@ -426,7 +369,7 @@ const drawList = [
     // {func:drawText, id:'xjapangood', type: 'png'},
 ];
 
-var groundPlanesize = 1000;
+var groundPlanesize = 10000;
 
 k.addBox({  // 创建地面
     DPZ : 1,

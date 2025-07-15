@@ -189,6 +189,11 @@ export default {
             vplayerBodyPos.x, vplayerBodyPos.y, vplayerBodyPos.z,
             cam.qua.rx, cam.qua.ry, cam.qua.rz
         );
+
+        // var tempY = (vplayerAct.z - 530) / 9;
+        // tempY = (tempY > 1) ? tempY : 1
+        // vplayerAct.y = (tempY < 1) ? 1 : tempY;
+
         mVP.body.position.x = vplayerAct.x;
         mVP.body.position.y = vplayerAct.y;
         mVP.body.position.z = vplayerAct.z;

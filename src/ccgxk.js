@@ -12,7 +12,7 @@ import animate from './core/animate.js';
 
 // 插件
 // import wjsShadow from './plugins/wjsShadow.js';
-// import centerDot from './plugins/centerDot.js';
+import centerDot from './plugins/centerDot.js';
 
 
 // 主对象
@@ -30,7 +30,7 @@ const ccgxk = {
 
 // 启用插件
 // wjsShadow(ccgxk);  // 开启阴影（暂时有性能问题，待改进）
-// centerDot(ccgxk);  // 开启中心点取物
+centerDot(ccgxk);  // 开启中心点取物
 
 
 // 兼容浏览器平台
