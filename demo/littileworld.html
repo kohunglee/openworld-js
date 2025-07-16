@@ -125,16 +125,21 @@ canvas {
 
 <script type="module">
 import ccgxkApp from '../src/ccgxk.js';
-var k = ccgxkApp;  // 初始化沙盒
+window.k = ccgxkApp;  // 初始化沙盒
 k.initWorld('c');
 var list = k.bodylist;
 
+
+// 引入插件（计算城市）
 import calCity from '../src/plugins/calCity.js';
 calCity(k);
 
+// 引入插件（svg 纹理库）
+import svgTextureLib from '../src/plugins/svgTextureLib.js';
+svgTextureLib(k);
+
 // k.W.isOpenShadow = !k.W.isOpenShadow;  // 关闭阴影
 
-// AIzaSyDoOziyoAkxusHJpOnGMPoC5Appql2gluM
 console.time('creat10_000');
 // 定义单个立方体对象的多个实例
 const cubeInstances = [];
@@ -169,23 +174,219 @@ for (let i = 0; i < numCubes; i++) {
 // });
 
 
+/**
+ * 建筑大师的智能设计程序
+ * @returns {Array} 包含所有方块实例的数组
+ */
+const buildMyDreamHouse = () => {
+    // [建筑蓝图] - 在这里调整房子的所有参数，一处修改，全局生效！
+    const blueprint = {
+        // --- 基础尺寸 ---
+        houseX: 0,         // 房子在世界中的基准X坐标
+        houseY: 0,         // 房子在世界中的基准Y坐标 (地基顶部)
+        houseZ: 0,         // 房子在世界中的基准Z坐标
+        width: 60,         // 房子宽度 (沿X轴)
+        depth: 40,         // 房子深度 (沿Z轴)
+        height: 20,        // 墙体高度 (沿Y轴)
+        wallThickness: 2,  // 墙的厚度
+
+        // --- 屋顶参数 ---
+        roofPitch: 0.8,    // 屋顶倾斜度，值越大屋顶越尖
+        eavesOverhang: 4,  // 屋檐伸出的长度
+
+        // --- 门窗参数 ---
+        doorWidth: 8,
+        doorHeight: 12,
+        windowSize: 10,
+        windowHeight: 10,  // 窗户离地面的高度
+    };
+
+    // [施工队的花名册] - 我们将在这里注册所有的方块
+    // const cubeInstances = [];
+
+    // [施工队的工具箱] - 一个高效的“砌砖”函数，避免重复劳动
+    // 使用了JS的默认参数和对象属性简写，非常现代！
+    const addBlock = (x, y, z, w, h, d = w) => { // 默认深度等于宽度，适合砌方砖
+        cubeInstances.push({ x, y, z, w, h, d });
+    };
+
+    // =================================================================
+    // 第1步：地基与地板施工队 (Foundation & Floor Crew)
+    // =================================================================
+    const buildFoundation = () => {
+        // console.log("正在铺设地基和地板...");
+        addBlock(
+            blueprint.houseX - blueprint.eavesOverhang,
+            blueprint.houseY - blueprint.wallThickness,
+            blueprint.houseZ - blueprint.eavesOverhang,
+            blueprint.width + blueprint.eavesOverhang * 2,
+            blueprint.wallThickness,
+            blueprint.depth + blueprint.eavesOverhang * 2
+        );
+    };
+
+    // =================================================================
+    // 第2步：墙体施工队 (Wall Crew)
+    // 这是一个非常聪明的施工队，他们会根据蓝图自动留出门窗位置
+    // =================================================================
+    const buildWalls = () => {
+        // console.log("开始砌墙，并智能预留门窗洞口...");
+        const { houseX, houseY, houseZ, width, depth, height, wallThickness, doorWidth, doorHeight, windowSize, windowHeight } = blueprint;
+
+        // 定义墙体建造规则
+        const wallJobs = [
+            // [位置, 长度, 是否沿X轴, 洞口列表]
+            { pos: [houseX, houseZ], len: width, isX: true, openings: [ // 前墙
+                { from: (width - doorWidth) / 2, to: (width + doorWidth) / 2, type: 'door' }, // 门
+                { from: width * 0.1, to: width * 0.1 + windowSize, type: 'window' }, // 左窗
+                { from: width * 0.9 - windowSize, to: width * 0.9, type: 'window' } // 右窗
+            ]},
+            { pos: [houseX, houseZ + depth - wallThickness], len: width, isX: true, openings: [ // 后墙
+                { from: width / 2 - windowSize/2, to: width / 2 + windowSize/2, type: 'window' }
+            ]},
+            { pos: [houseX, houseZ], len: depth, isX: false, openings: [] }, // 左墙
+            { pos: [houseX + width - wallThickness, houseZ], len: depth, isX: false, openings: [] } // 右墙
+        ];
+
+        // 施工队开始按照规则砌墙
+        wallJobs.forEach(job => {
+            for (let i = 0; i < job.len; i += wallThickness) {
+                for (let j = 0; j < height; j += wallThickness) {
+                    // 检查当前位置是否需要留空
+                    let isOpening = false;
+                    for (const opening of job.openings) {
+                        const openingHeight = opening.type === 'door' ? doorHeight : windowSize;
+                        const openingY_start = opening.type === 'door' ? 0 : windowHeight;
+                        if (i >= opening.from && i < opening.to && j >= openingY_start && j < openingY_start + openingHeight) {
+                            isOpening = true;
+                            break;
+                        }
+                    }
+                    if (isOpening) continue; // 如果是洞口，跳过这块砖
+
+                    const x = job.isX ? job.pos[0] + i : job.pos[0];
+                    const z = job.isX ? job.pos[1] : job.pos[1] + i;
+                    addBlock(x, houseY + j, z, wallThickness, wallThickness);
+                }
+            }
+        });
+    };
+    
+    // =================================================================
+    // 第3步：屋顶施工队 (Roofing Crew)
+    // 采用经典的三角形斜屋顶设计，一层层搭建
+    // =================================================================
+    const buildRoof = () => {
+        // console.log("开始封顶，搭建漂亮的斜屋顶...");
+        const { houseX, houseY, houseZ, width, depth, height, roofPitch, eavesOverhang } = blueprint;
+        
+        const roofHeight = width / 2 * roofPitch;
+        for(let i = 0; i < width / 2; i += 1) {
+            const y = height + i * roofPitch;
+            const w = 1;
+            const x1 = houseX + i;
+            const x2 = houseX + width - i - w;
+            const d = depth + 2 * eavesOverhang;
+            const z = houseZ - eavesOverhang;
+            addBlock(x1, houseY + y, z, w, w, d);
+            addBlock(x2, houseY + y, z, w, w, d);
+        }
+        
+        // 封住屋顶两端的山墙
+        for(let y = 0; y < roofHeight; y++) {
+            const currentWidth = (roofHeight - y) / roofPitch * 2;
+            addBlock(
+                houseX + (width - currentWidth) / 2,
+                houseY + height + y,
+                houseZ,
+                currentWidth, 1, 1
+            );
+            addBlock(
+                houseX + (width - currentWidth) / 2,
+                houseY + height + y,
+                houseZ + depth - 1,
+                currentWidth, 1, 1
+            );
+        }
+    };
+    
+    // =================================================================
+    // 第4步：精装修与细节施工队 (Detailing Crew)
+    // 添加烟囱、家具等，让房子充满生活气息
+    // =================================================================
+    const buildDetails = () => {
+        // console.log("最后进行精装修，添加烟囱和家具...");
+        const { houseX, houseY, houseZ,width, depth, height, roofPitch } = blueprint;
+
+        // --- 建造一个温暖的烟囱 ---
+        const chimneySize = 4;
+        const chimneyX = houseX + width * 0.8;
+        const chimneyZ = houseZ - chimneySize/2;
+        const roofYatChimney = height + (width * 0.8 - width / 2) * roofPitch;
+        for (let y = 0; y < 10; y += 1) {
+             addBlock(chimneyX, houseY + roofYatChimney + y, chimneyZ, chimneySize, 1);
+        }
+
+        // --- 从烟囱冒出的可爱的烟 (创造力的体现！) ---
+        for (let i = 0; i < 5; i++) {
+            const smokeX = chimneyX + Math.random() * 4 - 2;
+            const smokeZ = chimneyZ + Math.random() * 4 - 2;
+            const smokeY = houseY + roofYatChimney + 10 + i * 2;
+            const smokeSize = Math.random() * 2 + 1;
+            addBlock(smokeX, smokeY, smokeZ, smokeSize, smokeSize);
+        }
+
+        // --- 在室内放一张简单的桌子 ---
+        const tableHeight = 6;
+        const tableSize = 12;
+        addBlock( //桌面
+            houseX + width/2 - tableSize/2, 
+            houseY + tableHeight, 
+            houseZ + depth/2 - tableSize/2, 
+            tableSize, 1, tableSize
+        );
+        addBlock( //桌腿 x4
+            houseX + width/2 - tableSize/2, houseY, houseZ + depth/2 - tableSize/2, 
+            1, tableHeight, 1
+        );
+        addBlock(
+            houseX + width/2 + tableSize/2 - 1, houseY, houseZ + depth/2 - tableSize/2, 
+            1, tableHeight, 1
+        );
+        addBlock(
+            houseX + width/2 - tableSize/2, houseY, houseZ + depth/2 + tableSize/2 - 1, 
+            1, tableHeight, 1
+        );
+        addBlock(
+            houseX + width/2 + tableSize/2 - 1, houseY, houseZ + depth/2 + tableSize/2 - 1, 
+            1, tableHeight, 1
+        );
+    };
+
+    // [总工程师] - 按顺序指挥施工队开工！
+    buildFoundation();
+    buildWalls();
+    buildRoof();
+    buildDetails();
+    
+    // console.log(`恭喜！您的梦想小屋已建成，共使用了 ${cubeInstances.length} 个方块。`);
+    return cubeInstances;
+};
+
+// --- 开始建造！ ---
+const myHouseCubes = buildMyDreamHouse();
+// 现在，myHouseCubes 数组里就装满了构成你漂亮房子的所有方块数据。
+// 你可以打印一部分看看结果：
+// console.log("房屋方块数据预览（前5个）:", myHouseCubes.slice(0, 5));
+
 /* -------------------------------------------------------- */
 
-// 实例化物体可视化
-for (let index = 0; index < 1; index++) {
-  k.W.cube({
-    n: 'manyCubes' + index,
-    instances: cubeInstances, // 实例属性的数组
-    t: marble,
-    mix: 0.5,
-    y:50 * index * 10,
-  });
-}
+
 
 // 为实例化加上简单的物理引擎
 for (let index = 0; index < cubeInstances.length; index++) {
     k.addTABox({
-        DPZ : 3,
+        DPZ : 4,
         isPhysical: true,
         X: cubeInstances[index].x,
         Y: cubeInstances[index].y,
@@ -202,6 +403,33 @@ for (let index = 0; index < cubeInstances.length; index++) {
         texture: marble,
     });
 }
+
+k.loadTexture(k.svgTextureLib).then(loadedImage => {
+    if (loadedImage) {
+        k.addTABox({  // 创建一个 旋转测试 细长物理体
+            DPZ : 1,
+            colliGroup: 1,
+            name: 'longThin', X: 34, Y: 10, Z: 102, 
+            mass: 1, width: 3, depth: 2, height: 2, texture: 'greenStone', mixValue:0.7, background : '#333',
+        });
+
+        console.log(k.textureMap);
+        console.log(k.textureMap.get('greenStoneTwo'));
+        console.log(k.textureMap.get('greenStone'));
+
+        // 实例化物体可视化
+        for (let index = 0; index < 1; index++) {
+            k.W.cube({
+                n: 'manyCubes' + index,
+                instances: cubeInstances, // 实例属性的数组
+                t: k.textureMap.get('greenStone'),
+                mix: 0.5,
+                y: 50 * index * 10,
+            });
+        }
+    }
+});
+
 
 // 利用钩子来自定义纹理
 k.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this){
@@ -345,12 +573,7 @@ k.mainVPlayer = k.addBox({  // 创建一个立方体，并设置为主角
     });
 k.W.next['mainPlayer'].h = 0.8;  // 防止穿模，因为纹理和地面的问题.....  后续再想好办法
 
-k.addTABox({  // 创建一个 旋转测试 细长物理体
-    DPZ : 3,
-    colliGroup: 1,
-    name: 'longThin', X: 29, Y: 10, Z: 496,
-    mass: 1, width: 3, depth: 2, height: 2, texture: 'marble'
-});
+
 
 k.addTABox({  // 创建一个 旋转测试 细长物理体
     DPZ : 1,

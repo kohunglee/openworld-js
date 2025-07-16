@@ -33,6 +33,7 @@ const ccgxk = {
 centerDot(ccgxk);  // 开启中心点取物
 
 
+
 // 兼容浏览器平台
 window.ccgxk = ccgxk;
 

@@ -18,10 +18,10 @@ export default {
     },
 
     // 新的 dynaNodes（适用于长宽 40 以内的物体）
-    gridsize : new Uint16Array([10000, 1000, 100, 20]),  // 单个区块面积大小
+    gridsize : new Uint16Array([10000, 1000, 100, 20, 5]),  // 单个区块面积大小（与 DPZ 挨个对应）
     currentlyActiveIndices : new Set(),  // 当前激活状态的物体。也可保存本次的激活物体列表，供下一次使用
     activationQueue : new Array(),  // 激活任务队列
-    
+
     dynaNodes_lab : function(){
         if(this.mainVPlayer === null || this.stopDynaNodes) {return ''};
         const mVP = this.mainVPlayer;
