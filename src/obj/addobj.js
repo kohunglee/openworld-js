@@ -223,9 +223,6 @@ export default {
 
 
 
-
-
-
     // 添加 box 物体
     addBox : function({
                 DPZ = 2,  // 显示优先级
