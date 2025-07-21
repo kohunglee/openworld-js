@@ -6,7 +6,7 @@
 
 // 插件入口
 export default function(ccgxkObj) {
-    const template = document.createElement('template');
+    const template = document.createElement('template');  //+ 添加 html 节点
     template.innerHTML = htmlCode;
     const content = template.content.cloneNode(true);
     document.body.appendChild(content);
