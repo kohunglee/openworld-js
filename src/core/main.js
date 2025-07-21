@@ -19,7 +19,6 @@ export default {
     bodylistMass0 : new Array(),  // 无质量的可视模型
 
     // 画板
-    // canvas : null,
     canvas : null,
 
     // 初始化
@@ -34,7 +33,6 @@ export default {
         this.initBodyTypeArray(1_000_000);  // 初始化一个物体信息库
         this.eventListener();  // 事件监听
         this.animate(); // 动画
-        shiftInfo.textContent = '速度:' + 0 + ' | ' // 【测试，临时】
     },
 
     // 初始化 W 引擎
