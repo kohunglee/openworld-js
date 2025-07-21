@@ -132,7 +132,7 @@ export default {
             var speed = (this.isShiftPress)
                         ? Math.max(this.speedH,this.speedL-(this.forwardAcc+=this.speedAdd))
                         : this.speedL+0*(this.forwardAcc=0.01);  // 加速度
-            shiftInfo.textContent = '速度:' + Math.round((100 / speed)) + ' | ';
+            // shiftInfo.textContent = '速度:' + Math.round((100 / speed)) + ' | ';
             Z += (-keys.viewForward + keys.viewBackward) * Math.cos(RY * Math.PI / 180) / speed;
             X += (-keys.viewForward + keys.viewBackward) * Math.sin(RY * Math.PI / 180) / speed;
             this.displayPOS();
@@ -189,10 +189,6 @@ export default {
             vplayerBodyPos.x, vplayerBodyPos.y, vplayerBodyPos.z,
             cam.qua.rx, cam.qua.ry, cam.qua.rz
         );
-
-        // var tempY = (vplayerAct.z - 530) / 9;
-        // tempY = (tempY > 1) ? tempY : 1
-        // vplayerAct.y = (tempY < 1) ? 1 : tempY;
 
         mVP.body.position.x = vplayerAct.x;
         mVP.body.position.y = vplayerAct.y;

@@ -65,7 +65,7 @@ export default {
         this.currentlyActiveIndices = newActiveIndices;
         if (this.activationQueue.length > 0 && !this.isActivationScheduled) {  // 如果有旧任务，且没有安排新任务
             this.isActivationScheduled = true;
-            requestIdleCallback(this._processActivationQueue.bind(this));  // 处理
+            // requestIdleCallback(this._processActivationQueue.bind(this));  // 处理
         }
 
     },

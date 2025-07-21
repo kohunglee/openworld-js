@@ -4,18 +4,14 @@
 <meta http-equiv="pragma" content="no-cache">
 <style>
     body{margin: 0;}
-    #posMap {
-        position: fixed;
-        right: 50px;
-        margin-top: -100px;
-        opacity: 0.8;
-    }
+
     .myHUD {
         position: absolute;
         bottom: 0;
         padding: 0.3em;
         color: #ffffff;
     }
+
     #someCtrl {
         position: fixed;  
         top: 0;
@@ -66,6 +62,7 @@ canvas {
 <script src="../src/cannon/cannon29kb.js"></script>
 <img src='./img/texture.jpeg' id=marble hidden>
 <canvas id=c style="width:100vw;height:100vh"></canvas>
+
 <div id="myHUD" class="myHUD">
     <div id="fpsInfo"></div>
     <span id="shiftInfo"></span>
@@ -74,9 +71,10 @@ canvas {
     <span id="cpuInfo"></span>
     <span id="modListCount"></span>
     <span id="posIDMVP"></span>
-    <canvas id="posMap" width="100" height="100"></canvas>
-    <canvas id="centerPoint" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);" width="1" height="1"></canvas>
 </div>
+
+<canvas id="centerPoint" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);" width="1" height="1"></canvas>
+
 <div id="myHUDModal" class="myHUD-modal" hidden>
     <div class="myHUD-modalPos">
         <div>
@@ -122,12 +120,18 @@ canvas {
 </div>
 <script type="module">
 import ccgxkApp from '../src/ccgxk.js';
+
 var k = ccgxkApp;  // 初始化沙盒
 k.initWorld('c');
 var list = k.bodylist;
 
 import calCity from '../src/plugins/calCity.js';
-calCity(k);
+import xmap from '../src/plugins/xmap.js';
+import xdashpanel from '../src/plugins/xdashpanel.js';
+calCity(k);  // 计算城市
+xmap(k);  // 小地图
+xdashpanel(k);  // 简易仪表盘
+
 
 // k.W.isOpenShadow = !k.W.isOpenShadow;  // 关闭阴影
 
@@ -426,12 +430,12 @@ const drawList = [
     // {func:drawText, id:'xjapangood', type: 'png'},
 ];
 
-var groundPlanesize = 1000;
+var groundPlanesize = 10000;
 
 k.addBox({  // 创建地面
     DPZ : 1,
     colliGroup: 1,
-    tiling : 10,
+    tiling : 100,
     // isShadow: 1,
     name: 'groundPlane', X: 0, Y: -0.5, Z: 0,
     mass: 0, width: groundPlanesize, depth: groundPlanesize, height: 2,
@@ -475,14 +479,7 @@ function drawRandomNoise(ctx, w, h) {
 }
 
 
-// 一个能跑起来的计算角度的函数，凑合用吧
-function calculateNorthAngle(t,a,h){var t=-t*Math.PI/180,a=-a*Math.PI/180,h=h*Math.PI/180,M=Math.cos(t),
-    t=Math.sin(t),o=Math.cos(a),a=Math.sin(a),h=(Math.cos(h),Math.sin(h),a*M),a=-t,t=o*M,o=[0,0,1],M=t,
-    a=Math.sqrt(Math.pow(h,2)+Math.pow(a,2)+Math.pow(t,2));let n=Math.acos(Math.min(1,Math.max(-1,M/a)));
-    return n=(n=h*o[2]-t*o[0]<0?-n:n)>-Math.PI/2&&n<Math.PI/2?2*Math.PI-n:n}
 
-// 是否使用小范围地图 10 倍？？
-const isMapLittle = true;
 
 // 前进
 xforward.addEventListener('mousedown', function(event) {
@@ -575,53 +572,7 @@ function getObjectCookie(name) {
 
 
 
-/**
- * 绘制小地图的核心函数
- * @param {HTMLCanvasElement} canvasElement - 用于绘制小地图的 <canvas> 元素。
- */
-const mapUpdateInterval = setInterval(() => {
-    drawRedDot(posMap);
-}, 50);
-function drawRedDot(canvasElement) {
-    const ctx = canvasElement.getContext("2d");
-    const centerX = canvasElement.width / 2;    // 地图中心的 X 坐标
-    const centerY = canvasElement.height / 2;   // 地图中心的 Y 坐标
-    let playerMapX = (k.mainVPlayer.X / 5000) * centerX;
-    let playerMapZ = (k.mainVPlayer.Z / 5000) * centerY;
-    const gridSize = canvasElement.width / 10;  // 10 * 10 格子大小
-    ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    if (isMapLittle) {  // 小比例尺
-        playerMapX = (k.mainVPlayer.X / 500) * centerX;
-        playerMapZ = (k.mainVPlayer.Z / 500) * centerY;
-    }
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
-    ctx.fillStyle = "#F5F7FF";
-    for (let row = 0; row < 10; row++) {  // 棋盘
-        for (let col = 0; col < 10; col++) {
-            if ((row + col) % 2 === 0) {
-                ctx.fillRect(row * gridSize, col * gridSize, gridSize, gridSize);
-            }
-        }
-    }
-    const finalPlayerX = centerX + playerMapX;
-    const finalPlayerY = centerY + playerMapZ;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, 2, 0, 2 * Math.PI); // 中心点
-    ctx.arc(finalPlayerX, finalPlayerY, 1, 0, 2 * Math.PI); // 玩家点
-    ctx.fillStyle = "red";
-    ctx.fill();
-    ctx.strokeStyle = "#9AFF4D";  //+ 玩家朝向线
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(finalPlayerX, finalPlayerY);
-    const mainPlayer = k.W.current.mainPlayer;
-    const northAngle = calculateNorthAngle(mainPlayer.rx, mainPlayer.ry, mainPlayer.rz);
-    const lineEndX = finalPlayerX - 100 * Math.sin(northAngle);
-    const lineEndY = finalPlayerY - 100 * Math.cos(northAngle);
-    ctx.lineTo(lineEndX, lineEndY);
-    ctx.stroke();
-}
+
 </script>
 
 
