@@ -120,6 +120,7 @@ const W = {
         };
         W.clearColor("fff");
         W.gl.enable(2929);
+        // W.gl.enable(W.gl.POLYGON_OFFSET_FILL);
         W.light({y: -1});
         W.camera({fov: 30});
         // W.wjsHooks.emitSync('start_draw', W);  // 钩子：'开始绘制'
@@ -360,7 +361,7 @@ const W = {
             W.gl.vertexAttrib4fv(colorAttribLoc, W.col(object.b || '888'));
           }
           if(W.models[object.type].indicesBuffer){  // 存在索引的绘制
-            W.gl.bindBuffer(34963 , W.models[object.type].indicesBuffer);
+            // W.gl.bindBuffer(34963 , W.models[object.type].indicesBuffer);
             if (object.isInstanced) { // 索引+实例化
               W.gl.drawElementsInstanced(
                 +object.mode || W.gl[object.mode],W.models[object.type].indices.length,W.gl.UNSIGNED_SHORT,0,object.numInstances
@@ -370,6 +371,7 @@ const W = {
             }
           }
           else { // 不存在索引的绘制
+            W.gl.polygonOffset(1.0, 1.0);
             if (object.isInstanced) {  //无索引+实例化
               W.gl.drawArraysInstanced(+object.mode || W.gl[object.mode],0,W.models[object.type].vertices.length / 3,object.numInstances);
             } else {  // 正常
@@ -423,8 +425,8 @@ const W = {
   },
 
   // 根据新的 canvas 大小重置画面
-  resetView : () => {
-    W.gl.viewport(0, 0, W.gl.canvas.width, W.gl.canvas.height);
+  resetView : (displayViewTime = 1) => {  // displayViewTime : 显示清晰度
+    W.gl.viewport(0, 0, W.gl.canvas.width * displayViewTime, W.gl.canvas.height * displayViewTime);
     W.setState({ n: 'camera', fov: W.next.camera.fov });
   },
   
