@@ -125,7 +125,7 @@ const W = {
         setTimeout(W.draw, 16);  // 开始绘制
   },
 
-  // 设置对象的状态
+  // 设置对象的状态 
   setState: (state, type, texture, i, normal = [], A, B, C, Ai, Bi, Ci, AB, BC) => {
         state.n ||= 'o' + W.objs++;
         if(state.size) state.w = state.h = state.d = state.size;
