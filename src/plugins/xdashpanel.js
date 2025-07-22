@@ -6,21 +6,17 @@
 
 // 插件入口
 export default function(ccgxkObj) {
-    // console.log('ybp');
     const template = document.createElement('template');  //+4 将 html 节点添加到文档
     template.innerHTML = htmlCode;
     const content = template.content.cloneNode(true);
     document.body.appendChild(content);
 
-
     shiftInfo.textContent = '速度:' + 0 + ' | ' // 【测试，临时】
 
-    // FPS 计算的辅助值
-    ccgxkObj.fpsFrameCount = 0;
+    ccgxkObj.fpsFrameCount = 0;  //+ FPS 计算的辅助值
     ccgxkObj.lastTime = performance.now();
-    
-    // 显示 FPS 和 内存 等... (所有一秒一次的函数)
-    ccgxkObj.isFirstShowFPS = true;
+
+    ccgxkObj.isFirstShowFPS = true;  //+ 显示 FPS 和 内存 等... (所有一秒一次的函数)
     ccgxkObj.showFPS1S = function(){
         var currentTime = performance.now();
         var deltaTime = currentTime - this.lastTime;
@@ -39,19 +35,32 @@ export default function(ccgxkObj) {
             modListCount.textContent = ('当前模型数：' + this.bodylist.length +
                                         ' - ❀' + this.bodylistNotPys.length +
                                         ' - 口' + this.bodylistMass0.length +
-                                        ' - ⚡️ ' +this.currentlyActiveIndices.size + `（can ${this.world.bodies.length}）` +  `（${this.indexToArgs.size}）` + `（纹理：${this.textureMap.size}）` +
-                                                        ' |');  // 一秒显示一次模型数
+                                        ' - ⚡️ ' +this.currentlyActiveIndices.size +
+                                        `（can ${this.world.bodies.length} | w ${this._calWNotHidden()}）` +
+                                        `（${this.indexToArgs.size}）` +
+                                        `（纹理：${this.textureMap.size}）` +
+                                        ' |');
         }
     }
 
-    // 显示内存占用情况
-    ccgxkObj._showMemory = function(){
+    ccgxkObj._showMemory = function(){  //+ 显示内存占用情况
         var output = document.getElementById('metrics');
         if (performance.memory) {
             const mem = performance.memory;
             output.textContent = `内存: ${(mem.usedJSHeapSize/1048576).toFixed(1)}MB/` +
                     `${(mem.jsHeapSizeLimit/1048576).toFixed(1)}MB`  + ' | ';
         }
+    }
+
+    ccgxkObj._calWNotHidden = function() {  // 计算没有被 hidden 的 Webgl 元素数量
+        let length = 0;
+        for (var key in this.W.next) {
+            const item = this.W.next[key];
+            if (item.hidden !== true) {
+                length++;
+            }
+        }
+        return length;
     }
 
 

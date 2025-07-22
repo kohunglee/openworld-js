@@ -6,17 +6,23 @@
 
 // 全局变量
 const globalVar = {};  // 用于指向 ccgxkObj
-const canvas = document.getElementById('centerPoint');  // 画板
-const xStopDY = document.getElementById('xStopDY');  // 热点物体的 index
-const textureEditorTG = document.getElementById('textureEditorTG');  // 文字编辑框
-const textureEditorOffsetX = document.getElementById('textureEditorOffsetX');  // 左偏移
-const textureEditorOffsetXR = document.getElementById('textureEditorOffsetXR');  // 右偏移
-const textureEditorOffsetY = document.getElementById('textureEditorOffsetY');  // 下偏移
-const textureEditorInfo = document.getElementById('textureEditorInfo');  // 警告有没有保存
-
+let canvas, xStopDY, textureEditorTG, textureEditorOffsetX, textureEditorOffsetXR, textureEditorOffsetY, textureEditorInfo;  // 全局 ID DOM 的变量
 
 // 插件入口
 export default function(ccgxkObj) {
+    const template = document.createElement('template');  //+4 将 html 节点添加到文档
+    template.innerHTML = htmlCode;
+    const content = template.content.cloneNode(true);
+    document.body.appendChild(content);
+
+    canvas = document.getElementById('centerPoint');  // 画板
+    xStopDY = document.getElementById('xStopDY');  // 热点物体的 index
+    textureEditorTG = document.getElementById('textureEditorTG');  // 文字编辑框
+    textureEditorOffsetX = document.getElementById('textureEditorOffsetX');  // 左偏移
+    textureEditorOffsetXR = document.getElementById('textureEditorOffsetXR');  // 右偏移
+    textureEditorOffsetY = document.getElementById('textureEditorOffsetY');  // 下偏移
+    textureEditorInfo = document.getElementById('textureEditorInfo');  // 警告有没有保存
+
     globalVar.ccgxkObj = ccgxkObj;
     const W = ccgxkObj.W;
     W.tempColor = new Uint8Array(4);  // 临时储存颜色，供本插件使用
@@ -90,6 +96,195 @@ export default function(ccgxkObj) {
             ccgxkObj.mainCamera.pos = {x:0, y:0.5, z:0};
         }
     });
+
+
+
+    // 单击数字行辅助按钮后
+    document.getElementById('textureEditorNumAux').addEventListener('click', function(){
+        textureEditorTG.value = '0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16' +
+            '\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30';  // 数字行辅助
+    })
+
+    // 单击清空
+    document.getElementById('textureEditorClear').addEventListener('click', function(){
+        textureEditorTG.value = '';
+    })
+
+
+    // 单击一键去除数字行
+    document.getElementById('textureEditorNumAuxRemove').addEventListener('click', function(){
+        textureEditorTG.value = textureEditorTG.value.replace(/^\d+$/gm, '');  // 数字行辅助
+    })
+
+    // 用户操作完，然后单击 确认（写入） 按钮后
+    document.getElementById('textureEditorSave').addEventListener('click', function(){
+        myHUDModal.hidden = true;  // 隐藏模态框
+        lockPointer();  // 锁定鼠标
+        const modValue = {
+            content: textureEditorTG.value,
+            x: Number(textureEditorOffsetX.value),
+            xr: Number(textureEditorOffsetXR.value),
+            y: Number(textureEditorOffsetY.value) ,
+        };
+        modTextDemo(globalVar.indexHotCurr, modValue, globalVar.ccgxkObj);  // 修改文字
+        cleanEditorPanel();  // 清理面板
+        closePoint();  // 关闭小点
+        const bookAsArray = [...globalVar.ccgxkObj.currTextData.entries()];  //+ 写入到浏览器的 localStorage 里
+        const jsonScroll = JSON.stringify(bookAsArray, null, 2);
+        localStorage.setItem('TGTOOL-backup', jsonScroll);
+    })
+
+    // 单击 CANCEL (取消)按钮后
+    document.getElementById('textureEditorCancel').addEventListener('click', function(){
+        myHUDModal.hidden = true;  // 隐藏模态框
+        lockPointer();  // 锁定鼠标
+        cleanEditorPanel();  // 清理面板
+        closePoint();  // 关闭小点
+    });
+
+    // 单击 下载存档 按钮后
+    document.getElementById('textureEditorDownload').addEventListener('click', function(){
+        const bookAsArray = [...globalVar.ccgxkObj.currTextData.entries()];
+        const jsonScroll = JSON.stringify(bookAsArray, null, 2);
+        const blob = new Blob([jsonScroll], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `TGTool-backup-${new Date(Date.now()).toLocaleString('sv-SE').replace(/[-:T\s]/g, '')}.json`; // 给卷轴起个带时间戳的名字
+        link.click();
+        URL.revokeObjectURL(url); // 释放这个临时URL
+    });
+
+    // 单击 读取存档 按钮后
+    document.getElementById('textureEditorReadfile').addEventListener('change', function(event){
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                readAfter(e.target.result);
+            } catch (error) {
+                alert('研读失败！这可能是一份损坏或格式错误的存档。\n' + error.message);
+            }
+        };
+        reader.readAsText(file); // 阅读内容
+        event.target.value = ''; // 清空选择，以便下次能上传同一个文件
+    });
+
+    // 从浏览器的 localStorage 里读取备份
+    document.getElementById('textureEditorRcover').addEventListener('click', function(){
+        const jsonScroll = localStorage.getItem('TGTOOL-backup');
+        if (jsonScroll) {
+            try {
+                readAfter(jsonScroll);
+                textureEditorTG.placeholder = '';
+                textureEditorInfo.innerText = '';
+            } catch (error) {
+                alert('研读失败！这可能是一份损坏或格式错误的存档。\n' + error.message);
+            }
+        }
+    });
+
+
+    // 键盘上的 r 键被按下（冻结物体）
+    function frozenMVP(event) {
+        if (event.key === 'f') {
+            const mvpBody = globalVar.ccgxkObj.mainVPlayer.body;
+            if(mvpBody.mass === 0){
+                mvpBody.mass = 50;  // 重量还原
+            } else {
+                mvpBody.mass = 0;  // 重量归 0
+                mvpBody.velocity.set(0, 0, 0);  // 设置线速度为0
+                mvpBody.angularVelocity.set(0, 0, 0);  // 设置角速度为0
+                mvpBody.force.set(0, 0, 0);  // 清除所有作用力
+                mvpBody.torque.set(0, 0, 0);  // 清除所有扭矩
+            }
+        }
+        document.removeEventListener('keydown', frozenMVP);
+    }
+    document.addEventListener('keydown', frozenMVP);
+    document.addEventListener('keyup', function(){
+        document.addEventListener('keydown', frozenMVP);
+    });
+
+
+    // 利用钩子来自定义纹理
+    ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this){
+        const index = drawItem.index;
+        const id = drawItem.id;
+        if('T' + index !== id) return;  // 只支持 T1234 这种格式的图片名
+        console.log(_this);
+        const value = k.currTextData.get(id)?.content || '';  //+3 使用文字库 currTextData 里的文字，偏移量
+        const offsetX = k.currTextData.get(id)?.x || 0;
+        const offsetY = k.currTextData.get(id)?.y || 0;
+        const offsetXR = k.currTextData.get(id)?.xr || 0;
+        const typeObj = {};
+        if(!value) return;  // 如果没有文字内容，则不绘制
+        ctx.font = typeObj.font || "25px Arial";                  // 字体大小和类型
+        ctx.fillStyle =  typeObj.fillStyle || "white";            // 填充颜色
+        ctx.strokeStyle = 'transparent';                          // 好像没用（描边颜色）
+        ctx.textAlign =  typeObj.textAlign || "left";             // 水平对齐方式（left/center/right）
+        ctx.textBaseline =  typeObj.textBaseline ||"top";         // 垂直对齐方式（top/middle/bottom）
+        var lineHeight = parseInt(ctx.font) || 30;
+        const margin = 10;  // 边距
+        const marginLeft = 10;  // 边距
+        const marginTop = 10;
+        ctx.clearRect(0, 0, width, height);  // 透明色
+        ctx.fillStyle = 'white';
+        
+        // 简单排版函数
+        function wrapText(_ctx, text, x, y, maxWidth, lineHeight) {
+            text = text.split('/*')[0];  // 去掉注释
+            const words = text.split(''); // 按单个字符来拆分，保证中英文都能换行
+            let line = ''; // 当前正在排版的行内容
+            for(let n = 0; n < words.length; n++) {
+                if (words[n] === '\n') {  //+ 处理 \n 来换行的逻辑
+                    _ctx.fillText(line, x, y);
+                    y += lineHeight; line = '';
+                    continue;
+                }
+                if(words[n] === '&'){  // 本行内有 &, 则本行颜色为透明
+                    ctx.fillStyle = 'transparent';
+                    ctx.font = "25px Arial";
+                    lineHeight = 25;
+                    words[n] = '';
+                }
+                if(words[n] === '#'){  // 本行内有 @, 则本行颜色为蓝色
+                    ctx.fillStyle = 'blue';
+                    ctx.font = "40px serif";
+                    lineHeight = 43;
+                    words[n] = '';
+                }
+                if(words[n] === '%'){  // 本行内有 @, 则本行颜色为红色
+                    ctx.fillStyle = 'red';  
+                    ctx.font = "40px serif";
+                    lineHeight = 43;
+                    words[n] = '';
+                }
+                if(words[n] === '@'){  // 本行内有 #, 则本行格式为默认
+                    ctx.fillStyle = 'white';
+                    ctx.font = typeObj.font || "25px Arial";
+                    lineHeight = 25;
+                    words[n] = '';
+                }
+                const testLine = line + words[n];  //+ 长度够了，换行的逻辑
+                const metrics = _ctx.measureText(testLine);  // 计算长度
+                const testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {  // 超长了
+                    _ctx.fillText(line, x, y);
+                    line = words[n];  // 另起一行
+                    y += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            _ctx.fillText(line, x, y);  // 最后剩下的一行
+        }
+
+        wrapText(ctx, value, marginLeft + width * offsetX, marginTop + height * offsetY, (width - margin * 2) * (1 - offsetX - offsetXR), lineHeight);
+        _this.W.next[id].hidden = false;  //+ 在 webgl 和 ccgxk.js 里的该元素不再隐藏
+        _this.indexToArgs.get(index).isInvisible = false;
+    })
 }
 
 // 绘制屏幕中心的点
@@ -167,75 +362,6 @@ function closePoint(){
     globalVar.ccgxkObj.mainCamera.pos = {x: 0, y: 2, z: 4};
 }
 
-// 用户操作完，然后单击 确认（写入） 按钮后
-document.getElementById('textureEditorSave').addEventListener('click', function(){
-    myHUDModal.hidden = true;  // 隐藏模态框
-    lockPointer();  // 锁定鼠标
-    const modValue = {
-        content: textureEditorTG.value,
-        x: Number(textureEditorOffsetX.value),
-        xr: Number(textureEditorOffsetXR.value),
-        y: Number(textureEditorOffsetY.value) ,
-    };
-    modTextDemo(globalVar.indexHotCurr, modValue, globalVar.ccgxkObj);  // 修改文字
-    cleanEditorPanel();  // 清理面板
-    closePoint();  // 关闭小点
-    const bookAsArray = [...globalVar.ccgxkObj.currTextData.entries()];  //+ 写入到浏览器的 localStorage 里
-    const jsonScroll = JSON.stringify(bookAsArray, null, 2);
-    localStorage.setItem('TGTOOL-backup', jsonScroll);
-})
-
-// 单击 CANCEL (取消)按钮后
-document.getElementById('textureEditorCancel').addEventListener('click', function(){
-    myHUDModal.hidden = true;  // 隐藏模态框
-    lockPointer();  // 锁定鼠标
-    cleanEditorPanel();  // 清理面板
-    closePoint();  // 关闭小点
-});
-
-// 单击 下载存档 按钮后
-document.getElementById('textureEditorDownload').addEventListener('click', function(){
-    const bookAsArray = [...globalVar.ccgxkObj.currTextData.entries()];
-    const jsonScroll = JSON.stringify(bookAsArray, null, 2);
-    const blob = new Blob([jsonScroll], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `TGTool-backup-${new Date(Date.now()).toLocaleString('sv-SE').replace(/[-:T\s]/g, '')}.json`; // 给卷轴起个带时间戳的名字
-    link.click();
-    URL.revokeObjectURL(url); // 释放这个临时URL
-});
-
-// 单击 读取存档 按钮后
-document.getElementById('textureEditorReadfile').addEventListener('change', function(event){
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            readAfter(e.target.result);
-        } catch (error) {
-            alert('研读失败！这可能是一份损坏或格式错误的存档。\n' + error.message);
-        }
-    };
-    reader.readAsText(file); // 阅读内容
-    event.target.value = ''; // 清空选择，以便下次能上传同一个文件
-});
-
-// 从浏览器的 localStorage 里读取备份
-document.getElementById('textureEditorRcover').addEventListener('click', function(){
-    const jsonScroll = localStorage.getItem('TGTOOL-backup');
-    if (jsonScroll) {
-        try {
-            readAfter(jsonScroll);
-            textureEditorTG.placeholder = '';
-            textureEditorInfo.innerText = '';
-        } catch (error) {
-            alert('研读失败！这可能是一份损坏或格式错误的存档。\n' + error.message);
-        }
-    }
-});
-
 // 读档后的操作
 function readAfter(result){
     const bookAsArray = JSON.parse(result);
@@ -259,58 +385,16 @@ function readAfter(result){
     }
 }
 
-
-// 单击数字行辅助按钮后
-document.getElementById('textureEditorNumAux').addEventListener('click', function(){
-    textureEditorTG.value = '0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16' +
-         '\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30';  // 数字行辅助
-})
-
-// 单击清空
-document.getElementById('textureEditorClear').addEventListener('click', function(){
-    textureEditorTG.value = '';
-})
-
-
-// 单击一键去除数字行
-document.getElementById('textureEditorNumAuxRemove').addEventListener('click', function(){
-    textureEditorTG.value = textureEditorTG.value.replace(/^\d+$/gm, '');  // 数字行辅助
-})
-
-// 键盘上的 r 键被按下
-function frozenMVP(event) {
-    if (event.key === 'f') {
-        const mvpBody = globalVar.ccgxkObj.mainVPlayer.body;
-        if(mvpBody.mass === 0){
-            mvpBody.mass = 50;  // 重量还原
-        } else {
-            mvpBody.mass = 0;  // 重量归 0
-            mvpBody.velocity.set(0, 0, 0);  // 设置线速度为0
-            mvpBody.angularVelocity.set(0, 0, 0);  // 设置角速度为0
-            mvpBody.force.set(0, 0, 0);  // 清除所有作用力
-            mvpBody.torque.set(0, 0, 0);  // 清除所有扭矩
-        }
-    }
-    document.removeEventListener('keydown', frozenMVP);
-}
-document.addEventListener('keydown', frozenMVP);
-document.addEventListener('keyup', function(){
-    document.addEventListener('keydown', frozenMVP);
-});
-
 // 一个修改文字的 DEMO
 function modTextDemo(indexID, value = {}, thisObj) {  // 待优雅化
     const nID = 'T' + indexID;
-
     if(!thisObj?.indexToArgs?.get(indexID)?.TGtoolText){ return 0 }  // 判断是否可编辑纹理
-
     thisObj.currTextData.set(nID, {  // 重新设置文本内容
         content: value?.content || '',
         x: value?.x || 0,
         xr: value?.xr || 0,
         y: value?.y || 0,
     });
-
     thisObj.textureMap.delete(nID);  // 删除纹理库里的该纹理（可能没用？？）
     window[nID] = undefined;  // 顺便删一下全局的该纹理
     thisObj.W.plane({
@@ -341,3 +425,71 @@ function lockPointer(){
     canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock || canvas.webkitRequestPointerLock;
     canvas.requestPointerLock();
 }
+
+// html 内容
+
+const htmlCode = `
+<style>
+    /* 模态框 */
+    .myHUD-modal {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100vw;
+        height: 100vh;
+        transform: translate(-50%, -50%);
+    }
+    .myHUD-modalPos {
+        margin-left: 50vw;
+        margin-top: 50vh;
+        transform: translate(-50%, -50%);
+        width: 700px;
+        text-align: center;
+        background-color: rgb(159 51 204 / 55%);
+        padding: 32px;
+        backdrop-filter: blur(2px);
+    }
+    .texture-editorBtn-lab {
+        display: inline-block;
+        background: rgb(32 32 32);
+        color: rgb(255, 255, 255);
+        padding: 5px 5px;
+        border: none;
+        cursor: pointer;
+        margin: 5px;
+        font-size: 14;
+        color: #bbbbbb;
+    }
+</style>
+<div id="myHUDModal" class="myHUD-modal" hidden>
+    <div class="myHUD-modalPos">
+        <div>
+            左 <input type="number" id="textureEditorOffsetX" name="offsetX" min="0" max="1" step="0.1">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            右 <input type="number" id="textureEditorOffsetXR" name="offsetXR" min="0" max="1" step="0.1">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            下 <input type="number" id="textureEditorOffsetY" name="offsetY" min="0" max="1" step="0.1">
+            （偏移量，0 ~ 1）
+        </div>
+        <textarea rows="10" cols="50" class="tgeditor-texture" id="textureEditorTG"></textarea>
+        <div><br>
+            <div>
+                <span id="textureEditorInfo"></span><br>
+            </div>
+            <button class="texture-editorBtn" id="textureEditorSave">写入</button>
+            <button class="texture-editorBtn" id="textureEditorCancel">取消</button>
+            <button class="texture-editorBtn" id="textureEditorDownload">下载存档</button>
+            <label for="textureEditorReadfile" class="texture-editorBtn-lab">读取存档 </label>
+            <input  type="file" id="textureEditorReadfile" accept=".json" hidden>
+            <div>
+                <button class="texture-editorBtn" id="textureEditorClear">清空</button>
+                <button class="texture-editorBtn" id="textureEditorNumAux">数字行号辅</button>
+                <button class="texture-editorBtn" id="textureEditorNumAuxRemove">一键去除行号</button>
+            </div>
+            <hr>
+            
+            <button class="texture-editorBtn" id="textureEditorRcover">从浏览器恢复</button>
+        </div>
+    </div>
+</div>
+`;
