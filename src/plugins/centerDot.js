@@ -6,7 +6,7 @@
 
 // 全局变量
 const globalVar = {};  // 用于指向 ccgxkObj
-let canvas, xStopDY, textureEditorTG, textureEditorOffsetX, textureEditorOffsetXR, textureEditorOffsetY, textureEditorInfo;  // 全局 ID DOM 的变量
+let canvas, pointObjIndex, textureEditorTG, textureEditorOffsetX, textureEditorOffsetXR, textureEditorOffsetY, textureEditorInfo;  // 全局 ID DOM 的变量
 
 // 插件入口
 export default function(ccgxkObj) {
@@ -14,15 +14,13 @@ export default function(ccgxkObj) {
     template.innerHTML = htmlCode;
     const content = template.content.cloneNode(true);
     document.body.appendChild(content);
-
     canvas = document.getElementById('centerPoint');  // 画板
-    xStopDY = document.getElementById('xStopDY');  // 热点物体的 index
+    pointObjIndex = document.getElementById('pointObjIndex');  // 热点物体的 index
     textureEditorTG = document.getElementById('textureEditorTG');  // 文字编辑框
     textureEditorOffsetX = document.getElementById('textureEditorOffsetX');  // 左偏移
     textureEditorOffsetXR = document.getElementById('textureEditorOffsetXR');  // 右偏移
     textureEditorOffsetY = document.getElementById('textureEditorOffsetY');  // 下偏移
     textureEditorInfo = document.getElementById('textureEditorInfo');  // 警告有没有保存
-
     globalVar.ccgxkObj = ccgxkObj;
     const W = ccgxkObj.W;
     W.tempColor = new Uint8Array(4);  // 临时储存颜色，供本插件使用
@@ -287,6 +285,7 @@ export default function(ccgxkObj) {
     })
 }
 
+
 // 绘制屏幕中心的点
 function drawCenterPoint(canvas, thisObj, isClear){
     if(isClear) { canvas.width = 0; canvas.height = 0; return; }  // 清空
@@ -299,7 +298,7 @@ function drawCenterPoint(canvas, thisObj, isClear){
     const colorArray = thisObj.W.tempColor || [255, 0, 0, 255];  //+2 获取当前颜色值并转化为数组
     const color = `rgba(${255 - colorArray[0]}, ${255 - colorArray[1]}, ${255 - colorArray[2]}, ${colorArray[3]/255})`;
     const objIndex = colorArray[0] * 256 ** 2 + colorArray[1] * 256 + colorArray[2];  // 根据颜色获取到了对应的 index 值
-    xStopDY.innerHTML = objIndex;
+    pointObjIndex.innerHTML = objIndex;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if(objIndex !== 0){
         thisObj.hotPoint = objIndex;
@@ -329,6 +328,7 @@ function drawCenterPoint(canvas, thisObj, isClear){
     ctx.fill();  // 绘制圆点
 }
 
+
 // 单击热点后的事件
 function hotAction(thisObj){
     globalVar.indexHotCurr = thisObj.hotPoint + 0;  // 将 index 数字定格，防止被更改
@@ -345,6 +345,7 @@ function hotAction(thisObj){
     textureEditorOffsetY.value = thisObj.currTextData.get('T' + globalVar.indexHotCurr)?.y || 0;
 }
 
+
 // 清理面板
 function cleanEditorPanel(){
     textureEditorTG.value = '';  // 清空编辑框
@@ -354,6 +355,7 @@ function cleanEditorPanel(){
     globalVar.indexHotCurr = -1;
 }
 
+
 // 关闭小点
 function closePoint(){
     drawCenterPoint(canvas, globalVar.ccgxkObj, true);  //+4 关闭小点
@@ -361,6 +363,7 @@ function closePoint(){
     globalVar.ccgxkObj.centerPointColorUpdatax = null;
     globalVar.ccgxkObj.mainCamera.pos = {x: 0, y: 2, z: 4};
 }
+
 
 // 读档后的操作
 function readAfter(result){
@@ -385,6 +388,7 @@ function readAfter(result){
     }
 }
 
+
 // 一个修改文字的 DEMO
 function modTextDemo(indexID, value = {}, thisObj) {  // 待优雅化
     const nID = 'T' + indexID;
@@ -405,6 +409,7 @@ function modTextDemo(indexID, value = {}, thisObj) {  // 待优雅化
     thisObj.currentlyActiveIndices.delete(indexID);  // 让 dynaNodes 重新添加一次
 }
 
+
 // 解锁鼠标
 function unlockPointer() {
   if ('pointerLockElement' in document || 
@@ -419,6 +424,7 @@ function unlockPointer() {
   }
 }
 
+
 // 锁定鼠标
 function lockPointer(){
     const canvas = globalVar.ccgxkObj.canvas;
@@ -426,8 +432,8 @@ function lockPointer(){
     canvas.requestPointerLock();
 }
 
-// html 内容
 
+// html 内容
 const htmlCode = `
 <style>
     /* 模态框 */
@@ -460,6 +466,20 @@ const htmlCode = `
         font-size: 14;
         color: #bbbbbb;
     }
+    .xCity {
+        font-size: 60px;
+        color: rgb(255, 255, 255);
+        position: fixed;
+        left: 50vw;
+        transform: translate(-50%);
+        width: max-content;
+        top: 30px;
+    }
+    .pointObjIndex {
+        position: fixed;
+        top: 50px;
+        left: 10px;
+    }
 </style>
 <div id="myHUDModal" class="myHUD-modal" hidden>
     <div class="myHUD-modalPos">
@@ -487,9 +507,11 @@ const htmlCode = `
                 <button class="texture-editorBtn" id="textureEditorNumAuxRemove">一键去除行号</button>
             </div>
             <hr>
-            
             <button class="texture-editorBtn" id="textureEditorRcover">从浏览器恢复</button>
         </div>
     </div>
 </div>
+<span id="currCityName" class="xCity">城市</span>
+<span id="pointObjIndex" class="pointObjIndex">城市</span>
+<canvas id="centerPoint" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);" width="1" height="1"></canvas>
 `;

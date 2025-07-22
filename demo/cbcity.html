@@ -5,41 +5,19 @@
 <style>
     body{margin: 0;}
     #someCtrl {
-        position: fixed;  
+        position: fixed;
         top: 0;
         opacity: 0.5;
     }
     #someCtrl button {
-    width: 45px;
-    height: 30px;
-}
-
-canvas {
-  /* 针对苹果系统下的火狐和 Chrome/Safari */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+        width: 45px;
+        height: 30px;
+    }
 </style>
 <script src="../src/cannon/cannon29kb.js"></script>
 <img src='./img/texture.jpeg' id=marble hidden>
 <canvas id=c style="width:99vw;height:100vh"></canvas>
 
-<canvas id="centerPoint" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);" width="1" height="1"></canvas>
-
-
-
-
-<div id="someCtrl">
-    <button id="xforward" style="width: 90px;">前</button>
-    <button id="xbackward" style="width: 90px;">城寨入口</button>
-    <button id="xright" style="width: 90px;">坐标原点</button>
-    <button id="xleft" style="width: 90px;">防眩晕</button>
-    <button id="xjump" style="width: 90px;">蹦</button>
-    <button id="xShadow" style="width: 90px;">影</button>
-    <button id="xVIEW1" style="width: 90px;">视1</button>
-    <button id="xStopDY"  style="width: 90px;">小点</button>
-    <span id="xVIEW2" style="font-size: 60px;color: rgb(255, 255, 255);position: absolute;left: 50vw;transform: translate(-50%);width: max-content;">城市</span>
-</div>
 <script type="module">
 import ccgxkApp from '../src/ccgxk.js';
 
@@ -50,9 +28,18 @@ var list = k.bodylist;
 import calCity from '../src/plugins/calCity.js';
 import xmap from '../src/plugins/xmap.js';
 import xdashpanel from '../src/plugins/xdashpanel.js';
+import cookieSavePos from '../src/plugins/cookieSavePos.js';
 calCity(k);  // 计算城市
 xmap(k);  // 小地图
 xdashpanel(k);  // 简易仪表盘
+cookieSavePos(k);  // cookie 保存/还原 位置
+
+setInterval(() => {  // 城市名显示
+    var currCityName = document.getElementById('currCityName');
+    if(currCityName){
+        currCityName.innerHTML = k.calCityName(); // 获取当前城市名称
+    }
+}, 1000)
 
 
 // k.W.isOpenShadow = !k.W.isOpenShadow;  // 关闭阴影
@@ -171,9 +158,9 @@ function addPlaneObj2Memory(deadline) {  // 添加物体
     } else {
         console.log("所有 add obj 步已优雅地完成！");
     }
-    if(currentIndex_obj % 100 === 0){  // 显示进度
-        xforward.innerHTML = 'obj ' + currentIndex_obj;
-    }
+    // if(currentIndex_obj % 100 === 0){  // 显示进度
+    //     xforward.innerHTML = 'obj ' + currentIndex_obj;
+    // }
 }
 if(window.requestIdleCallback === undefined){  // safari bug
     for (let i = 0; i < totalTasks; i++) {
@@ -184,61 +171,11 @@ if(window.requestIdleCallback === undefined){  // safari bug
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // *---[ 少用物的储物柜 ↓ ]--------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 // 从 COOKIE 里取出上一次的位置
-var lastPos = getObjectCookie('lastPos_mvp');
+var lastPos = k?.lastPoss;
 if(!lastPos){
     lastPos = {x:33, y:5.00, z:498};
 }
@@ -277,7 +214,6 @@ k.addTABox({  // 创建一个 旋转测试 细长物理体
 const drawList = [
     {func:drawRandomNoise, id:'xnoise'},
     {func:drawjpflag, id:'jpflag', type: 'jpg'},
-    // {func:drawText, id:'xjapangood', type: 'png'},
 ];
 
 var groundPlanesize = 10000;
@@ -331,8 +267,27 @@ function drawRandomNoise(ctx, w, h) {
 
 
 
+
+
+
+</script>
+
+
+
+<div id="someCtrl">
+    <button id="btn01" style="width: 90px;">前</button>
+    <button id="btn02" style="width: 90px;">城寨入口</button>
+    <button id="btn03" style="width: 90px;">坐标原点</button>
+    <button id="btn04" style="width: 90px;">x</button>
+    <button id="btn05" style="width: 90px;">蹦</button>
+    <button id="btn06" style="width: 90px;">影</button>
+    <button id="btn07" style="width: 90px;">x</button>
+    <button id="btn08"  style="width: 90px;">x</button>
+</div>
+<script>
+
 // 前进
-xforward.addEventListener('mousedown', function(event) {
+btn01.addEventListener('mousedown', function(event) {
     if(k.keys.viewForward === 1){
         k.keys.viewForward = 0;
     } else {
@@ -340,89 +295,40 @@ xforward.addEventListener('mousedown', function(event) {
     }
 });
 
-// 后退
-xbackward.addEventListener('mousedown', function(event) {
+// 城寨入口
+btn02.addEventListener('mousedown', function(event) {
     k.mainVPlayer.body.position.x = 113;
     k.mainVPlayer.body.position.y = 5;
     k.mainVPlayer.body.position.z = 495;
 });
 
-
-// 左转
-xleft.addEventListener('mousedown', function(event) {
-    k.antiDizzyMode = !k.antiDizzyMode;
-});
-
-
-// 右转
-xright.addEventListener('mousedown', function(event) {
+// 坐标原点
+btn03.addEventListener('mousedown', function(event) {
     k.mainVPlayer.body.position.x = 7.6;
     k.mainVPlayer.body.position.y = 5;
     k.mainVPlayer.body.position.z = 16.5;
 });
 
+// 左转
+btn04.addEventListener('mousedown', function(event) {
+    k.antiDizzyMode = !k.antiDizzyMode;
+});
 
 // 蹦
-xjump.addEventListener('mousedown', function(event) {
+btn05.addEventListener('mousedown', function(event) {
     k.mainVPlayer.body.velocity.y = 10;
 });
 
 // 开关阴影
-xShadow.addEventListener('mousedown', function(event) {
+btn06.addEventListener('mousedown', function(event) {
     k.W.isOpenShadow = !k.W.isOpenShadow
 });
 
-k.viewType = 0;  // 0 是第三视角，1 是第一视角
-// 第一视角
-xVIEW1.addEventListener('mousedown', function(event) {
-    k.mainCamera.pos = {x:0, y:1, z:0}
-    k.viewType = 1;
+btn07.addEventListener('mousedown', function(event) {
+
 });
 
-// 第三视角
-xVIEW2.addEventListener('mousedown', function(event) {
-    // k.mainCamera.pos = {x: 0, y: 2, z: 4}
-    // k.viewType = 0;
+btn08.addEventListener('mousedown', function(event) {
+
 });
-
-
-// 一秒执行一次
-setInterval(() => {
-    // cookie 储存位置
-    const mainVPlayerBodyPos = k.mainVPlayer.body.position;  //+2 储存主角的位置到 COOKIE
-    setObjectCookie('lastPos_mvp', {x: mainVPlayerBodyPos.x, y: mainVPlayerBodyPos.y, z: mainVPlayerBodyPos.z}); // 存储对象到Cookie
-
-    xVIEW2.innerHTML = k.calCityName(); // 获取当前城市名称
-}, 1000)
-
-// 存储对象到Cookie
-function setObjectCookie(name, obj, days) {
-  const value = encodeURIComponent(JSON.stringify(obj));
-  let expires = "";
-  if (days) {
-    const date = new Date();
-    date.setTime(date.getTime() + (days*24*60*60*1000));
-    expires = "; expires=" + date.toUTCString();
-  }
-  document.cookie = `${name}=${value}${expires}; path=/`;
-}
-
-// 从 Cookie 读取对象
-function getObjectCookie(name) {
-  const cookieArr = document.cookie.split('; ');
-  for(let i = 0; i < cookieArr.length; i++) {
-    const cookiePair = cookieArr[i].split('=');
-    if(name === cookiePair[0]) {
-      return JSON.parse(decodeURIComponent(cookiePair[1]));
-    }
-  }
-  return null;
-}
-
-
-
-
-
 </script>
-
-

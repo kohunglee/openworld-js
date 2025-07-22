@@ -11,7 +11,6 @@ export default function(ccgxkObj){
             const mVP = this.mainVPlayer;
             const x = mVP.X + 500;
             const z = mVP.Z + 500;
-            // return Math.floor(x / 100) + ' - ' + Math.floor(z / 100);
             const xID = Math.floor(x / 100);
             const zID = Math.floor(z / 100);
             if(xID >= 0 && xID < 10 && zID >= 0 && zID < 10){
