@@ -75,17 +75,20 @@ export default {
         tiling: [1, 1],
         shape: 'cube',
         isFictBody: false,    // 物理假体，视觉比真实物理体小一圈，用于颜色探测
+        isInvisible: false,  // 在 webgl 留档但不渲染（实验，用于减少渲染压力）
     },
 
     // 激活 TA 物体
+    argsObj : {},  // 外置一个对象，重复利用
     activeTABox : function(index){
         const p_offset = index * 8;
         const posProp = this.positionsStatus.subarray(p_offset, p_offset + 8);    // 提取位置属性
         const physicalProp = this.physicsProps.subarray(p_offset, p_offset + 4);  // 提取物理属性
         const org_args = this.indexToArgs.get(index);  // 提取参数
-        const args = {...this.defaultBoxArgs, ...org_args};  // 为节省内存，固不破坏源对象，使用新对象
+        this.argsObj = {...this.defaultBoxArgs, ...org_args};  // 为节省内存，固不破坏源对象，使用新对象
+        const args = this.argsObj;
         if(args.isPhysical){  // 添加物理体
-            const body = new CANNON.Body();  // 新 new 一个对象，不用对象池了，性能不优化了，我不管了
+            const body = new CANNON.Body();  // 新 new 一个对象 （不用对象池，因为 cannon 的对象太复杂）
             body.mass = physicalProp[0];  // mass
             body.type = physicalProp[0] === 0 ? CANNON.Body.STATIC : CANNON.Body.DYNAMIC;
             var boxShape;
@@ -158,6 +161,7 @@ export default {
                 t: texture, s: args.smooth, tile: tiling,
                 rx: args.rX, ry: args.rY, rz: args.rZ, b: args.background, mix: args.mixValue,
                 shadow: args.isShadow,
+                hidden: args.isInvisible,
             });
             if(textureError){  // 纹理加载失败，尝试换上自定义纹理（id 还是原 id）
                 const expRatio = 40;  // 缩放比例
@@ -258,19 +262,6 @@ export default {
                     break;
             }
 
-            // // 对象池
-            // body = this.acquireBody();  // 从对象池里取对象
-            // body.mass = mass;
-            // body.type = mass === 0 ? CANNON.Body.STATIC : CANNON.Body.DYNAMIC;
-            // body.shapes = [];
-            // body.addShape(boxShape);
-            // body.position.set(X, Y, Z);
-            // body.material = this.cannonDefaultContactMaterial;
-            // body.updateMassProperties();
-            // body.wakeUp();
-
-            
-
             body = new CANNON.Body({
                 mass : mass,
                 shape: boxShape,
@@ -290,28 +281,6 @@ export default {
                 body.quaternion.set(quat.x, quat.y, quat.z, quat.w);
             }
             quat = body.quaternion;
-
-            // /* ---------------------- 实验 ------------------------------ */
-            // if (this.freeSlots.length === 0) return;  // 没有空位就退，否则占个位子
-            // const index = this.freeSlots.pop();
-            // this.nameToIndexMap.set(name, index);  // 暂时用不到，可能是个 API 吧，能用于控制是否渲染
-            // const p_offset = index * 8;  //+8 向 TA 传数据的起点，并传入数据
-            // this.positionsStatus[p_offset] = X;
-            // this.positionsStatus[p_offset + 1] = Y;
-            // this.positionsStatus[p_offset + 2] = Z;
-            // this.positionsStatus[p_offset + 3] = quat.x;
-            // this.positionsStatus[p_offset + 4] = quat.y;
-            // this.positionsStatus[p_offset + 5] = quat.z;
-            // this.positionsStatus[p_offset + 6] = quat.w;
-            // this.positionsStatus[p_offset + 7] = 1;  // 状态位（0=隐藏, 1=激活, 2=待移除）
-            // const gridKey = `${Math.floor(X / 10)}_${Math.floor(Z / 10)}`;  // 计算区块 key
-            // let indicesInCell = this.spatialGrid.get(gridKey);
-            // if (!indicesInCell) {
-            //     indicesInCell = []; 
-            // }
-            // indicesInCell.push(index);
-            // this.spatialGrid.set(gridKey, indicesInCell); // 把新数组放回地图
-            // /* ----------------------------------------------------------- */
         }
         if(isVisualMode){  // 是否 W 渲染可视化
             if(typeof tiling === 'number'){ tiling = [tiling, tiling] }  // 处理平铺数
@@ -336,7 +305,6 @@ export default {
             default:
                 this.bodylist.push(result);  // 默认数组
         }
-        // this.ccgxkhooks.emitSync('addObj_ok');  // 钩子使用示例
         return result;
     },
 }

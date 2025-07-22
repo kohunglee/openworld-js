@@ -4,14 +4,6 @@
 <meta http-equiv="pragma" content="no-cache">
 <style>
     body{margin: 0;}
-
-    /* .myHUD {
-        position: absolute;
-        bottom: 0;
-        padding: 0.3em;
-        color: #ffffff;
-    } */
-
     #someCtrl {
         position: fixed;  
         top: 0;
@@ -22,37 +14,6 @@
     height: 30px;
 }
 
-/* 模态框 */
-.myHUD-modal {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100vw;
-    height: 100vh;
-    transform: translate(-50%, -50%);
-}
-.myHUD-modalPos {
-    margin-left: 50vw;
-    margin-top: 50vh;
-    transform: translate(-50%, -50%);
-    width: 700px;
-    text-align: center;
-    background-color: rgb(159 51 204 / 55%);
-    padding: 32px;
-    backdrop-filter: blur(2px);
-}
-
-.texture-editorBtn-lab {
-    display: inline-block;
-    background: rgb(32 32 32);
-    color: rgb(255, 255, 255);
-    padding: 5px 5px;
-    border: none;
-    cursor: pointer;
-    margin: 5px;
-    font-size: 14;
-    color: #bbbbbb;
-}
 canvas {
   /* 针对苹果系统下的火狐和 Chrome/Safari */
   -webkit-font-smoothing: antialiased;
@@ -61,52 +22,13 @@ canvas {
 </style>
 <script src="../src/cannon/cannon29kb.js"></script>
 <img src='./img/texture.jpeg' id=marble hidden>
-<canvas id=c style="width:100vw;height:100vh"></canvas>
-<!-- 
-<div id="myHUD" class="myHUD">
-    <div id="fpsInfo"></div>
-    <span id="shiftInfo"></span>
-    <span id="posInfo"></span>
-    <span id="metrics"></span>
-    <span id="cpuInfo"></span>
-    <span id="modListCount"></span>
-    <span id="posIDMVP"></span>
-</div> -->
+<canvas id=c style="width:99vw;height:100vh"></canvas>
 
 <canvas id="centerPoint" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);" width="1" height="1"></canvas>
 
-<div id="myHUDModal" class="myHUD-modal" hidden>
-    <div class="myHUD-modalPos">
-        <div>
-            左 <input type="number" id="textureEditorOffsetX" name="offsetX" min="0" max="1" step="0.1">
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            右 <input type="number" id="textureEditorOffsetXR" name="offsetXR" min="0" max="1" step="0.1">
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            下 <input type="number" id="textureEditorOffsetY" name="offsetY" min="0" max="1" step="0.1">
-            （偏移量，0 ~ 1）
-        </div>
-        <textarea rows="10" cols="50" class="tgeditor-texture" id="textureEditorTG"></textarea>
-        <div><br>
-            <div>
-                <span id="textureEditorInfo"></span><br>
-            </div>
-            <button class="texture-editorBtn" id="textureEditorSave">写入</button>
-            <button class="texture-editorBtn" id="textureEditorCancel">取消</button>
-            <button class="texture-editorBtn" id="textureEditorDownload">下载存档</button>
-            <label for="textureEditorReadfile" class="texture-editorBtn-lab">读取存档 </label>
-            <input  type="file" id="textureEditorReadfile" accept=".json" hidden>
-            <div>
-                <button class="texture-editorBtn" id="textureEditorClear">清空</button>
-                <button class="texture-editorBtn" id="textureEditorNumAux">数字行号辅</button>
-                <button class="texture-editorBtn" id="textureEditorNumAuxRemove">一键去除行号</button>
-            </div>
-            <hr>
-            
-            <button class="texture-editorBtn" id="textureEditorRcover">从浏览器恢复</button>
-        </div>
-    </div>
-    
-</div>
+
+
+
 <div id="someCtrl">
     <button id="xforward" style="width: 90px;">前</button>
     <button id="xbackward" style="width: 90px;">城寨入口</button>
@@ -121,7 +43,7 @@ canvas {
 <script type="module">
 import ccgxkApp from '../src/ccgxk.js';
 
-var k = ccgxkApp;  // 初始化沙盒
+window.k = ccgxkApp;  // 初始化沙盒
 k.initWorld('c');
 var list = k.bodylist;
 
@@ -220,15 +142,16 @@ function makeTestObj(indexObj = 8074){
 
     faceConfigs.forEach(face => {
             k.addTABox({  // 创建一个 TA 平面试试
-            DPZ : 3,
-            shape: 'plane',
-            isPhysical: false,
-            // isVisualMode: false,
-            X: face.X, Y: face.Y, Z: face.Z, rX: face.rX, rY: face.rY, rZ: 0,
-            mass: 0, width: face.width, depth: 0, height: face.height,
-            texture: null, 
-            background:'#00000000', mixValue: 0,  // 设置成透明，防止闪烁
-            TGtoolText: true,  // 贴逛使用的参数，如果为 true，则表示可以编辑纹理（文字）
+                DPZ : 3,
+                shape: 'plane',
+                isPhysical: false,
+                // isVisualMode: false,
+                X: face.X, Y: face.Y, Z: face.Z, rX: face.rX, rY: face.rY, rZ: 0,
+                mass: 0, width: face.width, depth: 0, height: face.height,
+                texture: null, 
+                background:'#00000000', mixValue: 0,  // 设置成透明，防止闪烁
+                TGtoolText: true,  // 贴逛使用的参数，如果为 true，则表示可以编辑纹理（文字）
+                isInvisible: true,  // 为节省内存，在文字等纹理处理前，不显示
         });
     })
     
@@ -264,79 +187,6 @@ if(window.requestIdleCallback === undefined){  // safari bug
 
 
 
-// 利用钩子来自定义纹理
-k.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this){
-    const index = drawItem.index;
-    const id = drawItem.id;
-    if('T' + index !== id) return;  // 只支持 T1234 这种格式的图片名
-    const value = k.currTextData.get(id)?.content || '';  //+3 使用文字库 currTextData 里的文字，偏移量
-    const offsetX = k.currTextData.get(id)?.x || 0;
-    const offsetY = k.currTextData.get(id)?.y || 0;
-    const offsetXR = k.currTextData.get(id)?.xr || 0;
-    const typeObj = {};
-    ctx.font = typeObj.font || "25px Arial";                  // 字体大小和类型
-    ctx.fillStyle =  typeObj.fillStyle || "white";            // 填充颜色
-    ctx.strokeStyle = 'transparent';                          // 好像没用（描边颜色）
-    ctx.textAlign =  typeObj.textAlign || "left";             // 水平对齐方式（left/center/right）
-
-    ctx.textBaseline =  typeObj.textBaseline ||"top";         // 垂直对齐方式（top/middle/bottom）
-    var lineHeight = parseInt(ctx.font) || 30;
-    const margin = 10;  // 边距
-    const marginLeft = 10;  // 边距
-    const marginTop = 10;
-    ctx.clearRect(0, 0, width, height);  // 透明色
-    ctx.fillStyle = 'white';
-    
-    // 简单排版函数
-    function wrapText(_ctx, text, x, y, maxWidth, lineHeight) {
-        text = text.split('/*')[0];  // 去掉注释
-        const words = text.split(''); // 按单个字符来拆分，保证中英文都能换行
-        let line = ''; // 当前正在排版的行内容
-        for(let n = 0; n < words.length; n++) {
-            if (words[n] === '\n') {  //+ 处理 \n 来换行的逻辑
-                _ctx.fillText(line, x, y);
-                y += lineHeight; line = '';
-                continue;
-            }
-            if(words[n] === '&'){  // 本行内有 &, 则本行颜色为透明
-                ctx.fillStyle = 'transparent';
-                ctx.font = "25px Arial";
-                lineHeight = 25;
-                words[n] = '';
-            }
-            if(words[n] === '#'){  // 本行内有 @, 则本行颜色为蓝色
-                ctx.fillStyle = 'blue';
-                ctx.font = "40px serif";
-                lineHeight = 43;
-                words[n] = '';
-            }
-            if(words[n] === '%'){  // 本行内有 @, 则本行颜色为红色
-                ctx.fillStyle = 'red';  
-                ctx.font = "40px serif";
-                lineHeight = 43;
-                words[n] = '';
-            }
-            if(words[n] === '@'){  // 本行内有 #, 则本行格式为默认
-                ctx.fillStyle = 'white';
-                ctx.font = typeObj.font || "25px Arial";
-                lineHeight = 25;
-                words[n] = '';
-            }
-            const testLine = line + words[n];  //+ 长度够了，换行的逻辑
-            const metrics = _ctx.measureText(testLine);  // 计算长度
-            const testWidth = metrics.width;
-            if (testWidth > maxWidth && n > 0) {  // 超长了
-                _ctx.fillText(line, x, y);
-                line = words[n];  // 另起一行
-                y += lineHeight;
-            } else {
-                line = testLine;
-            }
-        }
-        _ctx.fillText(line, x, y);  // 最后剩下的一行
-    }
-    wrapText(ctx, value, marginLeft + width * offsetX, marginTop + height * offsetY, (width - margin * 2) * (1 - offsetX - offsetXR), lineHeight);
-})
 
 
 

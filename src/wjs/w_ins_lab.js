@@ -120,10 +120,8 @@ const W = {
         };
         W.clearColor("fff");
         W.gl.enable(2929);
-        // W.gl.enable(W.gl.POLYGON_OFFSET_FILL);
         W.light({y: -1});
         W.camera({fov: 30});
-        // W.wjsHooks.emitSync('start_draw', W);  // 钩子：'开始绘制'
         setTimeout(W.draw, 16);  // 开始绘制
   },
 
@@ -180,7 +178,7 @@ const W = {
         }
         state = {  // 保存和初始化对象的类型
           type,
-          ...(W.current[state.n] = W.next[state.n] || {w:1, h:1, d:1, x:0, y:0, z:0, rx:0, ry:0, rz:0, b:'888', mode:4, mix: 0}),
+          ...(W.current[state.n] = W.next[state.n] || {w:1, h:1, d:1, x:0, y:0, z:0, rx:0, ry:0, rz:0, b:'888', mode:4, mix: 0, hidden: false}),
           ...state,
           f:0
         };
@@ -227,32 +225,29 @@ const W = {
           W.gl.uniformMatrix4fv(W.uniformLocations.eye, false, v.toFloat32Array());  // 相机矩阵发往着 eye 着色器
           v.invertSelf();
           v.preMultiplySelf(W.projection);
-          W.gl.uniformMatrix4fv( W.uniformLocations.pv,
-                                    false,
-                                    v.toFloat32Array());  // 处理好 pv ，传给着色器      
-          W.wjsHooks.emitSync('shadow_draw', W);  // 绘制阴影插件，测试钩子
+          W.gl.uniformMatrix4fv(W.uniformLocations.pv,  // 处理好 pv ，传给着色器   
+                                false,
+                                v.toFloat32Array());   
+          W.wjsHooks.emitSync('shadow_draw', W);  // 绘制阴影插件的钩子
           W.gl.clear(16640);
-
-
-          /* ------------ */
-          for(i in W.next){  // 遍历渲染模型
+          for(i in W.next) {  // 遍历渲染模型
             const object = W.next[i];
-            if (!object.isInstanced && !object.t && W.col(object.b)[3] == 1) {
-              W.render(object, dt);
-            } else {
-              transparent.push(object);  // 透明的先不渲染，存起来
+            if(object.hidden !== true) {  // hidden 物体不渲染（用于更灵活的减少 recall 数量）
+                if (!object.isInstanced && !object.t && W.col(object.b)[3] == 1) {
+                W.render(object, dt);
+              } else {
+                transparent.push(object);  // 透明的先不渲染，存起来
+              }
             }
           }
           transparent.sort((a, b) => {return W.dist(b) - W.dist(a);});  // 感觉会损失性能，先注释掉
           W.gl.enable(3042 );
-
           W.gl.depthMask(1)
           for(i of transparent) {  // 遍历渲染透明对象（这几行好抽象，后续再优化）
             if (i.isInstanced) {
               W.render(i, dt);
             }
           }
-          // W.gl.depthMask(0);  // 貌似没用、还产生 BUG
           for(i of transparent){
             if (!i.isInstanced) {
               W.render(i, dt);
@@ -260,9 +255,6 @@ const W = {
           }
           W.gl.depthMask(1);
           W.gl.disable(3042);
-        
-
-        /* --------------- */
         }
         W.gl.uniform3f(  // light 信息发往着色器
           W.uniformLocations.light,
@@ -477,13 +469,6 @@ W.smooth = (state, dict = {}, vertices = [], iterate, iterateSwitch, i, j, A, B,
 // 可以从相同模型添加自定义模型，OBJ导入器可在 https://xem.github.io/WebGLFramework/obj2js/ 获取
 
 // 平面/广告牌
-//
-//  v1------v0
-//  |       |
-//  |   x   |
-//  |       |
-//  v2------v3
-
 W.add("plane", {
   vertices: [
     .5, .5, 0,    -.5, .5, 0,   -.5,-.5, 0,
@@ -497,16 +482,7 @@ W.add("plane", {
 });
 W.add("billboard", W.models.plane);
 
-// Cube
-//
-//    v6----- v5
-//   /|      /|
-//  v1------v0|
-//  | |  x  | |
-//  | |v7---|-|v4
-//  |/      |/
-//  v2------v3
-
+// 立方体
 W.add("cube", {
   vertices: [
     .5, .5, .5,  -.5, .5, .5,  -.5,-.5, .5, // front
@@ -539,15 +515,7 @@ W.add("cube", {
 });
 W.cube = settings => W.setState(settings, 'cube');
 
-// Pyramid
-//
-//      ^
-//     /\\
-//    // \ \
-//   /+-x-\-+
-//  //     \/
-//  +------+
-
+// 金字塔
 W.add("pyramid", {
   vertices: [
     -.5,-.5, .5,   .5,-.5, .5,    0, .5,  0,  // Front
@@ -567,16 +535,7 @@ W.add("pyramid", {
   ]
 });
 
-// Sphere
-//
-//          =   =
-//       =         =
-//      =           =
-//     =      x      =
-//      =           =
-//       =         =
-//          =   =
-
+// 球形
 ((i, ai, j, aj, p1, p2, vertices = [], indices = [], uv = [], precision = 20) => {
   for(j = 0; j <= precision; j++){
     aj = j * Math.PI / precision;
