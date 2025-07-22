@@ -6,7 +6,7 @@ export default {
     // 纹理列表
     textureMap : new Map(),
 
-    // 一个浏览器不知名的特性，为防止纹理被缓存，所以来个递增数防止重复
+    // 一个浏览器不知名的特性(bug)，为防止纹理被缓存，所以搞了个递增数，防止重复
     loadTextureIndex : 1,
 
     // 用于光栅化 canvas 使用的临时 canvas
@@ -54,7 +54,6 @@ export default {
             });
             texturePromises.push(promise);
         }
-
         return Promise.all(texturePromises);
     },
 
@@ -70,6 +69,8 @@ export default {
         const canvas = this.canvasObj;
         canvas.width = drawItem.width || 400;
         canvas.height = drawItem.height || 400;
+        canvas.style.webkitFontSmoothing = 'antialiased';  // 两款浏览器的平滑字体兼容（可能有效）
+        canvas.style.mozOsxFontSmoothing = 'grayscale';
         const ctx = canvas.getContext('2d')
         if(drawItem.type === 'png'){  // 为透明化作铺垫
             drawItem.func(ctx, canvas.width, canvas.height, drawItem, this);
