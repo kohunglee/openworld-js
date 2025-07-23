@@ -11,8 +11,9 @@ import addobj from './obj/addobj.js';
 import animate from './core/animate.js';
 
 // 插件
-// import wjsShadow from './plugins/wjsShadow.js';
+import wjsShadow from './plugins/webgl/wjsShadow.js';
 import centerDot from './plugins/centerDot.js';
+import dynamicIns from './plugins/webgl/wjsDynamicIns.js';
 
 
 // 主对象
@@ -31,6 +32,7 @@ const ccgxk = {
 // 启用插件
 // wjsShadow(ccgxk);  // 开启阴影（暂时有性能问题，待改进）
 centerDot(ccgxk);  // 开启中心点取物
+dynamicIns(ccgxk);  // 开启实例化的动态操作
 
 
 

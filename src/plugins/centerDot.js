@@ -211,7 +211,6 @@ export default function(ccgxkObj) {
         const index = drawItem.index;
         const id = drawItem.id;
         if('T' + index !== id) return;  // 只支持 T1234 这种格式的图片名
-        console.log(_this);
         const value = k.currTextData.get(id)?.content || '';  //+3 使用文字库 currTextData 里的文字，偏移量
         const offsetX = k.currTextData.get(id)?.x || 0;
         const offsetY = k.currTextData.get(id)?.y || 0;
@@ -444,6 +443,7 @@ const htmlCode = `
         width: 100vw;
         height: 100vh;
         transform: translate(-50%, -50%);
+        z-index: 999;
     }
     .myHUD-modalPos {
         margin-left: 50vw;
