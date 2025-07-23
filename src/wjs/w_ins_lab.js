@@ -136,9 +136,9 @@ const W = {
         if(state.size) state.w = state.h = state.d = state.size;
         if(state.t && state.t.width && !W.textures[state.t.id]){  // 纹理
           texture = W.gl.createTexture();
-          W.gl.pixelStorei(37441 , true);
+          W.gl.pixelStorei(37441 , false);
           W.gl.bindTexture(3553 , texture);
-          W.gl.pixelStorei(37440 , 0);
+          W.gl.pixelStorei(37440 , 1);
           W.gl.texImage2D(3553 , 0, 6408 , 6408 , 5121 , state.t);
           W.gl.generateMipmap(3553 );
           W.textures[state.t.id] = texture;
@@ -167,7 +167,6 @@ const W = {
           W.instanceMatrixBuffers[state.n] = buffer;
           W.gl.bindBuffer(W.gl.ARRAY_BUFFER, W.instanceColorBuffers[state.n] = W.gl.createBuffer());
           W.gl.bufferData(W.gl.ARRAY_BUFFER, new Float32Array(instanceColors), W.gl.DYNAMIC_DRAW);
-          // state.instances = null;  // 清理，因为我们不再需要 JS 端的这个大数组
         } else {
           state.isInstanced = false;
         }
@@ -220,12 +219,12 @@ const W = {
   },
 
   // 绘制场景
-  draw: (now, dt, v, i, transparent = [], unHiddenface = []) => {
+  draw: (now, dt, v, i, transparent = []) => {
         const frameRenderStart = performance.now();  // 记录开始的时间
         dt = now - W.lastFrame;
         W.lastFrame = now;
         requestAnimationFrame(W.draw);
-        if (W.debugFBO) {  // 如果打开，就播放 FBO 的录像，然后直接结束这一帧
+        if (W.debugFBO) {  // 如果打开，就播放 FBO 的画面，然后直接结束这一帧
           renderFBOToCanvas();
           return; 
         } else {
