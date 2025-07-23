@@ -26,6 +26,7 @@ const W = {
     W.gl.activeTexture(33984);
     W.program = W.gl.createProgram();
     W.gl.enable(2884);  // 隐藏不可见面
+    
     W.instanceColorBuffers = {};  // 初始化颜色实例化数据
     W.lastFrame = 0;
     W.drawTime = 0;         // 初始化 绘制 时间
@@ -76,7 +77,11 @@ const W = {
           uniform sampler2D sampler;
           out vec4 c;
           void main() {
-            c = mix(texture(sampler, v_uv.xy * tiling), v_col, o[3]);
+            vec2 final_uv = v_uv.xy;  //+ 新增纹理面修正逻辑，修复纹理面翻转问题
+            if (!gl_FrontFacing) {
+              final_uv.x = 1.0 - final_uv.x;
+            }
+            c = mix(texture(sampler, final_uv * tiling), v_col, o[3]);
             if(o[1] > 0.){
               c = vec4(
                 c.rgb * (max(0., dot(light, -normalize(
@@ -133,7 +138,7 @@ const W = {
           texture = W.gl.createTexture();
           W.gl.pixelStorei(37441 , true);
           W.gl.bindTexture(3553 , texture);
-          W.gl.pixelStorei(37440 , 1);
+          W.gl.pixelStorei(37440 , 0);
           W.gl.texImage2D(3553 , 0, 6408 , 6408 , 5121 , state.t);
           W.gl.generateMipmap(3553 );
           W.textures[state.t.id] = texture;
@@ -158,11 +163,11 @@ const W = {
           const matrixData = new Float32Array(instanceMatrices);
           const buffer = W.gl.createBuffer();
           W.gl.bindBuffer(W.gl.ARRAY_BUFFER, buffer);
-          W.gl.bufferData(W.gl.ARRAY_BUFFER, matrixData, W.gl.STATIC_DRAW);
+          W.gl.bufferData(W.gl.ARRAY_BUFFER, matrixData, W.gl.DYNAMIC_DRAW);
           W.instanceMatrixBuffers[state.n] = buffer;
           W.gl.bindBuffer(W.gl.ARRAY_BUFFER, W.instanceColorBuffers[state.n] = W.gl.createBuffer());
-          W.gl.bufferData(W.gl.ARRAY_BUFFER, new Float32Array(instanceColors), W.gl.STATIC_DRAW);
-          state.instances = null;  // 清理，因为我们不再需要 JS 端的这个大数组
+          W.gl.bufferData(W.gl.ARRAY_BUFFER, new Float32Array(instanceColors), W.gl.DYNAMIC_DRAW);
+          // state.instances = null;  // 清理，因为我们不再需要 JS 端的这个大数组
         } else {
           state.isInstanced = false;
         }
@@ -178,7 +183,14 @@ const W = {
         }
         state = {  // 保存和初始化对象的类型
           type,
-          ...(W.current[state.n] = W.next[state.n] || {w:1, h:1, d:1, x:0, y:0, z:0, rx:0, ry:0, rz:0, b:'888', mode:4, mix: 0, hidden: false}),
+          ...(W.current[state.n] = W.next[state.n] || {w:1, h:1, d:1, x:0, y:0, z:0,
+                                  rx:0, ry:0, rz:0,
+                                  b:'888', mode:4, mix: 0,
+                                  hidden: false,  // 更灵活的调整是否隐藏
+                                  uncullface: 0,  // 0:只显示外头； 1:两面都显示
+                                  smooth: 0, t: state.t,
+                                  texture, normal,
+                                  A, B, C, Ai, Bi, Ci, AB, BC, ...state}),
           ...state,
           f:0
         };
@@ -208,7 +220,7 @@ const W = {
   },
 
   // 绘制场景
-  draw: (now, dt, v, i, transparent = []) => {
+  draw: (now, dt, v, i, transparent = [], unHiddenface = []) => {
         const frameRenderStart = performance.now();  // 记录开始的时间
         dt = now - W.lastFrame;
         W.lastFrame = now;
@@ -241,7 +253,7 @@ const W = {
             }
           }
           transparent.sort((a, b) => {return W.dist(b) - W.dist(a);});  // 感觉会损失性能，先注释掉
-          W.gl.enable(3042 );
+          W.gl.enable(3042);
           W.gl.depthMask(1)
           for(i of transparent) {  // 遍历渲染透明对象（这几行好抽象，后续再优化）
             if (i.isInstanced) {
@@ -352,8 +364,16 @@ const W = {
           } else {
             W.gl.vertexAttrib4fv(colorAttribLoc, W.col(object.b || '888'));
           }
+          if(object.uncullface) {  // 面剔除的判断，不知道这样写是否会影响性能
+            W.gl.disable(2884);
+            W.cullface = false;
+          } else {
+            if(W.cullface !== true){  // 避免频繁开关
+              W.gl.enable(2884);
+              W.cullface = true;
+            }
+          }
           if(W.models[object.type].indicesBuffer){  // 存在索引的绘制
-            // W.gl.bindBuffer(34963 , W.models[object.type].indicesBuffer);
             if (object.isInstanced) { // 索引+实例化
               W.gl.drawElementsInstanced(
                 +object.mode || W.gl[object.mode],W.models[object.type].indices.length,W.gl.UNSIGNED_SHORT,0,object.numInstances
@@ -363,7 +383,6 @@ const W = {
             }
           }
           else { // 不存在索引的绘制
-            W.gl.polygonOffset(1.0, 1.0);
             if (object.isInstanced) {  //无索引+实例化
               W.gl.drawArraysInstanced(+object.mode || W.gl[object.mode],0,W.models[object.type].vertices.length / 3,object.numInstances);
             } else {  // 正常
@@ -429,6 +448,7 @@ const W = {
   delete: (t, delay) => setTimeout(()=>{ delete W.next[t] }, delay || 1),
   camera: (t, delay) => setTimeout(()=>{ W.setState(t, t.n = 'camera') }, delay || 1),
   light: (t, delay) => delay ? setTimeout(()=>{ W.setState(t, t.n = 'light') }, delay) : W.setState(t, t.n = 'light'),
+  cullface: true,  // 面剔除(默认启用)
 };
 
 // 平滑法线计算插件（可选）

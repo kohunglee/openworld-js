@@ -47,9 +47,11 @@ setInterval(() => {  // 城市名显示
 // 定义单个立方体对象的多个实例
 const cubeInstances = [];
 var cubeTimes = 1;
-var numCubes = 100 * cubeTimes;
+// var numCubes = 100 * cubeTimes;
+var numCubes = 10 * cubeTimes;
 const spacing = 2.5;
-const areaSpace = 10**1;
+// const areaSpace = 10**1;
+const areaSpace = 2**1;
 const random = k.genPR(17, numCubes * numCubes * 5);  // 伪随机数
 for (let i = 0; i < numCubes; i++) {
     for (let j = 0; j < numCubes; j++) {
@@ -77,6 +79,7 @@ for (let index = 0; index < 1; index++) {
   });
 }
 
+// {b: "#2951b7", d: 30, h: 4, w: 20, x: -37, y: 49, z: 10};
 // 为实例化加上简单的物理引擎
 for (let i = 0; i < numCubes; i++) {
     for (let j = 0; j < numCubes; j++) {
@@ -147,7 +150,7 @@ function makeTestObj(indexObj = 8074){
 
 // 向内存里添加 plane 文字板物体
 let currentIndex_obj = 0;
-const totalTasks = 10000;
+const totalTasks = numCubes * numCubes;
 function addPlaneObj2Memory(deadline) {  // 添加物体
     while (deadline.timeRemaining() > 0 && currentIndex_obj < totalTasks) {
         makeTestObj(currentIndex_obj);  // 执行任务
@@ -158,9 +161,6 @@ function addPlaneObj2Memory(deadline) {  // 添加物体
     } else {
         console.log("所有 add obj 步已优雅地完成！");
     }
-    // if(currentIndex_obj % 100 === 0){  // 显示进度
-    //     xforward.innerHTML = 'obj ' + currentIndex_obj;
-    // }
 }
 if(window.requestIdleCallback === undefined){  // safari bug
     for (let i = 0; i < totalTasks; i++) {
@@ -175,7 +175,7 @@ if(window.requestIdleCallback === undefined){  // safari bug
 
 
 // 从 COOKIE 里取出上一次的位置
-var lastPos = k?.lastPoss;
+var lastPos = k?.lastPos;
 if(!lastPos){
     lastPos = {x:33, y:5.00, z:498};
 }
@@ -191,7 +191,7 @@ k.mainVPlayer = k.addBox({  // 创建一个立方体，并设置为主角
         background : '#333',
         texture: marble
     });
-k.W.next['mainPlayer'].h = 0.8;  // 防止穿模，因为纹理和地面的问题.....  后续再想好办法
+// k.W.next['mainPlayer'].h = 0.8;  // 防止穿模，因为纹理和地面的问题.....  后续再想好办法
 
 k.addTABox({  // 创建一个 旋转测试 细长物理体
     DPZ : 3,
@@ -216,6 +216,8 @@ const drawList = [
     {func:drawjpflag, id:'jpflag', type: 'jpg'},
 ];
 
+
+
 var groundPlanesize = 10000;
 
 k.addBox({  // 创建地面
@@ -228,17 +230,20 @@ k.addBox({  // 创建地面
     texture: marble, background: '#287A17', mixValue: 0.5,
 });
 
-k.addBox({  // 创建一个参考1米的使用的辅助图片。它会拉低渲染，所以要记得删去
-    DPZ : 1,
-    colliGroup: 1,
-    tiling : 10000,
-    isShadow: 1,
-    shape: 'plane',
-    isPhysical: false,
-    name: 'groundPlaneAux', X: 0, Y: 0.6, Z: 0, rX: -90,
-    mass: 0, width: 10000, depth: 0, height: 10000,
-    texture: marble, background: '#171f7a14', mixValue: 0.71,
-});
+// k.addBox({  // 创建一个参考1米的使用的辅助图片。它会拉低渲染，所以要记得删去
+//     DPZ : 1,
+//     colliGroup: 1,
+//     tiling : 10000,
+//     isShadow: 1,
+//     shape: 'plane',
+//     isPhysical: false,
+//     name: 'groundPlaneAux', X: 0, Y: 0.6, Z: 0, rX: -90,
+//     mass: 0, width: 10000, depth: 0, height: 10000,
+//     texture: marble, background: '#171f7a14', mixValue: 0.71,
+// });
+
+// 尝试创建天空
+k.W.sphere({n:'sky',x:0, y:0, z:0, size:5000, s:1, b:"#B13DFF", uncullface: 2, t: marble,});
 
 
 // 日本国旗
@@ -263,13 +268,6 @@ function drawRandomNoise(ctx, w, h) {
         ctx.arc(x, y, s, 0, Math.PI*2); ctx.fill();
     }
 }
-
-
-
-
-
-
-
 </script>
 
 
