@@ -44,8 +44,7 @@ function calculateNorthAngle(t,a,h){var t=-t*Math.PI/180,a=-a*Math.PI/180,h=h*Ma
 // 绘制小地图的核心函数
 function drawRedDot(canvasElement, ccgxkObj) {
     const mvp = ccgxkObj.mainVPlayer;
-    if(mvp.isMVPInit === false){
-        console.log('no');
+    if(ccgxkObj?.isMVPInit !== true){
         return 0;
     }
     const ctx = canvasElement.getContext("2d");

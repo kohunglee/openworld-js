@@ -175,7 +175,6 @@ export default {
                     height: cHeight,
                     index: index,
                 }]).then(res => {
-                    if(index === 12278){ console.log('纹理');console.log(window[args.texture]); }
                     this.W[args.shape]({
                         n: 'T' + index,
                         t: this.textureMap.get(args.texture),
