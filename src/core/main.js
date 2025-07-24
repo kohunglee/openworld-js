@@ -51,7 +51,7 @@ export default {
         W.cube({g:'posZero',z:5,d:10,w:.5,h:.5,b:"44f"});
         W.pyramid({g:'posZero',size:1,x:10,rz:-90,b:"f44"});
         W.pyramid({g:'posZero',size:1,y:10,b:"4f4"});
-        W.pyramid({g:'posZero', n:'test0001' ,size:1,z:10,rx:90,b:"44f"});
+        W.pyramid({g:'posZero',size:1,z:10,rx:90,b:"44f"});
         W.sphere({n:'posZeroSphere',x:0, y:0, z:0, size:5, s:1, b:"#FF145B"});
     },
 }

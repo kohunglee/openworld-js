@@ -6,6 +6,7 @@
 export default function(ccgxkObj){
     // 一秒执行一次
     setInterval(() => {
+        if(ccgxkObj?.isMVPInit !== true){ return 0 }
         const mainVPlayerBodyPos = ccgxkObj.mainVPlayer.body.position;  //+2 储存主角的位置到 COOKIE
         setObjectCookie('lastPos_mvp', {x: mainVPlayerBodyPos.x, y: mainVPlayerBodyPos.y, z: mainVPlayerBodyPos.z}); // 存储对象到Cookie
     }, 1000)

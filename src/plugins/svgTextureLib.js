@@ -8,7 +8,7 @@ export default function(ccgxkObj){
 
     const greenStone = `
 <svg width="1024" height="1024" xmlns="http://www.w3.org/2000/svg">
-  <filter id="ancient-wall" filterUnits="userSpaceOnUse" x="-10" y="-10" width="1040" height="1040">
+  <filter id="ancient-wall" filterUnits="userSpaceOnUse" x="-20" y="-20" width="1060" height="1060">
     <feTurbulence type="fractalNoise" baseFrequency="0.005" numOctaves="4" seed="10" result="base_plaster" />
     <feDiffuseLighting in="base_plaster" surfaceScale="15" lighting-color="white" result="lit_plaster">
     <feDistantLight azimuth="145" elevation="30" />

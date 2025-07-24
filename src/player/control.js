@@ -116,6 +116,7 @@ export default {
     // 显示主角的实时位置
     displayPOS : function(){
         var posInfo = document.getElementById('posInfo');
+        if(!posInfo) {return 0}
         if(this.mainVPlayer !== null){
             posInfo.textContent = (
                 '位置: X:' + this.mainVPlayer.body.position.x.toFixed(2) +
@@ -170,7 +171,7 @@ export default {
 
     // 主角、相机辅助值
     isMVPInit : false,  // 相机和主角是否初始化
-    Y_AXIS : new CANNON.Vec3(0, 1, 0),
+    Y_AXIS : new CANNON.Vec3(0, 1, 0),  //+ 辅助值
     DEG_TO_RAD : Math.PI / 180,
 
     // 摄像机和主角的移动和旋转
