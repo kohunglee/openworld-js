@@ -36,29 +36,35 @@
 
         // 加载预设纹理，开始程序
         k.loadTexture(k.svgTextureLib).then(loadedImage => {
+            const greenStone = k.textureMap.get('greenStone');
+            const greenStoneTwo = k.textureMap.get('greenStoneTwo');
+
             k.addBox({  // 创建地面
                 DPZ : 1,
                 colliGroup: 1,
                 tiling : 100,
                 name: 'groundPlane', X: 0, Y: -0.5, Z: 0,
                 mass: 0, width: 1000, depth: 1000, height: 2,
-                texture: k.textureMap.get('greenStoneTwo'), background: '#287A17', mixValue: 0.5,
+                texture: greenStoneTwo, background: '#287A17', mixValue: 0.5,
             });
 
-            var lastPos = k?.lastPos || {x:33, y:5.00, z:498};
+            var lastPos = k?.lastPos || {x:33, y:5.00, z:498, rX:0, rY:0, rZ:0};
             k.mainVPlayer = k.addBox({  // 创建一个立方体，并设置为主角
                 name: 'mainPlayer',
                 DPZ : 1,
                 colliGroup: 1,
                 isShadow: 'ok',
                 X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z,
-                rX: 0, rY: 0, rZ: 0, size:1, mixValue:0.7,
+                rX: 45, rY: 45, rZ: 45, size:1, mixValue:0.7,
                 mass: 50,
                 background : '#333',
-                texture: k.textureMap.get('greenStone'),
+                texture: greenStone,
             });
 
-            k.W.prism({n:'testMyModel',x:30, y:5, z:30, size:5, b:"#FF145B"});
+            k.W.uvplane({  // 测试我的模型
+                x:0, y:5, z:0, t:greenStone, size:5, b:"#FF145B",
+                // uncullface: 1,
+            });
         });
 
 

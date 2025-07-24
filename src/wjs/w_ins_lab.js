@@ -373,6 +373,7 @@ const W = {
             }
           }
           if(W.models[object.type].indicesBuffer){  // 存在索引的绘制
+            W.gl.bindBuffer(34963, W.models[object.type].indicesBuffer);  // 重新拿起索引数据
             if (object.isInstanced) { // 索引+实例化
               W.gl.drawElementsInstanced(
                 +object.mode || W.gl[object.mode],W.models[object.type].indices.length,W.gl.UNSIGNED_SHORT,0,object.numInstances

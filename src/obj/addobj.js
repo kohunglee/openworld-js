@@ -283,6 +283,7 @@ export default {
         }
         if(isVisualMode){  // 是否 W 渲染可视化
             if(typeof tiling === 'number'){ tiling = [tiling, tiling] }  // 处理平铺数
+            console.log(rX, rY, rZ);
             this.W[shape]({
                 n: name,
                 w: width, d: depth, h: height,
