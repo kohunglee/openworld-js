@@ -29,10 +29,12 @@ import calCity from '../src/plugins/calCity.js';
 import xmap from '../src/plugins/xmap.js';
 import xdashpanel from '../src/plugins/xdashpanel.js';
 import cookieSavePos from '../src/plugins/cookieSavePos.js';
+import centerDot from '../src/plugins/centerDot.js';
 calCity(k);  // 计算城市
 xmap(k);  // 小地图
 xdashpanel(k);  // 简易仪表盘
 cookieSavePos(k);  // cookie 保存/还原 位置
+centerDot(k);       // 开启中心点取物
 
 setInterval(() => {  // 城市名显示
     var currCityName = document.getElementById('currCityName');
@@ -240,7 +242,7 @@ k.addBox({  // 创建地面
 k.W.sphere({n:'sky',x:0, y:0, z:0, size:5000, s:1, b:"#B13DFF", t: marble,});
 
 
-// 日本国旗
+// 日本国旗    
 function drawjpflag(ctx, w, h) {
     ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);
     const radius = 150;
