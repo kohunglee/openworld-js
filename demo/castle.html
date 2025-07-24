@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+
+
     <meta charset="UTF-8">
     <meta http-equiv="cache-control" content="no-cache">
     <meta http-equiv="expires" content="0">
@@ -12,8 +12,9 @@
         }
     </style>
     <title>castle</title>
-</head>
-<body>
+    <img src="./img/city.jpg" alt="city texture" id="city" hidden>
+
+
     <canvas id="vistaCanv" style="width:99vw;height:99vh"></canvas>
     <script src="../src/cannon/cannon29kb.js"></script>
     <script type="module">
@@ -28,16 +29,19 @@
         import svgTextureLib from '../src/plugins/svgTextureLib.js';
         import xdashpanel from '../src/plugins/xdashpanel.js';
         import commModel from '../src/plugins/webgl/commModel.js';
+        import centerDot from '../src/plugins/centerDot.js';
         xmap(k);            // 小地图
         cookieSavePos(k);   // 保存当前位置
         svgTextureLib(k);   // 纹理预设库
         xdashpanel(k);      // 仪表盘
         commModel(k);       // 基础模型库
+        centerDot(k);       // 开启中心点取物
 
         // 加载预设纹理，开始程序
         k.loadTexture(k.svgTextureLib).then(loadedImage => {
             const greenStone = k.textureMap.get('greenStone');
             const greenStoneTwo = k.textureMap.get('greenStoneTwo');
+            const greenStoneTest = k.textureMap.get('greenStoneTest');
 
             k.addBox({  // 创建地面
                 DPZ : 1,
@@ -62,7 +66,7 @@
             });
 
             k.W.uvplane({  // 测试我的模型
-                x:0, y:5, z:0, t:greenStone, size:5, b:"#FF145B",
+                x:0, y:5, z:0, t:city, size:5, b:"#FF145B",
                 // uncullface: 1,
             });
         });
@@ -71,10 +75,4 @@
 
 
 
-
-
-
-
     </script>
-</body>
-</html>

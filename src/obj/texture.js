@@ -35,7 +35,7 @@ export default {
                         const finalImage = new Image();
                         finalImage.onload = () => {
                             this.textureMap.set(drawItem.id, finalImage);
-                            resolve(finalImage); // Promise完成，返回最终的PNG图片对象
+                            resolve(finalImage); // Promise 完成，返回最终的PNG图片对象
                         };
                         finalImage.src = pngBase64;
                     };
