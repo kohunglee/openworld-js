@@ -47,7 +47,7 @@ const productionConfig = {
   plugins: [
     // 版权横幅插件
     new webpack.BannerPlugin({
-      banner: '/*! vista.js v1.0.0 | (c) kohunglee | MIT License */',
+      banner: '/*! vista.js v1.0.0 | (c) github/kohunglee | MIT License */',
       raw: true,
       entryOnly: true,
     }),
