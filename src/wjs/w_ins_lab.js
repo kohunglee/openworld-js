@@ -311,6 +311,9 @@ const W = {
             }
         }
         if(!just_compute){  // 渲染可见物体
+          if(!W.models[object.type]?.verticesBuffer) {  // 热更新模型时会报错，一个勉强的解法。以后再优化
+            return 0;
+          }
           W.gl.bindBuffer(34962 , W.models[object.type].verticesBuffer);
           W.gl.vertexAttribPointer(buffer = W.attribLocations.pos, 3, 5126 , false, 0, 0);
           W.gl.enableVertexAttribArray(buffer);

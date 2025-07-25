@@ -319,8 +319,6 @@
      * @constructor
      */
     function ArrayCollisionMatrix() {
-        
-    
         /**
          * 矩阵存储
          * @property 矩阵
@@ -6996,7 +6994,7 @@
         World_step_frictionEquationPool = [],
         World_step_p1 = [], 
         World_step_p2 = [];
-    World.prototype.internalStep = function(dt){
+        World.prototype.internalStep = function(dt){
         this.dt = dt;
         var world = this,
             that = this,

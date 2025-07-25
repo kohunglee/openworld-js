@@ -42,9 +42,6 @@ export default {
     // 是否按下了 shift 键
     isShiftPress : 0,
 
-    // 是否使用防眩晕模式
-    antiDizzyMode : false,
-
     // 判断当前是否是鼠标锁定状态
     isPointerLock : function(){
         return document.pointerLockElement === this.canvas || document.mozPointerLockElement === this.canvas || document.webkitPointerLockElement === this.canvas;
@@ -99,8 +96,7 @@ export default {
         var action = this.keyMap[e.key.toLowerCase()];
         if (action) { this.keys[action] = value; }
         if ((e.keyCode === 32 || e.key.toLowerCase() === 'e') && this.mainVPlayer !== null) {  // e 或 空格键，飞翔
-            var limit = this.mainVPlayer.body.position.y <= 10000;
-            if (this.keys.jumping === 0 && limit) {
+            if (this.keys.jumping === 0) {
                 this.mainVPlayer.body.velocity.y = this.jumpYVel;
             }
             this.keys.jumping = value;
@@ -129,22 +125,19 @@ export default {
     // 计算物体（主要是相机和主角）的移动参数
     calMovePara : function(X, Y, Z, RX, RY, RZ){
         const keys = this.keys;
-        if (keys.viewForward || keys.viewBackward) { // 前后平移
+        if (keys.viewForward || keys.viewBackward) {  // 前后平移
             var speed = (this.isShiftPress)
                         ? Math.max(this.speedH,this.speedL-(this.forwardAcc+=this.speedAdd))
                         : this.speedL+0*(this.forwardAcc=0.01);  // 加速度
-            // shiftInfo.textContent = '速度:' + Math.round((100 / speed)) + ' | ';
+            // shiftInfo.textContent = '速度:' + Math.round((100 / speed)) + ' | ';  // 后续可以改成一个钩子
             Z += (-keys.viewForward + keys.viewBackward) * Math.cos(RY * Math.PI / 180) / speed;
             X += (-keys.viewForward + keys.viewBackward) * Math.sin(RY * Math.PI / 180) / speed;
             this.displayPOS();
         }
-        if (keys.viewLeft || keys.viewRight) { // 左右平移
+        if (keys.viewLeft || keys.viewRight) {  // 左右平移
             Z += (-keys.viewLeft + keys.viewRight) * Math.cos((RY + 90) * Math.PI / 180) / 10;
             X += (-keys.viewLeft + keys.viewRight) * Math.sin((RY + 90) * Math.PI / 180) / 10;
             this.displayPOS();
-        }
-        if (keys.viewUp || keys.viewDown) { // 上下平移（已经名存实亡了）
-            Y = 150;
         }
         RY = this.keys.turnRight;
         RX = this.keys.turnUp;
@@ -177,16 +170,16 @@ export default {
     // 摄像机和主角的移动和旋转
     mainVPlayerMove : function(mVP){
         if(mVP === null){return};
-        var cam = this.mainCamera;
+        const cam = this.mainCamera;
 
         if(this.isMVPInit === false){
             cam.groupName = mVP.name;
             this.isMVPInit = true;
         }
         
-        var vplayerBodyPos = mVP.body.position;  //+ 计算下一帧的主角数据，并传递给物理引擎
-        var vplayerBodyQua = mVP.body.quaternion;
-        var vplayerAct = this.calMovePara(  // 获取按键和鼠标事件处理后的移动参数
+        const vplayerBodyPos = mVP.body.position;  //+ 计算下一帧的主角数据，并传递给物理引擎
+        const vplayerBodyQua = mVP.body.quaternion;
+        const vplayerAct = this.calMovePara(  // 获取按键和鼠标事件处理后的移动参数
             vplayerBodyPos.x, vplayerBodyPos.y, vplayerBodyPos.z,
             cam.qua.rx, cam.qua.ry, cam.qua.rz
         );
@@ -198,9 +191,9 @@ export default {
         vplayerBodyQua.setFromAxisAngle(this.Y_AXIS, this.DEG_TO_RAD * vplayerAct.ry);  // 主角只旋转 Y 轴
         this.W.camera({g:mVP.name, x:cam.pos.x, y:cam.pos.y, z:cam.pos.z, rx: cam.qua.rx, rz: cam.qua.rz})  // 摄像机只旋转 X 和 Z 轴
 
-        let pos = mVP.body.position;
-        let quat = mVP.body.quaternion;
-        let indexItemEuler = this.quaternionToEuler(quat);
+        const pos = mVP.body.position;
+        const quat = mVP.body.quaternion;
+        const indexItemEuler = this.quaternionToEuler(quat);
         mVP.quat = quat;
         mVP.rX = indexItemEuler.rX;
         mVP.rY = indexItemEuler.rY;
