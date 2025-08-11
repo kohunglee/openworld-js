@@ -13,6 +13,26 @@ export default {
         return { rX: toDeg(roll), rY: toDeg(pitch), rZ: toDeg(yaw)};
     },
 
+    // 将欧拉角 (以度为单位) 转换为四元数。
+    eulerToQuaternion: function(euler) {
+        const { rX, rY, rZ } = euler;
+        const toRad = angle => angle * (Math.PI / 180);
+        const halfRoll = toRad(rX) * 0.5;
+        const halfPitch = toRad(rY) * 0.5;
+        const halfYaw = toRad(rZ) * 0.5;
+        const sr = Math.sin(halfRoll);
+        const cr = Math.cos(halfRoll);
+        const sp = Math.sin(halfPitch);
+        const cp = Math.cos(halfPitch);
+        const sy = Math.sin(halfYaw);
+        const cy = Math.cos(halfYaw);
+        const w = cr * cp * cy + sr * sp * sy;
+        const x = sr * cp * cy - cr * sp * sy;
+        const y = cr * sp * cy + sr * cp * sy;
+        const z = cr * cp * sy - sr * sp * cy;
+        return { x, y, z, w };
+    },
+
     // 给定种子，生成伪随机数（数组），genPseudoRandoms
     genPR : function (seed, count){
         let x = Math.abs(seed) || 1;

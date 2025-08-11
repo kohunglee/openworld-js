@@ -171,26 +171,22 @@ export default {
     mainVPlayerMove : function(mVP){
         if(mVP === null){return};
         const cam = this.mainCamera;
-
         if(this.isMVPInit === false){
             cam.groupName = mVP.name;
             this.isMVPInit = true;
         }
-        
         const vplayerBodyPos = mVP.body.position;  //+ 计算下一帧的主角数据，并传递给物理引擎
         const vplayerBodyQua = mVP.body.quaternion;
         const vplayerAct = this.calMovePara(  // 获取按键和鼠标事件处理后的移动参数
             vplayerBodyPos.x, vplayerBodyPos.y, vplayerBodyPos.z,
             cam.qua.rx, cam.qua.ry, cam.qua.rz
         );
-
         mVP.body.position.x = vplayerAct.x;
         mVP.body.position.y = vplayerAct.y;
         mVP.body.position.z = vplayerAct.z;
         cam.qua = vplayerAct;
         vplayerBodyQua.setFromAxisAngle(this.Y_AXIS, this.DEG_TO_RAD * vplayerAct.ry);  // 主角只旋转 Y 轴
         this.W.camera({g:mVP.name, x:cam.pos.x, y:cam.pos.y, z:cam.pos.z, rx: cam.qua.rx, rz: cam.qua.rz})  // 摄像机只旋转 X 和 Z 轴
-
         const pos = mVP.body.position;
         const quat = mVP.body.quaternion;
         const indexItemEuler = this.quaternionToEuler(quat);
@@ -202,7 +198,6 @@ export default {
         mVP.Y = pos.y;
         mVP.Z = pos.z;
         this.W.move({ n: mVP.name, x: mVP.X, y: mVP.Y, z: mVP.Z, rx: mVP.rX, ry: mVP.rY, rz: mVP.rZ});
-
         mVP.posID = this.calPosID(mVP.X, mVP.Y, mVP.Z, 2);
         return 0;
     },

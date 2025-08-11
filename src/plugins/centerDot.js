@@ -93,6 +93,7 @@ export default function(ccgxkObj) {
             ccgxkObj.centerPointColorUpdatax = setInterval(() => { drawCenterPoint(canvas, ccgxkObj) }, 500);
             ccgxkObj.mainCamera.pos = {x:0, y:0.5, z:0};
         }
+        // PS: 火狐浏览器无法右键关闭，暂时无解
     });
 
 

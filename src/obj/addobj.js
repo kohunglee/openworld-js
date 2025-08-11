@@ -29,10 +29,14 @@ export default {
                 X = 5, Y = 5, Z = 5,
                 quat = {x: 0, y: 0, z: 0, w: 1},
                 mass = 0, width = 1, depth = 1, height = 1, size = 1,
+                rX= 0, rY= 0, rZ= 0,
             } = {}){
         const myargs = Array.from(arguments)[0];  // 提取参数
         if(size !== 1){  // 处理体积大小
             width =  depth =  height = size;
+        }
+        if(rX || rY || rZ){  // 处理旋转
+            quat = this.eulerToQuaternion({rX,rY,rZ});
         }
         if (this.freeSlots.length === 0) {alert('BodyTypeArray 容量已达上限，需要扩容！'); return false;};  // 没有空位就退，否则占个位子
         const index = this.freeSlots.pop();

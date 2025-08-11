@@ -37,6 +37,7 @@ export default {
                             this.textureMap.set(drawItem.id, finalImage);
                             resolve(finalImage); // Promise 完成，返回最终的PNG图片对象
                         };
+                        finalImage.id = drawItem.id;
                         finalImage.src = pngBase64;
                     };
                     const svgBlob = new Blob([drawItem.svgCode], { type: 'image/svg+xml' });
