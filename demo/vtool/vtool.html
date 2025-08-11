@@ -32,7 +32,7 @@
         }
     </style>
     <title>手搓模型顶点数据工具</title>
-    <img src="./img/house.jpg" alt="house texture" id="house" hidden>
+    <img src="./img/house.jpg" alt="house texture" id="house" crossorigin="anonymous" hidden>
     <canvas id="vistaCanv" style="width:99vw;height:99vh"></canvas>
     <div class="modelDataForm">
         <textarea id="modelData" class="modelData"></textarea>
@@ -40,7 +40,7 @@
         <button id="updateModelBtn" class="updateModelBtn">更新模型 Ctrl+S</button>
     </div>
     
-    <script src="../../src/cannon/cannon29kb.js"></script>
+    <script src="./cannon29kb.js"></script>
     <script src="./vista.min.js"></script>
     <script src="./areaeditor.2.0.min.js"></script>
     <script>
@@ -83,7 +83,7 @@
                 texture: greenStone,
             });
 
-            // 输入六棱柱，模型文件，学习使用
+            // 输入六棱柱
             k.W.add("hexahedron", {
                 vertices: [
                     /* 后面 */
@@ -346,7 +346,7 @@ modDataDIY = {
  * 模型原点位置是 (x:0, y:5, z:0)
  * 坐标轴 X 红色  Y 绿色  Z 蓝色
  * 感谢您的使用！
- * （2025-7-25）
+ * （2025-07-25）
  */`;
 
 

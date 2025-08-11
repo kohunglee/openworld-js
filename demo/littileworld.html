@@ -179,11 +179,11 @@ for (let i = 0; i < numCubes; i++) {
 
 
 
-const buildMyDreamHouse = () => {
+const buildMyDreamHouse = (x=0, y=0, z=0) => {
     const blueprint = {
-        houseX: 0,         
-        houseY: 0,         
-        houseZ: 0,         
+        houseX: x,         
+        houseY: y,         
+        houseZ: z,         
         width: 60,         
         depth: 40,        
         height: 20,        
@@ -320,7 +320,13 @@ const buildMyDreamHouse = () => {
     buildDetails();
     return cubeInstances;
 };
-const myHouseCubes = buildMyDreamHouse();
+
+for (let i = 0; i < 2; i++) {
+    
+    for (let j = 0; j < 3; j++) {
+        const myHouseCubes = buildMyDreamHouse(100 * i, -1, 100 * j);
+    }
+}
 
 /* -------------------------------------------------------- */
 
@@ -329,7 +335,7 @@ const myHouseCubes = buildMyDreamHouse();
 // 为实例化加上简单的物理引擎
 for (let index = 0; index < cubeInstances.length; index++) {
     k.addTABox({
-        DPZ : 4,
+        DPZ : 3,
         isPhysical: true,
         X: cubeInstances[index].x,
         Y: cubeInstances[index].y,
@@ -341,7 +347,7 @@ for (let index = 0; index < cubeInstances.length; index++) {
         background: '#f00',
         mixValue: 0.5,
         isShadow: false,
-        // isVisualMode: false,
+        isVisualMode: false,
         // isFictBody: true,
     });
 }

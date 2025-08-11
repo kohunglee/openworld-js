@@ -12,7 +12,6 @@ import animate from './core/animate.js';
 
 // 插件
 import wjsShadow from './plugins/webgl/wjsShadow.js';
-import centerDot from './plugins/centerDot.js';
 import dynamicIns from './plugins/webgl/wjsDynamicIns.js';
 
 
@@ -31,24 +30,7 @@ const ccgxk = {
 
 // 启用插件
 // wjsShadow(ccgxk);  // 开启阴影（暂时有性能问题，待改进）
-// centerDot(ccgxk);  // 开启中心点取物
 dynamicIns(ccgxk);  // 开启实例化的动态操作
-
-        // 导入插件模块
-import xmap from './plugins/xmap.js';
-import cookieSavePos from './plugins/cookieSavePos.js';
-import svgTextureLib from './plugins/svgTextureLib.js';
-import xdashpanel from './plugins/xdashpanel.js';
-import commModel from './plugins/webgl/commModel.js';
-// import centerDot from './plugins/centerDot.js';
-xmap(ccgxk);            // 小地图
-cookieSavePos(ccgxk);   // 保存当前位置
-svgTextureLib(ccgxk);   // 纹理预设库
-xdashpanel(ccgxk);      // 仪表盘
-commModel(ccgxk);       // 基础模型库
-centerDot(ccgxk);       // 开启中心点取物
-
-
 
 // 兼容浏览器平台
 window.ccgxk = ccgxk;

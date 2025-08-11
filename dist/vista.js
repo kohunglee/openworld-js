@@ -1175,7 +1175,6 @@ let canvas, pointObjIndex, textureEditorTG, textureEditorOffsetX, textureEditorO
         }
     });
 
-
     // 键盘上的 r 键被按下（冻结物体）
     function frozenMVP(event) {
         if (event.key === 'f') {
