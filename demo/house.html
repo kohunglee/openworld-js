@@ -1,20 +1,11 @@
 <!DOCTYPE html>
-
-
     <meta charset="UTF-8">
     <meta http-equiv="cache-control" content="no-cache">
     <meta http-equiv="expires" content="0">
     <meta http-equiv="pragma" content="no-cache">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            margin: 0;
-        }
-    </style>
+    <style> body { margin: 0; } </style>
     <title>castle</title>
-    <img src="./img/city.jpg" alt="city texture" id="city" hidden>
-    <img src="./img/uv.png" alt="uv texture" id="uv" hidden>
-
     <canvas id="vistaCanv" style="width:99vw;height:99vh"></canvas>
     <script src="../src/cannon/cannon29kb.js"></script>
     <script type="module">
@@ -40,9 +31,12 @@
         // 入口
         // 加载预设纹理，开始程序
         k.loadTexture(k.svgTextureLib).then(loadedImage => {
+            // 主题变量
             const greenStone = k.textureMap.get('greenStone');
-            const greenStoneTwo = k.textureMap.get('greenStoneTwo');
-            const greenStoneTest = k.textureMap.get('greenStoneTest');
+            const greenStoneborder = k.textureMap.get('greenStoneborder');
+            const frosted = k.textureMap.get('frosted');
+            const jpflag = k.textureMap.get('jpflag');
+            const checkerboard = k.textureMap.get('checkerboard');
 
             k.addBox({  // 创建地面
                 DPZ : 1,
@@ -50,7 +44,7 @@
                 tiling : 100,
                 name: 'groundPlane', X: 0, Y: -0.5, Z: 0,
                 mass: 0, width: 1000, depth: 1000, height: 2,
-                texture: greenStoneTwo, background: '#287A17', mixValue: 0.5,
+                texture: greenStoneborder, background: '#287A17', mixValue: 0.5,
             });
 
             var lastPos = k?.lastPos || {x:33, y:5.00, z:498, rX:0, rY:0, rZ:0};
@@ -66,11 +60,69 @@
                 texture: greenStone,
             });
 
+            
+            const cubeInstances = [];  // 定义单个立方体对象的「实例」
+
+            const addInsLD = (data) => {  // 使用左下角定位来添加方块
+                cubeInstances.push({  // 添加一个立方体
+                    x: data.x + 0.5*data.w, y: data.y + 0.5*data.h, z: data.z - 0.5*data.d,
+                    // x: data.x, y: data.y, z: data.z - 0.25,
+                    w: data.w, d: data.d, h: data.h,
+                    rx: data?.rx||0, ry:data?.ry||0, rz:data?.rz||0,
+                });
+            }
+
+
+            addInsLD({  // 添加一个立方体
+                x: 10, y: 0, z: -10,
+                w: 10, d: 9, h: 10,
+            });
+
+            addInsLD({
+                x: 30, y: 0, z: -40,
+                w: 10, d: 10, h: 1,
+                ry:45,
+            });
+
+
+
+
+
+
+
+
+            // 为「实例」加上简单的物理引擎
+            for (let index = 0; index < cubeInstances.length; index++) {
+                k.addTABox({
+                    DPZ : 3,
+                    isPhysical: true,
+                    mass: 0,
+                    background: '#f00',
+                    mixValue: 0.5,
+                    isShadow: false,
+                    isVisualMode: false,
+                    X: cubeInstances[index].x,
+                    Y: cubeInstances[index].y,
+                    Z: cubeInstances[index].z,
+                    width: cubeInstances[index].w,
+                    depth: cubeInstances[index].d,
+                    height: cubeInstances[index].h,
+                    rX: cubeInstances[index].rx,
+                    rY: cubeInstances[index].ry,
+                    rZ: cubeInstances[index].rz,
+                    // isFictBody: true,
+                });
+            }
+
+            // 渲染实例化
+            k.W.cube({
+                n: 'manyCubes',
+                t: checkerboard,
+                instances: cubeInstances, // 实例属性的数组
+                mix: 0.9,
+            });
 
         });
-
-
-
 
 
     </script>

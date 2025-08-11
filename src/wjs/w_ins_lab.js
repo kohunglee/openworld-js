@@ -149,9 +149,10 @@ const W = {
           const instanceColors = [];
           for (const instanceProps of state.instances) {  // 实例顶点
             const m = new DOMMatrix();
-            m.translateSelf(instanceProps.x + (state.x|0) | 0,
-                            instanceProps.y + (state.y|0) | 0,
-                            instanceProps.z + (state.z|0) | 0)
+            m.translateSelf(
+                (instanceProps.x || 0) + (state.x || 0),
+                (instanceProps.y || 0) + (state.y || 0),
+                (instanceProps.z || 0) + (state.z || 0))
             .rotateSelf(instanceProps.rx || 0, instanceProps.ry || 0, instanceProps.rz || 0)
             .scaleSelf(instanceProps.w || 1, instanceProps.h || 1, instanceProps.d || 1);
             instanceMatrices.push(...m.toFloat32Array());
