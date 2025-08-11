@@ -26,7 +26,6 @@ const W = {
     W.gl.activeTexture(33984);
     W.program = W.gl.createProgram();
     W.gl.enable(2884);  // 隐藏不可见面
-    
     W.instanceColorBuffers = {};  // 初始化颜色实例化数据
     W.lastFrame = 0;
     W.drawTime = 0;         // 初始化 绘制 时间

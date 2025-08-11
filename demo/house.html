@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+
+    <meta charset="UTF-8">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+    <title>castle</title>
+    <img src="./img/city.jpg" alt="city texture" id="city" hidden>
+    <img src="./img/uv.png" alt="uv texture" id="uv" hidden>
+
+    <canvas id="vistaCanv" style="width:99vw;height:99vh"></canvas>
+    <script src="../src/cannon/cannon29kb.js"></script>
+    <script type="module">
+        // 初始化 vista 世界
+        import ccgxkApp from '../src/ccgxk.js';
+        window.k = ccgxkApp;
+        k.initWorld('vistaCanv');
+
+        // 导入插件模块
+        import xmap from '../src/plugins/xmap.js';
+        import cookieSavePos from '../src/plugins/cookieSavePos.js';
+        import svgTextureLib from '../src/plugins/svgTextureLib.js';
+        import xdashpanel from '../src/plugins/xdashpanel.js';
+        import commModel from '../src/plugins/webgl/commModel.js';
+        import centerDot from '../src/plugins/centerDot.js';
+        xmap(k);            // 小地图
+        cookieSavePos(k);   // 保存当前位置
+        svgTextureLib(k);   // 纹理预设库
+        xdashpanel(k);      // 仪表盘
+        commModel(k);       // 基础模型库
+        centerDot(k);       // 开启中心点取物
+
+        // 入口
+        // 加载预设纹理，开始程序
+        k.loadTexture(k.svgTextureLib).then(loadedImage => {
+            const greenStone = k.textureMap.get('greenStone');
+            const greenStoneTwo = k.textureMap.get('greenStoneTwo');
+            const greenStoneTest = k.textureMap.get('greenStoneTest');
+
+            k.addBox({  // 创建地面
+                DPZ : 1,
+                colliGroup: 1,
+                tiling : 100,
+                name: 'groundPlane', X: 0, Y: -0.5, Z: 0,
+                mass: 0, width: 1000, depth: 1000, height: 2,
+                texture: greenStoneTwo, background: '#287A17', mixValue: 0.5,
+            });
+
+            var lastPos = k?.lastPos || {x:33, y:5.00, z:498, rX:0, rY:0, rZ:0};
+            k.mainVPlayer = k.addBox({  // 创建一个立方体，并设置为主角
+                name: 'mainPlayer',
+                DPZ : 1,
+                colliGroup: 1,
+                isShadow: 'ok',
+                X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z,
+                rX: 45, rY: 45, rZ: 45, size:1, mixValue:0.7,
+                mass: 50,
+                background : '#333',
+                texture: greenStone,
+            });
+
+
+        });
+
+
+
+
+
+    </script>
