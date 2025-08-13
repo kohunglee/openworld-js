@@ -91,7 +91,7 @@ export default function(ccgxkObj) {
         if(ccgxkObj.centerPointColorUpdatax || e.button === 2){  
             if(ccgxkObj.hotPoint && e.button !== 2) {  // 如果有热点，单击热点后，触发热点事件
                 hotAction(ccgxkObj);
-            } else {  // 关闭小点
+            } else {  // 关闭小点 // PS: 火狐浏览器无法右键关闭，暂时无解
                 drawCenterPoint(canvas, ccgxkObj, true);
                 clearInterval(ccgxkObj.centerPointColorUpdatax);
                 ccgxkObj.centerPointColorUpdatax = null;  // 避免重复清除
@@ -103,7 +103,6 @@ export default function(ccgxkObj) {
             ccgxkObj.centerPointColorUpdatax = setInterval(() => { drawCenterPoint(canvas, ccgxkObj) }, 500);
             ccgxkObj.mainCamera.pos = {x:0, y:0.9, z:0};
         }
-        // PS: 火狐浏览器无法右键关闭，暂时无解
     });
 
     // 单击 CANCEL (取消)按钮后
@@ -131,7 +130,22 @@ export default function(ccgxkObj) {
             };
             const orgs_Args = {...globalVar.ccgxkObj.indexToArgs.get(index)};
             globalVar.ccgxkObj.indexToArgs.set(index, {...orgs_Args, ...lastArgs});  // 合并操作，赋予源对象
-            // 这个时候把数据给修改了，明天做实质性改动！
+            // !!!! 下面以 'manyCubes' 为名称进行测试
+            const newInstanceData = {
+                x: lastArgs.X,
+                y: lastArgs.Y,
+                z: lastArgs.Z,
+                rx: lastArgs.rX,
+                ry: lastArgs.rY,
+                rz: lastArgs.rZ,
+                w: lastArgs.width,
+                h: lastArgs.height,
+                d: lastArgs.depth,
+            };
+            console.log(lastArgs);
+            console.log(newInstanceData);
+            console.log('------');
+            globalVar.ccgxkObj.W.updateInstance('manyCubes', index, newInstanceData);
         });
     });
 
@@ -204,14 +218,18 @@ function drawCenterPoint(canvas, thisObj, isClear){
     ctx.fill();  // 绘制圆点
 }
 
-
-// 单击热点后的事件
+/**
+ * 单击热点后的事件
+ * @param {*} thisObj 
+ */
 function hotAction(thisObj){
+    if(thisObj.hotPoint + 0 > 1_000_000) return 0;
     globalVar.indexHotCurr = thisObj.hotPoint + 0;  // 将 index 数字定格，防止被更改
     unlockPointer();  // 解锁鼠标
     myHUDModal.hidden = false;  // 显示模态框
     const index = globalVar.indexHotCurr;
     const indexArgs = globalVar.ccgxkObj.indexToArgs.get(index);
+    console.log(indexArgs);
     objID.value = index;
     objWidth.value = indexArgs.width;
     objHeight.value = indexArgs.height;
