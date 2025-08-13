@@ -7,7 +7,10 @@
 // 全局变量
 const globalVar = {};  // 用于指向 ccgxkObj
 let canvas, pointObjIndex, textureEditorTG, textureEditorOffsetX, textureEditorOffsetXR, textureEditorOffsetY, textureEditorInfo;  // 全局 ID DOM 的变量
-let objID, objWidth, objHeight, objDepth, objPosX, objPosY, objPosZ, objRotX, objRotY, objRotZ, isRealTimeUpdata, EdiArgsInput, textureEditorReset;  // 同上
+let objID, objWidth, objHeight, objDepth, objPosX,
+    objPosY, objPosZ, objRotX, objRotY, objRotZ,
+    isRealTimeUpdata, EdiArgsInput, textureEditorReset,
+    textureEditorOk;  // 同上
 
 
 // 插件入口
@@ -32,6 +35,7 @@ export default function(ccgxkObj) {
     isRealTimeUpdata = document.getElementById('isRealTimeUpdata');  // 是否实时更新
     EdiArgsInput = document.querySelectorAll('.EdiArgsInput');  // 那一大堆 OBJ 属性框
     textureEditorReset = document.getElementById('textureEditorReset');  // 恢复打开时的属性 按钮
+    textureEditorOk = document.getElementById('textureEditorOk');  // 确认 按钮
     globalVar.ccgxkObj = ccgxkObj;
     const W = ccgxkObj.W;
     W.tempColor = new Uint8Array(4);  // 临时储存颜色，供本插件使用
@@ -115,59 +119,22 @@ export default function(ccgxkObj) {
 
     // 所有属性编辑框的 OnChange 事件
     EdiArgsInput.forEach(input => {
-        input.addEventListener('change', function(event){
-            if(isRealTimeUpdata.checked === false) return 0;
-            const index = globalVar.indexHotCurr;
-            const lastArgs = {  // 生成新的 Args，以便于与源 Args 合并
-                X: parseFloat(objPosX.value),
-                Y: parseFloat(objPosY.value),
-                Z: parseFloat(objPosZ.value),
-                rX: parseFloat(objRotX.value),
-                rY: parseFloat(objRotY.value),
-                rZ: parseFloat(objRotZ.value),
-                width: parseFloat(objWidth.value),
-                height: parseFloat(objHeight.value),
-                depth: parseFloat(objDepth.value),
-            };
-            const orgs_Args = {...globalVar.ccgxkObj.indexToArgs.get(index)};
-            globalVar.ccgxkObj.indexToArgs.set(index, {...orgs_Args, ...lastArgs});  // 合并操作，赋予源对象
-            // !!!! 下面以 'manyCubes' 为名称进行测试
-            const newInstanceData = {
-                x: lastArgs.X,
-                y: lastArgs.Y,
-                z: lastArgs.Z,
-                rx: lastArgs.rX,
-                ry: lastArgs.rY,
-                rz: lastArgs.rZ,
-                w: lastArgs.width,
-                h: lastArgs.height,
-                d: lastArgs.depth,
-            };
-            globalVar.ccgxkObj.W.updateInstance('manyCubes', index, newInstanceData);  // 更新一下实例化模型
-            const quat = globalVar.ccgxkObj.eulerToQuaternion({rX: newInstanceData.rx, rY: newInstanceData.ry, rZ: newInstanceData.rz});  // 将欧拉角转换为四元数
-            const p_offset = index * 8;
-            globalVar.ccgxkObj.positionsStatus[p_offset] = newInstanceData.x;  
-            globalVar.ccgxkObj.positionsStatus[p_offset + 1] = newInstanceData.y;
-            globalVar.ccgxkObj.positionsStatus[p_offset + 2] = newInstanceData.z;
-            globalVar.ccgxkObj.positionsStatus[p_offset + 3] = quat.x;
-            globalVar.ccgxkObj.positionsStatus[p_offset + 4] = quat.y;
-            globalVar.ccgxkObj.positionsStatus[p_offset + 5] = quat.z;
-            globalVar.ccgxkObj.positionsStatus[p_offset + 6] = quat.w;
-            globalVar.ccgxkObj.physicsProps[p_offset + 1] = newInstanceData.w;
-            globalVar.ccgxkObj.physicsProps[p_offset + 2] = newInstanceData.h;
-            globalVar.ccgxkObj.physicsProps[p_offset + 3] = newInstanceData.d;
-            const org_args = globalVar.ccgxkObj.indexToArgs.get(index);  //+4 先去除物理体
-            if(org_args.isPhysical !== false && org_args.cannonBody !== undefined){
-                globalVar.ccgxkObj.world.removeBody(org_args.cannonBody);
-            }
-            globalVar.ccgxkObj.currentlyActiveIndices.delete(index);  // 重新激活一下这个模型
-        });
+        input.addEventListener('change', modelUpdate);
     });
 
+    // 单击确认按钮（更新模型）
+    textureEditorOk.addEventListener('click', modelUpdate);
+
+    // 【实时更新】勾选框 和 确认按钮 两个只显示一个
+    isRealTimeUpdata.addEventListener('change', ()=>{
+        textureEditorOk.hidden = isRealTimeUpdata.checked;
+    });
+    textureEditorOk.hidden = isRealTimeUpdata.checked;
+
     // 所有编辑框在按住 shift 的同时，增幅变为 1
-    document.addEventListener('keydown', (event) => { if (event.key === 'Shift') { setInputsStep('1') } });
-    document.addEventListener('keyup', (event) => { if (event.key === 'Shift') { setInputsStep('0.1') } });
-    window.addEventListener('blur', () => { setInputsStep('0.1') });  // 窗口失去焦点时，增幅变为 0.1
+    document.addEventListener('keydown', (event) => { if (event.key === 'Shift') { setInputsStep('0.1') } });
+    document.addEventListener('keyup', (event) => { if (event.key === 'Shift') { setInputsStep('1') } });
+    window.addEventListener('blur', () => { setInputsStep('1') });  // 窗口失去焦点时，增幅变为 0.1
 
     // 键盘上的 r 键被按下（冻结物体）
     document.addEventListener('keydown', frozenMVP);
@@ -189,6 +156,21 @@ export default function(ccgxkObj) {
         }
         document.removeEventListener('keydown', frozenMVP);
     }
+
+
+    // 单击画面，退出编辑
+    document.getElementById('myHUDModal').addEventListener('click', (event)=>{
+        if(event.target.id === 'myHUDModal') {
+            myHUDModal.hidden = true;  // 隐藏模态框
+            lockPointer();  // 锁定鼠标
+        }
+    });
+
+    // 单击恢复按钮
+    textureEditorReset.addEventListener('click', () => {
+        insertEdiFromBackUp();  // 填充数据
+        modelUpdate();  // 根据数据更新模型
+    });
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -198,14 +180,20 @@ export default function(ccgxkObj) {
  * @param {*} thisObj 
  */
 function hotAction(thisObj){
-    console.log('here');
     if(thisObj.hotPoint + 0 > 1_000_000) return 0;
     globalVar.indexHotCurr = thisObj.hotPoint + 0;  // 将 index 数字定格，防止被更改
     unlockPointer();  // 解锁鼠标
     myHUDModal.hidden = false;  // 显示模态框
     const index = globalVar.indexHotCurr;
-    const indexArgs = globalVar.ccgxkObj.indexToArgs.get(index);
+    globalVar.backupEdi = globalVar.ccgxkObj.indexToArgs.get(index);
     objID.value = index;
+    insertEdiFromBackUp();
+}
+
+
+// 从 backupEdi 里拿数据填充编辑区
+function insertEdiFromBackUp(){
+    const indexArgs = globalVar.backupEdi;
     objWidth.value = indexArgs.width;
     objHeight.value = indexArgs.height;
     objDepth.value = indexArgs.depth;
@@ -215,6 +203,56 @@ function hotAction(thisObj){
     objRotX.value = indexArgs.rX;
     objRotY.value = indexArgs.rY;
     objRotZ.value = indexArgs.rZ;
+}
+
+
+// 编辑区属性值更改后的事件
+function modelUpdate(e) {
+    console.log('hei hei');
+    const index = globalVar.indexHotCurr;
+    const lastArgs = {  // 生成新的 Args，以便于与源 Args 合并
+        X: parseFloat(objPosX.value),
+        Y: parseFloat(objPosY.value),
+        Z: parseFloat(objPosZ.value),
+        rX: parseFloat(objRotX.value),
+        rY: parseFloat(objRotY.value),
+        rZ: parseFloat(objRotZ.value),
+        width: parseFloat(objWidth.value),
+        height: parseFloat(objHeight.value),
+        depth: parseFloat(objDepth.value),
+    };
+    const orgs_Args = {...globalVar.ccgxkObj.indexToArgs.get(index)};
+    globalVar.ccgxkObj.indexToArgs.set(index, {...orgs_Args, ...lastArgs});  // 合并操作，赋予源对象
+    // !!!! 下面以 'manyCubes' 为名称进行测试
+    const newInstanceData = {
+        x: lastArgs.X,
+        y: lastArgs.Y,
+        z: lastArgs.Z,
+        rx: lastArgs.rX,
+        ry: lastArgs.rY,
+        rz: lastArgs.rZ,
+        w: lastArgs.width,
+        h: lastArgs.height,
+        d: lastArgs.depth,
+    };
+    globalVar.ccgxkObj.W.updateInstance('manyCubes', index, newInstanceData);  // 更新一下实例化模型
+    const quat = globalVar.ccgxkObj.eulerToQuaternion({rX: newInstanceData.rx, rY: newInstanceData.ry, rZ: newInstanceData.rz});  // 将欧拉角转换为四元数
+    const p_offset = index * 8;
+    globalVar.ccgxkObj.positionsStatus[p_offset] = newInstanceData.x;  
+    globalVar.ccgxkObj.positionsStatus[p_offset + 1] = newInstanceData.y;
+    globalVar.ccgxkObj.positionsStatus[p_offset + 2] = newInstanceData.z;
+    globalVar.ccgxkObj.positionsStatus[p_offset + 3] = quat.x;
+    globalVar.ccgxkObj.positionsStatus[p_offset + 4] = quat.y;
+    globalVar.ccgxkObj.positionsStatus[p_offset + 5] = quat.z;
+    globalVar.ccgxkObj.positionsStatus[p_offset + 6] = quat.w;
+    globalVar.ccgxkObj.physicsProps[p_offset + 1] = newInstanceData.w;
+    globalVar.ccgxkObj.physicsProps[p_offset + 2] = newInstanceData.h;
+    globalVar.ccgxkObj.physicsProps[p_offset + 3] = newInstanceData.d;
+    const org_args = globalVar.ccgxkObj.indexToArgs.get(index);  //+4 先去除物理体
+    if(org_args.isPhysical !== false && org_args.cannonBody !== undefined){
+        globalVar.ccgxkObj.world.removeBody(org_args.cannonBody);
+    }
+    globalVar.ccgxkObj.currentlyActiveIndices.delete(index);  // 重新激活一下这个模型
 }
 
 
@@ -247,6 +285,7 @@ function lockPointer(){
     const canvas = globalVar.ccgxkObj.canvas;
     canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock || canvas.webkitRequestPointerLock;
     canvas.requestPointerLock();
+    globalVar.upbackEdi = null;  // 清空备份，鼠标锁定状态 没备份
 }
 
 
@@ -272,7 +311,7 @@ function drawCenterPoint(canvas, thisObj, isClear){
     const objIndex = colorArray[0] * 256 ** 2 + colorArray[1] * 256 + colorArray[2] - 1;  // 根据颜色获取到了对应的 index 值
     pointObjIndex.innerHTML = objIndex;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if(objIndex >= 0){
+    if(objIndex >= 0 && objIndex < 2_000_000){
         thisObj.hotPoint = objIndex;
         ctx.beginPath();
         ctx.strokeStyle = color;
@@ -286,7 +325,7 @@ function drawCenterPoint(canvas, thisObj, isClear){
         ctx.lineWidth = 2;
         ctx.stroke(); 
     } else if (thisObj.hotPoint) {
-        thisObj.hotPoint = false;
+        thisObj.hotPoint = -1;
     }
     ctx.beginPath();
     ctx.arc(  
@@ -344,6 +383,12 @@ const htmlCode = `
         background-color: #fff0f066;
         width: 50px;
     }
+
+    /* webgl canvas */
+    /* 可提醒用户单击画面 */
+    #vistaCanv, .myHUD-modal {
+        cursor: pointer;
+    }
 </style>
 <div id="myHUDModal" class="myHUD-modal" hidden>
     <div class="myHUD-modalPos">
@@ -351,17 +396,17 @@ const htmlCode = `
             <div>
                 <span id="textureEditorInfo"></span>
             </div>
-            ID: <input type="number" id="objID" name="objID" min="0" max="10000000" step="1">
+            index: <input type="number" id="objID" name="objID" min="0" max="10000000" step="1">
             <hr>
-            宽: <input type="number" class="EdiArgsInput" id="objWidth" name="objWidth" min="0.1" step="0.1">
-            高: <input type="number" class="EdiArgsInput" id="objHeight" name="objHeight" min="0.1" step="0.1">
-            纵: <input type="number" class="EdiArgsInput" id="objDepth" name="objDepth" min="0.1" step="0.1"><br><br>
-            X: <input type="number" class="EdiArgsInput" id="objPosX" name="objPosX" step="0.1">
-            Y: <input type="number" class="EdiArgsInput" id="objPosY" name="objPosY" step="0.1">
-            Z: <input type="number" class="EdiArgsInput" id="objPosZ" name="objPosZ" step="0.1"><br><br>
-            rx: <input type="number" class="EdiArgsInput" id="objRotX" name="objRotX" step="0.1">
-            ry: <input type="number" class="EdiArgsInput" id="objRotY" name="objRotY" step="0.1">
-            rz: <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ" step="0.1"><br><br>
+            宽: <input type="number" class="EdiArgsInput" id="objWidth" name="objWidth" min="0.1">
+            高: <input type="number" class="EdiArgsInput" id="objHeight" name="objHeight" min="0.1">
+            纵: <input type="number" class="EdiArgsInput" id="objDepth" name="objDepth" min="0.1"><br><br>
+            X: <input type="number" class="EdiArgsInput" id="objPosX" name="objPosX">
+            Y: <input type="number" class="EdiArgsInput" id="objPosY" name="objPosY">
+            Z: <input type="number" class="EdiArgsInput" id="objPosZ" name="objPosZ"><br><br>
+            rx: <input type="number" class="EdiArgsInput" id="objRotX" name="objRotX">
+            ry: <input type="number" class="EdiArgsInput" id="objRotY" name="objRotY">
+            rz: <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ"><br><br>
             <hr>
             <input type="checkbox" name="isRealTimeUpdata" id="isRealTimeUpdata" checked> 实时更新 <br><br>
             <button class="texture-editorBtn" id="textureEditorReset">恢复</button>
