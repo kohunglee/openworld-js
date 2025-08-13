@@ -31,7 +31,6 @@ export default {
                 mass = 0, width = 1, depth = 1, height = 1, size = 1,
                 rX= 0, rY= 0, rZ= 0,
             } = {}){
-        console.log('add');
         const myargs = Array.from(arguments)[0];  // 提取参数
         if(size !== 1){  // 处理体积大小
             width =  depth =  height = size;
@@ -86,7 +85,6 @@ export default {
     // 激活 TA 物体
     argsObj : {},  // 外置一个对象，重复利用
     activeTABox : function(index){
-        console.log('active');
         const p_offset = index * 8;
         const posProp = this.positionsStatus.subarray(p_offset, p_offset + 8);    // 提取位置属性
         const physicalProp = this.physicsProps.subarray(p_offset, p_offset + 4);  // 提取物理属性

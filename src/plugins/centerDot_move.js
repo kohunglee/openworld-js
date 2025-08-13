@@ -144,7 +144,23 @@ export default function(ccgxkObj) {
                 d: lastArgs.depth,
             };
             globalVar.ccgxkObj.W.updateInstance('manyCubes', index, newInstanceData);  // 更新一下实例化模型
-            // globalVar.ccgxkObj.currentlyActiveIndices.delete(index);  // 更新一下物理模型
+            const quat = globalVar.ccgxkObj.eulerToQuaternion({rX: newInstanceData.rx, rY: newInstanceData.ry, rZ: newInstanceData.rz});  // 将欧拉角转换为四元数
+            const p_offset = index * 8;
+            globalVar.ccgxkObj.positionsStatus[p_offset] = newInstanceData.x;  
+            globalVar.ccgxkObj.positionsStatus[p_offset + 1] = newInstanceData.y;
+            globalVar.ccgxkObj.positionsStatus[p_offset + 2] = newInstanceData.z;
+            globalVar.ccgxkObj.positionsStatus[p_offset + 3] = quat.x;
+            globalVar.ccgxkObj.positionsStatus[p_offset + 4] = quat.y;
+            globalVar.ccgxkObj.positionsStatus[p_offset + 5] = quat.z;
+            globalVar.ccgxkObj.positionsStatus[p_offset + 6] = quat.w;
+            globalVar.ccgxkObj.physicsProps[p_offset + 1] = newInstanceData.w;
+            globalVar.ccgxkObj.physicsProps[p_offset + 2] = newInstanceData.h;
+            globalVar.ccgxkObj.physicsProps[p_offset + 3] = newInstanceData.d;
+            const org_args = globalVar.ccgxkObj.indexToArgs.get(index);  //+4 先去除物理体
+            if(org_args.isPhysical !== false && org_args.cannonBody !== undefined){
+                globalVar.ccgxkObj.world.removeBody(org_args.cannonBody);
+            }
+            globalVar.ccgxkObj.currentlyActiveIndices.delete(index);  // 重新激活一下这个模型
         });
     });
 
@@ -336,15 +352,15 @@ const htmlCode = `
             </div>
             ID: <input type="number" id="objID" name="objID" min="0" max="10000000" step="1">
             <hr>
-            宽: <input type="number" class="EdiArgsInput" id="objWidth" name="objWidth" min="0" max="10000" step="0.1">
-            高: <input type="number" class="EdiArgsInput" id="objHeight" name="objHeight" min="0" max="10000" step="0.1">
-            纵: <input type="number" class="EdiArgsInput" id="objDepth" name="objDepth" min="0" max="10000" step="0.1"><br><br>
-            X: <input type="number" class="EdiArgsInput" id="objPosX" name="objPosX" min="0" max="10000" step="0.1">
-            Y: <input type="number" class="EdiArgsInput" id="objPosY" name="objPosY" min="0" max="10000" step="0.1">
-            Z: <input type="number" class="EdiArgsInput" id="objPosZ" name="objPosZ" min="0" max="10000" step="0.1"><br><br>
-            rx: <input type="number" class="EdiArgsInput" id="objRotX" name="objRotX" min="0" max="360" step="0.1">
-            ry: <input type="number" class="EdiArgsInput" id="objRotY" name="objRotY" min="0" max="360" step="0.1">
-            rz: <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ" min="0" max="360" step="0.1"><br><br>
+            宽: <input type="number" class="EdiArgsInput" id="objWidth" name="objWidth" min="0.1" step="0.1">
+            高: <input type="number" class="EdiArgsInput" id="objHeight" name="objHeight" min="0.1" step="0.1">
+            纵: <input type="number" class="EdiArgsInput" id="objDepth" name="objDepth" min="0.1" step="0.1"><br><br>
+            X: <input type="number" class="EdiArgsInput" id="objPosX" name="objPosX" step="0.1">
+            Y: <input type="number" class="EdiArgsInput" id="objPosY" name="objPosY" step="0.1">
+            Z: <input type="number" class="EdiArgsInput" id="objPosZ" name="objPosZ" step="0.1"><br><br>
+            rx: <input type="number" class="EdiArgsInput" id="objRotX" name="objRotX" step="0.1">
+            ry: <input type="number" class="EdiArgsInput" id="objRotY" name="objRotY" step="0.1">
+            rz: <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ" step="0.1"><br><br>
             <hr>
             <input type="checkbox" name="isRealTimeUpdata" id="isRealTimeUpdata" checked> 实时更新 <br><br>
             <button class="texture-editorBtn" id="textureEditorReset">恢复</button>
