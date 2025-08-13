@@ -7,7 +7,7 @@
 // 全局变量
 const globalVar = {};  // 用于指向 ccgxkObj
 let canvas, pointObjIndex, textureEditorTG, textureEditorOffsetX, textureEditorOffsetXR, textureEditorOffsetY, textureEditorInfo;  // 全局 ID DOM 的变量
-let objID, objWidth, objHeight, objDepth, objPosX, objPosY, objPosZ, objRotX, objRotY, objRotZ, isRealTimeUpdata, EdiArgsInput;  // 同上
+let objID, objWidth, objHeight, objDepth, objPosX, objPosY, objPosZ, objRotX, objRotY, objRotZ, isRealTimeUpdata, EdiArgsInput, textureEditorReset;  // 同上
 
 
 // 插件入口
@@ -31,6 +31,7 @@ export default function(ccgxkObj) {
     objRotZ = document.getElementById('objRotZ');  // Z 旋转显示框
     isRealTimeUpdata = document.getElementById('isRealTimeUpdata');  // 是否实时更新
     EdiArgsInput = document.querySelectorAll('.EdiArgsInput');  // 那一大堆 OBJ 属性框
+    textureEditorReset = document.getElementById('textureEditorReset');  // 恢复打开时的属性 按钮
     globalVar.ccgxkObj = ccgxkObj;
     const W = ccgxkObj.W;
     W.tempColor = new Uint8Array(4);  // 临时储存颜色，供本插件使用
@@ -142,10 +143,8 @@ export default function(ccgxkObj) {
                 h: lastArgs.height,
                 d: lastArgs.depth,
             };
-            console.log(lastArgs);
-            console.log(newInstanceData);
-            console.log('------');
-            globalVar.ccgxkObj.W.updateInstance('manyCubes', index, newInstanceData);
+            globalVar.ccgxkObj.W.updateInstance('manyCubes', index, newInstanceData);  // 更新一下实例化模型
+            // globalVar.ccgxkObj.currentlyActiveIndices.delete(index);  // 更新一下物理模型
         });
     });
 
@@ -176,47 +175,7 @@ export default function(ccgxkObj) {
     });
 }
 
-// 绘制屏幕中心的点
-function drawCenterPoint(canvas, thisObj, isClear){
-    if(isClear) { canvas.width = 0; canvas.height = 0; return; }  // 清空
-    if(canvas.width === 0 || canvas.width === 1){
-        canvas.width = 20;
-        canvas.height = 20;
-    }
-    const ctx = canvas.getContext('2d');
-    thisObj.W.getColorPickObj();  // 拾取颜色一次
-    const colorArray = thisObj.W.tempColor || [255, 0, 0, 255];  //+2 获取当前颜色值并转化为数组
-    const color = `rgba(${255 - colorArray[0]}, ${255 - colorArray[1]}, ${255 - colorArray[2]}, ${colorArray[3]/255})`;
-    const objIndex = colorArray[0] * 256 ** 2 + colorArray[1] * 256 + colorArray[2];  // 根据颜色获取到了对应的 index 值
-    pointObjIndex.innerHTML = objIndex;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if(objIndex !== 0){
-        thisObj.hotPoint = objIndex;
-        ctx.beginPath();
-        ctx.strokeStyle = color;
-        ctx.arc(
-            canvas.width / 2,
-            canvas.height / 2,
-            9,                
-            0,                
-            Math.PI * 2       
-        );
-        ctx.lineWidth = 2;
-        ctx.stroke(); 
-    } else if (thisObj.hotPoint) {
-        thisObj.hotPoint = false;
-    }
-    ctx.beginPath();
-    ctx.arc(  
-        canvas.width / 2,
-        canvas.height / 2,
-        5,
-        0,
-        Math.PI * 2
-    );
-    ctx.fillStyle = color;
-    ctx.fill();  // 绘制圆点
-}
+/* ---------------------------------------------------------------------------- */
 
 /**
  * 单击热点后的事件
@@ -229,7 +188,6 @@ function hotAction(thisObj){
     myHUDModal.hidden = false;  // 显示模态框
     const index = globalVar.indexHotCurr;
     const indexArgs = globalVar.ccgxkObj.indexToArgs.get(index);
-    console.log(indexArgs);
     objID.value = index;
     objWidth.value = indexArgs.width;
     objHeight.value = indexArgs.height;
@@ -283,6 +241,48 @@ function setInputsStep(stepValue) {
 }
 
 
+// 绘制屏幕中心的点
+function drawCenterPoint(canvas, thisObj, isClear){
+    if(isClear) { canvas.width = 0; canvas.height = 0; return; }  // 清空
+    if(canvas.width === 0 || canvas.width === 1){
+        canvas.width = 20;
+        canvas.height = 20;
+    }
+    const ctx = canvas.getContext('2d');
+    thisObj.W.getColorPickObj();  // 拾取颜色一次
+    const colorArray = thisObj.W.tempColor || [255, 0, 0, 255];  //+2 获取当前颜色值并转化为数组
+    const color = `rgba(${255 - colorArray[0]}, ${255 - colorArray[1]}, ${255 - colorArray[2]}, ${colorArray[3]/255})`;
+    const objIndex = colorArray[0] * 256 ** 2 + colorArray[1] * 256 + colorArray[2];  // 根据颜色获取到了对应的 index 值
+    pointObjIndex.innerHTML = objIndex;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if(objIndex !== 0){
+        thisObj.hotPoint = objIndex;
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.arc(
+            canvas.width / 2,
+            canvas.height / 2,
+            9,                
+            0,                
+            Math.PI * 2       
+        );
+        ctx.lineWidth = 2;
+        ctx.stroke(); 
+    } else if (thisObj.hotPoint) {
+        thisObj.hotPoint = false;
+    }
+    ctx.beginPath();
+    ctx.arc(  
+        canvas.width / 2,
+        canvas.height / 2,
+        5,
+        0,
+        Math.PI * 2
+    );
+    ctx.fillStyle = color;
+    ctx.fill();  // 绘制圆点
+}
+
 // html 内容
 const htmlCode = `
 <style>
@@ -297,14 +297,15 @@ const htmlCode = `
         z-index: 999;
     }
     .myHUD-modalPos {
-        margin-left: 50vw;
-        margin-top: 50vh;
-        transform: translate(-50%, -50%);
-        width: 700px;
+        margin-left: calc(100% - 350px);
+        margin-top: 1em;
+        /* transform: translate(-50%, -50%); */
+        width: 280px;
         text-align: center;
         background-color: rgba(51, 204, 111, 0.07);
-        padding: 32px;
+        padding: 20px;
         backdrop-filter: blur(1px);
+        /* background-color: aliceblue; */
     }
     .texture-editorBtn-lab {
         display: inline-block;
@@ -324,14 +325,14 @@ const htmlCode = `
     }
     .EdiArgsInput, #objID {
         background-color: #fff0f066;
+        width: 50px;
     }
 </style>
 <div id="myHUDModal" class="myHUD-modal" hidden>
     <div class="myHUD-modalPos">
-        
-        <div><br>
+        <div>
             <div>
-                <span id="textureEditorInfo"></span><br>
+                <span id="textureEditorInfo"></span>
             </div>
             ID: <input type="number" id="objID" name="objID" min="0" max="10000000" step="1">
             <hr>
@@ -341,11 +342,12 @@ const htmlCode = `
             X: <input type="number" class="EdiArgsInput" id="objPosX" name="objPosX" min="0" max="10000" step="0.1">
             Y: <input type="number" class="EdiArgsInput" id="objPosY" name="objPosY" min="0" max="10000" step="0.1">
             Z: <input type="number" class="EdiArgsInput" id="objPosZ" name="objPosZ" min="0" max="10000" step="0.1"><br><br>
-            RX: <input type="number" class="EdiArgsInput" id="objRotX" name="objRotX" min="0" max="360" step="0.1">
-            RY: <input type="number" class="EdiArgsInput" id="objRotY" name="objRotY" min="0" max="360" step="0.1">
-            RZ: <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ" min="0" max="360" step="0.1"><br><br>
+            rx: <input type="number" class="EdiArgsInput" id="objRotX" name="objRotX" min="0" max="360" step="0.1">
+            ry: <input type="number" class="EdiArgsInput" id="objRotY" name="objRotY" min="0" max="360" step="0.1">
+            rz: <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ" min="0" max="360" step="0.1"><br><br>
             <hr>
             <input type="checkbox" name="isRealTimeUpdata" id="isRealTimeUpdata" checked> 实时更新 <br><br>
+            <button class="texture-editorBtn" id="textureEditorReset">恢复</button>
             <button class="texture-editorBtn" id="textureEditorOk">确认</button>
             <button class="texture-editorBtn" id="textureEditorCancel">关闭</button>
         </div>
