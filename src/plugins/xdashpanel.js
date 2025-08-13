@@ -74,7 +74,7 @@ const htmlCode = `
 <style>
     .myHUD {
         position: absolute;
-        bottom: 0;
+        bottom: 5px;
         padding: 0.3em;
         color: #ffffff;
     }
