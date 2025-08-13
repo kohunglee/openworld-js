@@ -64,7 +64,7 @@ export default function(ccgxkObj) {
             const obj = W.next['T' + index];
             if (!obj) continue;
             var obj_proxy = {...obj};  // 创建代理，想办法将代理显示成纯色
-            obj_proxy.b = index.toString(16).padStart(6, '0');
+            obj_proxy.b = (index+1).toString(16).padStart(6, '0');
             obj_proxy.ns = 1;
             obj_proxy.mix = 1;
             W.gl.activeTexture(W.gl.TEXTURE0);
@@ -90,7 +90,7 @@ export default function(ccgxkObj) {
     }
     ccgxkObj.hooks.on('pointer_lock_click', function(obj, e){
         if(ccgxkObj.centerPointColorUpdatax || e.button === 2){  
-            if(ccgxkObj.hotPoint && e.button !== 2) {  // 如果有热点，单击热点后，触发热点事件
+            if(ccgxkObj.hotPoint >= 0 && e.button !== 2) {  // 如果有热点，单击热点后，触发热点事件
                 hotAction(ccgxkObj);
             } else {  // 关闭小点 // PS: 火狐浏览器无法右键关闭，暂时无解
                 drawCenterPoint(canvas, ccgxkObj, true);
@@ -170,6 +170,10 @@ export default function(ccgxkObj) {
     window.addEventListener('blur', () => { setInputsStep('0.1') });  // 窗口失去焦点时，增幅变为 0.1
 
     // 键盘上的 r 键被按下（冻结物体）
+    document.addEventListener('keydown', frozenMVP);
+    document.addEventListener('keyup', function(){
+        document.addEventListener('keydown', frozenMVP);
+    });
     function frozenMVP(event) {
         if (event.key === 'f') {
             const mvpBody = globalVar.ccgxkObj.mainVPlayer.body;
@@ -185,10 +189,6 @@ export default function(ccgxkObj) {
         }
         document.removeEventListener('keydown', frozenMVP);
     }
-    document.addEventListener('keydown', frozenMVP);
-    document.addEventListener('keyup', function(){
-        document.addEventListener('keydown', frozenMVP);
-    });
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -198,6 +198,7 @@ export default function(ccgxkObj) {
  * @param {*} thisObj 
  */
 function hotAction(thisObj){
+    console.log('here');
     if(thisObj.hotPoint + 0 > 1_000_000) return 0;
     globalVar.indexHotCurr = thisObj.hotPoint + 0;  // 将 index 数字定格，防止被更改
     unlockPointer();  // 解锁鼠标
@@ -268,10 +269,10 @@ function drawCenterPoint(canvas, thisObj, isClear){
     thisObj.W.getColorPickObj();  // 拾取颜色一次
     const colorArray = thisObj.W.tempColor || [255, 0, 0, 255];  //+2 获取当前颜色值并转化为数组
     const color = `rgba(${255 - colorArray[0]}, ${255 - colorArray[1]}, ${255 - colorArray[2]}, ${colorArray[3]/255})`;
-    const objIndex = colorArray[0] * 256 ** 2 + colorArray[1] * 256 + colorArray[2];  // 根据颜色获取到了对应的 index 值
+    const objIndex = colorArray[0] * 256 ** 2 + colorArray[1] * 256 + colorArray[2] - 1;  // 根据颜色获取到了对应的 index 值
     pointObjIndex.innerHTML = objIndex;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if(objIndex !== 0){
+    if(objIndex >= 0){
         thisObj.hotPoint = objIndex;
         ctx.beginPath();
         ctx.strokeStyle = color;
