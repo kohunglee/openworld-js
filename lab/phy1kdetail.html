@@ -4,26 +4,30 @@
 	 * 3D柔性体物理引擎（Soft-body allPointhysics Engine）
 	 * X 朝右
 	 * Y 朝下
-	 * Z 朝里
+	 * Z 朝外
 	 */
 	  var a = document.getElementById('m');
 	  var b = document.body;
 	  var c = a.getContext("2d");
+
+	const forceState = {  // 用于键盘操控
+		up      : 0,
+		down    : 0,
+		left    : 0,
+		right   : 0,
+		in      : 0,
+		out     : 0
+	};
 	  /* -------------------- */
-	
 	faceNum=0;  // 粒子的数量
 	M=1;  // 模式：1 代表创造模式，0 代表模拟
 	B=1;  // 用于实现一个“闪光”的开场特效
 	W=1200;  // 画布的宽度
-	
-
-	b.onclick = function(){M=!M};  // 每按一下屏幕，就重新生成新物体 
-	
+	// b.onclick = function(){M=!M};  // 每按一下屏幕，就重新生成新物体 
 	H = a.height *= W/a.width;  //+ 画布尺寸初始化
 	a.width = W;
-  
+	yForce = 0;  // 向下的力
 	setInterval(function() {  // 一个每秒 66 帧的动画
-
 	  if (M) {  // 生成原始模型
 	  	  index        = 0;     // 计数器
 		  allPoint     = [];    // 存放所有的小珠子
@@ -33,28 +37,23 @@
 		  frontZ       = -200;  // 面前的墙的 Z 距离
 		  moveScale    = 9;     // 弹性移动速度
 		  elasCoe      = 30;    // 弹性系数，弹簧硬度
-
+		  calSpeed     = 1;    // 每帧的计算次数
 		  /* 一个测试的预设数值 */
-		  faceNum      = 3;    // 面数
+		  faceNum      = 90;    // 面数
 		  initRoSpeed  = 0.1;  // 旋转速度
 		  initLen      = 160;  // 初始长度（X 方向上）
 		  inclined     = 1;    // 倾斜度
-
 		  for (i=faceNum; i--;) {  // 根据蓝图，生成模型的「珠子」，每面生成一次
 			allPoint[index++] = initPointData(radius, initLen, faceNum, inclined, initRoSpeed);
-
 			initLen = -initLen;  //+ ？？交错参数，翻转半径，为下一个点做准备
 			inclined = 1/inclined;
 		  	allPoint[index++] = initPointData(radius, initLen, faceNum, inclined, initRoSpeed);
-
 			initLen = -initLen;  //+ 再次翻转，恢复原样
 			inclined = 1/inclined;
 		  }
-
 		  faceNum = index;  // 更新粒子总数
 		  M=0;  // 开始模拟模式
 		  index=0;  // 计数器归 0
-
 		  for (i=faceNum; i--;) {  // 测量与记录线（橡皮筋）的长度。3 个面，每个面 3 次组成一个三角形
 			j = (i+1)%faceNum;  // j 是 i 的下一个点（邻居）
 			longArr[index++] = measureLen(i, j, allPoint);  // 将测量好的距离，记录到 longArr 里
@@ -67,16 +66,14 @@
 	  }
 
 	  /* --- 开始模拟计算 --- */
-
-      for (q=15; q--;) {  // 每帧循环 15 次，等于模拟的速率吧
-
+      for (q=calSpeed; q--;) {  // 每帧循环 calSpeed 次，等于模拟的速率吧
 		  for (i=faceNum; i--;) {		//  重置受力
-				allPoint[i].f = 0;      //+ 清空每个原子在 X 和 Z 上的受力
-				allPoint[i].h = 0;
-				allPoint[i].g= 1 / W;		// 重力，每个点都要收的一个微小，向下的力（Y 方向下）
+				allPoint[i].f = forceState.right - forceState.left;      //+ 清空每个原子在 X 和 Z 上的受力
+				allPoint[i].h = forceState.out - forceState.in;
+				// allPoint[i].g= 1 / W ;		// 重力，每个点都要收的一个微小，向下的力（Y 方向下）
+				allPoint[i].g= forceState.down - forceState.up;		// 重力为 0
 				index = 0;              // 计数器归 0
 		  }
-		  
 		  for (i=faceNum; i--;) {  // 虎克定律 F=Kx，计算每个点受到的弹力
 		  		j = (i+1)%faceNum;  //+ i 的邻居，勾股定理计算 i 和 j 之间的橡皮筋的长度
 				calPointForce(i, j, allPoint, faceNum);
@@ -85,18 +82,14 @@
 				j = (i+1+faceNum/2)%faceNum;
 				calPointForce(i, j, allPoint, faceNum);
 		  }
-		  
 		  for (i=faceNum; i--;) {  // 挨个点进行 X Y Z 数据的更新（包括检测碰撞）。根据牛二定理， F=ma -> a=F/m (m=1) 。
 				allPoint[i].v += allPoint[i].f;  //+ 将该点的力，当做加速度（也就是 a = F 嘛），加到该点的速度上。 V = V + a*T
 				allPoint[i].u += allPoint[i].g;
 				allPoint[i].q += allPoint[i].h;
-	
 				allPoint[i].x += allPoint[i].v * moveScale;  // 根据新的速度，更新 X 轴的位置（moveScale 用于控制模拟速度）
 				allPoint[i].y += allPoint[i].u * moveScale;
 				allPoint[i].z += allPoint[i].q * moveScale;
-
 				if (allPoint[i].y>groundY) {  // 碰撞检测，如果到 y=200 以上（可能是地面）
-
 				  frictional = allPoint[i].g * 0.5;  // 计算一个摩擦力，摩擦系数等于 0.5,它与压力有关
 				  allPoint[i].u = 0;  // Y 轴上的速度和力（加速度）清零
 				  allPoint[i].g = 0;
@@ -109,7 +102,6 @@
 				  allPoint[i].q -= frictional * v;
 				  allPoint[i].y = groundY;  // 强制将 y 轴位置拉回 200
 				}
-
 				if (allPoint[i].z>frontZ) {  // 如果撞到背景墙
     			  if (allPoint[i].q>0) {
 					B=0;  // 关闭闪光特效
@@ -119,23 +111,20 @@
     			}		
 		  }
 		}
-
 	/* ----- 三维渲染 ----- */
-
 		T=-1;  // 临时变量重置
 		C=99;  // 改变颜色用
 		c.clearRect(0,0,W,H);  // 清空画板
-		c.fillStyle="hsla("+C+",99%," + -80*T +"%,"+B+")";  // 画笔颜色，一个洋红色
+		c.fillStyle="hsla("+C+",99%," + -20*T +"%,"+B+")";  // 画笔颜色，一个洋红色
       	c.fillRect(0,0,W,H);  // 涂满背景
       	C=200;  // 恢复青色
-		c.fillStyle="hsla("+C+",99%," + -80*T +"%,"+B+")";
+		c.fillStyle="hsla("+C+",99%," + -30*T +"%,"+B+")";
       	c.fillRect(0,0,W,W/4);  // 顶部的矩形
 		C=initLen;  // 获取一个随机颜色
 		render(faceNum, allPoint, c, W, B, C, T, false);  // 外侧面
 		render(faceNum, allPoint, c, W, B, C, T, true);
       	B=(B<1)?B+=.1:1;	// 让闪光逐渐退去，（0 -> 1）
 	  },15);
-
 
 // 初始化 顶点 的数据
 function initPointData(radius, initLen, faceNum, inclined, initRoSpeed){
@@ -169,18 +158,15 @@ function calPointForce(i, j, allPoint, faceNum){
 	w = allPoint[i].z - allPoint[j].z;
 	l = Math.sqrt(u*u + v*v + w*w);  // 勾股定理
 	u = u/l; v = v/l; w = w/l;  // i 指向 j 的方向向量上的投影模距离
-	
 	b = (allPoint[i].v-allPoint[j].v)*u +  // 在 X 上，两点的速度差（相对速度），乘以距离向量，3 个相加，得到合力
 		(allPoint[i].u-allPoint[j].u)*v +  // 这个合力，就是（阻尼），为什么呢？因为速度差，就是阻力。
 		(allPoint[i].q-allPoint[j].q)*w;
 	
 	elasticity = -(l-longArr[index++]+b)/ elasCoe;	// 核心公式，弹力 elasticity =（当前长度-舒适长度+阻尼），其中 elasCoe 是弹簧的硬度、弹性系数  	    
-
 	// 设置 i 的力
 	allPoint[i].f += elasticity*u;  // 弹力分解到 X 轴（Y 轴速度）
 	allPoint[i].g += elasticity*v;  // 弹力分解到 Y 轴（X 轴速度）
 	allPoint[i].h += elasticity*w;  // 弹力分解到 Z 轴（Z 轴速度）
-
 	// j 的反作用力
 	allPoint[j].f -= elasticity*u;  //+ 根据牛顿第三定律，反作用力（下同）
 	allPoint[j].g -= elasticity*v;
@@ -196,59 +182,134 @@ function render(faceNum, allPoint, c, W, B, C, T, isInsideFace = true){
 		w = allPoint[i].z - allPoint[j].z;
 		l = Math.sqrt(u*u + v*v + w*w);
 		U = u/l; V = v/l; Q = w/l;  // 计算从 i 到 j 的方向
-			
-
 		j = (i+2)%faceNum;  // i 的另一个邻居
 		u = allPoint[i].x - allPoint[j].x;
 		v = allPoint[i].y - allPoint[j].y;
 		w = allPoint[i].z - allPoint[j].z;
 		l = Math.sqrt(u*u + v*v + w*w);
 		u = u/l; v = v/l; w = w/l;  // 计算从 i 到另一个 j 的方向
-
 		T = (v*Q - w*V) * allPoint[i].x -  // 向量叉乘计算光照
 			(u*Q - w*U) * allPoint[i].y +  // ，结果的正负带边面收否朝向（背向）我们
 			(u*V - v*U) * allPoint[i].z;   // 这个 T 就是光照强度，原理很简单，就是面的向量（法向）的方向
-		
 		u = allPoint[i].x;
 		v = allPoint[i].y;
 		w = allPoint[i].z;
 		l = Math.sqrt(u*u + v*v + w*w);  // 计算 i 点到原点的距离，用于计算透视
-		
 		c.beginPath();
-
 		m=allPoint[i];  // m 是当前原子
 		f = 3 * 200 / (200-m.z);  // 核心投影透视公式，计算缩放因子 f
 		c.moveTo( m.x*f+W/4, m.y*f + W/4 );  // 将原子的坐标转换为 2D 坐标，（W 为屏幕宽度），第一个点 X Y 控制左右上下，Z 控制 f
-
 		j = (i+1)%faceNum;  // 找到 i 的邻居，第 2 个原子
 		m=allPoint[j];
 		f = 3*200/(200-m.z);  // 同样，计算透视后的缩放因子 f
 		c.lineTo( m.x*f+W/4, m.y*f + W/4 );  // 两点之间的连线
-
 		j = (i+3)%faceNum;  // 第 3 个原子（构成一个四边形）
 		m=allPoint[j]; f = 3*200/(200-m.z);
 		c.lineTo( m.x*f+W/4, m.y*f + W/4 );
-
 		j = (i+2)%faceNum;  // 第 4 个原子
 		m=allPoint[j];
 		f = 3*200/(200-m.z);
 		c.lineTo( m.x*f+W/4, m.y*f + W/4 );
-
 		if(isInsideFace){
 			T=T/l;
 		} else {
 			T=T/l/-2;
 		}
-
 		if ((!(i%2))&(T<=0)) {  // 如果这个面是偶数面（避免重复绘制），且朝向我们
 			c.fillStyle="hsla("+C+",99%," + -80*T +"%,"+B+")";  // 根据亮度 T 来填充颜色，？T 越小越亮
 			c.fill();  // 填充四边形
 		}
-		
 		if(isInsideFace === false){
 			c.stroke();  // 给四边形描个边
 		}
 	}
 	return T;
 }
+
+const keyMap = {
+  'ArrowUp': 'up',
+  'ArrowDown': 'down',
+  'ArrowLeft': 'left',
+  'ArrowRight': 'right',
+  'w' : 'up',
+  's' : 'down',
+  'a' : 'left',
+  'd' : 'right',
+  'o' : 'in',
+  'k' : 'out',
+}
+
+window.addEventListener('keydown', function(event) {
+    forceState[keyMap[event.key]] = 0.1;
+  	console.log(forceState);
+});
+
+window.addEventListener('keyup', function(event) {
+    forceState[keyMap[event.key]] = 0;
+	console.log(forceState);
+});
+</script>
+
+<!-- 追加的 HTML 和 CSS -->
+<style>
+    #controls {
+        position: fixed; /* 固定在屏幕上 */
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%); /* 水平居中 */
+        display: grid;
+        grid-template-areas: ". up ." "left front right" ". down ." "in . out"; /* 按钮布局 */
+        gap: 10px;
+        z-index: 10; /* 确保在 canvas 上面 */
+    }
+    #controls button {
+        width: 60px; height: 60px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 20px;
+        cursor: pointer;
+        user-select: none; /* 防止长按选中文本 */
+        transition: background 0.2s;
+    }
+    #controls button:hover { background: rgba(0, 0, 0, 0.7); }
+    #controls button:active { background: rgba(255, 255, 255, 0.3); }
+    /* 将按钮分配到网格布局的指定区域 */
+    [data-direction="up"]    { grid-area: up; }
+    [data-direction="down"]  { grid-area: down; }
+    [data-direction="left"]  { grid-area: left; }
+    [data-direction="right"] { grid-area: right; }
+    [data-direction="in"]    { grid-area: in; }
+    [data-direction="out"]   { grid-area: out; }
+</style>
+
+<div id="controls">
+    <button data-direction="up">↑</button>
+    <button data-direction="down">↓</button>
+    <button data-direction="left">←</button>
+    <button data-direction="right">→</button>
+    <button data-direction="in">前</button>
+    <button data-direction="out">后</button>
+</div>
+
+<!-- 追加的 JavaScript -->
+<script>
+    const controlButtons = document.querySelectorAll('#controls button');
+    const forceValue = 0.1; // 和键盘按键力度保持一致
+
+    controlButtons.forEach(button => {
+        const direction = button.dataset.direction;
+        // 兼容PC鼠标和手机触摸
+        const startEvents = ['mousedown', 'touchstart'];
+        const endEvents = ['mouseup', 'mouseleave', 'touchend'];
+
+        startEvents.forEach(evt => button.addEventListener(evt, (e) => {
+             e.preventDefault(); // 阻止触摸事件的默认行为（如滚动）
+             forceState[direction] = forceValue;
+        }));
+        endEvents.forEach(evt => button.addEventListener(evt, () => {
+            forceState[direction] = 0;
+        }));
+    });
 </script>
