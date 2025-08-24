@@ -5,7 +5,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 // 这里存放两个版本都共用的配置
 const baseConfig = {
-  entry: './src/ccgxk.js',
+  entry: './src/openworld.js',
   devtool: false,
   module: {
     rules: [],

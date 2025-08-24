@@ -10,7 +10,7 @@ export default {
     colorClear: "#7A4141",  // 画布背景色
     displayViewTime: 0.9,      // 显示清晰度
 
-    // ccgxk 的 cannon.js 物理世界
+    // openworld 的 cannon.js 物理世界
     world : null,
 
     // 物体列表

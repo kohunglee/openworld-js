@@ -1,3 +1,5 @@
+
+
 "use strict";
 
 import hooks from './common/hooks.js';
@@ -16,7 +18,7 @@ import dynamicIns from './plugins/webgl/wjsDynamicIns.js';
 
 
 // 主对象
-const ccgxk = {
+const openworld = {
     hooks : hooks,        // JS 钩子，用于扩展
     W     : wjs,          // 三维模型 WebGL 渲染引擎
     ...tool,         // 工具函数
@@ -29,11 +31,11 @@ const ccgxk = {
 }
 
 // 启用插件
-// wjsShadow(ccgxk);  // 开启阴影（暂时有性能问题，待改进）
-dynamicIns(ccgxk);  // 开启实例化的动态操作
+// wjsShadow(openworld);  // 开启阴影（暂时有性能问题，待改进）
+dynamicIns(openworld);  // 开启实例化的动态操作
 
 // 兼容浏览器平台
-window.ccgxk = ccgxk;
+window.openworld = openworld;
 
 // 导出
-export default ccgxk;
+export default openworld;
