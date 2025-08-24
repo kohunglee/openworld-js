@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style> body { margin: 0; } </style>
     <title>castle</title>
-    <canvas id="vistaCanv" style="width:99vw;height:99vh"></canvas>
+    <canvas id="openworldCanv" style="width:99vw;height:99vh"></canvas>
     <script src="../src/cannon/cannon29kb.js"></script>
     <script type="module">
-        // 初始化 vista 世界
+        // 初始化 openworld 世界
         import openworldApp from '../src/openworld.js';
         window.k = openworldApp;
-        k.initWorld('vistaCanv');
+        k.initWorld('openworldCanv');
 
         // 导入插件模块
         import xmap from '../src/plugins/xmap.js';

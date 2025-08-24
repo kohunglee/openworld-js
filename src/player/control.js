@@ -68,7 +68,7 @@ export default {
             this.canvas.requestPointerLock();
             isMouseMove = true;
             if(document.pointerLockElement){
-                _this.hooks.emitSync('pointer_lock_click', _this, e);  // 钩子：虚拟鼠标下的单击事件 ()
+                _this.hooks.emitSync('pointer_lock_click', _this, e);  // 钩子：虚拟鼠标下的单击事件
             }
             
         });
@@ -129,7 +129,7 @@ export default {
             var speed = (this.isShiftPress)
                         ? Math.max(this.speedH,this.speedL-(this.forwardAcc+=this.speedAdd))
                         : this.speedL+0*(this.forwardAcc=0.01);  // 加速度
-            // shiftInfo.textContent = '速度:' + Math.round((100 / speed)) + ' | ';  // 后续可以改成一个钩子
+            this.hooks.emit('forwardBackward', this, speed);  // 钩子：前后移动
             Z += (-keys.viewForward + keys.viewBackward) * Math.cos(RY * Math.PI / 180) / speed;
             X += (-keys.viewForward + keys.viewBackward) * Math.sin(RY * Math.PI / 180) / speed;
             this.displayPOS();

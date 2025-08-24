@@ -18,9 +18,9 @@ const productionConfig = {
   mode: 'production', // 开启生产模式，进行所有优化
   
   output: {
-    filename: 'vista.min.js', 
+    filename: 'openworld.min.js', 
     path: path.resolve(__dirname, 'dist'),
-    library: 'vista',
+    library: 'openworld',
     libraryTarget: 'umd',
     globalObject: 'this',
   },
@@ -47,7 +47,7 @@ const productionConfig = {
   plugins: [
     // 版权横幅插件
     new webpack.BannerPlugin({
-      banner: '/*! vista.js v1.0.0 | (c) github/kohunglee | MIT License */',
+      banner: '/*! openworld.js v1.0.0 | (c) github/kohunglee | MIT License */',
       raw: true,
       entryOnly: true,
     }),
@@ -68,9 +68,9 @@ const developmentConfig = {
 
   mode: 'development', // 开启开发模式，优化可读性
   output: {
-    filename: 'vista.js', 
+    filename: 'openworld.js', 
     path: path.resolve(__dirname, 'dist'),
-    library: 'vista',
+    library: 'openworld',
     libraryTarget: 'umd',
     globalObject: 'this',
   },
@@ -81,7 +81,7 @@ const developmentConfig = {
   
   plugins: [
     new webpack.BannerPlugin({
-      banner: '/*! vista.js v1.0.0 | (c) kohunglee | MIT License */',
+      banner: '/*! open.js v1.0.0 | (c) kohunglee | MIT License */',
       raw: true,
       entryOnly: true,
     }),
