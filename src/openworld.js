@@ -13,8 +13,8 @@ import addobj from './obj/addobj.js';
 import animate from './core/animate.js';
 
 // 插件
-import wjsShadow from './plugins/webgl/wjsShadow.js';
-import dynamicIns from './plugins/webgl/wjsDynamicIns.js';
+// import wjsShadow from './plugins/webgl/wjsShadow.js';
+// import dynamicIns from './plugins/webgl/wjsDynamicIns.js';
 
 
 // 主对象
