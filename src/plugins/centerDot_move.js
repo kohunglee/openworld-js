@@ -10,6 +10,7 @@ let canvas, pointObjIndex, textureEditorTG, textureEditorOffsetX, textureEditorO
 let objID, objWidth, objHeight, objDepth, objPosX,
     objPosY, objPosZ, objRotX, objRotY, objRotZ,
     isRealTimeUpdata, EdiArgsInput, textureEditorReset, rollerPlus, textureCopyCubes,
+    textureGetCubeData,
     textureEditorOk;  // 同上
 
 
@@ -38,6 +39,7 @@ export default function(ccgxkObj) {
     textureEditorReset = document.getElementById('textureEditorReset');  // 恢复打开时的属性 按钮
     textureEditorOk = document.getElementById('textureEditorOk');  // 确认 按钮
     textureCopyCubes = document.getElementById('textureCopyCubes');  // 复制按钮
+    textureGetCubeData = document.getElementById('textureGetCubeData');  // 复制按钮
     globalVar.ccgxkObj = ccgxkObj;
     const W = ccgxkObj.W;
     W.tempColor = new Uint8Array(4);  // 临时储存颜色，供本插件使用
@@ -195,9 +197,14 @@ export default function(ccgxkObj) {
         modelUpdate();  // 根据数据更新模型
     });
 
-    // 单击复制按钮
+    // 单击复制 +1 按钮
     textureCopyCubes.addEventListener('click', () => {
         copyACube();
+    });
+
+    // 获取方块的数据
+    textureGetCubeData.addEventListener('click', () => {
+        getCubesData();
     });
 }
 
@@ -296,13 +303,62 @@ function modelUpdate(e, customIndex = -1, offset = 0) {
     }
 }
 
+function getCubesData(){
+    var cubeDATA = [];
+    for (let i = 0; i < (globalVar.ccgxkObj.visCubeLen + 1); i++) {
+        var p_offset = i * 8;
+        const pos = globalVar.ccgxkObj.positionsStatus;
+        const phy = globalVar.ccgxkObj.physicsProps;
+        const euler = globalVar.ccgxkObj.quaternionToEuler({  // 将四元数转换为欧拉角
+            x: pos[p_offset + 3],
+            y: pos[p_offset + 4],
+            z: pos[p_offset + 5],
+            w: pos[p_offset + 6]
+        });
+        cubeDATA[i] = {
+            x: pos[p_offset],
+            y: pos[p_offset + 1],
+            z: pos[p_offset + 2],
+            rx: euler.rX,
+            ry: euler.rY,
+            rz: euler.rZ,
+            w: phy[p_offset + 1],
+            h: phy[p_offset + 2],
+            d: phy[p_offset + 3],
+        }
+        for (const key in cubeDATA[i]) {
+            cubeDATA[i][key] = f(cubeDATA[i][key]);
+            if (!cubeDATA[i][key] || +cubeDATA[i][key] === 0) {
+                delete cubeDATA[i][key];
+            }
+        }
+    }
+    const jsonScroll = JSON.stringify(cubeDATA, null, 2);
+    const blob = new Blob([jsonScroll], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `cubeData-${new Date(Date.now()).toLocaleString('sv-SE').replace(/[-:T\s]/g, '')}.json`; // 给卷轴起个带时间戳的名字
+    link.click();
+    URL.revokeObjectURL(url); // 释放这个临时URL
+    console.log('--------------');
+    console.log(jsonScroll);
+}
 
+
+// 保留小数使用，智能修剪
+function f(num, digits = 2) {
+    if (typeof num !== 'number' || num % 1 === 0) {
+        return num;
+    }
+    const shifter = Math.pow(10, digits); // 创造一个放大/缩小的工具 (100)
+    return Math.trunc(num * shifter) / shifter;
+}
 
 // 复制当前方块，作为新方块
 function copyACube(){
     // !!!! 一个临时的解决方案，新开辟了 visCubeLen
     const newIndex = globalVar.ccgxkObj.visCubeLen + 2;
-    const index = globalVar.indexHotCurr;
     modelUpdate(null, newIndex, 0);
     globalVar.ccgxkObj.visCubeLen++;
     globalVar.indexHotCurr = newIndex;  // 更新成新方块
@@ -469,6 +525,8 @@ const htmlCode = `
             <button class="texture-editorBtn" id="textureEditorReset">恢复</button>
             <button class="texture-editorBtn" id="textureEditorOk">确认</button>
             <button class="texture-editorBtn" id="textureEditorCancel">关闭</button>
+            <hr>
+            <button class="texture-getCubeData" id="textureGetCubeData">获取数据</button>
         </div>
     </div>
 </div>
