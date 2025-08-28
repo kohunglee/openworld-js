@@ -9,7 +9,7 @@ const globalVar = {};  // 用于指向 ccgxkObj
 let canvas, pointObjIndex, textureEditorTG, textureEditorOffsetX, textureEditorOffsetXR, textureEditorOffsetY, textureEditorInfo;  // 全局 ID DOM 的变量
 let objID, objWidth, objHeight, objDepth, objPosX,
     objPosY, objPosZ, objRotX, objRotY, objRotZ,
-    isRealTimeUpdata, EdiArgsInput, textureEditorReset, rollerPlus,
+    isRealTimeUpdata, EdiArgsInput, textureEditorReset, rollerPlus, textureCopyCubes,
     textureEditorOk;  // 同上
 
 
@@ -37,6 +37,7 @@ export default function(ccgxkObj) {
     EdiArgsInput = document.querySelectorAll('.EdiArgsInput');  // 那一大堆 OBJ 属性框
     textureEditorReset = document.getElementById('textureEditorReset');  // 恢复打开时的属性 按钮
     textureEditorOk = document.getElementById('textureEditorOk');  // 确认 按钮
+    textureCopyCubes = document.getElementById('textureCopyCubes');  // 复制按钮
     globalVar.ccgxkObj = ccgxkObj;
     const W = ccgxkObj.W;
     W.tempColor = new Uint8Array(4);  // 临时储存颜色，供本插件使用
@@ -128,18 +129,18 @@ export default function(ccgxkObj) {
         input.addEventListener('wheel', (event) => {  // 滚轮增减数字大小
             if(rollerPlus.checked === false){ return 0; }
             event.preventDefault();
+            var step = 0.1;
             var minValue = event.target.min;
-            var currentValue = parseInt(input.value) || 0;
+            var currentValue = +input.value;
             if (event.deltaY < 0) {
-                currentValue++;
+                currentValue += step;
             } else if (event.deltaY > 0) {
-                currentValue--;
+                currentValue -= step;
             }
             if(!minValue || (minValue && (currentValue > minValue)) ){
                 input.value = currentValue;
                 modelUpdate();
             }
-            
         }, { passive: false });
     });
 
@@ -153,9 +154,10 @@ export default function(ccgxkObj) {
     textureEditorOk.hidden = isRealTimeUpdata.checked;
 
     // 所有编辑框在按住 shift 的同时，增幅变为 1
-    document.addEventListener('keydown', (event) => { if (event.key === 'Shift') { setInputsStep('0.1') } });
-    document.addEventListener('keyup', (event) => { if (event.key === 'Shift') { setInputsStep('1') } });
-    window.addEventListener('blur', () => { setInputsStep('1') });  // 窗口失去焦点时，增幅变为 0.1
+    setInputsStep('0.1');
+    document.addEventListener('keydown', (event) => { if (event.key === 'Shift') { setInputsStep('1') } });
+    document.addEventListener('keyup', (event) => { if (event.key === 'Shift') { setInputsStep('0.1') } });
+    window.addEventListener('blur', () => { setInputsStep('0.1') });  // 窗口失去焦点时，增幅变为 0.1
 
     // 键盘上的 f 键被按下（冻结物体）
     document.addEventListener('keydown', frozenMVP);
@@ -191,6 +193,11 @@ export default function(ccgxkObj) {
     textureEditorReset.addEventListener('click', () => {
         insertEdiFromBackUp();  // 填充数据
         modelUpdate();  // 根据数据更新模型
+    });
+
+    // 单击复制按钮
+    textureCopyCubes.addEventListener('click', () => {
+        copyACube();
     });
 }
 
@@ -228,12 +235,13 @@ function insertEdiFromBackUp(){
 
 
 // 编辑区属性值更改后的事件
-function modelUpdate(e) {
-    const index = globalVar.indexHotCurr;
+function modelUpdate(e, customIndex = -1, offset = 0) {
+    var index = globalVar.indexHotCurr;
+    if(customIndex !== -1){index = customIndex};
     const lastArgs = {  // 生成新的 Args，以便于与源 Args 合并
-        X: parseFloat(objPosX.value),
-        Y: parseFloat(objPosY.value),
-        Z: parseFloat(objPosZ.value),
+        X: parseFloat(objPosX.value) + offset,
+        Y: parseFloat(objPosY.value) + offset,
+        Z: parseFloat(objPosZ.value) + offset,
         rX: parseFloat(objRotX.value),
         rY: parseFloat(objRotY.value),
         rZ: parseFloat(objRotZ.value),
@@ -277,6 +285,28 @@ function modelUpdate(e) {
         globalVar.ccgxkObj.world.removeBody(org_args.cannonBody);
     }
     globalVar.ccgxkObj.currentlyActiveIndices.delete(index);  // 重新激活一下这个模型
+    if(customIndex !== -1){  // 如果是新加模型，需要重新计算一下区块
+        const DPZ = 2;  // 假设 DPZ 是 2
+        const _this = globalVar.ccgxkObj;
+        const gridKey = `${DPZ}_${Math.floor(lastArgs.X / _this.gridsize[DPZ])}_${Math.floor(lastArgs.Z / _this.gridsize[DPZ])}`;
+        let indicesInCell = _this.spatialGrid.get(gridKey);
+        if (!indicesInCell) { indicesInCell = [] }
+        indicesInCell.push(index);
+        _this.spatialGrid.set(gridKey, indicesInCell);
+    }
+}
+
+
+
+// 复制当前方块，作为新方块
+function copyACube(){
+    // !!!! 一个临时的解决方案，新开辟了 visCubeLen
+    const newIndex = globalVar.ccgxkObj.visCubeLen + 2;
+    const index = globalVar.indexHotCurr;
+    modelUpdate(null, newIndex, 0);
+    globalVar.ccgxkObj.visCubeLen++;
+    globalVar.indexHotCurr = newIndex;  // 更新成新方块
+    objID.value = newIndex;
 }
 
 
@@ -421,6 +451,7 @@ const htmlCode = `
                 <span id="textureEditorInfo"></span>
             </div>
             index: <input type="number" id="objID" name="objID" min="0" max="99999999" step="1" readonly>
+            <button class="texture-copyCubes" id="textureCopyCubes">复制(+1)</button>
             <hr>
             宽: <input type="number" class="EdiArgsInput" id="objWidth" name="objWidth" min="0.1">
             高: <input type="number" class="EdiArgsInput" id="objHeight" name="objHeight" min="0.1">

@@ -124,13 +124,19 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
 
 
     const cubeInstances = [];  // 定义单个立方体对象的「实例」
-
-    const addInsLD = (data) => {  // 使用左下角定位来添加方块
+    const isHiddenVis = [];  // 隐藏显示表
+    var cubeIndex = 0;
+    const addInsLD = (data, isHidden = false) => {  // 使用左下角定位来添加方块
         cubeInstances.push({  // 添加一个立方体
             x: data.x + 0.5*data.w, y: data.y + 0.5*data.h, z: data.z - 0.5*data.d,
             w: data.w, d: data.d, h: data.h,
             rx: data?.rx||0, ry:data?.ry||0, rz:data?.rz||0,
         });
+        if(isHidden !== true){
+            k.visCubeLen = cubeIndex;
+        }
+        isHiddenVis[cubeIndex] = isHidden;
+        cubeIndex++;
     }
 
     addInsLD({  // 添加一个立方体
@@ -173,6 +179,13 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         w: 0.4, d: 20 - 0.4, h: 4,
     });
 
+    for (let index = 0; index < 9000; index++) {
+        addInsLD({  // 招待大楼西墙
+            x: 999999999, y: -999999999, z: 999999999,
+            w: 0.001, d: 0.001, h: 0.001,
+        }, true);
+    }
+
     // 为「实例」加上简单的物理引擎
     for (let index = 0; index < cubeInstances.length; index++) {
         k.addTABox({
@@ -181,6 +194,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             mass: 0,
             background: '#fff',
             mixValue: 0.5,
+            // colliGroup: 2,
             isShadow: false,
             // isVisualMode: false,
             X: cubeInstances[index].x,
