@@ -127,8 +127,13 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     const isHiddenVis = [];  // 隐藏显示表
     var cubeIndex = 0;
     const addInsLD = (data, isHidden = false) => {  // 使用左下角定位来添加方块
+        // cubeInstances.push({  // 添加一个立方体
+        //     x: data.x + 0.5*data.w, y: data.y + 0.5*data.h, z: data.z - 0.5*data.d,
+        //     w: data.w, d: data.d, h: data.h,
+        //     rx: data?.rx||0, ry:data?.ry||0, rz:data?.rz||0,
+        // });
         cubeInstances.push({  // 添加一个立方体
-            x: data.x + 0.5*data.w, y: data.y + 0.5*data.h, z: data.z - 0.5*data.d,
+            x: data.x, y: data.y, z: data.z,
             w: data.w, d: data.d, h: data.h,
             rx: data?.rx||0, ry:data?.ry||0, rz:data?.rz||0,
         });
@@ -139,47 +144,50 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         cubeIndex++;
     }
 
-    addInsLD({  // 添加一个立方体
-        x: 10, y: 0, z: -10,
-        w: 10, d: 9, h: 10,
-    });
+    // addInsLD({  // 添加一个立方体
+    //     x: 10, y: 0, z: -10,
+    //     w: 10, d: 9, h: 10,
+    // });
 
-    addInsLD({
-        x: -30, y: 0, z: -40,
-        w: 10, d: 10, h: 1,
-        ry:45,
-    });
+    // addInsLD({
+    //     x: -30, y: 0, z: -40,
+    //     w: 10, d: 10, h: 1,
+    //     ry:45,
+    // });
 
-    addInsLD({  // 地皮 40 * 100
-        x: 30, y: 0.5, z: -40,
-        w: 100, d: 40, h: 1,
-    });
+    // addInsLD({  // 地皮 40 * 100
+    //     x: 30, y: 0.5, z: -40,
+    //     w: 100, d: 40, h: 1,
+    // });
 
-    /* ---------------------------------------------[ 招待大楼一楼墙壁 ]------------------------- */
+    // /* ---------------------------------------------[ 招待大楼一楼墙壁 ]------------------------- */
 
-    addInsLD({  // 招待大楼南墙
-        x: 30 + 5, y: 1.5 + 0, z: -40 - 5,
-        w: 10, d: 0.4, h: 4,
-        // x: 35, y: 1.5, z: -45,
-        // w: 10, d: 0.4, h: 4,
-    });
+    // addInsLD({  // 招待大楼南墙
+    //     x: 30 + 5, y: 1.5 + 0, z: -40 - 5,
+    //     w: 10, d: 0.4, h: 4,
+    //     // x: 35, y: 1.5, z: -45,
+    //     // w: 10, d: 0.4, h: 4,
+    // });
 
-    addInsLD({  // 招待大楼北墙
-        x: 30 + 5, y: 1.5 + 0, z: -40 - 5 - 20,
-        w: 10, d: 0.4, h: 4,
-    });
+    // addInsLD({  // 招待大楼北墙
+    //     x: 30 + 5, y: 1.5 + 0, z: -40 - 5 - 20,
+    //     w: 10, d: 0.4, h: 4,
+    // });
 
-    addInsLD({  // 招待大楼东墙
-        x: 30 + 5, y: 1.5 + 0, z: -40 - 5 - 0.4,
-        w: 0.4, d: 20 - 0.4, h: 4,
-    });
+    // addInsLD({  // 招待大楼东墙
+    //     x: 30 + 5, y: 1.5 + 0, z: -40 - 5 - 0.4,
+    //     w: 0.4, d: 20 - 0.4, h: 4,
+    // });
 
-    addInsLD({  // 招待大楼西墙
-        x: 30 + 5 + 10 - 0.4, y: 1.5 + 0, z: -40 - 5 - 0.4,
-        w: 0.4, d: 20 - 0.4, h: 4,
-    });
+    // addInsLD({  // 招待大楼西墙
+    //     x: 30 + 5 + 10 - 0.4, y: 1.5 + 0, z: -40 - 5 - 0.4,
+    //     w: 0.4, d: 20 - 0.4, h: 4,
+    // });
+    for (let index = 0; index < testcubedata.length; index++) {  // 使用下载好的数据
+        addInsLD(testcubedata[index]);
+    }
 
-    for (let index = 0; index < 9000; index++) {
+    for (let index = 0; index < 9000; index++) {  // 添加占位空模型
         addInsLD({  // 招待大楼西墙
             x: 999999999, y: -999999999, z: 999999999,
             w: 0.001, d: 0.001, h: 0.001,
@@ -192,7 +200,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             DPZ : 2,
             isPhysical: true,
             mass: 0,
-            background: '#fff',
+            background: '#6c1d1dff',
             mixValue: 0.5,
             // colliGroup: 2,
             isShadow: false,

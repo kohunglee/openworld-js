@@ -27,7 +27,8 @@ export default {
         this.initW(this.canvas);
         this.world = new CANNON.World();
         this.world.gravity.set(0, -9.82, 0); // 地球重力9.82m/s²
-        this.world.broadphase = new CANNON.SAPBroadphase(this.world); // 宽相检测算法
+        // this.world.broadphase = new CANNON.SAPBroadphase(this.world); // 宽相检测算法
+        this.world.broadphase = new CANNON.NaiveBroadphase(); // 宽相检测算法
         this.world.solver.iterations = 10; // 物理迭代
         this.world.addContactMaterial(this.cannonDefaultCantactMaterial);  // 默认材质关联
         this.initBodyTypeArray(1_000_000);  // 初始化一个物体信息库
