@@ -9,7 +9,7 @@ const globalVar = {};  // 用于指向 ccgxkObj
 let canvas, pointObjIndex, textureEditorTG, textureEditorOffsetX, textureEditorOffsetXR, textureEditorOffsetY, textureEditorInfo;  // 全局 ID DOM 的变量
 let objID, objWidth, objHeight, objDepth, objPosX,
     objPosY, objPosZ, objRotX, objRotY, objRotZ,
-    isRealTimeUpdata, EdiArgsInput, textureEditorReset,
+    isRealTimeUpdata, EdiArgsInput, textureEditorReset, rollerPlus,
     textureEditorOk;  // 同上
 
 
@@ -33,6 +33,7 @@ export default function(ccgxkObj) {
     objRotY = document.getElementById('objRotY');  // Y 旋转显示框
     objRotZ = document.getElementById('objRotZ');  // Z 旋转显示框
     isRealTimeUpdata = document.getElementById('isRealTimeUpdata');  // 是否实时更新
+    rollerPlus = document.getElementById('rollerPlus');  // 滚轮加减
     EdiArgsInput = document.querySelectorAll('.EdiArgsInput');  // 那一大堆 OBJ 属性框
     textureEditorReset = document.getElementById('textureEditorReset');  // 恢复打开时的属性 按钮
     textureEditorOk = document.getElementById('textureEditorOk');  // 确认 按钮
@@ -119,7 +120,27 @@ export default function(ccgxkObj) {
 
     // 所有属性编辑框的 OnChange 事件
     EdiArgsInput.forEach(input => {
-        input.addEventListener('change', modelUpdate);
+        input.addEventListener('change', modelUpdate);  // onchange 事件
+        input.addEventListener('mouseover', () => {
+            if(rollerPlus.checked === false){ return 0; }
+            input.focus();
+         });  // 悬浮激活焦点
+        input.addEventListener('wheel', (event) => {  // 滚轮增减数字大小
+            if(rollerPlus.checked === false){ return 0; }
+            event.preventDefault();
+            var minValue = event.target.min;
+            var currentValue = parseInt(input.value) || 0;
+            if (event.deltaY < 0) {
+                currentValue++;
+            } else if (event.deltaY > 0) {
+                currentValue--;
+            }
+            if(!minValue || (minValue && (currentValue > minValue)) ){
+                input.value = currentValue;
+                modelUpdate();
+            }
+            
+        }, { passive: false });
     });
 
     // 单击确认按钮（更新模型）
@@ -136,7 +157,7 @@ export default function(ccgxkObj) {
     document.addEventListener('keyup', (event) => { if (event.key === 'Shift') { setInputsStep('1') } });
     window.addEventListener('blur', () => { setInputsStep('1') });  // 窗口失去焦点时，增幅变为 0.1
 
-    // 键盘上的 r 键被按下（冻结物体）
+    // 键盘上的 f 键被按下（冻结物体）
     document.addEventListener('keydown', frozenMVP);
     document.addEventListener('keyup', function(){
         document.addEventListener('keydown', frozenMVP);
@@ -208,7 +229,6 @@ function insertEdiFromBackUp(){
 
 // 编辑区属性值更改后的事件
 function modelUpdate(e) {
-    console.log('hei hei');
     const index = globalVar.indexHotCurr;
     const lastArgs = {  // 生成新的 Args，以便于与源 Args 合并
         X: parseFloat(objPosX.value),
@@ -236,7 +256,11 @@ function modelUpdate(e) {
         d: lastArgs.depth,
     };
     globalVar.ccgxkObj.W.updateInstance('manyCubes', index, newInstanceData);  // 更新一下实例化模型
-    const quat = globalVar.ccgxkObj.eulerToQuaternion({rX: newInstanceData.rx, rY: newInstanceData.ry, rZ: newInstanceData.rz});  // 将欧拉角转换为四元数
+    const quat = globalVar.ccgxkObj.eulerToQuaternion({  // 将欧拉角转换为四元数
+        rX: newInstanceData.rx,
+        rY: newInstanceData.ry,
+        rZ: newInstanceData.rz
+    });
     const p_offset = index * 8;
     globalVar.ccgxkObj.positionsStatus[p_offset] = newInstanceData.x;  
     globalVar.ccgxkObj.positionsStatus[p_offset + 1] = newInstanceData.y;
@@ -353,7 +377,7 @@ const htmlCode = `
         z-index: 999;
     }
     .myHUD-modalPos {
-        margin-left: calc(100% - 350px);
+        margin-left: calc(50% - 140px);
         margin-top: 1em;
         /* transform: translate(-50%, -50%); */
         width: 280px;
@@ -396,7 +420,7 @@ const htmlCode = `
             <div>
                 <span id="textureEditorInfo"></span>
             </div>
-            index: <input type="number" id="objID" name="objID" min="0" max="10000000" step="1">
+            index: <input type="number" id="objID" name="objID" min="0" max="99999999" step="1" readonly>
             <hr>
             宽: <input type="number" class="EdiArgsInput" id="objWidth" name="objWidth" min="0.1">
             高: <input type="number" class="EdiArgsInput" id="objHeight" name="objHeight" min="0.1">
@@ -408,7 +432,9 @@ const htmlCode = `
             ry: <input type="number" class="EdiArgsInput" id="objRotY" name="objRotY">
             rz: <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ"><br><br>
             <hr>
-            <input type="checkbox" name="isRealTimeUpdata" id="isRealTimeUpdata" checked> 实时更新 <br><br>
+            <input type="checkbox" name="isRealTimeUpdata" id="isRealTimeUpdata" checked> 实时更新 
+            <input type="checkbox" name="rollerPlus" id="rollerPlus" checked> 滚轮加减
+            <br><br>
             <button class="texture-editorBtn" id="textureEditorReset">恢复</button>
             <button class="texture-editorBtn" id="textureEditorOk">确认</button>
             <button class="texture-editorBtn" id="textureEditorCancel">关闭</button>
