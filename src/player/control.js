@@ -35,8 +35,8 @@ export default {
         'b': 'frozen',
         'arrowup': 'viewForward',
         'arrowdown': 'viewBackward',
-        'arrowleft': 'turnLeft',
-        'arrowright': 'turnRight',
+        'arrowleft': 'viewLeft',
+        'arrowright': 'viewRight',
     },
 
     // 是否按下了 shift 键
