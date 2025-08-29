@@ -65,6 +65,8 @@ export default function(ccgxkObj) {
     W.getColorPickObj = () => {  // 获取屏幕中心物体颜色值
         const player = W.next['mainPlayer'];
         if (!player) return;
+        // console.log(player);
+        // if(player.n === "mainPlayer") return;
         W.gl.bindFramebuffer(W.gl.FRAMEBUFFER, W.pickingFBO);  // 切换到 FBO 里
         W.gl.clearColor(0.0, 0.0, 0.0, 1.0); // 黑背景
         W.gl.clear(W.gl.COLOR_BUFFER_BIT | W.gl.DEPTH_BUFFER_BIT); // 清空排练室
@@ -110,7 +112,7 @@ export default function(ccgxkObj) {
             if(W.makeFBOSucess !== true){ W.makeFBO() }
             drawCenterPoint(canvas, ccgxkObj);
             ccgxkObj.centerPointColorUpdatax = setInterval(() => { drawCenterPoint(canvas, ccgxkObj) }, 500);
-            ccgxkObj.mainCamera.pos = {x:0, y:0.9, z:0};
+            ccgxkObj.mainCamera.pos = {x:0, y:0.9, z:-0.8};
         }
     });
 
@@ -124,11 +126,13 @@ export default function(ccgxkObj) {
     // 所有属性编辑框的 OnChange 事件
     EdiArgsInput.forEach(input => {
         input.addEventListener('change', modelUpdate);  // onchange 事件
-        input.addEventListener('mouseover', () => {
+        input.addEventListener('mouseover', () => {  // 鼠标悬浮属性值上，自动焦点
+            if(isRealTimeUpdata.checked === false){ return 0; }
             if(rollerPlus.checked === false){ return 0; }
             input.focus();
          });  // 悬浮激活焦点
         input.addEventListener('wheel', (event) => {  // 滚轮增减数字大小
+            if(isRealTimeUpdata.checked === false){ return 0; }
             if(rollerPlus.checked === false){ return 0; }
             event.preventDefault();
             var step = 0.1;
@@ -147,7 +151,9 @@ export default function(ccgxkObj) {
     });
 
     // 单击确认按钮（更新模型）
-    textureEditorOk.addEventListener('click', modelUpdate);
+    textureEditorOk.addEventListener('click',  function(){
+        modelUpdate(null, -1, 0, true);
+    } );
 
     // 【实时更新】勾选框 和 确认按钮 两个只显示一个
     isRealTimeUpdata.addEventListener('change', ()=>{
@@ -242,7 +248,8 @@ function insertEdiFromBackUp(){
 
 
 // 编辑区属性值更改后的事件
-function modelUpdate(e, customIndex = -1, offset = 0) {
+function modelUpdate(e, customIndex = -1, offset = 0, isKeyOk = false) {
+    if(isRealTimeUpdata.checked === false && isKeyOk === false){ return 0; }
     var index = globalVar.indexHotCurr;
     if(customIndex !== -1){index = customIndex};
     const lastArgs = {  // 生成新的 Args，以便于与源 Args 合并
@@ -303,6 +310,8 @@ function modelUpdate(e, customIndex = -1, offset = 0) {
     }
 }
 
+
+// 获取（和下载）当前的所有方块数据
 function getCubesData(){
     var cubeDATA = [];
     for (let i = 0; i < (globalVar.ccgxkObj.visCubeLen + 1); i++) {
@@ -407,6 +416,20 @@ function setInputsStep(stepValue) {
 }
 
 
+// 显示被选中的模型
+function displayHotModel(){
+    return 0;
+    const obj = globalVar.ccgxkObj;
+    globalVar.lastHotId = obj.hotPoint || 0;
+    // obj.W.next['T' + globalVar.lastHotId].hidden = false;
+    const wobj = obj.W.next['T' + globalVar.lastHotId];
+    console.log(wobj);
+    if(wobj){
+        wobj.hidden = false;
+    }
+}
+
+
 // 绘制屏幕中心的点
 function drawCenterPoint(canvas, thisObj, isClear){
     if(isClear) { canvas.width = 0; canvas.height = 0; return; }  // 清空
@@ -420,6 +443,7 @@ function drawCenterPoint(canvas, thisObj, isClear){
     const color = `rgba(${255 - colorArray[0]}, ${255 - colorArray[1]}, ${255 - colorArray[2]}, ${colorArray[3]/255})`;
     const objIndex = colorArray[0] * 256 ** 2 + colorArray[1] * 256 + colorArray[2] - 1;  // 根据颜色获取到了对应的 index 值
     pointObjIndex.innerHTML = objIndex;
+    displayHotModel();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if(objIndex >= 0 && objIndex < 2_000_000){
         thisObj.hotPoint = objIndex;
