@@ -200,7 +200,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             DPZ : 2,
             isPhysical: true,
             mass: 0,
-            background: '#6c1d1dff',
+            background: '#f6a1a1ff',
             mixValue: 0.5,
             // colliGroup: 2,
             isShadow: false,
