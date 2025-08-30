@@ -104,6 +104,7 @@ export default function(ccgxkObj) {
                 hotAction(ccgxkObj);
             } else {  // 关闭小点 // PS: 火狐浏览器无法右键关闭，暂时无解
                 drawCenterPoint(canvas, ccgxkObj, true);
+                displayHotModel(true);
                 clearInterval(ccgxkObj.centerPointColorUpdatax);
                 ccgxkObj.centerPointColorUpdatax = null;  // 避免重复清除
                 ccgxkObj.mainCamera.pos = {x: 0, y: 2, z: 4};
@@ -111,7 +112,10 @@ export default function(ccgxkObj) {
         } else {  // 开启小点
             if(W.makeFBOSucess !== true){ W.makeFBO() }
             drawCenterPoint(canvas, ccgxkObj);
-            ccgxkObj.centerPointColorUpdatax = setInterval(() => { drawCenterPoint(canvas, ccgxkObj) }, 500);
+            ccgxkObj.centerPointColorUpdatax = setInterval(() => {
+                if(myHUDModal.hidden === false){ return 0;}  // 如果显示了模态框，则暂停
+                drawCenterPoint(canvas, ccgxkObj);
+            }, 100);
             ccgxkObj.mainCamera.pos = {x:0, y:0.9, z:-0.8};
         }
     });
@@ -262,6 +266,7 @@ function modelUpdate(e, customIndex = -1, offset = 0, isKeyOk = false) {
         width: parseFloat(objWidth.value),
         height: parseFloat(objHeight.value),
         depth: parseFloat(objDepth.value),
+        isInvisible: false,
     };
     const orgs_Args = {...globalVar.ccgxkObj.indexToArgs.get(index)};
     globalVar.ccgxkObj.indexToArgs.set(index, {...orgs_Args, ...lastArgs});  // 合并操作，赋予源对象
@@ -367,10 +372,13 @@ function f(num, digits = 2) {
 // 复制当前方块，作为新方块
 function copyACube(){
     // !!!! 一个临时的解决方案，新开辟了 visCubeLen
-    const newIndex = globalVar.ccgxkObj.visCubeLen + 2;
+    const obj = globalVar.ccgxkObj;
+    const newIndex = obj.visCubeLen + 2;
     modelUpdate(null, newIndex, 0);
-    globalVar.ccgxkObj.visCubeLen++;
+    obj.visCubeLen++;
     globalVar.indexHotCurr = newIndex;  // 更新成新方块
+    obj.hotPoint = newIndex;
+    displayHotModel(true);  // 清空当前的红色显示
     objID.value = newIndex;
 }
 
@@ -378,6 +386,7 @@ function copyACube(){
 // 关闭小点
 function closePoint(){
     drawCenterPoint(canvas, globalVar.ccgxkObj, true);  //+4 关闭小点
+    displayHotModel(true);
     clearInterval(globalVar.ccgxkObj.centerPointColorUpdatax);
     globalVar.ccgxkObj.centerPointColorUpdatax = null;
     globalVar.ccgxkObj.mainCamera.pos = {x: 0, y: 2, z: 4};
@@ -416,23 +425,31 @@ function setInputsStep(stepValue) {
 }
 
 
-// 显示被选中的模型
-function displayHotModel(){
-    return 0;
+// 显示被选中的模型，物体变红
+function displayHotModel(clearLast = false, displayIndex = -1){
     const obj = globalVar.ccgxkObj;
-    globalVar.lastHotId = obj.hotPoint || 0;
-    // obj.W.next['T' + globalVar.lastHotId].hidden = false;
-    const wobj = obj.W.next['T' + globalVar.lastHotId];
-    console.log(wobj);
-    if(wobj){
-        wobj.hidden = false;
+    const currHot = obj.hotPoint;
+    if(currHot !== globalVar?.lastHotId){
+        const currObj = obj.W.next['T' + currHot];
+        if(currObj) { currObj.hidden = false;  }
+        const lastObj = obj.W.next['T' + globalVar?.lastHotId];
+        if(lastObj){ lastObj.hidden = true; }
+        globalVar.lastHotId = currHot;
+    }
+    if(clearLast) {  // 清除所有的变红方格
+        const lastObj = obj.W.next['T' + globalVar?.lastHotId];
+        if(lastObj){ lastObj.hidden = true; }
+        console.log(currHot);
+        const currObj = obj.W.next['T' + currHot];
+        if(currObj) { currObj.hidden = true;  }
+        globalVar.lastHotId = -1;
     }
 }
 
 
 // 绘制屏幕中心的点
-function drawCenterPoint(canvas, thisObj, isClear){
-    if(isClear) { canvas.width = 0; canvas.height = 0; return; }  // 清空
+function drawCenterPoint(canvas, thisObj, isClear, isPause){
+    if(isClear) { canvas.width = 0; canvas.height = 0; return 0; }  // 清空
     if(canvas.width === 0 || canvas.width === 1){
         canvas.width = 20;
         canvas.height = 20;
