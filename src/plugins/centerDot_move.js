@@ -65,8 +65,6 @@ export default function(ccgxkObj) {
     W.getColorPickObj = () => {  // 获取屏幕中心物体颜色值
         const player = W.next['mainPlayer'];
         if (!player) return;
-        // console.log(player);
-        // if(player.n === "mainPlayer") return;
         W.gl.bindFramebuffer(W.gl.FRAMEBUFFER, W.pickingFBO);  // 切换到 FBO 里
         W.gl.clearColor(0.0, 0.0, 0.0, 1.0); // 黑背景
         W.gl.clear(W.gl.COLOR_BUFFER_BIT | W.gl.DEPTH_BUFFER_BIT); // 清空排练室
@@ -171,13 +169,15 @@ export default function(ccgxkObj) {
     document.addEventListener('keyup', (event) => { if (event.key === 'Shift') { setInputsStep('0.1') } });
     window.addEventListener('blur', () => { setInputsStep('0.1') });  // 窗口失去焦点时，增幅变为 0.1
 
-    // 键盘上的 f 键被按下（冻结物体）
-    document.addEventListener('keydown', frozenMVP);
+    // 一些键盘事件
+    document.addEventListener('keydown', keyEvent);
     document.addEventListener('keyup', function(){
-        document.addEventListener('keydown', frozenMVP);
+        document.addEventListener('keydown', keyEvent);
     });
-    function frozenMVP(event) {
-        if (event.key === 'f') {
+    function keyEvent(event) {
+        if(disListen() === false) {return 0}
+        const key = event.key.toLowerCase();
+        if(key === 'f') {  // 键盘上的 f 键被按下（冻结物体）
             const mvpBody = globalVar.ccgxkObj.mainVPlayer.body;
             if(mvpBody.mass === 0){
                 mvpBody.mass = 50;  // 重量还原
@@ -189,7 +189,20 @@ export default function(ccgxkObj) {
                 mvpBody.torque.set(0, 0, 0);  // 清除所有扭矩
             }
         }
-        document.removeEventListener('keydown', frozenMVP);
+
+        if(key === 'x') {
+
+        }
+        document.removeEventListener('keydown', keyEvent);
+    }
+
+
+
+
+
+    // 一些禁止监听键盘事件的场景
+    function disListen(){
+        if(myHUDModal.hidden === false){ return false;}
     }
 
 
@@ -355,8 +368,6 @@ function getCubesData(){
     link.download = `cubeData-${new Date(Date.now()).toLocaleString('sv-SE').replace(/[-:T\s]/g, '')}.json`; // 给卷轴起个带时间戳的名字
     link.click();
     URL.revokeObjectURL(url); // 释放这个临时URL
-    console.log('--------------');
-    console.log(jsonScroll);
 }
 
 
@@ -369,6 +380,7 @@ function f(num, digits = 2) {
     return Math.trunc(num * shifter) / shifter;
 }
 
+
 // 复制当前方块，作为新方块
 function copyACube(){
     // !!!! 一个临时的解决方案，新开辟了 visCubeLen
@@ -378,7 +390,7 @@ function copyACube(){
     obj.visCubeLen++;
     globalVar.indexHotCurr = newIndex;  // 更新成新方块
     obj.hotPoint = newIndex;
-    displayHotModel(true);  // 清空当前的红色显示
+    displayHotModel(true);  // 清空当前的红色高亮显示
     objID.value = newIndex;
 }
 
@@ -439,7 +451,6 @@ function displayHotModel(clearLast = false, displayIndex = -1){
     if(clearLast) {  // 清除所有的变红方格
         const lastObj = obj.W.next['T' + globalVar?.lastHotId];
         if(lastObj){ lastObj.hidden = true; }
-        console.log(currHot);
         const currObj = obj.W.next['T' + currHot];
         if(currObj) { currObj.hidden = true;  }
         globalVar.lastHotId = -1;
