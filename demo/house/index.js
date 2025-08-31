@@ -10,12 +10,14 @@ import svgTextureLib from '../../src/plugins/svgTextureLib.js';
 import xdashpanel from '../../src/plugins/xdashpanel.js';
 import commModel from '../../src/plugins/webgl/commModel.js';
 import centerDot from '../../src/plugins/centerDot_move.js';
+import sound from '../../src/plugins/sound.js';
 xmap(k);            // 小地图
 cookieSavePos(k);   // 保存当前位置
 svgTextureLib(k);   // 纹理预设库
 xdashpanel(k);      // 仪表盘
 commModel(k);       // 基础模型库
 centerDot(k);       // 开启中心点取物
+sound(k);           // 声音插件
 
 // 入口
 // 加载预设纹理，开始程序

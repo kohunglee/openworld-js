@@ -101,6 +101,7 @@ export default function(ccgxkObj) {
             if(ccgxkObj.hotPoint >= 0 && e.button !== 2) {  // 如果有热点，单击热点后，触发热点事件
                 hotAction(ccgxkObj);
             } else {  // 关闭小点 // PS: 火狐浏览器无法右键关闭，暂时无解
+                music('closePoint');
                 drawCenterPoint(canvas, ccgxkObj, true);
                 displayHotModel(true);
                 clearInterval(ccgxkObj.centerPointColorUpdatax);
@@ -110,6 +111,7 @@ export default function(ccgxkObj) {
         } else {  // 开启小点
             if(W.makeFBOSucess !== true){ W.makeFBO() }
             drawCenterPoint(canvas, ccgxkObj);
+            music('openPoint');
             ccgxkObj.centerPointColorUpdatax = setInterval(() => {
                 if(myHUDModal.hidden === false){ return 0;}  // 如果显示了模态框，则暂停
                 drawCenterPoint(canvas, ccgxkObj);
@@ -123,6 +125,7 @@ export default function(ccgxkObj) {
         myHUDModal.hidden = true;  // 隐藏模态框
         lockPointer();  // 锁定鼠标
         closePoint();  // 关闭小点
+        music('closeEdi');  // 关闭编辑器（音效）
     });
 
     // 所有属性编辑框的 OnChange 事件
@@ -208,9 +211,10 @@ export default function(ccgxkObj) {
 
     // 单击画面，退出编辑
     document.getElementById('myHUDModal').addEventListener('click', (event)=>{
-        if(event.target.id === 'myHUDModal') {
+        if(event.target.id === 'myHUDModal' || event.target.id === 'textureEditorClose') {
             myHUDModal.hidden = true;  // 隐藏模态框
             lockPointer();  // 锁定鼠标
+            music('closeByClick');
         }
     });
 
@@ -233,6 +237,22 @@ export default function(ccgxkObj) {
 
 /* ---------------------------------------------------------------------------- */
 
+
+// 播放音效
+const musicMap = {  // 映射关系
+    'closeEdi' : 'coin0',
+    'openEdi'  : 'coin0',
+    'closeByClick' : 'coin0',
+    'closePoint'   : 'wood',
+    'openPoint'    : 'wood',
+};
+function music(myevent){
+    const obj = globalVar.ccgxkObj;
+    const play = obj.audio;
+    const list = obj.sound;
+    play(list[musicMap[myevent]]);
+}
+
 /**
  * 单击热点后的事件
  * @param {*} thisObj 
@@ -242,6 +262,7 @@ function hotAction(thisObj){
     globalVar.indexHotCurr = thisObj.hotPoint + 0;  // 将 index 数字定格，防止被更改
     unlockPointer();  // 解锁鼠标
     myHUDModal.hidden = false;  // 显示模态框
+    music('openEdi');  // 打开编辑器（音效）
     const index = globalVar.indexHotCurr;
     globalVar.backupEdi = globalVar.ccgxkObj.indexToArgs.get(index);
     objID.value = index;
@@ -576,7 +597,8 @@ const htmlCode = `
             <br><br>
             <button class="texture-editorBtn" id="textureEditorReset">恢复</button>
             <button class="texture-editorBtn" id="textureEditorOk">确认</button>
-            <button class="texture-editorBtn" id="textureEditorCancel">关闭</button>
+            <button class="texture-editorBtn" id="textureEditorClose">关闭</button>
+            <button class="texture-editorBtn" id="textureEditorCancel">退出</button>
             <hr>
             <button class="texture-getCubeData" id="textureGetCubeData">获取数据</button>
         </div>
