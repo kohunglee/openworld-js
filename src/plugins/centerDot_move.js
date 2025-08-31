@@ -163,7 +163,7 @@ export default function(ccgxkObj) {
 
     // 单击确认按钮（更新模型）
     textureEditorOk.addEventListener('click',  function(){
-        modelUpdate(null, -1, 0, true);
+        modelUpdate(null, -1, true);
     } );
 
     // 【实时更新】勾选框 和 确认按钮 两个只显示一个
@@ -201,8 +201,13 @@ export default function(ccgxkObj) {
             }
         }
 
-        if(key === 'x') {
+        if(key === 'r') {  // 添加一个新的方块（跟随）
+            
+        }
 
+        if(key === 'x') {  // 添加一个新的方块（固定）
+
+            
         }
 
         if ((event.keyCode === 32 || key === 'e')) {
@@ -301,8 +306,8 @@ function insertEdiFromBackUp(){
 
 
 // 编辑区属性值更改后的事件
-function modelUpdate(e, customIndex = -1, offset = 0, isKeyOk = false) {
-    if(isRealTimeUpdata.checked === false && isKeyOk === false){ return 0; }
+function modelUpdate(e, customIndex = -1, offset = 0, isKeyOk = false, ) {
+    if(isRealTimeUpdata.checked === false && isKeyOk === false){ return 0; }  // 临时退出，不更新模型
     var index = globalVar.indexHotCurr;
     if(customIndex !== -1){index = customIndex};
     const lastArgs = {  // 生成新的 Args，以便于与源 Args 合并
@@ -422,7 +427,7 @@ function copyACube(){
     // !!!! 一个临时的解决方案，新开辟了 visCubeLen
     const obj = globalVar.ccgxkObj;
     const newIndex = obj.visCubeLen + 2;
-    modelUpdate(null, newIndex, 0);
+    modelUpdate(null, newIndex);
     obj.visCubeLen++;
     globalVar.indexHotCurr = newIndex;  // 更新成新方块
     obj.hotPoint = newIndex;
