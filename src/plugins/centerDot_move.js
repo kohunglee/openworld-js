@@ -6,7 +6,7 @@
 
 // 全局变量
 const globalVar = {};  // 用于指向 ccgxkObj
-let canvas, pointObjIndex, textureEditorTG, textureEditorOffsetX, textureEditorOffsetXR, textureEditorOffsetY, textureEditorInfo;  // 全局 ID DOM 的变量
+let canvas, pointObjIndex, textureEditorInfo;
 let objID, objWidth, objHeight, objDepth, objPosX,
     objPosY, objPosZ, objRotX, objRotY, objRotZ,
     isRealTimeUpdata, EdiArgsInput, textureEditorReset, rollerPlus, textureCopyCubes,
@@ -120,6 +120,12 @@ export default function(ccgxkObj) {
         }
     });
 
+    ccgxkObj.hooks.on('handlekey', function(obj, key){  // 收集 ow 的键盘事件
+        // if(key.jumping){  // 如果按下空格键
+        //     music('jump');
+        // }
+    });
+
     // 单击 CANCEL (取消)按钮后
     document.getElementById('textureEditorCancel').addEventListener('click', function(){
         myHUDModal.hidden = true;  // 隐藏模态框
@@ -184,17 +190,23 @@ export default function(ccgxkObj) {
             const mvpBody = globalVar.ccgxkObj.mainVPlayer.body;
             if(mvpBody.mass === 0){
                 mvpBody.mass = 50;  // 重量还原
+                music('unfrozen');
             } else {
                 mvpBody.mass = 0;  // 重量归 0
                 mvpBody.velocity.set(0, 0, 0);  // 设置线速度为0
                 mvpBody.angularVelocity.set(0, 0, 0);  // 设置角速度为0
                 mvpBody.force.set(0, 0, 0);  // 清除所有作用力
                 mvpBody.torque.set(0, 0, 0);  // 清除所有扭矩
+                music('frozen');
             }
         }
 
         if(key === 'x') {
 
+        }
+
+        if ((event.keyCode === 32 || key === 'e')) {
+            music('jump');
         }
         document.removeEventListener('keydown', keyEvent);
     }
@@ -245,6 +257,9 @@ const musicMap = {  // 映射关系
     'closeByClick' : 'coin0',
     'closePoint'   : 'wood',
     'openPoint'    : 'wood',
+    'jump'         : 'nudge',
+    'frozen'       : 'alien',
+    'unfrozen'     : 'unfrozen',
 };
 function music(myevent){
     const obj = globalVar.ccgxkObj;
