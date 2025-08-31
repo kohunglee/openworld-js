@@ -55,5 +55,20 @@ export default {
             friction: 0.1, // 摩擦力
             restitution: 0.0, // 弹性系数
     }),
+
+    // 音乐合成器
+    audio : function(func){
+        if(this?.offAudio) return;  // 是否开启音效
+        var t, A, m, b, s, i;
+        t=(i,n)=>(n-i)/n;
+        A=new AudioContext()
+        m=A.createBuffer(1,96e3,48e3)
+        b=m.getChannelData(0)
+        for(i=96e3;i--;)b[i]=func(i)
+        s=A.createBufferSource()
+        s.buffer=m
+        s.connect(A.destination)
+        s.start()
+    },
     
 };
