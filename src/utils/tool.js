@@ -59,12 +59,14 @@ export default {
     // 音乐合成器
     audio : function(func){
         if(this?.offAudio) return;  // 是否开启音效
-        var t, A, m, b, s, i;
+        const A = window.A = window.A || new AudioContext();  // 防止资源占用太多，导致报错
+        const fn = i => func(i) || 0;
+        var t, m, b, s, i;
+        A.state=='suspended' && (document.onclick=()=>A.resume());
         t=(i,n)=>(n-i)/n;
-        A=new AudioContext()
         m=A.createBuffer(1,96e3,48e3)
         b=m.getChannelData(0)
-        for(i=96e3;i--;)b[i]=func(i)
+        for(i=96e3;i--;)b[i]=fn(i)
         s=A.createBufferSource()
         s.buffer=m
         s.connect(A.destination)

@@ -135,12 +135,6 @@ export default {
         }
         if(args.isVisualMode !== false){  // 添加渲染物体
             var tiling = args.tiling;
-            if(posProp[3] !== 0){  // 可近似认为四分数被修改过，遂更新参数
-                var eulerQuat = this.quaternionToEuler({ x: posProp[3], y: posProp[4],  z: posProp[5],  w: posProp[6] });
-                args.rX = eulerQuat.x;
-                args.rY = eulerQuat.y;
-                args.rZ = eulerQuat.z
-            }
             if(typeof tiling === 'number'){ tiling = [tiling, tiling] }  // 处理平铺数
             const utter = (args.isFictBody) ? 0.1 : 0 // 物理假体，仅在视觉上物体小一圈儿
             var texture, textureError = false;

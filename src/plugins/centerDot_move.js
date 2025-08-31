@@ -317,7 +317,10 @@ function modelUpdate(e, customIndex = -1, offset = 0, isKeyOk = false) {
         depth: parseFloat(objDepth.value),
         isInvisible: false,
     };
+    console.log(lastArgs);
     const orgs_Args = {...globalVar.ccgxkObj.indexToArgs.get(index)};
+    console.log(orgs_Args);
+    console.log({...orgs_Args, ...lastArgs});
     globalVar.ccgxkObj.indexToArgs.set(index, {...orgs_Args, ...lastArgs});  // 合并操作，赋予源对象
     // !!!! 下面以 'manyCubes' 为名称进行测试
     const newInstanceData = {
