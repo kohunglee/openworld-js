@@ -22,6 +22,24 @@ export default function(ccgxkObj){
         wood : function(i){
             return (i >> 7) & (i >> 5) & (i >> 3) ? Math.exp(-i/1000) : 0;
         },
+
+        nudge : function(i){
+            var n=6e3;
+            if (i > n) return null;
+            var q = t(i,n);
+            return Math.sin(i*0.01*Math.sin(0.009*i+Math.sin(i/200))+Math.sin(i/100))*q*q;
+        },
+
+        alien : function(i){  // 外星人
+            return Math.sin((i % 400)/400 * 6.28) * Math.sin(i/5000) * Math.exp(-i/8000) * 5;  
+        },
+
+        unfrozen : function(i){  // 解冻
+            var n=2e4;
+            if (i > n) return null;
+            var q = t(i,n);
+            return Math.sin(i*0.001*Math.sin(0.009*i+Math.sin(i/200))+Math.sin(i/100))*q*q;
+        },
     }
     ccgxkObj.sound = sound;
 }
