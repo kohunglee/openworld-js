@@ -19,11 +19,11 @@ export default function(ccgxkObj){
             return Math.sin(i / 50) * Math.sin(i / 45) * Math.exp(-i/3000);
         },
 
-        wood : function(i){
+        wood : function(i){  // 木头
             return (i >> 7) & (i >> 5) & (i >> 3) ? Math.exp(-i/1000) : 0;
         },
 
-        nudge : function(i){
+        nudge : function(i){  // 轻推
             var n=6e3;
             if (i > n) return null;
             var q = t(i,n);
@@ -40,6 +40,11 @@ export default function(ccgxkObj){
             var q = t(i,n);
             return Math.sin(i*0.001*Math.sin(0.009*i+Math.sin(i/200))+Math.sin(i/100))*q*q;
         },
+
+        ting : function(i){  // 钟声
+            return (i%10 < 5 ? 1 : -1) * Math.exp(-i/2000)
+        },
+        
     }
     ccgxkObj.sound = sound;
 }

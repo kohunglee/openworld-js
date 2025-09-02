@@ -99,7 +99,7 @@ export default function(ccgxkObj) {
     ccgxkObj.hooks.on('pointer_lock_click', function(obj, e){
         if(ccgxkObj.centerPointColorUpdatax || e.button === 2){  
             if(ccgxkObj.hotPoint >= 0 && e.button !== 2) {  // 如果有热点，单击热点后，触发热点事件
-                hotAction(ccgxkObj);
+                hotAction();
             } else {  // 关闭小点 // PS: 火狐浏览器无法右键关闭，暂时无解
                 music('closePoint');
                 drawCenterPoint(canvas, ccgxkObj, true);
@@ -202,12 +202,13 @@ export default function(ccgxkObj) {
         }
 
         if(key === 'r') {  // 添加一个新的方块（跟随）
-            
+            operaCube(1);
+            hotAction();
         }
 
         if(key === 'x') {  // 添加一个新的方块（固定）
-
-            
+            operaCube(1, true);
+            music('addCube0');
         }
 
         if ((event.keyCode === 32 || key === 'e')) {
@@ -243,7 +244,7 @@ export default function(ccgxkObj) {
 
     // 单击复制 +1 按钮
     textureCopyCubes.addEventListener('click', () => {
-        copyACube();
+        operaCube(0);
     });
 
     // 获取方块的数据
@@ -255,7 +256,14 @@ export default function(ccgxkObj) {
 /* ---------------------------------------------------------------------------- */
 
 
-// 播放音效
+
+// 添加立方体
+function addCube(){
+    modelUpdate(null, newIndex, null, newArgs);
+}
+
+
+// 音效映射关系
 const musicMap = {  // 映射关系
     'closeEdi' : 'coin0',
     'openEdi'  : 'coin0',
@@ -265,19 +273,25 @@ const musicMap = {  // 映射关系
     'jump'         : 'nudge',
     'frozen'       : 'alien',
     'unfrozen'     : 'unfrozen',
+    'addCube0'     : 'ting',
 };
+/**
+ * 播放指定事件的音效
+ * @function music
+ * @param {string} myevent - 事件名称，用于从 musicMap 中获取对应的音效名称
+ * @returns {void}
+ */
 function music(myevent){
     const obj = globalVar.ccgxkObj;
-    const play = obj.audio;
     const list = obj.sound;
-    play(list[musicMap[myevent]]);
+    obj.audio(list[musicMap[myevent]]);
 }
 
 /**
  * 单击热点后的事件
  * @param {*} thisObj 
  */
-function hotAction(thisObj){
+function hotAction(thisObj = globalVar.ccgxkObj){
     if(thisObj.hotPoint + 0 > 1_000_000) return 0;
     globalVar.indexHotCurr = thisObj.hotPoint + 0;  // 将 index 数字定格，防止被更改
     unlockPointer();  // 解锁鼠标
@@ -290,7 +304,11 @@ function hotAction(thisObj){
 }
 
 
-// 从 backupEdi 里拿数据填充编辑区
+/**
+ * 从 backupEdi 里拿数据填充编辑区
+ * @function insertEdiFromBackUp
+ * @returns {void}
+ */
 function insertEdiFromBackUp(){
     const indexArgs = globalVar.backupEdi;
     objWidth.value = indexArgs.width;
@@ -305,15 +323,20 @@ function insertEdiFromBackUp(){
 }
 
 
-// 编辑区属性值更改后的事件
-function modelUpdate(e, customIndex = -1, offset = 0, isKeyOk = false, ) {
+// 编辑区属性值更改后的事件，也就是操作模型
+/**
+ * customIndex : 自定义的 index
+ * isKeyOk : 当前是否属于单击 确认 键的情况
+ * newArgs : 方块自定义的新自身属性参数
+ *  */
+function modelUpdate(e, customIndex = -1, isKeyOk = false, newArgs) {
     if(isRealTimeUpdata.checked === false && isKeyOk === false){ return 0; }  // 临时退出，不更新模型
     var index = globalVar.indexHotCurr;
     if(customIndex !== -1){index = customIndex};
-    const lastArgs = {  // 生成新的 Args，以便于与源 Args 合并
-        X: parseFloat(objPosX.value) + offset,
-        Y: parseFloat(objPosY.value) + offset,
-        Z: parseFloat(objPosZ.value) + offset,
+    const lastArgs = newArgs || {  // 生成(或使用)新的 Args，以便于与源 Args 合并
+        X: parseFloat(objPosX.value),
+        Y: parseFloat(objPosY.value),
+        Z: parseFloat(objPosZ.value),
         rX: parseFloat(objRotX.value),
         rY: parseFloat(objRotY.value),
         rZ: parseFloat(objRotZ.value),
@@ -423,13 +446,34 @@ function f(num, digits = 2) {
 
 
 // 复制当前方块，作为新方块
-function copyACube(){
+function operaCube(type = 0, vis = false){
     // !!!! 一个临时的解决方案，新开辟了 visCubeLen
     const obj = globalVar.ccgxkObj;
     const newIndex = obj.visCubeLen + 2;
-    modelUpdate(null, newIndex);
+    if(type === 0){  // 复制一个方块
+        modelUpdate(null, newIndex);
+    }
+    if(type === 1){  // 添加一个方块
+        const mVP = obj.mainVPlayer;
+        const northAngle = obj.calYAngle(mVP.rX, mVP.rY, mVP.rZ);
+        const plus_z = 5 * Math.cos(northAngle);
+        const plus_x = 5 * Math.sin(northAngle);
+        modelUpdate(null, newIndex, false, {
+            X: obj.mainVPlayer.X - plus_x,
+            Y: obj.mainVPlayer.Y,
+            Z: obj.mainVPlayer.Z  - plus_z,
+            rX: 0,
+            rY: 0,
+            rZ: 0,
+            width: 1,
+            height: 1,
+            depth: 1,
+            isInvisible: vis,
+        });
+    }
+
     obj.visCubeLen++;
-    globalVar.indexHotCurr = newIndex;  // 更新成新方块
+    globalVar.indexHotCurr = newIndex;  // 热点 ID 更新成新方块的
     obj.hotPoint = newIndex;
     displayHotModel(true);  // 清空当前的红色高亮显示
     objID.value = newIndex;

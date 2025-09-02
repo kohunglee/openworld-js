@@ -37,33 +37,18 @@ export default function(ccgxkObj){
 
   // 5*5 棋格图
   const drawCheckerboard = function(ctx, w, h) {
-    // 第一步：确定“设计蓝图”
-    // 计算出每一块“瓷砖”（小方格）的精确宽度和高度。
-    const squareWidth = w / 5;
-    const squareHeight = h / 5;
-
-    // 第二步：开始“铺设工作”
-    // 工匠需要一个系统性的方法来遍历整个 5x5 的工作区域。
-    // 外层循环控制“行”（从上到下）。
-    for (let i = 0; i < 5; i++) {
-      // 内层循环控制“列”（从左到右）。
-      for (let j = 0; j < 5; j++) {
-
-        // 第三步：遵循“神圣的铺设法则”
-        // 这是决定棋盘样式的核心规则：根据当前格子的坐标和来决定颜色。
-        // (行号 + 列号) 如果是偶数，就用白色；如果是奇数，就用黑色。
+    const number = 5;
+    const squareWidth = w / number;
+    const squareHeight = h / number;
+    for (let i = 0; i < number; i++) {
+      for (let j = 0; j < number; j++) {
         if ((i + j) % 2 === 0) {
           ctx.fillStyle = '#fff'; // 白色瓷砖
         } else {
           ctx.fillStyle = '#000'; // 黑色瓷砖
         }
-
-        // 第四步：放置“瓷砖”
-        // 计算出当前这块瓷砖在画布上的确切左上角坐标。
         const x = j * squareWidth;
         const y = i * squareHeight;
-
-        // 在计算好的位置，画下这块填满颜色的小方格。
         ctx.fillRect(x, y, squareWidth, squareHeight);
       }
     }

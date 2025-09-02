@@ -35,11 +35,11 @@ const htmlCode = `
 // 是否使用小范围地图 10 倍？？
 const isMapLittle = true;
 
-// 一个能跑起来的计算角度的函数，凑合用吧，原理混乱
-function calculateNorthAngle(t,a,h){var t=-t*Math.PI/180,a=-a*Math.PI/180,h=h*Math.PI/180,M=Math.cos(t),
-    t=Math.sin(t),o=Math.cos(a),a=Math.sin(a),h=(Math.cos(h),Math.sin(h),a*M),a=-t,t=o*M,o=[0,0,1],M=t,
-    a=Math.sqrt(Math.pow(h,2)+Math.pow(a,2)+Math.pow(t,2));let n=Math.acos(Math.min(1,Math.max(-1,M/a)));
-    return n=(n=h*o[2]-t*o[0]<0?-n:n)>-Math.PI/2&&n<Math.PI/2?2*Math.PI-n:n}
+// // 一个能跑起来的计算角度的函数，凑合用吧，原理混乱
+// function calculateNorthAngle(t,a,h){var t=-t*Math.PI/180,a=-a*Math.PI/180,h=h*Math.PI/180,M=Math.cos(t),
+//     t=Math.sin(t),o=Math.cos(a),a=Math.sin(a),h=(Math.cos(h),Math.sin(h),a*M),a=-t,t=o*M,o=[0,0,1],M=t,
+//     a=Math.sqrt(Math.pow(h,2)+Math.pow(a,2)+Math.pow(t,2));let n=Math.acos(Math.min(1,Math.max(-1,M/a)));
+//     return n=(n=h*o[2]-t*o[0]<0?-n:n)>-Math.PI/2&&n<Math.PI/2?2*Math.PI-n:n}
 
 // 绘制小地图的核心函数
 function drawRedDot(canvasElement, ccgxkObj) {
@@ -80,7 +80,7 @@ function drawRedDot(canvasElement, ccgxkObj) {
     ctx.beginPath();
     ctx.moveTo(finalPlayerX, finalPlayerY);
     const mainPlayer = ccgxkObj.W.current.mainPlayer;
-    const northAngle = calculateNorthAngle(mainPlayer.rx, mainPlayer.ry, mainPlayer.rz);
+    const northAngle = k.calYAngle(mainPlayer.rx, mainPlayer.ry, mainPlayer.rz);
     const lineEndX = finalPlayerX - 100 * Math.sin(northAngle);
     const lineEndY = finalPlayerY - 100 * Math.cos(northAngle);
     ctx.lineTo(lineEndX, lineEndY);
