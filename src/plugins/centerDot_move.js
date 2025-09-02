@@ -5,7 +5,7 @@
  */
 
 // 全局变量
-const globalVar = {};  // 用于指向 ccgxkObj
+var globalVar;
 let canvas, pointObjIndex, textureEditorInfo;
 let objID, objWidth, objHeight, objDepth, objPosX,
     objPosY, objPosZ, objRotX, objRotY, objRotZ,
@@ -16,12 +16,17 @@ let objID, objWidth, objHeight, objDepth, objPosX,
 
 // 插件入口
 export default function(ccgxkObj) {
+    ccgxkObj.centerDot = {};
+    globalVar = ccgxkObj.centerDot;
     const template = document.createElement('template');  //+4 将 html 节点添加到文档
     template.innerHTML = htmlCode;
     const content = template.content.cloneNode(true);
     document.body.appendChild(content);
+
+
     canvas = document.getElementById('centerPoint');  // 画板
     pointObjIndex = document.getElementById('pointObjIndex');  // 热点物体的 index
+    
     textureEditorInfo = document.getElementById('textureEditorInfo');  // 警告有没有保存
     objWidth = document.getElementById('objWidth');  // 宽度显示框
     objID = document.getElementById('objID');  // 物体 ID 显示框
@@ -40,6 +45,10 @@ export default function(ccgxkObj) {
     textureEditorOk = document.getElementById('textureEditorOk');  // 确认 按钮
     textureCopyCubes = document.getElementById('textureCopyCubes');  // 复制按钮
     textureGetCubeData = document.getElementById('textureGetCubeData');  // 复制按钮
+
+
+
+
     globalVar.ccgxkObj = ccgxkObj;
     const W = ccgxkObj.W;
     W.tempColor = new Uint8Array(4);  // 临时储存颜色，供本插件使用
@@ -109,14 +118,15 @@ export default function(ccgxkObj) {
                 ccgxkObj.mainCamera.pos = {x: 0, y: 2, z: 4};
             }
         } else {  // 开启小点
-            if(W.makeFBOSucess !== true){ W.makeFBO() }
-            drawCenterPoint(canvas, ccgxkObj);
-            music('openPoint');
-            ccgxkObj.centerPointColorUpdatax = setInterval(() => {
-                if(myHUDModal.hidden === false){ return 0;}  // 如果显示了模态框，则暂停
-                drawCenterPoint(canvas, ccgxkObj);
-            }, 100);
-            ccgxkObj.mainCamera.pos = {x:0, y:0.9, z:-0.8};
+            openPoint();
+            // if(W.makeFBOSucess !== true){ W.makeFBO() }
+            // drawCenterPoint(canvas, ccgxkObj);
+            // music('openPoint');
+            // ccgxkObj.centerPointColorUpdatax = setInterval(() => {
+            //     if(myHUDModal.hidden === false){ return 0;}  // 如果显示了模态框，则暂停
+            //     drawCenterPoint(canvas, ccgxkObj);
+            // }, 100);
+            // ccgxkObj.mainCamera.pos = {x:0, y:0.9, z:-0.8};
         }
     });
 
@@ -203,7 +213,8 @@ export default function(ccgxkObj) {
 
         if(key === 'r') {  // 添加一个新的方块（跟随）
             operaCube(1);
-            hotAction();
+            hotAction(ccgxkObj.visCubeLen + 1 );
+            openPoint();
         }
 
         if(key === 'x') {  // 添加一个新的方块（固定）
@@ -214,8 +225,36 @@ export default function(ccgxkObj) {
         if ((event.keyCode === 32 || key === 'e')) {
             music('jump');
         }
+
+        if(key === 'p'){
+
+
+        }
         document.removeEventListener('keydown', keyEvent);
     }
+
+    k.W.cube({  //  参考位置
+        g:'mainPlayer',
+        n:'new_cube_pos',
+        y: 0,
+        x: 0,
+        z: -5,
+        w:1,  h:1,  d:1,
+        b:'#bbbbbb46',
+    });
+
+    ccgxkObj.hooks.on('mouseMove', function(){
+        // const obj = globalVar.ccgxkObj;
+        // const mVP = obj.mainVPlayer;
+        // // console.log(mVP);
+        // const northAngle = obj.calYAngle(mVP.rX, mVP.rY, mVP.rZ);
+        // const newRy = northAngle * 180 / Math.PI
+        // k.W.cube({  //  参考位置
+        //     n:'new_cube_pos',
+        //     ry: -newRy,
+        // });
+        // console.log(newRy);
+    });
 
 
 
@@ -255,14 +294,6 @@ export default function(ccgxkObj) {
 
 /* ---------------------------------------------------------------------------- */
 
-
-
-// 添加立方体
-function addCube(){
-    modelUpdate(null, newIndex, null, newArgs);
-}
-
-
 // 音效映射关系
 const musicMap = {  // 映射关系
     'closeEdi' : 'coin0',
@@ -287,19 +318,34 @@ function music(myevent){
     obj.audio(list[musicMap[myevent]]);
 }
 
+// 打开小点
+function openPoint(){
+    const ccgxkObj = globalVar.ccgxkObj;
+    const W = ccgxkObj.W;
+    if(W.makeFBOSucess !== true){ W.makeFBO() }
+    drawCenterPoint(canvas, ccgxkObj);
+    music('openPoint');
+    ccgxkObj.centerPointColorUpdatax = setInterval(() => {
+        if(myHUDModal.hidden === false){ return 0;}  // 如果显示了模态框，则暂停
+        drawCenterPoint(canvas, ccgxkObj);
+    }, 100);
+    ccgxkObj.mainCamera.pos = {x:0, y:0.9, z:-0.8};
+}
+
 /**
  * 单击热点后的事件
  * @param {*} thisObj 
  */
-function hotAction(thisObj = globalVar.ccgxkObj){
+function hotAction(index){
+    const thisObj = globalVar.ccgxkObj;
     if(thisObj.hotPoint + 0 > 1_000_000) return 0;
-    globalVar.indexHotCurr = thisObj.hotPoint + 0;  // 将 index 数字定格，防止被更改
+    globalVar.indexHotCurr = index || thisObj.hotPoint + 0;  // 将 index 数字定格，防止被更改
     unlockPointer();  // 解锁鼠标
     myHUDModal.hidden = false;  // 显示模态框
     music('openEdi');  // 打开编辑器（音效）
-    const index = globalVar.indexHotCurr;
-    globalVar.backupEdi = globalVar.ccgxkObj.indexToArgs.get(index);
-    objID.value = index;
+    const _index = globalVar.indexHotCurr;
+    globalVar.backupEdi = globalVar.ccgxkObj.indexToArgs.get(_index);
+    objID.value = _index;
     insertEdiFromBackUp();
 }
 
@@ -459,11 +505,11 @@ function operaCube(type = 0, vis = false){
         const plus_z = 5 * Math.cos(northAngle);
         const plus_x = 5 * Math.sin(northAngle);
         modelUpdate(null, newIndex, false, {
-            X: obj.mainVPlayer.X - plus_x,
-            Y: obj.mainVPlayer.Y,
-            Z: obj.mainVPlayer.Z  - plus_z,
+            X: mVP.X - plus_x,
+            Y: mVP.Y,
+            Z: mVP.Z  - plus_z,
             rX: 0,
-            rY: 0,
+            rY: northAngle * 180 / Math.PI,
             rZ: 0,
             width: 1,
             height: 1,

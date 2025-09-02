@@ -11,6 +11,7 @@ import xdashpanel from '../../src/plugins/xdashpanel.js';
 import commModel from '../../src/plugins/webgl/commModel.js';
 import centerDot from '../../src/plugins/centerDot_move.js';
 import sound from '../../src/plugins/sound.js';
+import build from '../../src/plugins/centerDot/build.js';
 xmap(k);            // 小地图
 cookieSavePos(k);   // 保存当前位置
 svgTextureLib(k);   // 纹理预设库
@@ -18,6 +19,7 @@ xdashpanel(k);      // 仪表盘
 commModel(k);       // 基础模型库
 centerDot(k);       // 开启中心点取物
 sound(k);           // 声音插件
+build(k);           // 构建方块器
 
 // 入口
 // 加载预设纹理，开始程序
@@ -123,7 +125,6 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         rz:15,
         w:0.1,  h:0.6,  d:0.1,
     });
-
 
     const cubeInstances = [];  // 定义单个立方体对象的「实例」
     const isHiddenVis = [];  // 隐藏显示表
