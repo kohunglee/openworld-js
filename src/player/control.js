@@ -61,6 +61,7 @@ export default {
             if (isMouseMove) {
                 _this.keys.turnRight -= e.movementX * 0.1;
                 _this.keys.turnUp -= e.movementY * 0.1;
+                _this.hooks.emit('mouseMove', this, this.keys);  // 钩子：鼠标移动
             }
         });
         this.canvas.addEventListener('click', (e) => {  // 单击画布，开启虚拟鼠标
