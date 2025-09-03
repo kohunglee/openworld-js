@@ -26,7 +26,7 @@ export default function(ccgxkObj) {
 
     canvas = document.getElementById('centerPoint');  // 画板
     pointObjIndex = document.getElementById('pointObjIndex');  // 热点物体的 index
-    
+
     textureEditorInfo = document.getElementById('textureEditorInfo');  // 警告有没有保存
     objWidth = document.getElementById('objWidth');  // 宽度显示框
     objID = document.getElementById('objID');  // 物体 ID 显示框
@@ -138,6 +138,7 @@ export default function(ccgxkObj) {
 
     // 单击 CANCEL (取消)按钮后
     document.getElementById('textureEditorCancel').addEventListener('click', function(){
+        console.log('quit');
         myHUDModal.hidden = true;  // 隐藏模态框
         lockPointer();  // 锁定鼠标
         closePoint();  // 关闭小点
@@ -325,10 +326,12 @@ function openPoint(){
     if(W.makeFBOSucess !== true){ W.makeFBO() }
     drawCenterPoint(canvas, ccgxkObj);
     music('openPoint');
-    ccgxkObj.centerPointColorUpdatax = setInterval(() => {
-        if(myHUDModal.hidden === false){ return 0;}  // 如果显示了模态框，则暂停
-        drawCenterPoint(canvas, ccgxkObj);
-    }, 100);
+    if(ccgxkObj.centerPointColorUpdatax === null){
+        ccgxkObj.centerPointColorUpdatax = setInterval(() => {
+            if(myHUDModal.hidden === false){ return 0;}  // 如果显示了模态框，则暂停
+            drawCenterPoint(canvas, ccgxkObj);
+        }, 100);
+    }
     ccgxkObj.mainCamera.pos = {x:0, y:0.9, z:-0.8};
 }
 
