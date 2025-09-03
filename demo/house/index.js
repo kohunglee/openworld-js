@@ -9,7 +9,7 @@ import cookieSavePos from '../../src/plugins/cookieSavePos.js';
 import svgTextureLib from '../../src/plugins/svgTextureLib.js';
 import xdashpanel from '../../src/plugins/xdashpanel.js';
 import commModel from '../../src/plugins/webgl/commModel.js';
-import centerDot from '../../src/plugins/centerDot_move.js';
+import centerDot from '../../src/plugins/centerDot_clean.js';
 import sound from '../../src/plugins/sound.js';
 import build from '../../src/plugins/centerDot/build.js';
 xmap(k);            // 小地图

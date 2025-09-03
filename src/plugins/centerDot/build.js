@@ -3,13 +3,12 @@
  * ========
  * 实验中，可以移动物体
  */
-
-var globalVar;
+import init from './build/init.js';
+import music from './build/music.js';
 
 // 插件入口
 export default function(ccgxkObj) {
-    if(!ccgxkObj.centerDot) {console.log('no centerDot'); return;};
-    globalVar = ccgxkObj;
-    globalVar.ccgxkObj = ccgxkObj;
-    // console.log('build');
+    if(!ccgxkObj.centerDot) {console.error('no centerDot plugin'); return;};
+    // init(ccgxkObj);
+    // music(ccgxkObj);
 };
