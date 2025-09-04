@@ -1,6 +1,7 @@
 /**
  * 中心点插件 清爽版
  * ========
+ * obj.hotPoint ： 当前的 hot index id
  */
 
 // 全局变量
@@ -30,7 +31,6 @@ export default function(ccgxkObj) {
             const colorArray = thisObj.W.tempColor || [255, 0, 0, 255];  //+2 获取当前颜色值并转化为数组
             const color = `rgba(${255 - colorArray[0]}, ${255 - colorArray[1]}, ${255 - colorArray[2]}, ${colorArray[3]/255})`;
             const objIndex = colorArray[0] * 256 ** 2 + colorArray[1] * 256 + colorArray[2] - 1;  // 根据颜色获取到了对应的 index 值
-            pointObjIndex.innerHTML = objIndex;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             if(objIndex >= 0 && objIndex < 2_000_000){
                 thisObj.hotPoint = objIndex;
@@ -48,6 +48,8 @@ export default function(ccgxkObj) {
             } else {
                 thisObj.hotPoint = -1;
             }
+            pointObjIndex.innerHTML = thisObj.hotPoint;
+            thisObj.hooks.emitSync('draw_point_before', thisObj);  // 钩子：draw point before
             ctx.beginPath();
             ctx.arc(  
                 canvas.width / 2,
@@ -76,6 +78,35 @@ export default function(ccgxkObj) {
             <span id="pointObjIndex" class="pointObjIndex">0</span>
             <canvas id="centerPoint" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);" width="1" height="1"></canvas>
         `,
+
+
+        /**
+         * 开启点
+         * 默认用于鼠标左键
+         */
+        openPoint : (ccgxkObj) => {
+            if(W.makeFBOSucess !== true){ W.makeFBO() }
+            globalVar.drawPoint(canvas, ccgxkObj, false, 2);
+            ccgxkObj.centerPointColorUpdatax = setInterval(() => {
+                globalVar.drawPoint(canvas, ccgxkObj, false, 3);
+            }, 100);
+            ccgxkObj.mainCamera.pos = {x:0, y:0.9, z:-0.8};
+        },
+
+
+        /**
+         * 关闭点
+         * 默认用于鼠标右键
+         */
+        closePoint : (ccgxkObj) => {
+            console.log('close');
+            globalVar.drawPoint(canvas, ccgxkObj, true, 1);
+            clearInterval(ccgxkObj.centerPointColorUpdatax);
+            ccgxkObj.centerPointColorUpdatax = null;  // 避免重复清除
+            ccgxkObj.mainCamera.pos = {x: 0, y: 2, z: 4};
+        },
+
+ 
     };
     globalVar = ccgxkObj.centerDot;
     const template = document.createElement('template');  //+4 将 html 节点添加到文档
@@ -141,25 +172,17 @@ export default function(ccgxkObj) {
         W.tempColor = pixels;
     }
 
-    ccgxkObj.hooks.on('pointer_lock_click', function(obj, e){
+    ccgxkObj.hooks.on('pointer_lock_click', function(ccgxkObj, e){
         if(ccgxkObj.centerPointColorUpdatax || e.button === 2){  
             if(ccgxkObj.hotPoint >= 0 && e.button !== 2) {  // 如果有热点，单击热点后，触发热点事件
-                // hotAction();
+                ccgxkObj.hooks.emitSync('hot_action', ccgxkObj, e);  // 钩子：鼠标单击热点事件 hotAction()
             } else {  // 右键关闭小点 // PS: 火狐浏览器无法右键关闭，暂时无解
-                
-                globalVar.drawPoint(canvas, ccgxkObj, true, 1);
-                clearInterval(ccgxkObj.centerPointColorUpdatax);
-                ccgxkObj.centerPointColorUpdatax = null;  // 避免重复清除
-                ccgxkObj.mainCamera.pos = {x: 0, y: 2, z: 4};
+                ccgxkObj.hooks.emitSync('close_point', ccgxkObj, e);
+                globalVar.closePoint(ccgxkObj);
             }
         } else {  // 开启小点
-            
-            if(W.makeFBOSucess !== true){ W.makeFBO() }
-            globalVar.drawPoint(canvas, ccgxkObj, false, 2);
-            ccgxkObj.centerPointColorUpdatax = setInterval(() => {
-                globalVar.drawPoint(canvas, ccgxkObj, false, 3);
-            }, 100);
-            ccgxkObj.mainCamera.pos = {x:0, y:0.9, z:-0.8};
+            ccgxkObj.hooks.emitSync('open_point', ccgxkObj, e);  // 钩子：open point
+            globalVar.openPoint(ccgxkObj);
         }
     });
 }

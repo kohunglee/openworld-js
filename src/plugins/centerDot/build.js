@@ -9,6 +9,6 @@ import music from './build/music.js';
 // 插件入口
 export default function(ccgxkObj) {
     if(!ccgxkObj.centerDot) {console.error('no centerDot plugin'); return;};
-    // init(ccgxkObj);
+    init(ccgxkObj);
     // music(ccgxkObj);
 };

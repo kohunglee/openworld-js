@@ -126,7 +126,7 @@ export default function(ccgxkObj) {
                 ccgxkObj.mainCamera.pos = {x: 0, y: 2, z: 4};
             }
         } else {  // 开启小点
-            // openPoint();
+            openPoint();
             if(W.makeFBOSucess !== true){ W.makeFBO() }
             drawCenterPoint(canvas, ccgxkObj, false, 2);
             // music('openPoint');
