@@ -4,6 +4,8 @@
  */
 
 export default function(ccgxkObj) {
+
+    
     
     var G = {
         ...ccgxkObj.centerDot.init,
@@ -11,43 +13,18 @@ export default function(ccgxkObj) {
 
         // 将 HTML 绘制到页面上
         initHTML : () => {
+            G = ccgxkObj.centerDot.init;
             const template = document.createElement('template');  //+4 将 html 节点添加到文档
             template.innerHTML = G.htmlCode;
             const content = template.content.cloneNode(true);
             document.body.appendChild(content);
         },
 
-        // 热点事件
-        hotAction : (index) => {
-            const thisObj = ccgxkObj;
-            if(thisObj.hotPoint + 0 > 1_000_000) return 0;
-            G.indexHotCurr = index || thisObj.hotPoint + 0;  // 将 index 数字定格，防止被更改
-            G.unlockPointer();  // 解锁鼠标
-            myHUDModal.hidden = false;  // 显示模态框
-            G.music('openEdi');  // 打开编辑器（音效）
-            const _index = G.indexHotCurr;
-            G.backupEdi = ccgxkObj.indexToArgs.get(_index);
-            objID.value = _index;
-            G.insertEdiFromBackUp();
-            ccgxkObj.drawPointPause = true;  // 暂停绘制
-        },
 
-        // 从 backupEdi 里拿数据填充编辑区
-        insertEdiFromBackUp : () => {
-            const indexArgs = G.backupEdi;
-            objWidth.value = indexArgs.width;
-            objHeight.value = indexArgs.height;
-            objDepth.value = indexArgs.depth;
-            objPosX.value = indexArgs.X;
-            objPosY.value = indexArgs.Y;
-            objPosZ.value = indexArgs.Z;
-            objRotX.value = indexArgs.rX;
-            objRotY.value = indexArgs.rY;
-            objRotZ.value = indexArgs.rZ;
-        },
 
         // 解锁鼠标
         unlockPointer : () => {
+            G = ccgxkObj.centerDot.init;
             if ('pointerLockElement' in document || 
             'mozPointerLockElement' in document || 
             'webkitPointerLockElement' in document) {
@@ -62,6 +39,7 @@ export default function(ccgxkObj) {
 
         // 锁定鼠标
         lockPointer : () => {
+            G = ccgxkObj.centerDot.init;
             const canvas = ccgxkObj.canvas;
             canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock || canvas.webkitRequestPointerLock;
             canvas.requestPointerLock();
@@ -70,6 +48,7 @@ export default function(ccgxkObj) {
 
         // 显示被选中的模型，物体变红
         displayHotModel : (clearLast = false, displayIndex = -1) => {
+            G = ccgxkObj.centerDot.init;
             const obj = ccgxkObj;
             const currHot = obj.hotPoint;
             if(currHot !== G?.lastHotId){
@@ -95,6 +74,7 @@ export default function(ccgxkObj) {
          * newArgs : 方块自定义的新自身属性参数
          *  */
         modelUpdate : (e, customIndex = -1, isKeyOk = false, newArgs) => {
+            G = ccgxkObj.centerDot.init;
             if(isRealTimeUpdata.checked === false && isKeyOk === false){ return 0; }  // 临时退出，不更新模型
             var index = G.indexHotCurr;
             if(customIndex !== -1){ index = customIndex };
@@ -168,6 +148,7 @@ export default function(ccgxkObj) {
 
         // 一些键盘事件
         keyEvent : (event) => {
+            G = ccgxkObj.centerDot.init;
             if(G.disListen() === false) {return 0}
             const key = event.key.toLowerCase();
             if(key === 'f') {  // 键盘上的 f 键被按下（冻结物体）
@@ -206,6 +187,7 @@ export default function(ccgxkObj) {
 
         // 操作方块
         operaCube : (type = 0, vis = false) => {
+            G = ccgxkObj.centerDot.init;
             // !!!! 一个临时的解决方案，新开辟了 visCubeLen
             const obj = ccgxkObj;
             const newIndex = obj.visCubeLen + 2;
@@ -243,6 +225,7 @@ export default function(ccgxkObj) {
          * @returns {void}
          */
         insertEdiFromBackUp : () => {
+            G = ccgxkObj.centerDot.init;
             const indexArgs = G.backupEdi;
             objWidth.value = indexArgs.width;
             objHeight.value = indexArgs.height;
@@ -254,8 +237,6 @@ export default function(ccgxkObj) {
             objRotY.value = indexArgs.rY;
             objRotZ.value = indexArgs.rZ;
         },
-
-        
 
     };
 

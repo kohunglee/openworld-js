@@ -5,10 +5,27 @@
  */
 
 export default function(ccgxkObj) {
+
+    
     
     var G = {
         ...ccgxkObj.centerDot.init,
 
+        // 热点事件
+        hotAction : (index) => {
+            G = ccgxkObj.centerDot.init;
+            const thisObj = ccgxkObj;
+            if(thisObj.hotPoint + 0 > 1_000_000) return 0;
+            G.indexHotCurr = index || thisObj.hotPoint + 0;  // 将 index 数字定格，防止被更改
+            G.unlockPointer();  // 解锁鼠标
+            myHUDModal.hidden = false;  // 显示模态框
+            G.music('openEdi');  // 打开编辑器（音效）
+            const _index = G.indexHotCurr;
+            G.backupEdi = ccgxkObj.indexToArgs.get(_index);
+            objID.value = _index;
+            G.insertEdiFromBackUp();
+            ccgxkObj.drawPointPause = true;  // 暂停绘制
+        },
 
     };
 
