@@ -5,7 +5,7 @@
  */
 
 export default function(ccgxkObj) {
-    var G = {
+    var g = {
         // 需要建造的 html 内容
         htmlCode : htmlCode,
 
@@ -14,6 +14,16 @@ export default function(ccgxkObj) {
 
         // 备份当前的编辑器内容，用于恢复
         backupEdi : null,
+
+        // 将 HTML 绘制到页面上
+        initHTML : () => {
+            const G = ccgxkObj.centerDot.init;
+            const template = document.createElement('template');  //+4 将 html 节点添加到文档
+            template.innerHTML = G.htmlCode;
+            const content = template.content.cloneNode(true);
+            document.body.appendChild(content);
+        },
+
 
         // 保留小数使用，智能修剪
         f : (num, digits = 2) => {
@@ -44,6 +54,7 @@ export default function(ccgxkObj) {
 
         // 音乐播放器
         music : (myevent) => {
+            const G = ccgxkObj.centerDot.init;
             const obj = ccgxkObj;
             const list = obj.sound;
             obj.audio(list[G.musicMap[myevent]]);
@@ -58,7 +69,7 @@ export default function(ccgxkObj) {
         },
     };
 
-    ccgxkObj.centerDot.init = {...G, ...ccgxkObj.centerDot.init};
+    ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
 }
 
 
