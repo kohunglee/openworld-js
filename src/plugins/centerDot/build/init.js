@@ -4,6 +4,8 @@
  * 实验中，可以移动物体
  */
 
+import music from './music.js';
+
 export default function(ccgxkObj) {
     console.log('centerDot init');
 
@@ -26,25 +28,7 @@ export default function(ccgxkObj) {
             document.body.appendChild(content);
         },
 
-        // 音效映射关系
-        musicMap : {  // 映射关系
-            'closeEdi' : 'coin0',
-            'openEdi'  : 'coin0',
-            'closeByClick' : 'coin0',
-            'closePoint'   : 'wood',
-            'openPoint'    : 'wood',
-            'jump'         : 'nudge',
-            'frozen'       : 'alien',
-            'unfrozen'     : 'unfrozen',
-            'addCube0'     : 'ting',
-        },
 
-        // 音乐播放器
-        music : (myevent) => {
-            const obj = ccgxkObj;
-            const list = obj.sound;
-            obj.audio(list[G.musicMap[myevent]]);
-        },
 
         // 热点事件
         hotAction : (index) => {
@@ -362,11 +346,7 @@ export default function(ccgxkObj) {
 
 
 
-
-
-
-
-
+    music(ccgxkObj);
 
     k.W.cube({  //  参考位置
         g:'mainPlayer',
@@ -386,7 +366,8 @@ export default function(ccgxkObj) {
 
 
 
-    ccgxkObj.centerDot.init = G;  // 方便浏览器调试
+    ccgxkObj.centerDot.init = {...G, ...ccgxkObj.centerDot.init};  // 方便浏览器调试
+    G = ccgxkObj.centerDot.init;
 
     G.initHTML();  // 绘制 HTML
     ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){  // 热点事件
