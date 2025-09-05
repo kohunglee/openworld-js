@@ -4,9 +4,12 @@
  * 实验中，可以移动物体
  */
 
+import kit from './kit.js';
 import music from './music.js';
 import testMould from './testMould.js';
-import kit from './kit.js';
+import data from './data.js';
+import inputPanel from './inputPanel.js';
+import screen from './screen.js';
 
 export default function(ccgxkObj) {
     console.log('centerDot init');
@@ -16,6 +19,9 @@ export default function(ccgxkObj) {
     kit(ccgxkObj);
     music(ccgxkObj);
     testMould(ccgxkObj);
+    data(ccgxkObj);
+    inputPanel(ccgxkObj);
+    screen(ccgxkObj);
     
 
     k.W.cube({  //  参考位置
