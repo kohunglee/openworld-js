@@ -17,11 +17,12 @@ export default function(ccgxkObj) {
     /* -------------------------------------------------------------------- */
 
     kit(ccgxkObj);
-    music(ccgxkObj);
     testMould(ccgxkObj);
+    music(ccgxkObj);
     data(ccgxkObj);
     inputPanel(ccgxkObj);
     screen(ccgxkObj);
+    
     
 
     k.W.cube({  //  参考位置
