@@ -5,8 +5,6 @@
  */
 
 import kit from './kit.js';
-import music from './music.js';
-import testMould from './testMould.js';
 import data from './data.js';
 import inputPanel from './inputPanel.js';
 import screen from './screen.js';
@@ -17,23 +15,21 @@ export default function(ccgxkObj) {
     /* -------------------------------------------------------------------- */
 
     kit(ccgxkObj);
-    testMould(ccgxkObj);
-    music(ccgxkObj);
     data(ccgxkObj);
     inputPanel(ccgxkObj);
     screen(ccgxkObj);
     
     
 
-    k.W.cube({  //  参考位置
-        g:'mainPlayer',
-        n:'new_cube_pos',
-        y: 0,
-        x: 0,
-        z: -5,
-        w:1,  h:1,  d:1,
-        b:'#bbbbbb46',
-    });
+    // k.W.cube({  //  参考位置
+    //     g:'mainPlayer',
+    //     n:'new_cube_pos',
+    //     y: 0,
+    //     x: 0,
+    //     z: -5,
+    //     w:1,  h:1,  d:1,
+    //     b:'#bbbbbb46',
+    // });
 
     const G = ccgxkObj.centerDot.init;
 
