@@ -6,22 +6,11 @@
 
 export default function(ccgxkObj) {
 
-    var G = {
-        ...ccgxkObj.centerDot.init,
-
-        // 将 HTML 绘制到页面上
-        initHTML : () => {
-            G = ccgxkObj.centerDot.init;
-            const template = document.createElement('template');  //+4 将 html 节点添加到文档
-            template.innerHTML = G.htmlCode;
-            const content = template.content.cloneNode(true);
-            document.body.appendChild(content);
-        },
-
+    var g = {
 
         // 热点事件
         hotAction : (index) => {
-            G = ccgxkObj.centerDot.init;
+            const G = ccgxkObj.centerDot.init;
             const thisObj = ccgxkObj;
             if(thisObj.hotPoint + 0 > 1_000_000) return 0;
             G.indexHotCurr = index || thisObj.hotPoint + 0;  // 将 index 数字定格，防止被更改
@@ -37,7 +26,7 @@ export default function(ccgxkObj) {
 
         // 解锁鼠标
         unlockPointer : () => {
-            G = ccgxkObj.centerDot.init;
+            const G = ccgxkObj.centerDot.init;
             if ('pointerLockElement' in document || 
             'mozPointerLockElement' in document || 
             'webkitPointerLockElement' in document) {
@@ -52,7 +41,7 @@ export default function(ccgxkObj) {
 
         // 锁定鼠标
         lockPointer : () => {
-            G = ccgxkObj.centerDot.init;
+            const G = ccgxkObj.centerDot.init;
             const canvas = ccgxkObj.canvas;
             canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock || canvas.webkitRequestPointerLock;
             canvas.requestPointerLock();
@@ -61,7 +50,7 @@ export default function(ccgxkObj) {
 
         // 一些键盘事件
         keyEvent : (event) => {
-            G = ccgxkObj.centerDot.init;
+            const G = ccgxkObj.centerDot.init;
             if(G.disListen() === false) {return 0}
             const key = event.key.toLowerCase();
             if(key === 'f') {  // 键盘上的 f 键被按下（冻结物体）
@@ -100,5 +89,5 @@ export default function(ccgxkObj) {
 
     };
 
-    ccgxkObj.centerDot.init = {...G, ...ccgxkObj.centerDot.init};
+    ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
 }

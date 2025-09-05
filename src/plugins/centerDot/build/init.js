@@ -7,7 +7,8 @@
 import kit from './kit.js';
 import data from './data.js';
 import inputPanel from './inputPanel.js';
-import screen from './screen.js';
+import event from './event.js';
+import model from './model.js';
 
 export default function(ccgxkObj) {
     console.log('centerDot init');
@@ -17,7 +18,8 @@ export default function(ccgxkObj) {
     kit(ccgxkObj);
     data(ccgxkObj);
     inputPanel(ccgxkObj);
-    screen(ccgxkObj);
+    event(ccgxkObj);
+    model(ccgxkObj);
     
     
 

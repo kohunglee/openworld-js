@@ -5,11 +5,11 @@
  */
 
 export default function(ccgxkObj) {
-    var G = {
-        ...ccgxkObj.centerDot.init,
+    var g = {
 
         // 获取（和下载）当前的所有方块数据
         getCubesData : () => {
+            const G = ccgxkObj.centerDot.init;
             var cubeDATA = [];
             for (let i = 0; i < (ccgxkObj.visCubeLen + 1); i++) {
                 var p_offset = i * 8;
@@ -53,5 +53,5 @@ export default function(ccgxkObj) {
 
     };
 
-    ccgxkObj.centerDot.init = {...G, ...ccgxkObj.centerDot.init};
+    ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
 }
