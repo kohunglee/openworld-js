@@ -6,12 +6,14 @@
 
 import music from './music.js';
 import testMould from './testMould.js';
+import kit from './kit.js';
 
 export default function(ccgxkObj) {
     console.log('centerDot init');
 
     /* -------------------------------------------------------------------- */
 
+    kit(ccgxkObj);
     music(ccgxkObj);
     testMould(ccgxkObj);
     
