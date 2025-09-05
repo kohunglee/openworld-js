@@ -21,6 +21,7 @@ export default function(ccgxkObj) {
          * @returns {number|void} - 无返回值
          */
         drawPoint : (canvas, thisObj, isClear) => {
+            if(thisObj.drawPointPause){return 0;}  // 暂停
             if(isClear) { canvas.width = 0; canvas.height = 0; return 0; }  // 清空
             if(canvas.width === 0 || canvas.width === 1){
                 canvas.width = 20;
