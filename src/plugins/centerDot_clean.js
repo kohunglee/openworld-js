@@ -100,7 +100,6 @@ export default function(ccgxkObj) {
          * 默认用于鼠标右键
          */
         closePoint : (ccgxkObj) => {
-            console.log('close');
             globalVar.drawPoint(canvas, ccgxkObj, true, 1);
             clearInterval(ccgxkObj.centerPointColorUpdatax);
             ccgxkObj.centerPointColorUpdatax = null;  // 避免重复清除
