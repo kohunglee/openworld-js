@@ -58,4 +58,29 @@ window.testcubedata =
     "h": 4,
     "d": 19.6
   },
-]
+];
+
+
+// function generateRandomData() {
+//   const data = [];
+
+//   for (let i = 0; i < 10000; i++) {
+//     const randomObject = {
+//       x: Math.random() * (300 - 2) + 2,
+//       y: Math.random() * (300 - 2) + 2,
+//       z: Math.random() * (300 - 2) + 2,
+//       ry: Math.random() * (30 - 2) + 2,
+//       rz: Math.random() * (30 - 2) + 2,
+//       rx: Math.random() * (30 - 2) + 2,
+//       w: Math.random() * (30 - 2) + 2,
+//       h: Math.random() * (30 - 2) + 2,
+//       d: Math.random() * (30 - 2) + 2
+//     };
+//     data.push(randomObject);
+//   }
+
+//   return data;
+// }
+
+// const generatedData = generateRandomData();
+// window.testcubedata = generatedData;

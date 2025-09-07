@@ -9,9 +9,9 @@ import data from './data.js';
 import inputPanel from './inputPanel.js';
 import event from './event.js';
 import model from './model.js';
+import cubeReferPosJS from './cubeReferPos.JS';
 
 export default function(ccgxkObj) {
-    console.log('centerDot init');
 
     /* -------------------------------------------------------------------- */
 
@@ -20,18 +20,11 @@ export default function(ccgxkObj) {
     inputPanel(ccgxkObj);
     event(ccgxkObj);
     model(ccgxkObj);
+    cubeReferPosJS(ccgxkObj);
     
     
 
-    // k.W.cube({  //  参考位置
-    //     g:'mainPlayer',
-    //     n:'new_cube_pos',
-    //     y: 0,
-    //     x: 0,
-    //     z: -5,
-    //     w:1,  h:1,  d:1,
-    //     b:'#bbbbbb46',
-    // });
+
 
     const G = ccgxkObj.centerDot.init;
 
