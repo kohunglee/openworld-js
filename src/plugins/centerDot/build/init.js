@@ -13,7 +13,6 @@ import cubeReferPosJS from './cubeReferPos.JS';
 
 export default function(ccgxkObj) {
 
-    /* -------------------------------------------------------------------- */
 
     kit(ccgxkObj);
     data(ccgxkObj);
@@ -21,14 +20,14 @@ export default function(ccgxkObj) {
     event(ccgxkObj);
     model(ccgxkObj);
     cubeReferPosJS(ccgxkObj);
-    
-    
-
-
 
     const G = ccgxkObj.centerDot.init;
 
     G.initHTML();  // 绘制 HTML
+
+    /* ----------------------------------------------------------- */
+
+
     ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){  // 热点事件
         G.hotAction();
     });

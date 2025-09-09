@@ -43,10 +43,15 @@ export default function(ccgxkObj) {
                 const northAngle = obj.calYAngle(mVP.rX, mVP.rY, mVP.rZ);
                 const plus_z = 5 * Math.cos(northAngle);
                 const plus_x = 5 * Math.sin(northAngle);
-                G.modelUpdate(null, newIndex, false, {
+                const newPos = {
                     X: mVP.X - plus_x,
                     Y: mVP.Y,
                     Z: mVP.Z  - plus_z,
+                };
+                G.modelUpdate(null, newIndex, false, {
+                    X: newPos.X,
+                    Y: newPos.Y,
+                    Z: newPos.Z,
                     rX: 0,
                     rY: northAngle * 180 / Math.PI,
                     rZ: 0,
@@ -55,6 +60,7 @@ export default function(ccgxkObj) {
                     depth: 1,
                     isInvisible: vis,
                 });
+                G.music('addCube0');  // 添加方块
             }
             obj.visCubeLen++;
             G.indexHotCurr = newIndex;  // 热点 ID 更新成新方块的
@@ -104,9 +110,6 @@ export default function(ccgxkObj) {
                 d: lastArgs.depth,
             };
             ccgxkObj.W.updateInstance('manyCubes', index, newInstanceData);  // 更新一下实例化模型
-
-
-
             const quat = ccgxkObj.eulerToQuaternion({  // 将欧拉角转换为四元数
                 rX: newInstanceData.rx,
                 rY: newInstanceData.ry,

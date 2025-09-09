@@ -3,30 +3,33 @@
  * ========
  * 实验中，可以移动物体
  */
-
 export default function(ccgxkObj) {
-    
-    var g = {
-
+    const g = {
         /**
-         * 从 backupEdi 里拿数据填充编辑区
+         * 从 backupEdi 里拿数据填充编辑区 (优化版)
          * @function insertEdiFromBackUp
          * @returns {void}
          */
-        insertEdiFromBackUp : () => {
+        insertEdiFromBackUp: () => {
             const G = ccgxkObj.centerDot.init;
-            const indexArgs = G.backupEdi;
-            objWidth.value = indexArgs.width;
-            objHeight.value = indexArgs.height;
-            objDepth.value = indexArgs.depth;
-            objPosX.value = indexArgs.X;
-            objPosY.value = indexArgs.Y;
-            objPosZ.value = indexArgs.Z;
-            objRotX.value = indexArgs.rX;
-            objRotY.value = indexArgs.rY;
-            objRotZ.value = indexArgs.rZ;
+            const { backupEdi, f } = G;
+            const propertyMap = {
+                width: objWidth,
+                height: objHeight,
+                depth: objDepth,
+                X: objPosX,
+                Y: objPosY,
+                Z: objPosZ,
+                rX: objRotX,
+                rY: objRotY,
+                rZ: objRotZ,
+            };
+            for (const key in propertyMap) {
+                if (Object.hasOwnProperty.call(propertyMap, key) && backupEdi[key] !== undefined) {
+                    propertyMap[key].value = f(backupEdi[key]);
+                }
+            }
         },
-
     };
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
