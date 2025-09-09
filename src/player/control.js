@@ -71,7 +71,6 @@ export default {
             if(document.pointerLockElement){
                 _this.hooks.emitSync('pointer_lock_click', _this, e);  // 钩子：虚拟鼠标下的单击事件
             }
-            
         });
         this.lockChangeAlert = function() {  // 单击 ESC 键后
             if (document.pointerLockElement === _this.canvas || document.mozPointerLockElement === _this.canvas || document.webkitPointerLockElement === _this.canvas) {
@@ -104,7 +103,7 @@ export default {
         }
         if (e.keyCode === 16 || e.key.toLowerCase() === 'q') {  // shift键 或 q 开启加速
             this.isShiftPress = value;
-            
+
         }
         this.hooks.emit('handlekey', this, this.keys);  // 钩子：键盘事件
     },
@@ -114,13 +113,14 @@ export default {
 
     // 显示主角的实时位置
     displayPOS : function(){
-        var posInfo = document.getElementById('posInfo');
+        const posInfo = document.getElementById('posInfo');
+        const pos = this.mainVPlayer?.body?.position;
         if(!posInfo) {return 0}
         if(this.mainVPlayer !== null){
             posInfo.textContent = (
-                '位置: X:' + this.mainVPlayer.body.position.x.toFixed(2) +
-                ', Y:' + this.mainVPlayer.body.position.y.toFixed(2) +
-                ', Z:' + this.mainVPlayer.body.position.z.toFixed(2) + ', | '
+                '位置: X:' + pos.x.toFixed(2) +
+                ', Y:' + pos.y.toFixed(2) +
+                ', Z:' + pos.z.toFixed(2) + ', | '
             );
         }
     },
@@ -128,20 +128,30 @@ export default {
     // 计算物体（主要是相机和主角）的移动参数
     calMovePara : function(X, Y, Z, RX, RY, RZ){
         const keys = this.keys;
+        const mPVbody = this.mainVPlayer.body;
         if (keys.viewForward || keys.viewBackward) {  // 前后平移
-            var speed = (this.isShiftPress)
-                        ? Math.max(this.speedH,this.speedL-(this.forwardAcc+=this.speedAdd))
-                        : this.speedL+0*(this.forwardAcc=0.01);  // 加速度
-            this.hooks.emit('forwardBackward', this, speed);  // 钩子：前后移动
-            Z += (-keys.viewForward + keys.viewBackward) * Math.cos(RY * Math.PI / 180) / speed;
-            X += (-keys.viewForward + keys.viewBackward) * Math.sin(RY * Math.PI / 180) / speed;
+            if(this.isShiftPress){  // 加速键按下，则使用物理
+                console.log(keys.jumping);
+                const localForward = new CANNON.Vec3(0, 0, -1);
+                const worldForward = mPVbody.quaternion.vmult(localForward);
+                mPVbody.velocity.copy(worldForward.scale(20));  // 加速度
+                mPVbody.velocity.y = keys.jumping * 10;  // 跳跃兼容的解决方案
+            } else {
+                Z += (-keys.viewForward + keys.viewBackward) * Math.cos(RY * Math.PI / 180) / 8;
+                X += (-keys.viewForward + keys.viewBackward) * Math.sin(RY * Math.PI / 180) / 8;
+            }
             this.displayPOS();
+            this.hooks.emit('forwardBackward', this);  // 钩子：前后移动
         }
         if (keys.viewLeft || keys.viewRight) {  // 左右平移
             Z += (-keys.viewLeft + keys.viewRight) * Math.cos((RY + 90) * Math.PI / 180) / 10;
             X += (-keys.viewLeft + keys.viewRight) * Math.sin((RY + 90) * Math.PI / 180) / 10;
             this.displayPOS();
         }
+        if(this.lastIsShiftPress !== this.isShiftPress && this.lastIsShiftPress){  // 松开 Q 的瞬间，速度归 0 一下
+            mPVbody.velocity.set(0, 0, 0);
+        }
+        this.lastIsShiftPress = this.isShiftPress;
         RY = this.keys.turnRight;
         RX = this.keys.turnUp;
         return {  x: X,  y: Y,  z: Z,  rx: RX,  ry: RY,  rz: RZ  }
