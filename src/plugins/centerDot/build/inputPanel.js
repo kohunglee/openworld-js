@@ -40,6 +40,7 @@ export default function(ccgxkObj) {
             G.lockPointer();  // 锁定鼠标
             ccgxkObj.centerDot.closePoint(ccgxkObj);  // 关闭小点
             G.displayHotModel(true);  // 清除所有的变红方格
+            hotPointInfo.innerHTML = '';
             G.music('closeEdi');  // 关闭编辑器（音效）
         },
 
@@ -81,20 +82,44 @@ export default function(ccgxkObj) {
                 G.lockPointer();  // 锁定鼠标
                 ccgxkObj.drawPointPause = false;  // 恢复绘制
                 G.displayHotModel(true);
+                hotPointInfo.innerHTML = '';
                 G.music('closeByClick');
             }
         },
 
         // 在屏幕左上角显示当前热点的信息
-        showScreenHotInfo : () => {
+        showScreenHotInfo: () => {
             const G = ccgxkObj.centerDot.init;
-            const Curr = ccgxkObj.hotPoint
-            if(Curr !== G.showScreenHotInfo_lastId) {
-                // console.log('opera');
-                G.showScreenHotInfo_lastId = Curr;
-            }
+            const Curr = ccgxkObj.hotPoint;
+            if (Curr === G.showScreenHotInfo_lastId) { return }
+            G.showScreenHotInfo_lastId = Curr;
+            const info = ccgxkObj.indexToArgs.get(Curr);
+            const { f } = G;
+            const newHtml = info
+                ? `<table class="data-table">
+                    <tr>
+                        <td>宽: ${f(info.width)},</td>
+                        <td>高: ${f(info.height)},</td>
+                        <td>深: ${f(info.depth)}</td>
+                    </tr>
+                    <tr>
+                        <td>X: ${f(info.X)},</td>
+                        <td>Y: ${f(info.Y)},</td>
+                        <td>Z: ${f(info.Z)}</td>
+                    </tr>
+                    <tr>
+                        <td>rX: ${f(info.rX)},</td>
+                        <td>rY: ${f(info.rY)},</td>
+                        <td>rZ: ${f(info.rZ)}</td>
+                    </tr>
+                </table>`
+                : '';
+            hotPointInfo.innerHTML = newHtml;
         },
-        showScreenHotInfo_lastId : -1,
+        showScreenHotInfo_lastId: -1,
+
+
+
     };
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
