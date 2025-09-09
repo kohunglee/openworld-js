@@ -84,6 +84,17 @@ export default function(ccgxkObj) {
                 G.music('closeByClick');
             }
         },
+
+        // 在屏幕左上角显示当前热点的信息
+        showScreenHotInfo : () => {
+            const G = ccgxkObj.centerDot.init;
+            const Curr = ccgxkObj.hotPoint
+            if(Curr !== G.showScreenHotInfo_lastId) {
+                // console.log('opera');
+                G.showScreenHotInfo_lastId = Curr;
+            }
+        },
+        showScreenHotInfo_lastId : -1,
     };
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};

@@ -104,6 +104,7 @@ export default {
         }
         if (e.keyCode === 16 || e.key.toLowerCase() === 'q') {  // shift键 或 q 开启加速
             this.isShiftPress = value;
+            
         }
         this.hooks.emit('handlekey', this, this.keys);  // 钩子：键盘事件
     },
