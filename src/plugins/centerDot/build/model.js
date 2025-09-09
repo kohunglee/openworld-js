@@ -48,12 +48,13 @@ export default function(ccgxkObj) {
                     Y: mVP.Y,
                     Z: mVP.Z  - plus_z,
                 };
+                const new_rY = (G.newCubePosType === 2) ? 0 : northAngle * 180 / Math.PI;
                 G.modelUpdate(null, newIndex, false, {
                     X: newPos.X,
                     Y: newPos.Y,
                     Z: newPos.Z,
                     rX: 0,
-                    rY: northAngle * 180 / Math.PI,
+                    rY: new_rY,
                     rZ: 0,
                     width: 1,
                     height: 1,
