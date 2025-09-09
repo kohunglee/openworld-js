@@ -131,7 +131,6 @@ export default {
         const mPVbody = this.mainVPlayer.body;
         if (keys.viewForward || keys.viewBackward) {  // 前后平移
             if(this.isShiftPress){  // 加速键按下，则使用物理
-                console.log(keys.jumping);
                 const localForward = new CANNON.Vec3(0, 0, -1);
                 const worldForward = mPVbody.quaternion.vmult(localForward);
                 mPVbody.velocity.copy(worldForward.scale(20));  // 加速度
