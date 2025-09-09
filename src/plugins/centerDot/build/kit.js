@@ -107,11 +107,6 @@ const htmlCode = `
             font-size: 14;
             color: #bbbbbb;
         }
-        .pointObjIndex {
-            position: fixed;
-            top: 72px;
-            left: 10px;
-        }
         .EdiArgsInput, #objID {
             background-color: #fff0f066;
             width: 56px;
@@ -119,7 +114,9 @@ const htmlCode = `
 
         /* 热点的信息 */
         #hotPointInfo {
-        
+            position: fixed;
+            top: 72px;
+            left: 10px;
         }
 
         /* webgl canvas */

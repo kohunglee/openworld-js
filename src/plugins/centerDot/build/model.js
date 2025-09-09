@@ -141,8 +141,6 @@ export default function(ccgxkObj) {
                 if (!indicesInCell) { indicesInCell = [] }
                 indicesInCell.push(index);
                 _this.spatialGrid.set(gridKey, indicesInCell);
-            } else {
-                //ccgxkObj.currentlyActiveIndices.add(index);  // 此句用法疑问
             }
         },
 
