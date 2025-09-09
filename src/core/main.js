@@ -2,8 +2,8 @@
 export default {
 
     // 配置
-    speedH: 3,              // 最高速度的反数
-    speedL: 8,              // 最低速度的反数
+    speedH: 20,              // 最高速度的反数
+    speedL: 10,              // 最低速度的反数
     speedAdd: 0.1,          // 速度的增加率
     jumpYVel: 5,            // 跳跃时向上的加速度
     fov:35,                 // 相机视野
