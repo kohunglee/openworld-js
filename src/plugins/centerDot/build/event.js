@@ -48,7 +48,7 @@ export default function(ccgxkObj) {
             G.backupEdi = null;  // 清空备份，鼠标锁定状态 没备份
         },
 
-        // 一些键盘事件
+        // 大部分键盘事件的激活处
         keyEvent : (event) => {
             const G = ccgxkObj.centerDot.init;
             if(G.disListen() === false) {return 0}
@@ -82,7 +82,9 @@ export default function(ccgxkObj) {
                 G.music('jump');
             }
 
-            if(key === 'p'){}
+            if(key === 'z'){
+                G.displayRefer();
+            }
             document.removeEventListener('keydown', G.keyEvent);
         },
 

@@ -169,7 +169,7 @@ export default {
     Y_AXIS : new CANNON.Vec3(0, 1, 0),  //+ 辅助值
     DEG_TO_RAD : Math.PI / 180,
 
-    // 摄像机和主角的移动和旋转
+    // 摄像机和主角的移动和旋转（包括初始化 mVP）
     mainVPlayerMove : function(mVP){
         if(mVP === null){return};
         const cam = this.mainCamera;

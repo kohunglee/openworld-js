@@ -1,5 +1,5 @@
 /**
- * 辅助小工具、音效、变量等组件，不依赖其他库 (建造师，初始化建造师（引用中心点插件）)
+ * 辅助小工具、音效、变量等组件，基本不依赖其他库 (建造师，初始化建造师（引用中心点插件）)
  * ========
  * 实验中，可以移动物体
  */
@@ -23,7 +23,6 @@ export default function(ccgxkObj) {
             const content = template.content.cloneNode(true);
             document.body.appendChild(content);
         },
-
 
         // 保留小数使用，智能修剪
         f : (num, digits = 2) => {
@@ -110,12 +109,17 @@ const htmlCode = `
         }
         .pointObjIndex {
             position: fixed;
-            top: 50px;
+            top: 72px;
             left: 10px;
         }
         .EdiArgsInput, #objID {
             background-color: #fff0f066;
             width: 56px;
+        }
+
+        /* 热点的信息 */
+        #hotPointInfo {
+        
         }
 
         /* webgl canvas */
@@ -124,6 +128,7 @@ const htmlCode = `
             cursor: pointer;
         }
     </style>
+    <div id='hotPointInfo'>XYZ</div>
     <div id="myHUDModal" class="myHUD-modal" hidden>
         <div class="myHUD-modalPos">
             <div>
