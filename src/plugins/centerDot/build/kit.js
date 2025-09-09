@@ -115,7 +115,7 @@ const htmlCode = `
         }
         .EdiArgsInput, #objID {
             background-color: #fff0f066;
-            width: 50px;
+            width: 56px;
         }
 
         /* webgl canvas */

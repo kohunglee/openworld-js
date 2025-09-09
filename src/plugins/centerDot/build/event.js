@@ -76,7 +76,6 @@ export default function(ccgxkObj) {
 
             if(key === 'x') {  // 添加一个新的方块（固定）
                 G.operaCube(1, true);
-                G.music('addCube0');
             }
 
             if ((event.keyCode === 32 || key === 'e')) {  // 跳跃的声音
