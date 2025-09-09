@@ -32,6 +32,10 @@ export default function(ccgxkObj) {
         G.hotAction();
     });
 
+    ccgxkObj.hooks.on('jump', function(ccgxkObj, e){  // 热点事件
+        G.music('jump');
+    });
+
     ccgxkObj.hooks.on('draw_point_before', function(ccgxkObj){  // 在显示器左上显示当前的热点信息
         G.showScreenHotInfo();
     });

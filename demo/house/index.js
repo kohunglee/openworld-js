@@ -126,6 +126,10 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         w:0.1,  h:0.6,  d:0.1,
     });
 
+    k.l = (info)=>{  // 方便调试
+        console.log(info +'|'+ Math.random().toFixed(2));
+    }
+
     const cubeInstances = [];  // 定义单个立方体对象的「实例」
     const isHiddenVis = [];  // 隐藏显示表
     var cubeIndex = 0;

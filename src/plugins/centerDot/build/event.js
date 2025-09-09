@@ -78,10 +78,6 @@ export default function(ccgxkObj) {
                 G.operaCube(1, true);
             }
 
-            if ((event.keyCode === 32 || key === 'e')) {  // 跳跃的声音
-                G.music('jump');
-            }
-
             if(key === 'z'){
                 G.displayRefer();
             }

@@ -98,6 +98,7 @@ export default {
         if ((e.keyCode === 32 || e.key.toLowerCase() === 'e') && this.mainVPlayer !== null) {  // e 或 空格键，飞翔
             if (this.keys.jumping === 0) {
                 this.mainVPlayer.body.velocity.y = this.jumpYVel;
+                this.hooks.emit('jump', this);  // 钩子：跳跃
             }
             this.keys.jumping = value;
         }
@@ -125,19 +126,51 @@ export default {
         }
     },
 
+    // 供 calMovePara() 调用的常量
+    WALK_SPEED: 1 / 8,       // 每帧增加的速度
+    SPRINT_MIN_SPEED: 5.0,   // 最低冲刺速度
+    SPRINT_MAX_SPEED: 15.0,  // 最高冲刺速度
+    ACCELERATION: 0.25,      // 每帧增加的速度
+    JUMP_STRENGTH: 6.0,      // 跳跃力度
+    JUMP_HOLD_LIMIT: 30,     // 允许持续跳跃（施加向上速度）的帧数
+    DEG_TO_RAD: Math.PI / 180,
+
     // 计算物体（主要是相机和主角）的移动参数
     calMovePara : function(X, Y, Z, RX, RY, RZ){
         const keys = this.keys;
         const mPVbody = this.mainVPlayer.body;
         if (keys.viewForward || keys.viewBackward) {  // 前后平移
-            if(this.isShiftPress){  // 加速键按下，则使用物理
-                const localForward = new CANNON.Vec3(0, 0, -1);
+            const direction = (-keys.viewForward + keys.viewBackward);
+            if (this.isShiftPress) {  // 物理速度（快跑）
+                if (this.currentSpeed < this.SPRINT_MIN_SPEED) {  //+6 处理加速度
+                    this.currentSpeed = this.SPRINT_MIN_SPEED;
+                }
+                if (this.currentSpeed < this.SPRINT_MAX_SPEED) {
+                    this.currentSpeed += this.ACCELERATION;
+                }
+                const localForward = new CANNON.Vec3(0, 0, direction);
                 const worldForward = mPVbody.quaternion.vmult(localForward);
-                mPVbody.velocity.copy(worldForward.scale(20));  // 加速度
-                mPVbody.velocity.y = keys.jumping * 10;  // 跳跃兼容的解决方案
-            } else {
-                Z += (-keys.viewForward + keys.viewBackward) * Math.cos(RY * Math.PI / 180) / 8;
-                X += (-keys.viewForward + keys.viewBackward) * Math.sin(RY * Math.PI / 180) / 8;
+                const horizontalVelocity = worldForward.scale(this.currentSpeed);
+                let verticalVelocity = 0;
+                if (keys.jumping) {  // 处理跳跃逻辑
+                    if (this.jumpHoldFrames < this.JUMP_HOLD_LIMIT) {
+                        verticalVelocity = this.JUMP_STRENGTH;
+                    }
+                    this.jumpHoldFrames++;
+                } else {
+                    this.jumpHoldFrames = 0;
+                }
+                mPVbody.velocity.set(  // 据说可以清晰地分离水平和垂直的控制
+                    horizontalVelocity.x,
+                    verticalVelocity,
+                    horizontalVelocity.z
+                );
+            } else {  // 数学速度（慢跑）
+                this.currentSpeed = 0;
+                this.jumpHoldFrames = 0;
+                const moveDistance = direction * this.WALK_SPEED;
+                Z += moveDistance * Math.cos(RY * this.DEG_TO_RAD);
+                X += moveDistance * Math.sin(RY * this.DEG_TO_RAD);
             }
             this.displayPOS();
             this.hooks.emit('forwardBackward', this);  // 钩子：前后移动
@@ -147,8 +180,9 @@ export default {
             X += (-keys.viewLeft + keys.viewRight) * Math.sin((RY + 90) * Math.PI / 180) / 10;
             this.displayPOS();
         }
-        if(this.lastIsShiftPress !== this.isShiftPress && this.lastIsShiftPress){  // 松开 Q 的瞬间，速度归 0 一下
-            mPVbody.velocity.set(0, 0, 0);
+        if(this.lastIsShiftPress !== this.isShiftPress && this.lastIsShiftPress){  // 松开 Q 的瞬间，
+            this.forwardAcc = 10;  // 加速度归 0
+            mPVbody.velocity.set(0, 0, 0);  // 速度归 0 一下
         }
         this.lastIsShiftPress = this.isShiftPress;
         RY = this.keys.turnRight;
