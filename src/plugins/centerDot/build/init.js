@@ -46,6 +46,7 @@ export default function(ccgxkObj) {
 
     ccgxkObj.hooks.on('close_point', function(ccgxkObj, e){  // 右键关点事件
         G.displayHotModel(true);  // 清除所有变红方块
+        hotPointInfo.innerHTML = '';
     });
 
     document.getElementById('textureEditorCancel').addEventListener('click', function(){  // 单击 CANCEL (取消)按钮后

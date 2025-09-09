@@ -117,6 +117,10 @@ const htmlCode = `
             position: fixed;
             top: 72px;
             left: 10px;
+            font-family: monospace;
+        }
+        #hotPointInfo td {
+            min-width: 80px;
         }
 
         /* webgl canvas */
@@ -125,7 +129,7 @@ const htmlCode = `
             cursor: pointer;
         }
     </style>
-    <div id='hotPointInfo'>XYZ</div>
+    <div id='hotPointInfo'></div>
     <div id="myHUDModal" class="myHUD-modal" hidden>
         <div class="myHUD-modalPos">
             <div>
