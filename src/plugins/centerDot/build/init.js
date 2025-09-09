@@ -41,42 +41,13 @@ export default function(ccgxkObj) {
     });
 
     document.getElementById('textureEditorCancel').addEventListener('click', function(){  // 单击 CANCEL (取消)按钮后
-        myHUDModal.hidden = true;  // 隐藏模态框
-        ccgxkObj.drawPointPause = false;  // 恢复绘制
-        G.lockPointer();  // 锁定鼠标
-        ccgxkObj.centerDot.closePoint(ccgxkObj);  // 关闭小点
-        G.displayHotModel(true);  // 清除所有的变红方格
-        G.music('closeEdi');  // 关闭编辑器（音效）
+        G.cancelAction();
     });
 
     // 所有属性编辑框的 OnChange 事件
     const EdiArgsInput = document.querySelectorAll('.EdiArgsInput');  // 那一大堆 OBJ 属性框
     EdiArgsInput.forEach(input => {
-        input.addEventListener('change', ()=>{
-            G.modelUpdate();
-        });  // onchange 事件
-        input.addEventListener('mouseover', () => {  // 鼠标悬浮属性值上，自动焦点
-            if(isRealTimeUpdata.checked === false){ return 0; }
-            if(rollerPlus.checked === false){ return 0; }
-            input.focus();
-         });  // 悬浮激活焦点
-        input.addEventListener('wheel', (event) => {  // 滚轮增减数字大小
-            if(isRealTimeUpdata.checked === false){ return 0; }
-            if(rollerPlus.checked === false){ return 0; }
-            event.preventDefault();
-            var step = 0.1;
-            var minValue = event.target.min;
-            var currentValue = +input.value;
-            if (event.deltaY < 0) {
-                currentValue += step;
-            } else if (event.deltaY > 0) {
-                currentValue -= step;
-            }
-            if(!minValue || (minValue && (currentValue > minValue)) ){
-                input.value = currentValue;
-                G.modelUpdate();
-            }
-        }, { passive: false });
+        G.onchangeForeach(input);
     });
 
     // 一些键盘事件
@@ -87,13 +58,7 @@ export default function(ccgxkObj) {
 
     // 单击画面，退出编辑
     document.getElementById('myHUDModal').addEventListener('click', (event)=>{
-        if(event.target.id === 'myHUDModal' || event.target.id === 'textureEditorClose') {
-            myHUDModal.hidden = true;  // 隐藏模态框
-            G.lockPointer();  // 锁定鼠标
-            ccgxkObj.drawPointPause = false;  // 恢复绘制
-            G.displayHotModel(true);
-            G.music('closeByClick');
-        }
+        G.onclickView(event);
     });
 
     // 单击确认按钮（更新模型）
