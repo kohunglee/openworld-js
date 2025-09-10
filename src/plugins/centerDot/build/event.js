@@ -71,7 +71,7 @@ export default function(ccgxkObj) {
             if(key === 'r') {  // 添加一个新的方块（跟随）
                 G.operaCube(1);
                 G.hotAction(ccgxkObj.visCubeLen + 1 );
-                ccgxkObj.centerDot.openPoint(ccgxkObj);  // 关闭小点
+                // ccgxkObj.centerDot.openPoint(ccgxkObj);  // 关闭小点
             }
 
             if(key === 'x') {  // 添加一个新的方块（固定）

@@ -13,7 +13,7 @@ export default {
     // openworld 的 cannon.js 物理世界
     world : null,
 
-    // 物体列表
+    // 物体列表（接近作废）
     bodylist : new Array(),  // 有质量，有物理计算，可视化
     bodylistNotPys : new Array(),  // 纯模型，不进行物理计算
     bodylistMass0 : new Array(),  // 无质量的可视模型
