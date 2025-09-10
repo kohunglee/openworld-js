@@ -102,5 +102,14 @@ export default function(ccgxkObj) {
     document.addEventListener('keydown', (event) => { if (event.key === 'Shift') { G.setInputsStep('1') } });
     document.addEventListener('keyup', (event) => { if (event.key === 'Shift') { G.setInputsStep('0.1') } });
     window.addEventListener('blur', () => { G.setInputsStep('0.1') });  // 窗口失去焦点时，增幅变为 0.1
+
+    // 单击形状【预设】按钮
+    e_presets.addEventListener('click', G.e_presets );
+
+    // 单击位置【归整】（四舍五入）
+    e_round.addEventListener('click', G.e_round );
+
+    // 单击旋转【归零】按钮
+    e_zero.addEventListener('click', G.e_zero);
 }
 

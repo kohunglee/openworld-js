@@ -87,9 +87,8 @@ const htmlCode = `
         }
         .myHUD-modalPos {
             margin-left: calc(50% - 140px);
-            margin-top: 1em;
-            /* transform: translate(-50%, -50%); */
-            width: 280px;
+            margin-top: 4em;
+            width: 370px;
             text-align: center;
             background-color: rgba(51, 204, 111, 0.07);
             padding: 20px;
@@ -118,6 +117,7 @@ const htmlCode = `
             top: 72px;
             left: 10px;
             font-family: monospace;
+            color: white;
         }
         #hotPointInfo td {
             min-width: 80px;
@@ -141,13 +141,13 @@ const htmlCode = `
                 <hr>
                 宽: <input type="number" class="EdiArgsInput" id="objWidth" name="objWidth" min="0.1">
                 高: <input type="number" class="EdiArgsInput" id="objHeight" name="objHeight" min="0.1">
-                纵: <input type="number" class="EdiArgsInput" id="objDepth" name="objDepth" min="0.1"><br><br>
+                纵: <input type="number" class="EdiArgsInput" id="objDepth" name="objDepth" min="0.1">&nbsp;&nbsp;<button id="e_presets">预设</button><br><br>
                 X: <input type="number" class="EdiArgsInput" id="objPosX" name="objPosX">
                 Y: <input type="number" class="EdiArgsInput" id="objPosY" name="objPosY">
-                Z: <input type="number" class="EdiArgsInput" id="objPosZ" name="objPosZ"><br><br>
+                Z: <input type="number" class="EdiArgsInput" id="objPosZ" name="objPosZ">&nbsp;&nbsp;&nbsp;&nbsp;<button id="e_round">归整</button><br><br>
                 rx: <input type="number" class="EdiArgsInput" id="objRotX" name="objRotX">
                 ry: <input type="number" class="EdiArgsInput" id="objRotY" name="objRotY">
-                rz: <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ"><br><br>
+                rz: <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ">&nbsp;&nbsp;<button id="e_zero">归零</button><br><br>
                 <hr>
                 <input type="checkbox" name="isRealTimeUpdata" id="isRealTimeUpdata" checked> 实时更新 
                 <input type="checkbox" name="rollerPlus" id="rollerPlus" checked> 滚轮加减

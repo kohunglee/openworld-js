@@ -44,7 +44,7 @@ export default function(ccgxkObj) {
             G.music('closeEdi');  // 关闭编辑器（音效）
         },
 
-        // 所有属性编辑框的 OnChange 事件
+        // 所有属性编辑框共同事件（主要是为了 onchange 事件）
         onchangeForeach : (input) => {
             const G = ccgxkObj.centerDot.init;
             input.addEventListener('change', ()=>{
@@ -117,6 +117,37 @@ export default function(ccgxkObj) {
             hotPointInfo.innerHTML = newHtml;
         },
         showScreenHotInfo_lastId: -1,
+
+
+        // 形状的预设事件
+        e_presets: ()=>{
+            console.log('形状预设');
+        },
+        
+        // 位置的归整事件
+        e_round: ()=>{
+            const G = ccgxkObj.centerDot.init;
+            const x = +objPosX.value;
+            const y = +objPosY.value;
+            const z = +objPosZ.value;
+            const roundedX = Math.round(x);
+            const roundedY = Math.round(y);
+            const roundedZ = Math.round(z);
+            if (x !== roundedX) objPosX.value = roundedX;
+            if (y !== roundedY) objPosY.value = roundedY;
+            if (z !== roundedZ) objPosZ.value = roundedZ;
+            G.modelUpdate();
+        },
+        
+        
+        // 旋转的归零事件
+        e_zero: ()=>{
+            const G = ccgxkObj.centerDot.init;
+            objRotX.value = 0;
+            objRotY.value = 0;
+            objRotZ.value = 0;
+            G.modelUpdate();
+        },
 
 
 
