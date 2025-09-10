@@ -5,8 +5,9 @@
  */
 
 export default function(ccgxkObj){
-    var t=(i,n)=>(n-i)/n; // t 为一个函数，用于计算音高
-    var sound = {
+    const t=(i,n)=>(n-i)/n; // t 为一个函数，用于计算音高
+
+    const sound = {
         coin0 : function(i){  // 硬币声音
             var n=1e4;
             var c=n/3;
@@ -43,6 +44,10 @@ export default function(ccgxkObj){
 
         ting : function(i){  // 钟声
             return (i%10 < 5 ? 1 : -1) * Math.exp(-i/2000)
+        },
+
+        sa : function(i){  // 沙沙声
+            return (Math.random() - 0.5) * 0.3 * Math.exp(-i/2000);
         },
         
     }
