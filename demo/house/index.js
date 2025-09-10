@@ -17,6 +17,7 @@ import commModel from '../../src/plugins/webgl/commModel.js';
 import centerDot from '../../src/plugins/centerDot_clean.js';
 import sound from '../../src/plugins/sound.js';
 import build from '../../src/plugins/centerDot/build.js';
+import testSampleAni from '../../src/plugins/testSampleAni.js';
 xmap(k);            // 小地图
 cookieSavePos(k);   // 保存当前位置
 svgTextureLib(k);   // 纹理预设库
@@ -25,6 +26,7 @@ commModel(k);       // 基础模型库
 centerDot(k);       // 开启中心点取物
 sound(k);           // 声音插件
 build(k);           // 构建方块器
+testSampleAni(k);   // 简单的人物动画实现
 
 // 入口
 // 加载预设纹理，开始程序
@@ -52,7 +54,8 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         colliGroup: 1,
         isShadow: 'ok',
         X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z,
-        rX: 45, rY: 45, rZ: 45, size:1, mixValue:0.7,
+        rX: 45, rY: 45, rZ: 45, mixValue:0.7,
+        width: 1, depth: 1, height: 1,
         mass: 50,
         background : '#333',
         texture: greenStone,
@@ -90,46 +93,133 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         y: 0.3,
         x: 0,
         z: 0,
+        // b:'#0088ff8f',
         w:0.6,  h:0.5,  d:0.1,
     });
 
-    k.W.cube({  // 主角的左腿
+/************* 研究动画实验区 */
+
+    // 关节
+    k.W.cube({  // 关节：主角的右胳膊
         g:'mainPlayer',
-        n:'mvp_leg_l',
-        y: -0.15,
-        x: -0.15,
+        n:'joint_test',
+        y: 0.47,
+        x: 0.30,
         z: 0,
-        w:0.1,  h:0.7,  d:0.1,
+        rz:15,
+        ry:0,
+        w:0.1,  h:0.1,  d:0.1,
+        // hidden: true,
+    });
+
+
+    k.W.cube({  // 主角的右胳膊
+        g:'joint_test',
+        n:'aaa',
+        y: -2,
+        x: 0,
+        z: 0,
+        rz:0,
+        // b:'#0088ff8f',
+        w:1,  h:5,  d:1,
+    });
+
+    // 关节
+    k.W.cube({  // 关节：主角的右胳膊
+        g:'mainPlayer',
+        n:'joint_test_left',
+        y: 0.47,
+        x: -0.30,
+        z: 0,
+        rz:-15,
+        ry:0,
+        w:0.1,  h:0.1,  d:0.1,
+        // hidden: true,
+    });
+
+
+    k.W.cube({  // 主角的右胳膊
+        g:'joint_test_left',
+        n:'bbb',
+        y: -2,
+        x: 0,
+        z: 0,
+        rz:0,
+        // b:'#0088ff8f',
+        w:1,  h:5,  d:1,
+    });
+
+    /* ------------   测试腿了！  -------------- */
+    // 关节
+    k.W.cube({  // 关节：主角的右腿
+        g:'mainPlayer',
+        n:'joint_test_right_leg',
+        y: 0.1,
+        x: 0.15,
+        z: 0,
+        
+        w:0.1,  h:0.1,  d:0.1,
+        // hidden: true,
     });
 
     k.W.cube({  // 主角的右腿
-        g:'mainPlayer',
-        n:'mvp_leg_r',
-        y: -0.15,
-        x: 0.15,
+        g:'joint_test_right_leg',
+        n:'rightleg',
+        y: -3,
+        x: 0,
         z: 0,
-        w:0.1,  h:0.7,  d:0.1,
+        rz:0,
+        w:1,  h:6,  d:1,
     });
 
-    k.W.cube({  // 主角的左胳膊
+    // 关节
+    k.W.cube({  // 关节：主角的左腿
         g:'mainPlayer',
-        n:'mvp_arm_l',
-        y: 0.25,
-        x: -0.36,
+        n:'joint_test_left_leg',
+        y: 0.1,
+        x: -0.15,
         z: 0,
-        rz: -15,
-        w:0.1,  h:0.6,  d:0.1,
+        
+        w:0.1,  h:0.1,  d:0.1,
     });
 
-    k.W.cube({  // 主角的右胳膊
-        g:'mainPlayer',
-        n:'mvp_arm_r',
-        y: 0.25,
-        x: 0.36,
+    k.W.cube({  // 主角的右腿
+        g:'joint_test_left_leg',
+        n:'leftleg',
+        y: -3,
+        x: 0,
         z: 0,
-        rz:15,
-        w:0.1,  h:0.6,  d:0.1,
+        rz:0,
+        w:1,  h:6,  d:1,
     });
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**************** 结束 */
+
+
 
     const cubeInstances = [];  // 定义单个立方体对象的「实例」
     const isHiddenVis = [];  // 隐藏显示表
