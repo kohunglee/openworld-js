@@ -35,13 +35,9 @@ export default function(ccgxkObj) {
         // 单击取消键后
         cancelAction : () => {
             const G = ccgxkObj.centerDot.init;
-            myHUDModal.hidden = true;  // 隐藏模态框
-            ccgxkObj.drawPointPause = false;  // 恢复绘制
-            G.lockPointer();  // 锁定鼠标
+            G.quitPanel(G);
             ccgxkObj.centerDot.closePoint(ccgxkObj);  // 关闭小点
-            G.displayHotModel(true);  // 清除所有的变红方格
             hotPointInfo.innerHTML = '';
-            G.music('closeEdi');  // 关闭编辑器（音效）
         },
 
         // 所有属性编辑框共同事件（主要是为了 onchange 事件）
@@ -54,13 +50,14 @@ export default function(ccgxkObj) {
                 if(isRealTimeUpdata.checked === false){ return 0; }
                 if(rollerPlus.checked === false){ return 0; }
                 input.focus();
+                input.select();
             });  // 悬浮激活焦点
             input.addEventListener('wheel', (event) => {  // 滚轮增减数字大小
                 if(isRealTimeUpdata.checked === false){ return 0; }
                 if(rollerPlus.checked === false){ return 0; }
                 event.preventDefault();
                 var step = 0.1;
-                var minValue = event.target.min;
+                var minValue = input.min;
                 var currentValue = +input.value;
                 if (event.deltaY < 0) {
                     currentValue += step;
@@ -68,7 +65,8 @@ export default function(ccgxkObj) {
                     currentValue -= step;
                 }
                 if(!minValue || (minValue && (currentValue > minValue)) ){
-                    input.value = currentValue;
+                    input.value = G.f(currentValue);
+                    input.select();
                     G.modelUpdate();
                 }
             }, { passive: false });
@@ -78,13 +76,17 @@ export default function(ccgxkObj) {
         onclickView : (event) => {
             const G = ccgxkObj.centerDot.init;
             if(event.target.id === 'myHUDModal' || event.target.id === 'textureEditorClose') {  // 暂时退出编辑模式
-                myHUDModal.hidden = true;  // 隐藏模态框
-                G.lockPointer();  // 锁定鼠标
-                ccgxkObj.drawPointPause = false;  // 恢复绘制
-                G.displayHotModel(true);
-                hotPointInfo.innerHTML = '';
-                G.music('closeByClick');
+                G.quitPanel(G);
             }
+        },
+
+        // 退出编辑器，等同于单击画面
+        quitPanel : (G) => {
+            myHUDModal.hidden = true;  // 隐藏模态框
+            ccgxkObj.drawPointPause = false;  // 恢复绘制
+            G.lockPointer();  // 锁定鼠标
+            G.displayHotModel(true);
+            G.music('closeEdi');
         },
 
         // 在屏幕左上角显示当前热点的信息
@@ -92,7 +94,6 @@ export default function(ccgxkObj) {
             const G = ccgxkObj.centerDot.init;
             const Curr = ccgxkObj.hotPoint;
             if (Curr === G.showScreenHotInfo_lastId) { return }
-            G.showScreenHotInfo_lastId = Curr;
             const info = ccgxkObj.indexToArgs.get(Curr);
             const { f } = G;
             const newHtml = info
@@ -115,6 +116,7 @@ export default function(ccgxkObj) {
                 </table>`
                 : '';
             hotPointInfo.innerHTML = newHtml;
+            G.showScreenHotInfo_lastId = Curr;
         },
         showScreenHotInfo_lastId: -1,
 
@@ -139,7 +141,6 @@ export default function(ccgxkObj) {
             G.modelUpdate();
         },
         
-        
         // 旋转的归零事件
         e_zero: ()=>{
             const G = ccgxkObj.centerDot.init;
@@ -148,6 +149,22 @@ export default function(ccgxkObj) {
             objRotZ.value = 0;
             G.modelUpdate();
         },
+
+        // 删除物体
+        e_delete: ()=>{
+            const G = ccgxkObj.centerDot.init;
+            const N = 999999999;
+            const M = 0.001;
+            objPosX.value = N;
+            objPosY.value = N;
+            objPosZ.value = N;
+            objWidth.value = M;
+            objHeight.value = M;
+            objDepth.value = M;
+            G.modelUpdate();
+            G.quitPanel(G);
+        },
+
 
 
 

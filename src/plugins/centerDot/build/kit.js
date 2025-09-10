@@ -42,10 +42,9 @@ export default function(ccgxkObj) {
         musicMap : {  // 映射关系
             'closeEdi' : 'coin0',
             'openEdi'  : 'coin0',
-            'closeByClick' : 'coin0',
             'closePoint'   : 'wood',
             'openPoint'    : 'wood',
-            'jump'         : 'nudge',
+            'jump'         : 'sa',
             'frozen'       : 'alien',
             'unfrozen'     : 'unfrozen',
             'addCube0'     : 'ting',
@@ -87,13 +86,12 @@ const htmlCode = `
         }
         .myHUD-modalPos {
             margin-left: calc(50% - 140px);
-            margin-top: 4em;
+            margin-top: 6em;
             width: 370px;
             text-align: center;
-            background-color: rgba(51, 204, 111, 0.07);
+            background-color: #ffffff3d;
             padding: 20px;
             backdrop-filter: blur(1px);
-            /* background-color: aliceblue; */
         }
         .texture-editorBtn-lab {
             display: inline-block;
@@ -128,6 +126,17 @@ const htmlCode = `
         #vistaCanv, .myHUD-modal {
             cursor: pointer;
         }
+
+        /* 高级选项展开按钮 */
+        .moreopt-btn {
+            padding-top: 9px;
+        }
+        /* 高级选项面板 */
+        .moreopt-panel {
+            background: #ffbcbc7d;
+            padding: 10px;
+            margin-top: 5px;
+        }
     </style>
     <div id='hotPointInfo'></div>
     <div id="myHUDModal" class="myHUD-modal" hidden>
@@ -155,7 +164,13 @@ const htmlCode = `
                 <button class="texture-editorBtn" id="textureEditorReset">恢复</button>
                 <button class="texture-editorBtn" id="textureEditorOk">确认</button>
                 <button class="texture-editorBtn" id="textureEditorClose">关闭</button>
-                <button class="texture-editorBtn" id="textureEditorCancel">退出</button>
+                <button class="texture-editorBtn" id="textureEditorCancel">退出</button><br>
+                <details>
+                    <summary class="moreopt-btn">更多选项</summary>
+                    <div class="moreopt-panel">
+                        <button class="texture-editorBtn" id="e_delete">删除</button>
+                    </div>
+                </details>
                 <hr>
                 <button class="texture-getCubeData" id="textureGetCubeData">获取数据</button>
             </div>

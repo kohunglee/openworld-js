@@ -111,5 +111,8 @@ export default function(ccgxkObj) {
 
     // 单击旋转【归零】按钮
     e_zero.addEventListener('click', G.e_zero);
+
+    // 单击【删除】按钮
+    e_delete.addEventListener('click', G.e_delete);
 }
 
