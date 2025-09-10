@@ -150,7 +150,7 @@ const htmlCode = `
                 <hr>
                 宽: <input type="number" class="EdiArgsInput" id="objWidth" name="objWidth" min="0.1">
                 高: <input type="number" class="EdiArgsInput" id="objHeight" name="objHeight" min="0.1">
-                纵: <input type="number" class="EdiArgsInput" id="objDepth" name="objDepth" min="0.1">&nbsp;&nbsp;<button id="e_presets">预设</button><br><br>
+                纵: <input type="number" class="EdiArgsInput" id="objDepth" name="objDepth" min="0.1">&nbsp;<button id="e_presets">预设</button><br><br>
                 X: <input type="number" class="EdiArgsInput" id="objPosX" name="objPosX">
                 Y: <input type="number" class="EdiArgsInput" id="objPosY" name="objPosY">
                 Z: <input type="number" class="EdiArgsInput" id="objPosZ" name="objPosZ">&nbsp;&nbsp;&nbsp;&nbsp;<button id="e_round">归整</button><br><br>
