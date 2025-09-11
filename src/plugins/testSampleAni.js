@@ -1,77 +1,155 @@
 /**
- * 简单的动画插件
- * ========
- * 可以生成一些简单的动画，不过代码未经过优化，很多
+ * 经过优化的动画插件
+ * ==================
+ * 动画插件
  */
-
-// 插件入口
 export default function(ccgxkObj) {
+    const animationBlueprints = {
+        jog: {
+            duration: 300,
+            joints: [  // 慢跑
+                { name: 'joint_test',            start: -30, end: 45,  axis: 'x' },
+                { name: 'joint_test_left',       start: 45,  end: -30, axis: 'x' },
+                { name: 'joint_test_right_leg',  start: 45,  end: -30, axis: 'x' },
+                { name: 'joint_test_left_leg',   start: -30, end: 45,  axis: 'x' }
+            ],
+            stopPose: [
+                { name: 'joint_test',            value: 0,  axis: 'rx'  },
+                { name: 'joint_test_left',       value: 0,  axis: 'rx'  },
+                { name: 'joint_test_right_leg',  value: 0,  axis: 'rx'  },
+                { name: 'joint_test_left_leg',   value: 0,  axis: 'rx' }
+            ]
+        },
+        jump: {  // 跳跃
+            duration: 300,
+            joints: [
+                { name: 'joint_test',            start: 30,  end: 75,  axis: 'z' },
+                { name: 'joint_test_left',       start: -30, end: -75, axis: 'z' },
+                { name: 'joint_test_right_leg',  start: 10,  end: 20,  axis: 'x' },
+                { name: 'joint_test_left_leg',   start: 10,  end: 20,  axis: 'x' }
+            ],
+            stopPose: [
+                { name: 'joint_test',      value: 15, axis: 'rz' },
+                { name: 'joint_test_left', value: -15, axis: 'rz' },
+                { name: 'joint_test_right_leg',  value: 0,  axis: 'rx'  },
+                { name: 'joint_test_left_leg',   value: 0,  axis: 'rx' }
+            ]
+        }
+    };
 
-    const runtime = 300;
-    const smoothAnimation = createSwingingAnimation('joint_test', -30, 45, runtime, true);
-    const smoothAnimation_left = createSwingingAnimation('joint_test_left', 45, -30, runtime, true);
-    const smoothAnimation_leg_right = createSwingingAnimation('joint_test_right_leg', 45, -30, runtime, true);
-    const smoothAnimation_leg_left = createSwingingAnimation('joint_test_left_leg', -30, 45, runtime, true);
+    // 动画管理
+    const animationManager = {
+        actions: {},
+        currentAction: null,
+        
+        // 将动画搞到 actions 里
+        init() {
+            for (const name in animationBlueprints) {
+                this.actions[name] = this.buildActionFrom(animationBlueprints[name]);
+            }
+        },
 
-    ccgxkObj.stopmyani = () => {
-        smoothAnimation.stop();
-        smoothAnimation_left.stop();
-        smoothAnimation_leg_right.stop();
-        smoothAnimation_leg_left.stop();
-    }
+        // 绑定动画
+        buildActionFrom(blueprint) {
+            const puppeteers = blueprint.joints.map(jointConfig => 
+                createJointAnimation(jointConfig, blueprint.duration)
+            );
 
-    ccgxkObj.startmyani = () => {
-        smoothAnimation.start();
-        smoothAnimation_left.start();
-        smoothAnimation_leg_right.start();
-        smoothAnimation_leg_left.start();
-    }
+            return {
+                start: () => puppeteers.forEach(p => p.start()),
+                stop: () => {
+                    puppeteers.forEach(p => p.stop());
+                    if (blueprint.stopPose) {
+                        blueprint.stopPose.forEach(pose => {
+                            // 这里 k.W.cube 假设是您的全局对象
+                            k.W.cube({ n: pose.name, [pose.axis]: pose.value });
+                        });
+                    }
+                }
+            };
+        },
 
-    /**
-     * 创建一个可控制的关节摆动动画对象。
-     */
-    function createSwingingAnimation(jointName, startAngle, endAngle, period, useSin) {
-        let animationFrameId = null, startTime = 0;
-        const center = (startAngle + endAngle) / 2;      // 计算角度中心点
-        const amplitude = (startAngle - endAngle) / 2;   // 计算振幅
+        /**
+         * 命令导演：上演某个节目！
+         * @param {string} name - 节目名 (如 'jog' 或 'jump')
+         */
+        play(name) {
+            if (this.currentAction === name || !this.actions[name]) return; // 如果正在进行，则无动作
+            if (this.currentAction) {
+                this.actions[this.currentAction].stop();  // 如果没有，则停止当前节目
+            }
+            this.actions[name].start();  // 启动新节目
+            this.currentAction = name;
+        },
+
+        /**
+         * 停止当前
+         */
+        stopCurrent() {
+            if (this.currentAction) {
+                this.actions[this.currentAction].stop();
+                this.currentAction = null;
+            }
+        }
+    };
+
+    animationManager.init();  // 初始化
+
+    function createJointAnimation(config, duration) {
+        let frameId = null, startTime = 0;
+        const center = (config.start + config.end) / 2;
+        const amplitude = (config.start - config.end) / 2;
+        
         function animate() {
             const elapsed = performance.now() - startTime;
-            const progress = (elapsed % period) / period; // 计算进度 (0 to 1)
-            const factor = useSin ? Math.cos(progress * Math.PI * 2) : 1 - Math.abs(progress * 2 - 1) * 2;
+            const progress = (elapsed % duration) / duration;
+            const factor = Math.cos(progress * Math.PI * 2); // 使用 cos 创造平滑的来回摆动
             const angle = center + amplitude * factor;
-            ccgxkObj.W.cube({ n: jointName, rx: angle });
-            animationFrameId = requestAnimationFrame(animate);
+            
+            const updateConfig = { n: config.name };
+            const axisKey = `r${config.axis}`; // 'x' -> 'rx', 'z' -> 'rz'
+            updateConfig[axisKey] = angle;
+            
+            // 这里 ccgxkObj.W.cube 假设是您传入的对象方法
+            ccgxkObj.W.cube(updateConfig);
+            frameId = requestAnimationFrame(animate);
         }
+
         return {
             start: () => {
-                if (animationFrameId === null) {
+                if (frameId === null) {
                     startTime = performance.now();
                     animate();
                 }
             },
             stop: () => {
-                if (animationFrameId !== null) {
-                    cancelAnimationFrame(animationFrameId);
-                    animationFrameId = null;
-                    k.W.cube({ n: jointName, rx: 0 });
+                if (frameId !== null) {
+                    cancelAnimationFrame(frameId);
+                    frameId = null;
                 }
             }
         };
     }
 
-    let isWPressed = false;
-    window.addEventListener('keydown', (event) => {  // 按下键
-        if (event.code === 'KeyW' && !isWPressed) {
-            isWPressed = true;
-            ccgxkObj.startmyani();
+    // ================== 4. 舞台遥控器 (Event Listeners) ==================
+    // 我们把键盘事件监听器想象成遥控器，它只负责向“总导演”发送指令。
+    // 按下 W，就告诉导演“上演跑步”；松开，就告诉导演“全部停下”。
+    const keyState = { KeyW: false, KeyE: false };
+
+    window.addEventListener('keydown', (event) => {
+        if (!keyState[event.code]) {
+            keyState[event.code] = true;
+            if (event.code === 'KeyW') animationManager.play('jog');
+            if (event.code === 'KeyE') animationManager.play('jump');
         }
     });
-    window.addEventListener('keyup', (event) => {  // 松开键
-        if (event.code === 'KeyW') {
-            isWPressed = false;
-            ccgxkObj.stopmyani();
+
+    window.addEventListener('keyup', (event) => {
+        if (keyState[event.code]) {
+            keyState[event.code] = false;
+            // 只有当两个键都松开时才停止动画，或者根据您的需求调整
+            // 这里简化为，任何一个键松开，都停止当前动画
+            animationManager.stopCurrent();
         }
     });
 }
-
-
