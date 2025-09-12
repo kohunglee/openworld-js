@@ -23,16 +23,16 @@ export default function(ccgxkObj) {
         jump: {  // 跳跃
             duration: 300,
             joints: [
-                { name: 'joint_test',            start: 30,  end: 75,  axis: 'z' },
-                { name: 'joint_test_left',       start: -30, end: -75, axis: 'z' },
-                { name: 'joint_test_right_leg',  start: 10,  end: 20,  axis: 'x' },
-                { name: 'joint_test_left_leg',   start: 10,  end: 20,  axis: 'x' }
+                // { name: 'joint_test',            start: 30,  end: 75,  axis: 'z' },
+                // { name: 'joint_test_left',       start: -30, end: -75, axis: 'z' },
+                // { name: 'joint_test_right_leg',  start: 10,  end: 20,  axis: 'x' },
+                // { name: 'joint_test_left_leg',   start: 10,  end: 20,  axis: 'x' }
             ],
             stopPose: [
-                { name: 'joint_test',      value: 15, axis: 'rz' },
-                { name: 'joint_test_left', value: -15, axis: 'rz' },
-                { name: 'joint_test_right_leg',  value: 0,  axis: 'rx'  },
-                { name: 'joint_test_left_leg',   value: 0,  axis: 'rx' }
+                // { name: 'joint_test',      value: 15, axis: 'rz' },
+                // { name: 'joint_test_left', value: -15, axis: 'rz' },
+                // { name: 'joint_test_right_leg',  value: 0,  axis: 'rx'  },
+                // { name: 'joint_test_left_leg',   value: 0,  axis: 'rx' }
             ]
         }
     };
@@ -140,7 +140,7 @@ export default function(ccgxkObj) {
         if (!keyState[event.code]) {
             keyState[event.code] = true;
             if (event.code === 'KeyW') animationManager.play('jog');
-            if (event.code === 'KeyE') animationManager.play('jump');
+            // if (event.code === 'KeyE') animationManager.play('jump');
         }
     });
 
