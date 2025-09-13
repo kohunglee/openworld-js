@@ -65,7 +65,22 @@ export default function(ccgxkObj) {
                 input.step = stepValue;
             })
         },
-    };
+
+        // 返回 0~360 度之内的度数
+        nDeg : (degree) => {
+            return ((degree % 360) + 360) % 360;
+        },
+
+        // 方便添加 class
+        _applyClassToIds : (elementIds, className) => {
+            elementIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.classList.add(className);
+                }
+            });
+    }   ,
+    }
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
 }
@@ -89,7 +104,7 @@ const htmlCode = `
             margin-top: 6em;
             width: 370px;
             text-align: center;
-            background-color: #ffffff3d;
+            background-color: #ffffff08;
             padding: 20px;
             backdrop-filter: blur(1px);
         }
@@ -137,6 +152,26 @@ const htmlCode = `
             padding: 10px;
             margin-top: 5px;
         }
+
+        /* 编辑器的字上的前后标志 */
+        .e-panel-T:before {
+            content: '↑';
+            position: absolute;
+            margin-left: -7px;
+            margin-top: -3px;
+            color: #ffffff;
+            font-size: 10px;
+            background: #0000004d;
+        }
+        .e-panel-D:before {
+            content: '↓';
+            position: absolute;
+            margin-left: -7px;
+            margin-top: -3px;
+            color: #ffffff;
+            font-size: 10px;
+            background: #0000004d;
+        }
     </style>
     <div id='hotPointInfo'></div>
     <div id="myHUDModal" class="myHUD-modal" hidden>
@@ -148,15 +183,15 @@ const htmlCode = `
                 index: <input type="number" id="objID" name="objID" min="0" max="99999999" step="1" readonly>
                 <button class="texture-copyCubes" id="textureCopyCubes">复制(+1)</button>
                 <hr>
-                宽: <input type="number" class="EdiArgsInput" id="objWidth" name="objWidth" min="0.1">
+                <span id="etext_w">宽:</span> <input type="number" class="EdiArgsInput" id="objWidth" name="objWidth" min="0.1">
                 高: <input type="number" class="EdiArgsInput" id="objHeight" name="objHeight" min="0.1">
-                纵: <input type="number" class="EdiArgsInput" id="objDepth" name="objDepth" min="0.1">&nbsp;<button id="e_presets">预设</button><br><br>
-                X: <input type="number" class="EdiArgsInput" id="objPosX" name="objPosX">
+                <span id="etext_d">纵:</span> <input type="number" class="EdiArgsInput" id="objDepth" name="objDepth" min="0.1">&nbsp;<button id="e_presets">预设</button><br><br>
+                <span id="etext_x">X:</span> <input type="number" class="EdiArgsInput" id="objPosX" name="objPosX">
                 Y: <input type="number" class="EdiArgsInput" id="objPosY" name="objPosY">
-                Z: <input type="number" class="EdiArgsInput" id="objPosZ" name="objPosZ">&nbsp;&nbsp;&nbsp;&nbsp;<button id="e_round">归整</button><br><br>
-                rx: <input type="number" class="EdiArgsInput" id="objRotX" name="objRotX">
+                <span id="etext_z">Z:</span> <input type="number" class="EdiArgsInput" id="objPosZ" name="objPosZ">&nbsp;&nbsp;&nbsp;&nbsp;<button id="e_round">归整</button><br><br>
+                <span id="etext_rx">rx:</span> <input type="number" class="EdiArgsInput" id="objRotX" name="objRotX">
                 ry: <input type="number" class="EdiArgsInput" id="objRotY" name="objRotY">
-                rz: <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ">&nbsp;&nbsp;<button id="e_zero">归零</button><br><br>
+                <span id="etext_rz">rz:</span> <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ">&nbsp;&nbsp;<button id="e_zero">归零</button><br><br>
                 <hr>
                 <input type="checkbox" name="isRealTimeUpdata" id="isRealTimeUpdata" checked> 实时更新 
                 <input type="checkbox" name="rollerPlus" id="rollerPlus" checked> 滚轮加减
