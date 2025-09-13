@@ -19,7 +19,7 @@ export default function(ccgxkObj) {
                 if(lastObj){ lastObj.hidden = true; }
                 G.lastHotId = currHot;
             }
-            if(clearLast) {  // 清除所有的变红方格
+            if(clearLast) {  // 清除所有的变红方格（逻辑可能还需要改，有时候仍存在红色方格）
                 const lastObj = obj.W.next['T' + G?.lastHotId];
                 if(lastObj){ lastObj.hidden = true; }
                 const currObj = obj.W.next['T' + currHot];
