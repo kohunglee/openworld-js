@@ -129,7 +129,7 @@ export default {
     // 供 calMovePara() 调用的常量
     WALK_SPEED: 1 / 8,       // 每帧增加的速度
     SPRINT_MIN_SPEED: 5.0,   // 最低冲刺速度
-    SPRINT_MAX_SPEED: 15.0,  // 最高冲刺速度
+    SPRINT_MAX_SPEED: 35.0,  // 最高冲刺速度
     ACCELERATION: 0.25,      // 每帧增加的速度
     JUMP_STRENGTH: 6.0,      // 跳跃力度
     JUMP_HOLD_LIMIT: 30,     // 允许持续跳跃（施加向上速度）的帧数

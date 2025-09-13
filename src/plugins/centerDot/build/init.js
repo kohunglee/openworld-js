@@ -84,6 +84,7 @@ export default function(ccgxkObj) {
     // 单击复制 +1 按钮
     textureCopyCubes.addEventListener('click', () => {
         G.operaCube(0);
+
     });
 
     // 单击恢复按钮
