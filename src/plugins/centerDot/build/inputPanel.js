@@ -29,28 +29,36 @@ export default function(ccgxkObj) {
                     propertyMap[key].value = f(backupEdi[key]);
                 }
             }
+            G.drawFDico();  // 绘制箭头
+        },
 
-            /* 实验区，尝试搞出来左右对照关系 */
-            var icoFD = [];
-            const thisry = backupEdi.rY;
+        // 在编辑器上绘制【左右变化】、【前后移动】的参考箭头
+        drawFDico : () => {
+            const G = ccgxkObj.centerDot.init;
+            const thisry = G.backupEdi.rY;  //+9 绘制参考箭头
             const mVP = ccgxkObj.mainVPlayer;
             const mVPry = ccgxkObj.calYAngle(mVP.rX, mVP.rY, mVP.rZ) * 180 / Math.PI;
-            const mVPryForm = G.nDeg(mVPry)
-            const degreeDiff = G.nDeg(mVPryForm - thisry + 45) / 90 | 0;
-            // if(thisry > 90 ){
-            //     icoFD.push('etext_rx');
-            // }
-            // console.log((degreeDiff));
-            if(degreeDiff === 0){ 
-                G.addFDico(['etext_d'],['etext_z', 'etext_rx']);
-            }else if(degreeDiff === 1){
-                G.addFDico(['etext_w','etext_rz'],['etext_x']);
-            }else if(degreeDiff === 2){
-                G.addFDico(['etext_d','etext_z','etext_rz'],[]);
-            }else if(degreeDiff === 3){
-                G.addFDico(['etext_w','etext_x'],['etext_rz']);
-            }
-            /* 结束 */
+            const axis = G.calForwardAxis(G.nDeg(mVPry), 0);  // 计算出用户自己正朝向的轴
+            var icoF = [], icoD = [];
+            G.forwardAxis = axis.axis;
+            (axis.nega?icoD:icoF).push('etext_' + axis.axis);  // 正/反数组 添加相应的结果（方块移动的正方向）
+            const widthDepth = G.calForwardAxis(G.nDeg(mVPry), thisry).axis === 'z' ? 'w': 'd';
+            icoF.push('etext_' + widthDepth);  // 正向箭头添加【宽/深】计算结果（方块在用户视角的左右正方向）
+            console.log(icoF, icoD);
+            G.addFDico(icoF, icoD);  // 绘制箭头
+        },
+
+        // 根据物体的朝向之象限，计算哪根轴是它的正方向
+        calForwardAxis : (myAngle, boxAngle) => {
+            const directions = [
+                { axis: 'z', nega: true },
+                { axis: 'x', nega: false },
+                { axis: 'z', nega: false },
+                { axis: 'x', nega: true },
+            ];
+            const delta = (boxAngle - myAngle + 360) % 360;
+            const quadrantIndex = Math.round(delta / 90) % 4;
+            return directions[quadrantIndex];
         },
 
         // 去除所有 前后 标识
@@ -63,19 +71,7 @@ export default function(ccgxkObj) {
         },
 
         // 添加 前后 标识
-        addFDico : (listTOP =
-                        [
-                            // 'etext_w', 'etext_d',
-                            // 'etext_x','etext_z',
-                            // 'etext_rx', 'etext_rz'
-                        ],
-                    listDown =
-                        [
-                            'etext_w', 'etext_d',
-                            'etext_x','etext_z',
-                            'etext_rx', 'etext_rz'
-                        ],
-        ) => {
+        addFDico : (listTOP = [], listDown = []) => {
             const G = ccgxkObj.centerDot.init;
             G._applyClassToIds(listTOP, 'e-panel-T');
             G._applyClassToIds(listDown, 'e-panel-D');
@@ -92,9 +88,9 @@ export default function(ccgxkObj) {
         // 所有属性编辑框共同事件（主要是为了 onchange 事件）
         onchangeForeach : (input) => {
             const G = ccgxkObj.centerDot.init;
-            input.addEventListener('change', ()=>{
+            input.addEventListener('change', ()=>{  // onchange 事件
                 G.modelUpdate();
-            });  // onchange 事件
+            });
             input.addEventListener('mouseover', () => {  // 鼠标悬浮属性值上，自动焦点
                 if(isRealTimeUpdata.checked === false){ return 0; }
                 if(rollerPlus.checked === false){ return 0; }
@@ -126,8 +122,8 @@ export default function(ccgxkObj) {
             const G = ccgxkObj.centerDot.init;
             if(event.target.id === 'myHUDModal' || event.target.id === 'textureEditorClose') {  // 暂时退出编辑模式
                 G.quitPanel(G);
+                G.removeFDicon();
             }
-            G.removeFDicon();
         },
 
         // 退出编辑器，等同于单击画面
@@ -214,10 +210,6 @@ export default function(ccgxkObj) {
             G.modelUpdate();
             G.quitPanel(G);
         },
-
-
-
-
     };
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};

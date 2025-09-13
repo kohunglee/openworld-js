@@ -74,10 +74,15 @@ export default function(ccgxkObj) {
         // 方便添加 class
         _applyClassToIds : (elementIds, className) => {
             elementIds.forEach(id => {
+                console.log(id, className);
                 const element = document.getElementById(id);
                 if (element) {
                     element.classList.add(className);
                 }
+                // var element2 = document.getElementById('etext_d');
+                // if (element2) {
+                //     element2.classList.add('e-panel-T');
+                // }
             });
     }   ,
     }
