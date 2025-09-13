@@ -149,7 +149,8 @@ export default function(ccgxkObj) {
             keyState[event.code] = false;
             // 只有当两个键都松开时才停止动画，或者根据您的需求调整
             // 这里简化为，任何一个键松开，都停止当前动画
-            animationManager.stopCurrent();
+            // animationManager.stopCurrent();
+            if (event.code === 'KeyW') animationManager.stopCurrent();
         }
     });
 }

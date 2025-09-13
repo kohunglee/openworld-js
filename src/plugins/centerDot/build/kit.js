@@ -133,7 +133,7 @@ const htmlCode = `
         }
         /* 高级选项面板 */
         .moreopt-panel {
-            background: #ffbcbc7d;
+            background: #ffffff0d;
             padding: 10px;
             margin-top: 5px;
         }
