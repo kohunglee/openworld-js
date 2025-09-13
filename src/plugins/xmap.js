@@ -80,7 +80,7 @@ function drawRedDot(canvasElement, ccgxkObj) {
     ctx.beginPath();
     ctx.moveTo(finalPlayerX, finalPlayerY);
     const mainPlayer = ccgxkObj.W.current.mainPlayer;
-    const northAngle = k.calYAngle(mainPlayer.rx, mainPlayer.ry, mainPlayer.rz);
+    const northAngle = ccgxkObj.calYAngle(mainPlayer.rx, mainPlayer.ry, mainPlayer.rz);
     const lineEndX = finalPlayerX - 100 * Math.sin(northAngle);
     const lineEndY = finalPlayerY - 100 * Math.cos(northAngle);
     ctx.lineTo(lineEndX, lineEndY);

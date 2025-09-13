@@ -29,8 +29,57 @@ export default function(ccgxkObj) {
                     propertyMap[key].value = f(backupEdi[key]);
                 }
             }
+
+            /* 实验区，尝试搞出来左右对照关系 */
+            var icoFD = [];
+            const thisry = backupEdi.rY;
+            const mVP = ccgxkObj.mainVPlayer;
+            const mVPry = ccgxkObj.calYAngle(mVP.rX, mVP.rY, mVP.rZ) * 180 / Math.PI;
+            const mVPryForm = G.nDeg(mVPry)
+            const degreeDiff = G.nDeg(mVPryForm - thisry + 45) / 90 | 0;
+            // if(thisry > 90 ){
+            //     icoFD.push('etext_rx');
+            // }
+            // console.log((degreeDiff));
+            if(degreeDiff === 0){ 
+                G.addFDico(['etext_d'],['etext_z', 'etext_rx']);
+            }else if(degreeDiff === 1){
+                G.addFDico(['etext_w','etext_rz'],['etext_x']);
+            }else if(degreeDiff === 2){
+                G.addFDico(['etext_d','etext_z','etext_rz'],[]);
+            }else if(degreeDiff === 3){
+                G.addFDico(['etext_w','etext_x'],['etext_rz']);
+            }
+            /* 结束 */
         },
 
+        // 去除所有 前后 标识
+        removeFDicon : () => {
+            const elements = document
+                .querySelectorAll('.e-panel-T, .e-panel-D');
+            elements.forEach(el => {
+                el.classList.remove('e-panel-T', 'e-panel-D');
+            });
+        },
+
+        // 添加 前后 标识
+        addFDico : (listTOP =
+                        [
+                            // 'etext_w', 'etext_d',
+                            // 'etext_x','etext_z',
+                            // 'etext_rx', 'etext_rz'
+                        ],
+                    listDown =
+                        [
+                            'etext_w', 'etext_d',
+                            'etext_x','etext_z',
+                            'etext_rx', 'etext_rz'
+                        ],
+        ) => {
+            const G = ccgxkObj.centerDot.init;
+            G._applyClassToIds(listTOP, 'e-panel-T');
+            G._applyClassToIds(listDown, 'e-panel-D');
+        },
 
         // 单击取消键后
         cancelAction : () => {
@@ -78,6 +127,7 @@ export default function(ccgxkObj) {
             if(event.target.id === 'myHUDModal' || event.target.id === 'textureEditorClose') {  // 暂时退出编辑模式
                 G.quitPanel(G);
             }
+            G.removeFDicon();
         },
 
         // 退出编辑器，等同于单击画面
