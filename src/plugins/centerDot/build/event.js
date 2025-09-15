@@ -31,8 +31,8 @@ export default function(ccgxkObj) {
             'mozPointerLockElement' in document || 
             'webkitPointerLockElement' in document) {
                 const exitLock = document.exitPointerLock || 
-                                document.mozExitPointerLock || 
-                                document.webkitExitPointerLock;
+                                 document.mozExitPointerLock || 
+                                 document.webkitExitPointerLock;
                 if (exitLock) {
                     exitLock.call(document);
                 }

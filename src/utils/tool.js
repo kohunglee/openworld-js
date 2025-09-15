@@ -52,8 +52,8 @@ export default {
     cannonDefaultCantactMaterial : new CANNON.ContactMaterial( // 默认材质关联材质
         new CANNON.Material(),
         new CANNON.Material(), {
-            friction: 0.1, // 摩擦力
-            restitution: 0.0, // 弹性系数
+            friction: 100, // 摩擦力
+            restitution: 0.1, // 弹性系数
     }),
 
     // 音乐合成器

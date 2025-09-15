@@ -44,7 +44,6 @@ export default function(ccgxkObj) {
             (axis.nega?icoD:icoF).push('etext_' + axis.axis);  // 正/反数组 添加相应的结果（方块移动的正方向）
             const widthDepth = G.calForwardAxis(G.nDeg(mVPry), thisry).axis === 'z' ? 'w': 'd';
             icoF.push('etext_' + widthDepth);  // 正向箭头添加【宽/深】计算结果（方块在用户视角的左右正方向）
-            console.log(icoF, icoD);
             G.addFDico(icoF, icoD);  // 绘制箭头
         },
 
@@ -122,7 +121,6 @@ export default function(ccgxkObj) {
             const G = ccgxkObj.centerDot.init;
             if(event.target.id === 'myHUDModal' || event.target.id === 'textureEditorClose') {  // 暂时退出编辑模式
                 G.quitPanel(G);
-                G.removeFDicon();
             }
         },
 
@@ -132,6 +130,7 @@ export default function(ccgxkObj) {
             ccgxkObj.drawPointPause = false;  // 恢复绘制
             G.lockPointer();  // 锁定鼠标
             G.displayHotModel(true);
+            G.removeFDicon();  // 清除绘制的箭头标识
             G.music('closeEdi');
         },
 
