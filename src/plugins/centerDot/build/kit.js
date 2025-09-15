@@ -74,15 +74,10 @@ export default function(ccgxkObj) {
         // 方便添加 class
         _applyClassToIds : (elementIds, className) => {
             elementIds.forEach(id => {
-                console.log(id, className);
                 const element = document.getElementById(id);
                 if (element) {
                     element.classList.add(className);
                 }
-                // var element2 = document.getElementById('etext_d');
-                // if (element2) {
-                //     element2.classList.add('e-panel-T');
-                // }
             });
     }   ,
     }
@@ -150,6 +145,7 @@ const htmlCode = `
         /* 高级选项展开按钮 */
         .moreopt-btn {
             padding-top: 9px;
+            user-select: none;
         }
         /* 高级选项面板 */
         .moreopt-panel {

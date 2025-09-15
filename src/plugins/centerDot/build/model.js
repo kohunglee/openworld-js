@@ -9,6 +9,7 @@ export default function(ccgxkObj) {
     var g = {
         // 显示被选中的模型，物体变红
         displayHotModel : (clearLast = false, displayIndex = -1) => {
+            return 0;
             const G = ccgxkObj.centerDot.init;
             const obj = ccgxkObj;
             const currHot = obj.hotPoint;
