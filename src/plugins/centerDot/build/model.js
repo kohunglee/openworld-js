@@ -8,9 +8,11 @@ export default function(ccgxkObj) {
     
     var g = {
         // 显示被选中的模型，物体变红
+        isDisplayHotModel : false,
         displayHotModel : (clearLast = false, displayIndex = -1) => {
-            return 0;
             const G = ccgxkObj.centerDot.init;
+            if(G.isDisplayHotModel === false) return 0;
+            console.log(G.displayHotModel);
             const obj = ccgxkObj;
             const currHot = obj.hotPoint;
             if(currHot !== G?.lastHotId){
@@ -33,6 +35,9 @@ export default function(ccgxkObj) {
         // 操作方块
         operaCube : (type = 0, vis = false) => {
             const G = ccgxkObj.centerDot.init;
+            if(G.isDisplayHotModel === false) {
+                vis = true;
+            }
             // !!!! 一个临时的解决方案，新开辟了 visCubeLen
             const obj = ccgxkObj;
             const newIndex = obj.visCubeLen + 2;
@@ -92,7 +97,7 @@ export default function(ccgxkObj) {
                 width: parseFloat(objWidth.value),
                 height: parseFloat(objHeight.value),
                 depth: parseFloat(objDepth.value),
-                isInvisible: false,
+                isInvisible: (!G.isDisplayHotModel),
             };
 
             const orgs_Args = {...ccgxkObj.indexToArgs.get(index)};

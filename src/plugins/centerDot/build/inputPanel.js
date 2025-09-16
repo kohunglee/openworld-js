@@ -40,11 +40,13 @@ export default function(ccgxkObj) {
             const mVPry = ccgxkObj.calYAngle(mVP.rX, mVP.rY, mVP.rZ) * 180 / Math.PI;
             const axis = G.calForwardAxis(G.nDeg(mVPry), 0);  // 计算出用户自己正朝向的轴
             var icoF = [], icoD = [];
-            G.forwardAxis = axis.axis;
+            G.forwardAxis = axis;
             (axis.nega?icoD:icoF).push('etext_' + axis.axis);  // 正/反数组 添加相应的结果（方块移动的正方向）
             const widthDepth = G.calForwardAxis(G.nDeg(mVPry), thisry).axis === 'z' ? 'w': 'd';
+            G.axis_widthDepth = widthDepth;  // 记录当前宽/深轴
             icoF.push('etext_' + widthDepth);  // 正向箭头添加【宽/深】计算结果（方块在用户视角的左右正方向）
             G.addFDico(icoF, icoD);  // 绘制箭头
+            return 
         },
 
         // 根据物体的朝向之象限，计算哪根轴是它的正方向
