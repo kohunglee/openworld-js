@@ -121,5 +121,40 @@ export default function(ccgxkObj) {
     e_bassT.addEventListener('click', (e)=>{G.bassSet(e, 1)});
     e_bassR.addEventListener('click', (e)=>{G.bassSet(e, 2)});
     e_bassB.addEventListener('click', (e)=>{G.bassSet(e, 3)});
+
+    // // 找到我们的“石巨窗”
+    // const dragWindow = document.getElementById('myHUDObjEditor');
+    // let isDragging = false, offsetX, offsetY;
+
+    // // 咒语一：当鼠标按下时，“缔结契约”
+    // dragWindow.addEventListener('mousedown', e => {
+    //     isDragging = true; // 激活拖拽状态
+    //     offsetX = e.clientX - dragWindow.getBoundingClientRect().left;
+    //     offsetY = e.clientY - dragWindow.getBoundingClientRect().top;
+    //     dragWindow.style.cursor = 'grabbing'; // 切换为抓紧的手势
+    // });
+    // document.addEventListener('mousemove', e => {
+    //     if (!isDragging) return; // 如果契约未激活，则忽略所有移动
+    //     dragWindow.style.marginLeft = `${e.clientX - offsetX}px`;
+    //     dragWindow.style.marginTop = `${e.clientY - offsetY}px`;
+    // });
+
+    // document.addEventListener('mouseup', () => {
+    //     isDragging = false;
+    //     dragWindow.style.cursor = 'grab'; // 恢复可抓取手势
+    // });
+
+
+    myHUDObjEditor.addEventListener('mousedown', e => {  // 面板的移动初始化
+        G.panelMoveInit(e);
+    });
+    document.addEventListener('mousemove', e => {  // 面板移动
+        G.panelMove(e);
+    });
+    document.addEventListener('mouseup', () => {  // 面板结束移动
+        G.panelMoveEnd();
+    });
+
+
 }
 
