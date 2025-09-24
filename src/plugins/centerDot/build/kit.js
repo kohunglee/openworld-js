@@ -145,6 +145,7 @@ const htmlCode = `
 
         /* 高级选项展开按钮 */
         .moreopt-btn {
+            cursor: pointer;
             padding-top: 9px;
             user-select: none;
         }
@@ -177,12 +178,35 @@ const htmlCode = `
 
         /* 基点的临时的样式 */
         .editor-bass {
-            margin-block: 10px;
+            position: absolute;
+            left: 315px;
+            top: 190px;
+        }
+        .editor-bass button {
+            position: absolute;
+            height: 20px;
+            width: 20px;
+        }
+        button#e_bassL {
+            left: -11px;
+            top: 40px;
+        }
+        button#e_bassB {
+            left: 14px;
+            top: 60px;
+        }
+        button#e_bassR {
+            left: 40px;
+            top: 40px;
+        }
+        button#e_bassT {
+            top: 16px;
+            left: 14px;
         }
     </style>
     <div id='hotPointInfo'></div>
     <div id="myHUDModal" class="myHUD-modal" hidden>
-        <div class="myHUD-modalPos">
+        <div class="myHUD-modalPos" id="myHUDObjEditor">
             <div id='objEditor'>
                 <div>
                     <span id="textureEditorInfo"></span>
@@ -200,10 +224,10 @@ const htmlCode = `
                 ry: <input type="number" class="EdiArgsInput" id="objRotY" name="objRotY">
                 <span id="etext_rz">rz:</span> <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ">&nbsp;&nbsp;<button id="e_zero">归零</button><br>
                 <div class="editor-bass">
-                    <button class="texture-editorBtn" id="e_bassL">左</button>
-                    <button class="texture-editorBtn" id="e_bassT">上</button>
-                    <button class="texture-editorBtn" id="e_bassR">右</button>
-                    <button class="texture-editorBtn" id="e_bassB">下</button>
+                    <button class="texture-editorBtn" id="e_bassL"></button>
+                    <button class="texture-editorBtn" id="e_bassT"></button>
+                    <button class="texture-editorBtn" id="e_bassR"></button>
+                    <button class="texture-editorBtn" id="e_bassB"></button>
                 </div>
                 <hr>
                 <input type="checkbox" name="isRealTimeUpdata" id="isRealTimeUpdata" checked> 实时更新 

@@ -277,6 +277,27 @@ export default function(ccgxkObj) {
             e_bassR.style.backgroundColor = (type === 2)? 'red' : 'revert';
             e_bassB.style.backgroundColor = (type === 3)? 'red' : 'revert';
         },
+
+        // 面板的移动
+        isDragging : false,
+        panelMoveInit : (e) => {
+            const G = ccgxkObj.centerDot.init;
+            G.isDragging = true; // 激活拖拽状态
+            G.panelOffsetX = e.clientX - myHUDObjEditor.getBoundingClientRect().left;
+            G.panelOffsetY = e.clientY - myHUDObjEditor.getBoundingClientRect().top;
+            myHUDObjEditor.style.cursor = 'grabbing'; // 切换为抓紧的手势
+        },
+        panelMove : (e) => {
+            const G = ccgxkObj.centerDot.init;
+            if (!G.isDragging) return; // 如果契约未激活，则忽略所有移动
+            myHUDObjEditor.style.marginLeft = `${e.clientX - G.panelOffsetX}px`;
+            myHUDObjEditor.style.marginTop = `${e.clientY - G.panelOffsetY}px`;
+        },
+        panelMoveEnd : () => {
+            const G = ccgxkObj.centerDot.init;
+            G.isDragging = false;
+            myHUDObjEditor.style.cursor = 'grab'; // 恢复可抓取手势
+        },
     };
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
