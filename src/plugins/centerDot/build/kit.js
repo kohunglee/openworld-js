@@ -177,7 +177,7 @@ const htmlCode = `
     <div id='hotPointInfo'></div>
     <div id="myHUDModal" class="myHUD-modal" hidden>
         <div class="myHUD-modalPos">
-            <div>
+            <div id='objEditor'>
                 <div>
                     <span id="textureEditorInfo"></span>
                 </div>

@@ -52,13 +52,13 @@ export default function(ccgxkObj) {
         keyEvent : (event) => {
             const G = ccgxkObj.centerDot.init;
             const key = event.key.toLowerCase();
-            if(G.disListen() === false) {  // 仅在编辑器打开时有效的内容
+            if(G.disListen() === false && document.activeElement.tagName !== 'INPUT') {  // 键盘操作物体，仅在编辑器打开且未激活 input 有效
                 const action = G.keyActionMap[key];
                 if (action) {
                     const forwardSign = G.forwardAxis.nega ? -1 : 1;  // 根据【罗盘】确定前进后退
                     const initialSideSign = (G.forwardAxis.nega !== (G.axis_widthDepth === 'd')) ? 1 : -1;  // 确定侧向移动
                     const isSpaceWarped = (G.axis_widthDepth === 'd' && G.forwardAxis.axis === 'z') ||  // 一个难以解释的 bug 修复
-                                        (G.axis_widthDepth === 'w' && G.forwardAxis.axis === 'x');
+                                          (G.axis_widthDepth === 'w' && G.forwardAxis.axis === 'x');
                     const sidewaysSign = initialSideSign * (isSpaceWarped ? -1 : 1);
                     const isForwardMove = action.type === 'forward';  // 确定是前进还是侧移
                     const directionSign = isForwardMove ? forwardSign : sidewaysSign;  // 最终的推力方向
@@ -70,7 +70,6 @@ export default function(ccgxkObj) {
                     targetFoot.value = G.f(+targetFoot.value + delta);  // 修改参数
                     G.modelUpdate();  // 重绘世界
                 }
-                
                 return 0;
             }
             if(key === 'f') {  // 键盘上的 f 键被按下（冻结物体）
@@ -87,12 +86,12 @@ export default function(ccgxkObj) {
                     G.music('frozen');
                 }
             }
-            if(key === 'r') {  // 添加一个新的方块（跟随）
+            if(key === 'r' && G.newCubePosType) {  // 添加一个新的方块（跟随）
                 G.operaCube(1);
                 G.hotAction(ccgxkObj.visCubeLen + 1 );
             }
 
-            if(key === 'x') {  // 添加一个新的方块（固定）
+            if(key === 'x' && G.newCubePosType) {  // 添加一个新的方块（固定）
                 G.operaCube(1, true);
             }
 
@@ -105,7 +104,11 @@ export default function(ccgxkObj) {
             arrowup:    { dir:  1, type: 'forward' },
             arrowdown:  { dir: -1, type: 'forward' },
             arrowright: { dir:  1, type: 'sideways' },
-            arrowleft:  { dir: -1, type: 'sideways' }
+            arrowleft:  { dir: -1, type: 'sideways' },
+            w :        { dir:  1, type: 'forward' },
+            s :        { dir: -1, type: 'forward' },
+            d :        { dir:  1, type: 'sideways' },
+            a :        { dir: -1, type: 'sideways' },
         },
 
     };

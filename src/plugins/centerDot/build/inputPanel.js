@@ -116,6 +116,11 @@ export default function(ccgxkObj) {
                     G.modelUpdate();
                 }
             }, { passive: false });
+            input.addEventListener('mouseout', () => { // 鼠标移出，焦点失去
+                if(isRealTimeUpdata.checked === false){ return 0; }
+                if(rollerPlus.checked === false){ return 0; }
+                input.blur(); // 主动失去焦点
+            });
         },
 
         // 单击画面后的事件（如 退出编辑）
