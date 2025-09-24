@@ -46,7 +46,7 @@ export default function(ccgxkObj) {
             G.axis_widthDepth = widthDepth;  // 记录当前宽/深轴
             icoF.push('etext_' + widthDepth);  // 正向箭头添加【宽/深】计算结果（方块在用户视角的左右正方向）
             G.addFDico(icoF, icoD);  // 绘制箭头
-            return 
+            return 0;
         },
 
         // 根据物体的朝向之象限，计算哪根轴是它的正方向
@@ -89,7 +89,13 @@ export default function(ccgxkObj) {
         // 所有属性编辑框共同事件（主要是为了 onchange 事件）
         onchangeForeach : (input) => {
             const G = ccgxkObj.centerDot.init;
-            input.addEventListener('change', ()=>{  // onchange 事件
+            input.addEventListener('focus', (e)=>{  // focus 事件，记录 change 之前的值，方便计算 step
+                G.lastInputValue = e.target.value;
+            });
+            input.addEventListener('change', (e)=>{  // onchange 事件
+                const step = (e.target.value - G.lastInputValue).toFixed(4);
+                G.lastInputValue = e.target.value;
+                G.deformationBase(input.id, step);
                 G.modelUpdate();
             });
             input.addEventListener('mouseover', () => {  // 鼠标悬浮属性值上，自动焦点
@@ -105,13 +111,10 @@ export default function(ccgxkObj) {
                 var step = 0.1;
                 var minValue = input.min;
                 var currentValue = +input.value;
-                if (event.deltaY < 0) {
-                    currentValue += step;
-                } else if (event.deltaY > 0) {
-                    currentValue -= step;
-                }
+                if (event.deltaY > 0) { step = -step }  // 滚轮向下，step 负值
                 if(!minValue || (minValue && (currentValue > minValue)) ){
-                    input.value = G.f(currentValue);
+                    input.value = (currentValue+step).toFixed(2);
+                    G.deformationBase(input.id, step);  // 基点操作的逻辑
                     input.select();
                     G.modelUpdate();
                 }
@@ -139,6 +142,7 @@ export default function(ccgxkObj) {
             G.displayHotModel(true);
             G.removeFDicon();  // 清除绘制的箭头标识
             G.music('closeEdi');
+            G.bassSet(null, -1);
         },
 
         // 在屏幕左上角显示当前热点的信息
@@ -216,7 +220,71 @@ export default function(ccgxkObj) {
             G.modelUpdate();
             G.quitPanel(G);
         },
+
+        // 物体形变的基点（边）逻辑
+        deformationBaseType : -1,  // 0 左基点，1 上基点，2 右基点，3 下基点
+        deformationBase: (inputID, step) => {
+            const G = ccgxkObj.centerDot.init;
+            const xValue = +objPosX.value;
+            const yValue = +objPosY.value;
+            const zValue = +objPosZ.value;
+            const wOrD = (G.axis_widthDepth === 'w') ? 'objWidth' : 'objDepth';
+            var radians = objRotY.value * (Math.PI / 180);  // 旋转角度（当前只支持 Y 轴，未来再加别的吧）
+            if(G.deformationBaseType === 0){  // 左基点
+                if(inputID === wOrD){
+                    if(!G.forwardAxis.nega){step = -step}
+                    if((G.axis_widthDepth === 'w')){
+                        objPosX.value = (xValue+step/2*Math.cos(radians));
+                        objPosZ.value = (zValue-step/2*Math.sin(radians));
+                    } else {
+                        objPosX.value = (xValue-step/2*Math.sin(radians));  // 为减去，下同
+                        objPosZ.value = (zValue-step/2*Math.cos(radians));
+                    }
+                }
+            } else if (G.deformationBaseType === 2){  // 右基点
+                if(inputID === wOrD){
+                    step = -step;
+                    if(!G.forwardAxis.nega){step = -step}
+                    if((G.axis_widthDepth === 'w')){
+                        objPosX.value = (xValue+step/2*Math.cos(radians));
+                        objPosZ.value = (zValue-step/2*Math.sin(radians));
+                    } else {
+                        objPosX.value = (xValue-step/2*Math.sin(radians));
+                        objPosZ.value = (zValue-step/2*Math.cos(radians));
+                    }
+                }
+            } else if (G.deformationBaseType === 1){  // 上基点
+                if(inputID === 'objHeight'){
+                    step = -step;
+                    objPosY.value = (yValue+step/2).toFixed(2);
+                }
+            } else if (G.deformationBaseType === 3){  // 下基点
+                if(inputID === 'objHeight'){
+                    objPosY.value = (yValue+step/2).toFixed(2);
+                }
+            }
+        },
+
+        // 基点的设置
+        bassSet : (e, type) => {
+            const G = ccgxkObj.centerDot.init;
+            if(type === G.deformationBaseType){
+                type = G.deformationBaseType = -1;
+            }
+            G.deformationBaseType = type;
+            e_bassL.style.backgroundColor = (type === 0)? 'red' : 'revert';
+            e_bassT.style.backgroundColor = (type === 1)? 'red' : 'revert';
+            e_bassR.style.backgroundColor = (type === 2)? 'red' : 'revert';
+            e_bassB.style.backgroundColor = (type === 3)? 'red' : 'revert';
+        },
     };
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
 }
+
+
+
+
+
+
+

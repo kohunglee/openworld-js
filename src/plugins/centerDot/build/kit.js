@@ -26,11 +26,12 @@ export default function(ccgxkObj) {
 
         // 保留小数使用，智能修剪
         f : (num, digits = 2) => {
-            if (typeof num !== 'number' || num % 1 === 0) {
-                return num;
-            }
-            const shifter = Math.pow(10, digits); // 创造一个放大/缩小的工具 (100)
-            return Math.trunc(num * shifter) / shifter;
+            // if (typeof num !== 'number' || num % 1 === 0) {
+            //     return num;
+            // }
+            // const shifter = Math.pow(10, digits); // 创造一个放大/缩小的工具 (100)
+            // return Math.trunc(num * shifter) / shifter;
+            return num.toFixed(digits)
         },
 
         // 一些禁止监听键盘事件的场景
@@ -173,6 +174,11 @@ const htmlCode = `
             font-size: 10px;
             background: #0000004d;
         }
+
+        /* 基点的临时的样式 */
+        .editor-bass {
+            margin-block: 10px;
+        }
     </style>
     <div id='hotPointInfo'></div>
     <div id="myHUDModal" class="myHUD-modal" hidden>
@@ -192,11 +198,17 @@ const htmlCode = `
                 <span id="etext_z">Z:</span> <input type="number" class="EdiArgsInput" id="objPosZ" name="objPosZ">&nbsp;&nbsp;&nbsp;&nbsp;<button id="e_round">归整</button><br><br>
                 <span id="etext_rx">rx:</span> <input type="number" class="EdiArgsInput" id="objRotX" name="objRotX">
                 ry: <input type="number" class="EdiArgsInput" id="objRotY" name="objRotY">
-                <span id="etext_rz">rz:</span> <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ">&nbsp;&nbsp;<button id="e_zero">归零</button><br><br>
+                <span id="etext_rz">rz:</span> <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ">&nbsp;&nbsp;<button id="e_zero">归零</button><br>
+                <div class="editor-bass">
+                    <button class="texture-editorBtn" id="e_bassL">左</button>
+                    <button class="texture-editorBtn" id="e_bassT">上</button>
+                    <button class="texture-editorBtn" id="e_bassR">右</button>
+                    <button class="texture-editorBtn" id="e_bassB">下</button>
+                </div>
                 <hr>
                 <input type="checkbox" name="isRealTimeUpdata" id="isRealTimeUpdata" checked> 实时更新 
                 <input type="checkbox" name="rollerPlus" id="rollerPlus" checked> 滚轮加减
-                <br><br>
+                <br>
                 <button class="texture-editorBtn" id="textureEditorReset">恢复</button>
                 <button class="texture-editorBtn" id="textureEditorOk">确认</button>
                 <button class="texture-editorBtn" id="textureEditorClose">关闭</button>

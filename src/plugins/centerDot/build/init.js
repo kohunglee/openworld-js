@@ -115,5 +115,11 @@ export default function(ccgxkObj) {
 
     // 单击【删除】按钮
     e_delete.addEventListener('click', G.e_delete);
+
+    // 基点 左上右下
+    e_bassL.addEventListener('click', (e)=>{G.bassSet(e, 0)});
+    e_bassT.addEventListener('click', (e)=>{G.bassSet(e, 1)});
+    e_bassR.addEventListener('click', (e)=>{G.bassSet(e, 2)});
+    e_bassB.addEventListener('click', (e)=>{G.bassSet(e, 3)});
 }
 
