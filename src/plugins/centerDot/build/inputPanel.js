@@ -92,6 +92,19 @@ export default function(ccgxkObj) {
             input.addEventListener('focus', (e)=>{  // focus 事件，记录 change 之前的值，方便计算 step
                 G.lastInputValue = e.target.value;
             });
+            input.addEventListener('keydown', (e)=>{  // 主要用于处理魔法数字
+                if(magicNum.value){
+                    if(e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        input.value = (+magicNum.value + +input.value);
+                        G.modelUpdate();
+                    }
+                    if(e.key.slice(0, 5) === 'Arrow') {
+                        magicNum.value = '';
+                        magicNum.hidden = true;
+                    }
+                }
+            })
             input.addEventListener('change', (e)=>{  // onchange 事件
                 const step = (e.target.value - G.lastInputValue).toFixed(4);
                 G.lastInputValue = e.target.value;
@@ -113,6 +126,13 @@ export default function(ccgxkObj) {
                 var currentValue = +input.value;
                 if (event.deltaY > 0) { step = -step }  // 滚轮向下，step 负值
                 if(!minValue || (minValue && (currentValue > minValue)) ){
+                    if(magicNum.value) {  // 处理魔法数字
+                        if(step > 0){
+                            step = Number(magicNum.value);
+                        }
+                        magicNum.value = '';
+                        magicNum.hidden = true;
+                    }
                     input.value = (currentValue+step).toFixed(2);
                     G.deformationBase(input.id, step);  // 基点操作的逻辑
                     input.select();
@@ -298,6 +318,19 @@ export default function(ccgxkObj) {
             G.isDragging = false;
             myHUDObjEditor.style.cursor = 'grab'; // 恢复可抓取手势
         },
+
+        // 魔法数字的离开
+        magicNumBlur : (e) => {
+            const G = ccgxkObj.centerDot.init;
+            if(!(e.key >= 0 && e.key <= 9)){
+                if(e.key !== 'Backspace'){
+                    console.log(e.key);
+                    e.preventDefault();
+                    e.target.blur();
+                }
+                
+            }
+        }
     };
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
