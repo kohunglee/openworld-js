@@ -92,7 +92,13 @@ export default function(ccgxkObj) {
             ccgxkObj.centerPointColorUpdatax = setInterval(() => {
                 globalVar.drawPoint(canvas, ccgxkObj, false, 3);
             }, 100);
-            ccgxkObj.mainCamera.pos = {x:0, y:0.9, z:-0.8};
+
+            if(ccgxkObj.centerDot.init){  // 注意，这是插件测试，在下面的关闭也有，后续再优化位置，现在速度为先！
+                ccgxkObj.centerDot.init.setCamView('first');
+            } else {
+                ccgxkObj.mainCamera.pos = {x:0, y:0.9, z:-0.8};
+            }
+            
         },
 
 
@@ -104,7 +110,11 @@ export default function(ccgxkObj) {
             globalVar.drawPoint(canvas, ccgxkObj, true, 1);
             clearInterval(ccgxkObj.centerPointColorUpdatax);
             ccgxkObj.centerPointColorUpdatax = null;  // 避免重复清除
-            ccgxkObj.mainCamera.pos = {x: 0, y: 2, z: 4};
+            if(ccgxkObj.centerDot.init){
+                ccgxkObj.centerDot.init.setCamView('third');
+            } else {
+                ccgxkObj.mainCamera.pos = {x: 0, y: 2, z: 4};
+            }
         },
 
  

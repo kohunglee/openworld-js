@@ -200,8 +200,14 @@ const htmlCode = `
             top: 40px;
         }
         button#e_bassT {
-            top: 16px;
+            top: 19px;
             left: 14px;
+        }
+        span.editor-bass-info {
+            position: absolute;
+            width: 32px;
+            top: 38px;
+            left: 9px;
         }
     </style>
     <div id='hotPointInfo'></div>
@@ -224,6 +230,7 @@ const htmlCode = `
                 ry: <input type="number" class="EdiArgsInput" id="objRotY" name="objRotY">
                 <span id="etext_rz">rz:</span> <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ">&nbsp;&nbsp;<button id="e_zero">归零</button><br>
                 <div class="editor-bass">
+                    <span class="editor-bass-info">基点</span>
                     <button class="texture-editorBtn" id="e_bassL"></button>
                     <button class="texture-editorBtn" id="e_bassT"></button>
                     <button class="texture-editorBtn" id="e_bassR"></button>

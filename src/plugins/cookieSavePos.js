@@ -11,7 +11,7 @@ export default function(ccgxkObj){
         const mPos = mvp.body.position;  //+2 储存主角的位置到 COOKIE
         setObjectCookie('lastPos_mvp', {
             x: mPos.x, y: mPos.y, z: mPos.z,
-            rX: mvp.rX, rY:mvp.rY, rZ:mvp.rZ,  // 暂时不研究了，好像没法储存选择
+            rX: mvp.rX, rY:mvp.rY, rZ:mvp.rZ,  // 暂时不研究了，好像没法储存旋转
         }); // 存储对象到Cookie
     }, 1000)
 
@@ -33,7 +33,7 @@ export default function(ccgxkObj){
         for(let i = 0; i < cookieArr.length; i++) {
             const cookiePair = cookieArr[i].split('=');
             if(name === cookiePair[0]) {
-            return JSON.parse(decodeURIComponent(cookiePair[1]));
+                return JSON.parse(decodeURIComponent(cookiePair[1]));
             }
         }
         return null;
