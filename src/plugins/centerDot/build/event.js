@@ -52,9 +52,13 @@ export default function(ccgxkObj) {
         keyEvent : (event) => {
             const G = ccgxkObj.centerDot.init;
             const key = event.key.toLowerCase();
-            if(G.disListen() === false && document.activeElement.tagName !== 'INPUT') {  // 键盘操作物体，仅在编辑器打开且未激活 input 有效
+            if(G.disListen() === false && document.activeElement.tagName !== 'INPUT') {  // 仅在编辑器打开且未激活 input 有效
+                if(key >= "0" && key <= "9" || key === '-') {  // 数字键，激活【神奇数字叠加值】
+                    magicNum.hidden = false;
+                    magicNum.focus();
+                }
                 const action = G.keyActionMap[key];
-                if (action) {
+                if (action) {  //键盘操作物体
                     const forwardSign = G.forwardAxis.nega ? -1 : 1;  // 根据【罗盘】确定前进后退
                     const initialSideSign = (G.forwardAxis.nega !== (G.axis_widthDepth === 'd')) ? 1 : -1;  // 确定侧向移动
                     const isSpaceWarped = (G.axis_widthDepth === 'd' && G.forwardAxis.axis === 'z') ||  // 一个难以解释的 bug 修复
@@ -62,11 +66,17 @@ export default function(ccgxkObj) {
                     const sidewaysSign = initialSideSign * (isSpaceWarped ? -1 : 1);
                     const isForwardMove = action.type === 'forward';  // 确定是前进还是侧移
                     const directionSign = isForwardMove ? forwardSign : sidewaysSign;  // 最终的推力方向
-                    const delta = action.dir * directionSign * 0.1;  // 计算步长
+                    var delta = action.dir * directionSign * 0.1;  // 计算步长
                     const feet = { x: objPosX, z: objPosZ };  // 机器人的两个轴
                     const forwardAxisName = G.forwardAxis.axis;  // 确定朝向轴
                     const targetAxisName = isForwardMove ? forwardAxisName : (forwardAxisName === 'x' ? 'z' : 'x');
                     const targetFoot = feet[targetAxisName];
+                    if(magicNum.value){
+                        delta = delta > 0 ? magicNum.value : -magicNum.value;
+                        delta = Number(delta);
+                        magicNum.value = '';
+                        magicNum.hidden = true;
+                    }
                     targetFoot.value = G.f(+targetFoot.value + delta);  // 修改参数
                     G.modelUpdate();  // 重绘世界
                 }
@@ -102,6 +112,7 @@ export default function(ccgxkObj) {
             if(key === 'v'){  // 切换视角
                 G.setCamView();
             }
+
 
             document.removeEventListener('keydown', G.keyEvent);
         },

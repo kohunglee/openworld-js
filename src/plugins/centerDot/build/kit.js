@@ -209,6 +209,16 @@ const htmlCode = `
             top: 38px;
             left: 9px;
         }
+
+        /* 神奇数字叠加值 */
+        div#magicNumDiv {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        input#magicNum {
+            width: 80px;
+        }
     </style>
     <div id='hotPointInfo'></div>
     <div id="myHUDModal" class="myHUD-modal" hidden>
@@ -235,6 +245,9 @@ const htmlCode = `
                     <button class="texture-editorBtn" id="e_bassT"></button>
                     <button class="texture-editorBtn" id="e_bassR"></button>
                     <button class="texture-editorBtn" id="e_bassB"></button>
+                </div>
+                <div class="magicNumDiv-class" id="magicNumDiv">
+                    <input type="number" class="magicNum-input" id="magicNum" name="magicNum" hidden>
                 </div>
                 <hr>
                 <input type="checkbox" name="isRealTimeUpdata" id="isRealTimeUpdata" checked> 实时更新 
