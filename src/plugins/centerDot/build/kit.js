@@ -82,6 +82,19 @@ export default function(ccgxkObj) {
                 }
             });
         },
+
+        // 根据物体的朝向之象限，计算哪根轴是它的正方向（主要供绘制 CSS 上下箭头使用）
+        calForwardAxis : (myAngle, boxAngle) => {
+            const directions = [
+                { axis: 'z', nega: true },
+                { axis: 'x', nega: false },
+                { axis: 'z', nega: false },
+                { axis: 'x', nega: true },
+            ];
+            const delta = (boxAngle - myAngle + 360) % 360;
+            const quadrantIndex = Math.round(delta / 90) % 4;
+            return directions[quadrantIndex];
+        },
     }
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
@@ -263,7 +276,7 @@ const htmlCode = `
                     <div class="moreopt-panel">
                         <button class="texture-editorBtn" id="e_delete">删除</button>
                         &nbsp;&nbsp;
-                        颜色:<input type="color" class="EdiArgsInput" id="objColor" name="objColor" value="#888">
+                        颜色:<input type="color" class="EdiArgsInput" id="objColor" name="objColor" value="#888888">
                         &nbsp;&nbsp;
                     </div>
                 </details>

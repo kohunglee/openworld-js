@@ -31,13 +31,10 @@ export default function(ccgxkObj) {
             }
         },
 
-
         // 操作方块
         operaCube : (type = 0, vis = false) => {
             const G = ccgxkObj.centerDot.init;
-            if(G.isDisplayHotModel === false) {
-                vis = true;
-            }
+            if(G.isDisplayHotModel === false) { vis = true }  // 显示红色
             const obj = ccgxkObj;
             const newIndex = obj.visCubeLen + 2;  // !!!! 一个临时的解决方案，新开辟了 visCubeLen
             if(type === 0){  // 复制一个方块
@@ -55,15 +52,9 @@ export default function(ccgxkObj) {
                 };
                 const new_rY = (G.newCubePosType === 2) ? 0 : northAngle * 180 / Math.PI;
                 G.modelUpdate(null, newIndex, false, {
-                    X: newPos.X,
-                    Y: newPos.Y,
-                    Z: newPos.Z,
-                    rX: 0,
-                    rY: new_rY,
-                    rZ: 0,
-                    width: 1,
-                    height: 1,
-                    depth: 1,
+                    X: newPos.X, Y: newPos.Y, Z: newPos.Z,
+                    rX: 0, rY: new_rY, rZ: 0,
+                    width: 1, height: 1, depth: 1,
                     isInvisible: vis,
                 });
                 G.music('addCube0');  // 添加方块
@@ -86,9 +77,6 @@ export default function(ccgxkObj) {
             if(isRealTimeUpdata.checked === false && isKeyOk === false){ return 0; }  // 临时退出，不更新模型
             var index = G.indexHotCurr;
             if(customIndex !== -1){ index = customIndex };
-            // if(){
-
-            // }
             const lastArgs = newArgs || {  // 生成(或使用)新的 Args，以便于与源 Args 合并
                 X: parseFloat(objPosX.value),
                 Y: parseFloat(objPosY.value),
@@ -100,17 +88,13 @@ export default function(ccgxkObj) {
                 height: parseFloat(objHeight.value),
                 depth: parseFloat(objDepth.value),
                 isInvisible: (!G.isDisplayHotModel),
-                // background: objColor.value.replace('#', ''),
             };
             if(objColor.value !== '#888888'){  // 如果 颜色 不是默认颜色，则添加一个 insColor
                 lastArgs.insColor = objColor.value.replace('#', '');
             }
             const orgs_Args = {...ccgxkObj.indexToArgs.get(index)};
             ccgxkObj.indexToArgs.set(index, {...orgs_Args, ...lastArgs});  // 合并操作，赋予源对象
-
-
-            // !!!! 下面以 'manyCubes' 为名称进行测试
-            const newInstanceData = {
+            const newInstanceData = {  // !!!! 下面以 'manyCubes' 为名称进行测试
                 x: lastArgs.X,
                 y: lastArgs.Y,
                 z: lastArgs.Z,
@@ -156,8 +140,6 @@ export default function(ccgxkObj) {
                 _this.spatialGrid.set(gridKey, indicesInCell);
             }
         },
-
     };
-
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
 }

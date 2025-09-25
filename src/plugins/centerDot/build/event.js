@@ -126,9 +126,6 @@ export default function(ccgxkObj) {
             d :         { dir:  1, type: 'sideways' },
             a :         { dir: -1, type: 'sideways' },
         },
-
-        
-
     };
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
