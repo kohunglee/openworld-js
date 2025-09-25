@@ -43,7 +43,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         colliGroup: 1,
         tiling : 100,
         name: 'groundPlane', X: 0, Y: -0.5, Z: 0,
-        mass: 0, width: 1000, depth: 1000, height: 2,
+        mass: 0, width: 300, depth: 300, height: 2,
         texture: greenStoneborder, background: '#287A17', mixValue: 0.5,
     });
 
@@ -198,30 +198,6 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         w:1,  h:6,  d:1,
     });
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**************** 结束 */
 
 
@@ -244,7 +220,6 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     for (let index = 0; index < testcubedata.length; index++) {  // 使用下载好的数据
         addInsLD(testcubedata[index]);
     }
-
     for (let index = 0; index < 9000; index++) {  // 添加占位空模型
         addInsLD({
             x: 999999999, y: 999999999, z: 999999999,
@@ -282,7 +257,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         n: 'manyCubes',
         t: checkerboard,
         instances: cubeInstances, // 实例属性的数组
-        mix: 0.9,
+        mix: 0.98,
     });
 
 });

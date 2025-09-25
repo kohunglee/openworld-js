@@ -39,6 +39,12 @@ export default function(ccgxkObj) {
                     }
                 }
             }
+            for (let i = 0; i < (ccgxkObj.visCubeLen + 1); i++) {  // 单独循环这个颜色，后续测试一下是否有性能区别
+                var insColor = ccgxkObj.indexToArgs.get(i).insColor;
+                if(insColor) {
+                    cubeDATA[i].b = insColor;
+                }
+            }
             console.log(cubeDATA);  // 先输出，不下载
             return true;
             const jsonScroll = JSON.stringify(cubeDATA, null, 2);
