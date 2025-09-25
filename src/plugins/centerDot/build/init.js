@@ -10,6 +10,7 @@ import inputPanel from './inputPanel.js';
 import event from './event.js';
 import model from './model.js';
 import cubeReferPosJS from './cubeReferPos.JS';
+import viewCtrl from './viewCtrl.js';
 
 export default function(ccgxkObj) {
 
@@ -20,6 +21,7 @@ export default function(ccgxkObj) {
     event(ccgxkObj);
     model(ccgxkObj);
     cubeReferPosJS(ccgxkObj);
+    viewCtrl(ccgxkObj);
 
     const G = ccgxkObj.centerDot.init;
 

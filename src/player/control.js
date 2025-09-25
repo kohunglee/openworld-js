@@ -231,6 +231,7 @@ export default {
         mVP.body.position.y = vplayerAct.y;
         mVP.body.position.z = vplayerAct.z;
         cam.qua = vplayerAct;
+
         vplayerBodyQua.setFromAxisAngle(this.Y_AXIS, this.DEG_TO_RAD * vplayerAct.ry);  // 主角只旋转 Y 轴
         this.W.camera({g:mVP.name, x:cam.pos.x, y:cam.pos.y, z:cam.pos.z, rx: cam.qua.rx, rz: cam.qua.rz})  // 摄像机只旋转 X 和 Z 轴
         const pos = mVP.body.position;

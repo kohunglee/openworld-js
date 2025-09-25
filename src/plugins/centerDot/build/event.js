@@ -95,9 +95,14 @@ export default function(ccgxkObj) {
                 G.operaCube(1, true);
             }
 
-            if(key === 'z'){
+            if(key === 'z'){  // 添加方块时的参考
                 G.displayRefer();
             }
+
+            if(key === 'v'){  // 切换视角
+                G.setCamView();
+            }
+
             document.removeEventListener('keydown', G.keyEvent);
         },
         keyActionMap : {  // 用于键盘移动物体使用的键位
@@ -105,10 +110,10 @@ export default function(ccgxkObj) {
             arrowdown:  { dir: -1, type: 'forward' },
             arrowright: { dir:  1, type: 'sideways' },
             arrowleft:  { dir: -1, type: 'sideways' },
-            w :        { dir:  1, type: 'forward' },
-            s :        { dir: -1, type: 'forward' },
-            d :        { dir:  1, type: 'sideways' },
-            a :        { dir: -1, type: 'sideways' },
+            w :         { dir:  1, type: 'forward' },
+            s :         { dir: -1, type: 'forward' },
+            d :         { dir:  1, type: 'sideways' },
+            a :         { dir: -1, type: 'sideways' },
         },
 
         
