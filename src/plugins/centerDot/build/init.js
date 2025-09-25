@@ -6,14 +6,17 @@
 
 import kit from './kit.js';
 import data from './data.js';
-import inputPanel from './inputPanel.js';
+import inputPanel from './panel/inputPanel.js';
 import event from './event.js';
 import model from './model.js';
 import cubeReferPosJS from './cubeReferPos.JS';
 import viewCtrl from './viewCtrl.js';
+import pCommEvent from './panel/pCommEvent.js';
+import pEvent from './panel/pEvent.js';
+import pBassSet from './panel/pBassSet.js';
+import showHotInfo from './showHotInfo.js';
 
 export default function(ccgxkObj) {
-
 
     kit(ccgxkObj);
     data(ccgxkObj);
@@ -22,13 +25,16 @@ export default function(ccgxkObj) {
     model(ccgxkObj);
     cubeReferPosJS(ccgxkObj);
     viewCtrl(ccgxkObj);
+    pCommEvent(ccgxkObj);
+    pEvent(ccgxkObj);
+    pBassSet(ccgxkObj);
+    showHotInfo(ccgxkObj);
 
     const G = ccgxkObj.centerDot.init;
 
     G.initHTML();  // 绘制 HTML
 
     /* ----------------------------------------------------------- */
-
 
     ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){  // 热点事件
         G.hotAction();

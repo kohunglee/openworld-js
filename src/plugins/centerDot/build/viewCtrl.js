@@ -20,23 +20,20 @@ export default function(ccgxkObj) {
             }
             const totalType  = Object.keys(G.camViewData).length;
             G.currentCamType = (G.currentCamType + 1) % totalType;
-            // if(G.currentCamType !== 0) {  // 应该有注释掉的必要
             G.thirdCamViewType = G.currentCamType;
-            // }
             ccgxkObj.mainCamera.pos = G.camViewData[G.currentCamType];
         },
         currentCamType : 1,
         firstCamViewType : 0,
         thirdCamViewType : 1,
 
-
+        // 不同模式的视角数据
         camViewData : {
             0 : {x: 0, y: 0.6, z: -0.5},  // 第一视角
             1 : {x: 0, y: 2, z: 4},  // 第三视角（较远）
             2 : {x: 0, y: 1.3, z: 2},  // 第三视角（较近）
             3 : {x: 0, y: 1.2, z: 1},  // 第三视角（很近）
         },
-
     };
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
