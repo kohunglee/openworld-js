@@ -38,9 +38,8 @@ export default function(ccgxkObj) {
             if(G.isDisplayHotModel === false) {
                 vis = true;
             }
-            // !!!! 一个临时的解决方案，新开辟了 visCubeLen
             const obj = ccgxkObj;
-            const newIndex = obj.visCubeLen + 2;
+            const newIndex = obj.visCubeLen + 2;  // !!!! 一个临时的解决方案，新开辟了 visCubeLen
             if(type === 0){  // 复制一个方块
                 G.modelUpdate(null, newIndex);
             }
@@ -87,6 +86,9 @@ export default function(ccgxkObj) {
             if(isRealTimeUpdata.checked === false && isKeyOk === false){ return 0; }  // 临时退出，不更新模型
             var index = G.indexHotCurr;
             if(customIndex !== -1){ index = customIndex };
+            // if(){
+
+            // }
             const lastArgs = newArgs || {  // 生成(或使用)新的 Args，以便于与源 Args 合并
                 X: parseFloat(objPosX.value),
                 Y: parseFloat(objPosY.value),
@@ -98,8 +100,11 @@ export default function(ccgxkObj) {
                 height: parseFloat(objHeight.value),
                 depth: parseFloat(objDepth.value),
                 isInvisible: (!G.isDisplayHotModel),
+                // background: objColor.value.replace('#', ''),
             };
-
+            if(objColor.value !== '#888888'){  // 如果 颜色 不是默认颜色，则添加一个 insColor
+                lastArgs.insColor = objColor.value.replace('#', '');
+            }
             const orgs_Args = {...ccgxkObj.indexToArgs.get(index)};
             ccgxkObj.indexToArgs.set(index, {...orgs_Args, ...lastArgs});  // 合并操作，赋予源对象
 
@@ -116,6 +121,9 @@ export default function(ccgxkObj) {
                 h: lastArgs.height,
                 d: lastArgs.depth,
             };
+            if(lastArgs.insColor) {  // 如果有 insColor，则实例也更新
+                newInstanceData.b = lastArgs.insColor.replace('#', '');
+            }
             ccgxkObj.W.updateInstance('manyCubes', index, newInstanceData);  // 更新一下实例化模型
             const quat = ccgxkObj.eulerToQuaternion({  // 将欧拉角转换为四元数
                 rX: newInstanceData.rx,
@@ -138,7 +146,6 @@ export default function(ccgxkObj) {
                 ccgxkObj.world.removeBody(org_args.cannonBody);
             }
             ccgxkObj.currentlyActiveIndices.delete(index);  // 重新激活一下这个模型
-
             if(customIndex !== -1){  // 如果是新加模型，需要重新计算一下区块
                 const DPZ = 2;  // 假设 DPZ 是 2
                 const _this = ccgxkObj;

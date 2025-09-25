@@ -24,17 +24,18 @@ export default function(ccgxkObj) {
             document.body.appendChild(content);
         },
 
-        // 保留小数使用，智能修剪
+        // 保留小数使用
         f : (num, digits = 2) => {
-            // if (typeof num !== 'number' || num % 1 === 0) {
-            //     return num;
-            // }
-            // const shifter = Math.pow(10, digits); // 创造一个放大/缩小的工具 (100)
-            // return Math.trunc(num * shifter) / shifter;
-            return num.toFixed(digits)
+            // 这些是硬切割修剪，先注释了
+            if (typeof num !== 'number' || num % 1 === 0) {
+                return num;
+            }
+            const shifter = Math.pow(10, digits); // 创造一个放大/缩小的工具 (100)
+            return Math.trunc(num * shifter) / shifter;
+            // return num.toFixed(digits)
         },
 
-        // 一些禁止监听键盘事件的场景
+        // 一些在模态框显示时的禁止监听键盘事件的场景
         disListen : () => {
             if(myHUDModal.hidden === false){ return false;}
         },
@@ -80,7 +81,7 @@ export default function(ccgxkObj) {
                     element.classList.add(className);
                 }
             });
-    }   ,
+        },
     }
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
@@ -261,6 +262,9 @@ const htmlCode = `
                     <summary class="moreopt-btn">更多选项</summary>
                     <div class="moreopt-panel">
                         <button class="texture-editorBtn" id="e_delete">删除</button>
+                        &nbsp;&nbsp;
+                        颜色:<input type="color" class="EdiArgsInput" id="objColor" name="objColor" value="#888">
+                        &nbsp;&nbsp;
                     </div>
                 </details>
                 <hr>

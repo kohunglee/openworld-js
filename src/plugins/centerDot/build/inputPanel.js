@@ -29,6 +29,7 @@ export default function(ccgxkObj) {
                     propertyMap[key].value = f(backupEdi[key]);
                 }
             }
+            objColor.value = (backupEdi['insColor']) ? '#' + backupEdi['insColor'] : '#888888';
             G.drawFDico();  // 绘制箭头
         },
 
