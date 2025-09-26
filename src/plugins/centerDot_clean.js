@@ -92,13 +92,7 @@ export default function(ccgxkObj) {
             ccgxkObj.centerPointColorUpdatax = setInterval(() => {
                 globalVar.drawPoint(canvas, ccgxkObj, false, 3);
             }, 100);
-
-            if(ccgxkObj.centerDot.init){  // 注意，这是插件测试，在下面的关闭也有，后续再优化位置，现在速度为先！
-                ccgxkObj.centerDot.init.setCamView('first');
-            } else {
-                ccgxkObj.mainCamera.pos = {x:0, y:0.9, z:-0.8};
-            }
-            
+            ccgxkObj.centerDot.setCamView('first');
         },
 
 
@@ -110,11 +104,38 @@ export default function(ccgxkObj) {
             globalVar.drawPoint(canvas, ccgxkObj, true, 1);
             clearInterval(ccgxkObj.centerPointColorUpdatax);
             ccgxkObj.centerPointColorUpdatax = null;  // 避免重复清除
-            if(ccgxkObj.centerDot.init){
-                ccgxkObj.centerDot.init.setCamView('third');
-            } else {
-                ccgxkObj.mainCamera.pos = {x: 0, y: 2, z: 4};
+            ccgxkObj.centerDot.setCamView('third');
+        },
+
+        // 获取（和下载）当前的所有方块数据
+        setCamView : (viewType) => {
+            const G = ccgxkObj.centerDot;
+            if(viewType === 'first'){
+                ccgxkObj.mainCamera.pos = G.camViewData[G.firstCamViewType];
+                return 0;
             }
+            if(viewType === 'third'){
+                ccgxkObj.mainCamera.pos = G.camViewData[G.thirdCamViewType];
+                return 0;
+            }
+            if(ccgxkObj.centerDot.status) return 0;
+            const totalType  = Object.keys(G.camViewData).length;
+            G.currentCamType = (G.currentCamType + 1) % totalType;
+            if(G.currentCamType){
+                G.thirdCamViewType = G.currentCamType;
+            }
+            ccgxkObj.mainCamera.pos = G.camViewData[G.currentCamType];
+        },
+        currentCamType : 1,
+        firstCamViewType : 0,
+        thirdCamViewType : 1,
+
+        // 不同模式的视角数据
+        camViewData : {
+            0 : {x: 0, y: 0.6, z: -0.5},  // 第一视角
+            1 : {x: 0, y: 2, z: 4},  // 第三视角（较远）
+            2 : {x: 0, y: 1.3, z: 2},  // 第三视角（较近）
+            3 : {x: 0, y: 1.2, z: 1},  // 第三视角（很近）
         },
 
  
@@ -187,12 +208,14 @@ export default function(ccgxkObj) {
         if(ccgxkObj.centerPointColorUpdatax || e.button === 2){  
             if(ccgxkObj.hotPoint >= 0 && e.button !== 2) {  // 如果有热点，单击热点后，触发热点事件
                 ccgxkObj.hooks.emitSync('hot_action', ccgxkObj, e);  // 钩子：鼠标单击热点事件 hotAction()
-            } else {  // 右键关闭小点 // PS: 火狐浏览器无法右键关闭，暂时无解
+            } else {  // 右键和滚轮中键关闭小点 // PS: 火狐浏览器无法右键关闭，暂时无解
                 ccgxkObj.hooks.emitSync('close_point', ccgxkObj, e);
                 globalVar.closePoint(ccgxkObj);
+                ccgxkObj.centerDot.status = 0;  // 点关闭的状态
             }
         } else {  // 开启小点
             ccgxkObj.hooks.emitSync('open_point', ccgxkObj, e);  // 钩子：open point
+            ccgxkObj.centerDot.status = 1;  // 点开启的状态
             globalVar.openPoint(ccgxkObj);
         }
     });

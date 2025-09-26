@@ -31,12 +31,29 @@ export default function(ccgxkObj) {
                 G.deformationBase(input.id, step);
                 G.modelUpdate();
             });
+            input.addEventListener('mousedown', function(event) {  // 鼠标滚轮中键，处理魔法数字
+                if (event.button === 1) {
+                    var step;
+                    if(magicNum.value) {
+                        step = Number(magicNum.value);
+                        magicNum.value = '';
+                        magicNum.hidden = true;
+                        console.log('he');
+                    } else {return 0}
+                    var currentValue = +input.value;
+                    input.value = (currentValue+step).toFixed(2);
+                    G.deformationBase(input.id, step);
+                    input.select();
+                    G.modelUpdate();
+                    event.preventDefault();
+                }
+            });
             input.addEventListener('mouseover', () => {  // 鼠标悬浮属性值上，自动焦点
                 if(isRealTimeUpdata.checked === false){ return 0; }
                 if(rollerPlus.checked === false){ return 0; }
                 input.focus();
                 input.select();
-            });  // 悬浮激活焦点
+            });
             input.addEventListener('wheel', (event) => {  // 滚轮增减数字大小
                 if(isRealTimeUpdata.checked === false){ return 0; }
                 if(rollerPlus.checked === false){ return 0; }
