@@ -200,35 +200,45 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
 
 /**************** 结束 */
 
+    console.time('load');
 
+    // Url 参数
+    var cellpageid, cubeDatas;
+    var urlParams = new URLSearchParams(window.location.search);  // 获取 URL
+    k.cellpageid_geturl = urlParams.get('id');  // 获取 url 的 id 参数
+    if(k.cellpageid_geturl) {
+        cellpageid = k.cellpageid_geturl;
+    } else {
+        cellpageid = Math.random().toString(36).slice(2,7);  // 随机5字符作为ID
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.set('id',cellpageid);
+    history.pushState({}, '', url.toString());  // 将这个新的随机字符放置到地址栏
 
-    const cubeInstances = [];  // 定义单个立方体对象的「实例」
-    const isHiddenVis = [];  // 隐藏显示表
-    var cubeIndex = 0;
-    const addInsLD = (data, isHidden = false) => {  // 使用左下角定位来添加方块
-        cubeInstances.push({  // 添加一个立方体
-            x: data.x, y: data.y, z: data.z,
-            w: data.w, d: data.d, h: data.h,
-            rx: data?.rx||0, ry:data?.ry||0, rz:data?.rz||0,
-        });
-        if(isHidden !== true){
-            k.visCubeLen = cubeIndex;
-        }
-        isHiddenVis[cubeIndex] = isHidden;
-        cubeIndex++;
+    // 浏览器储存
+    if (!localStorage.getItem('ow_' + cellpageid)) {  // 初始化存储
+        localStorage.setItem('ow_' + cellpageid, JSON.stringify([]));
+        // cubeDatas = [];
+        cubeDatas = testcubedata;  // 使用我的本地测试数据
+    } else {
+        cubeDatas = JSON.parse(localStorage.getItem('ow_' + cellpageid));
     }
-    for (let index = 0; index < testcubedata.length; index++) {  // 使用下载好的数据
-        addInsLD(testcubedata[index]);
+    
+    const totalCube = 10000;  // 计划的总方块数
+    const cubeInstances = [];  // 立方体对象【实例】的容器
+    const isHiddenVis = [];  // 【隐藏显示】表
+    var cubeIndex = 0;  // 计数器
+    for (let index = 0; index < cubeDatas.length; index++) {  // 数据，填充我的容器
+        addInsLD(cubeDatas[index]);
     }
-    for (let index = 0; index < 9000; index++) {  // 添加占位空模型
+    // console.log(totalCube - k.visCubeLen);  // 空模型总数
+    for (let index = 0; index < totalCube - k.visCubeLen; index++) {  // 空模型
         addInsLD({
             x: 999999999, y: 999999999, z: 999999999,
             w: 0.001, d: 0.001, h: 0.001,
         }, true);
     }
-
-    // 为「实例」加上简单的物理引擎
-    for (let index = 0; index < cubeInstances.length; index++) {
+    for (let index = 0; index < cubeInstances.length; index++) {  // 为「实例」加上简单的物理引擎
         k.addTABox({
             DPZ : 2,
             isPhysical: true,
@@ -251,15 +261,35 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             // isFictBody: true,
         });
     }
-
-    // 渲染实例化
-    k.W.cube({
+    k.W.cube({  // 渲染实例化
         n: 'manyCubes',
         t: checkerboard,
         instances: cubeInstances, // 实例属性的数组
         mix: 0.98,
     });
+    function addInsLD (data, isHidden = false) {  // 添加方块的函数
+        if(data.del) {  // 【删除】标记，按照【空模型】处理
+            data = {
+                x: 999999999, y: 999999999, z: 999999999,
+                w: 0.001, d: 0.001, h: 0.001,
+            };
+        }
+        const result = {  // 添加一个立方体
+            x: data.x, y: data?.y||1, z: data.z,
+            w: data?.w || 1, d: data?.d || 1, h: data?.h || 1, b: data.b,
+            rx: data?.rx||0, ry:data?.ry||0, rz:data?.rz||0,
+        };
+        cubeInstances.push(result);
+        if(isHidden !== true){
+            k.visCubeLen = cubeIndex;  // 记录，有多少显示的，不过用处不大
+        }
+        isHiddenVis[cubeIndex] = isHidden;
+        cubeIndex++;
+    }
+    console.timeEnd('load');
 
 });
+
+
 
 // k.offAudio = true;

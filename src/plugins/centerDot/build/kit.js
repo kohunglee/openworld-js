@@ -26,13 +26,12 @@ export default function(ccgxkObj) {
 
         // 保留小数使用
         f : (num, digits = 2) => {
-            // 这些是硬切割修剪，先注释了
             if (typeof num !== 'number' || num % 1 === 0) {
                 return num;
             }
+            num = +num.toFixed(digits);
             const shifter = Math.pow(10, digits); // 创造一个放大/缩小的工具 (100)
             return Math.trunc(num * shifter) / shifter;
-            // return num.toFixed(digits)
         },
 
         // 一些在模态框显示时的禁止监听键盘事件的场景
@@ -281,7 +280,8 @@ const htmlCode = `
                     </div>
                 </details>
                 <hr>
-                <button class="texture-getCubeData" id="textureGetCubeData">获取数据</button>
+                <button class="texture-saveCubeData" id="textureSaveCubeData">保存数据</button>
+                <button class="texture-getCubeData" id="textureGetCubeData">下载数据</button>
             </div>
         </div>
     </div>

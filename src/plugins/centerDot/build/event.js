@@ -49,9 +49,13 @@ export default function(ccgxkObj) {
         },
 
         // 大部分键盘事件的激活处
-        keyEvent : (event) => {
+        keyEvent : (e) => {
             const G = ccgxkObj.centerDot.init;
-            const key = event.key.toLowerCase();
+            const key = e.key.toLowerCase();
+            // if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+            //     e.preventDefault(); // 防止默认行为（如保存页面）
+            //     alert('保存');
+            // }  
             if(G.disListen() === false && document.activeElement.tagName !== 'INPUT') {  // 仅在编辑器打开且未激活 input 有效
                 if(key >= "0" && key <= "9" || key === '-') {  // 数字键，激活【神奇数字叠加值】
                     magicNum.hidden = false;
@@ -97,8 +101,8 @@ export default function(ccgxkObj) {
                 }
             }
             if(key === 'r') {  // 添加一个新的方块（跟随）
-                G.operaCube(1);
-                G.hotAction(ccgxkObj.visCubeLen + 1 );
+                // G.operaCube(1);
+                // G.hotAction(ccgxkObj.visCubeLen + 1 );
             }
 
             if(key === 'x' && G.newCubePosType) {  // 添加一个新的方块（固定）
@@ -112,7 +116,6 @@ export default function(ccgxkObj) {
             if(key === 'v'){  // 切换视角
                 ccgxkObj.centerDot.setCamView();
             }
-
 
             document.removeEventListener('keydown', G.keyEvent);
         },

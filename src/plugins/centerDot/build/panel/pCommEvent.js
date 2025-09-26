@@ -41,7 +41,7 @@ export default function(ccgxkObj) {
                         console.log('he');
                     } else {return 0}
                     var currentValue = +input.value;
-                    input.value = (currentValue+step).toFixed(2);
+                    input.value = G.f(currentValue+step);
                     G.deformationBase(input.id, step);
                     input.select();
                     G.modelUpdate();
@@ -70,7 +70,7 @@ export default function(ccgxkObj) {
                         magicNum.value = '';
                         magicNum.hidden = true;
                     }
-                    input.value = (currentValue+step).toFixed(2);
+                    input.value = G.f(currentValue+step);
                     G.deformationBase(input.id, step);  // 基点操作的逻辑
                     input.select();
                     G.modelUpdate();

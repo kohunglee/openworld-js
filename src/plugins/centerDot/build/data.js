@@ -8,10 +8,12 @@ export default function(ccgxkObj) {
     var g = {
 
         // 获取（和下载）当前的所有方块数据
-        getCubesData : () => {
+        getCubesData : (isDownload = false) => {
+            // console.time('生成所有数据');
             const G = ccgxkObj.centerDot.init;
             var cubeDATA = [];
-            for (let i = 0; i < (ccgxkObj.visCubeLen + 1); i++) {
+            const total = ccgxkObj.visCubeLen + 1;  // 当前方块总数
+            for (let i = 0; i < total; i++) {
                 var p_offset = i * 8;
                 const pos = ccgxkObj.positionsStatus;
                 const phy = ccgxkObj.physicsProps;
@@ -33,13 +35,16 @@ export default function(ccgxkObj) {
                     d: phy[p_offset + 3],
                 }
                 for (const key in cubeDATA[i]) {  // 删去为 0 的值
-                    cubeDATA[i][key] = G.f(cubeDATA[i][key]);
+                    cubeDATA[i][key] = G.f( +cubeDATA[i][key].toFixed(2) );
                     if (!cubeDATA[i][key] || +cubeDATA[i][key] === 0) {
+                        delete cubeDATA[i][key];
+                    }
+                    if (cubeDATA[i][key] === g.defaultData[key]) {
                         delete cubeDATA[i][key];
                     }
                 }
             }
-            for (let i = 0; i < (ccgxkObj.visCubeLen + 1); i++) {  // 单独其他选项，后续测试一下是否有性能区别
+            for (let i = 0; i < total; i++) {  // 单独其他选项，后续测试一下是否有性能区别
                 var insColor = ccgxkObj.indexToArgs.get(i).insColor;  //+ 颜色的设置
                 if(insColor) {
                     cubeDATA[i].b = insColor;
@@ -47,19 +52,43 @@ export default function(ccgxkObj) {
                 if(cubeDATA[i].x > 999_999_999){  // 被删除内容的标识
                     cubeDATA[i] = {del:1};
                 }
+                // g.removeDefaults(cubeDATA[i]);
             }
+            // console.timeEnd('生成所有数据');  
+            if(isDownload){
+                const jsonScroll = JSON.stringify(cubeDATA, null, 2);
+                const blob = new Blob([jsonScroll], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `cubeData-${ccgxkObj.cellpageid_geturl}-${new Date(Date.now()).toLocaleString('sv-SE').replace(/[-:T\s]/g, '')}.json`; // 给卷轴起个带时间戳的名字
+                link.click();
+                URL.revokeObjectURL(url); // 释放这个临时URL
+            } else {
+                return cubeDATA;
+            }
+
             
-            console.log(cubeDATA);  // 先输出，不下载
-            return true;
-            const jsonScroll = JSON.stringify(cubeDATA, null, 2);
-            const blob = new Blob([jsonScroll], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `cubeData-${new Date(Date.now()).toLocaleString('sv-SE').replace(/[-:T\s]/g, '')}.json`; // 给卷轴起个带时间戳的名字
-            link.click();
-            URL.revokeObjectURL(url); // 释放这个临时URL
         },
+
+        // 保存到本地的浏览器里
+        saveToLocalSt : () => {
+            const G = ccgxkObj.centerDot.init;
+            const cubeDATA = g.getCubesData();
+            if (ccgxkObj.cellpageid_geturl) {
+                localStorage.setItem(`ow_${ccgxkObj.cellpageid_geturl}`, JSON.stringify(cubeDATA)); 
+                // new Blob([localStorage.getItem(`ow_${ccgxkObj.cellpageid_geturl}`)]).size;  // 输出当前数据的储存长度
+                alert('保存到 localStorage 成功！');
+            } else {
+                alert('当前页面没有 id 参数，无法保存到本地');
+            }
+        },
+
+        // 默认的参数
+        defaultData : {
+            w: 1, h: 1, d: 1, y: 1, b: '888888',
+        },
+
 
     };
 

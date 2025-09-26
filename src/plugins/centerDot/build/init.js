@@ -8,7 +8,7 @@ import kit from './kit.js';
 import data from './data.js';
 import inputPanel from './panel/inputPanel.js';
 import event from './event.js';
-import model from './model.js';
+import model from './cubemodel.js';
 import cubeReferPosJS from './cubeReferPos.JS';
 import viewCtrl from './viewCtrl.js';
 import pCommEvent from './panel/pCommEvent.js';
@@ -38,6 +38,10 @@ export default function(ccgxkObj) {
 
     ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){  // 热点事件
         G.hotAction();
+    });
+
+    ccgxkObj.hooks.on('ctrlSEvent', function(ccgxkObj, e){  // Ctrl + S 保存事件
+        G.saveToLocalSt();
     });
 
     ccgxkObj.hooks.on('jump', function(ccgxkObj, e){  // 热点事件
@@ -101,9 +105,14 @@ export default function(ccgxkObj) {
         G.modelUpdate();  // 根据数据更新模型
     });
     
-    // 获取方块的数据
+    // 下载方块的数据
     textureGetCubeData.addEventListener('click', () => {
-        G.getCubesData();
+        G.getCubesData(true);
+    });
+
+    // 保存到 localstorage 里数据
+    textureSaveCubeData.addEventListener('click', () => {
+        G.saveToLocalSt();
     });
 
     // 所有编辑框在按住 shift 的同时，增幅变为 1
