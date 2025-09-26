@@ -263,9 +263,10 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     }
     k.W.cube({  // 渲染实例化
         n: 'manyCubes',
-        t: checkerboard,
+        // t: checkerboard,  // 棋格
+        t: dls,  // 大理石
         instances: cubeInstances, // 实例属性的数组
-        mix: 0.98,
+        mix: 0.5,
     });
     function addInsLD (data, isHidden = false) {  // 添加方块的函数
         if(data.del) {  // 【删除】标记，按照【空模型】处理
