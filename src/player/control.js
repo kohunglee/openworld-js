@@ -52,7 +52,12 @@ export default {
         var _this = this;
         var isMouseMove = false;
         document.addEventListener('keydown', function(e) {  // 按下键盘
-            _this._handleKey(e, 1);
+            if (e.key === 's' && (e.ctrlKey || e.metaKey)) {  // 特例，Ctrl+S 键盘事件
+                e.preventDefault(); // 防止默认行为（如保存页面）
+                _this.hooks.emit('ctrlSEvent', this, this.keys);  // 钩子：保存事件
+            } else {
+                _this._handleKey(e, 1);
+            }
         });
         document.addEventListener('keyup', function(e) {  // 松开键盘
             _this._handleKey(e, 0);

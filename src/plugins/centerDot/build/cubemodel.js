@@ -36,7 +36,7 @@ export default function(ccgxkObj) {
             const G = ccgxkObj.centerDot.init;
             if(G.isDisplayHotModel === false) { vis = true }  // 显示红色
             const obj = ccgxkObj;
-            const newIndex = obj.visCubeLen + 2;  // !!!! 一个临时的解决方案，新开辟了 visCubeLen
+            const newIndex = obj.visCubeLen + 1;  // !!!! 一个临时的解决方案，新开辟了 visCubeLen
             if(type === 0){  // 复制一个方块
                 G.modelUpdate(null, newIndex);
             }

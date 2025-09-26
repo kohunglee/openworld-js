@@ -22,7 +22,9 @@ export default function(ccgxkObj) {
             };
             for (const key in propertyMap) {
                 if (Object.hasOwnProperty.call(propertyMap, key) && backupEdi[key] !== undefined) {
-                    propertyMap[key].value = f(backupEdi[key]);
+                    propertyMap[key].value = f(
+                        backupEdi[key]
+                    );
                 }
             }
             objColor.value = (backupEdi['insColor']) ? '#' + backupEdi['insColor'] : '#888888';
