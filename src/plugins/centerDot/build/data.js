@@ -39,12 +39,16 @@ export default function(ccgxkObj) {
                     }
                 }
             }
-            for (let i = 0; i < (ccgxkObj.visCubeLen + 1); i++) {  // 单独循环这个颜色，后续测试一下是否有性能区别
-                var insColor = ccgxkObj.indexToArgs.get(i).insColor;
+            for (let i = 0; i < (ccgxkObj.visCubeLen + 1); i++) {  // 单独其他选项，后续测试一下是否有性能区别
+                var insColor = ccgxkObj.indexToArgs.get(i).insColor;  //+ 颜色的设置
                 if(insColor) {
                     cubeDATA[i].b = insColor;
                 }
+                if(cubeDATA[i].x > 999_999_999){  // 被删除内容的标识
+                    cubeDATA[i] = {del:1};
+                }
             }
+            
             console.log(cubeDATA);  // 先输出，不下载
             return true;
             const jsonScroll = JSON.stringify(cubeDATA, null, 2);

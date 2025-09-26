@@ -96,7 +96,7 @@ export default function(ccgxkObj) {
                     G.music('frozen');
                 }
             }
-            if(key === 'r' && G.newCubePosType) {  // 添加一个新的方块（跟随）
+            if(key === 'r') {  // 添加一个新的方块（跟随）
                 G.operaCube(1);
                 G.hotAction(ccgxkObj.visCubeLen + 1 );
             }
@@ -110,7 +110,7 @@ export default function(ccgxkObj) {
             }
 
             if(key === 'v'){  // 切换视角
-                G.setCamView();
+                ccgxkObj.centerDot.setCamView();
             }
 
 
