@@ -46,7 +46,6 @@ export default function(ccgxkObj) {
             }
             for (let i = 0; i < total; i++) {  // 单独其他选项，后续测试一下是否有性能区别
                 const insColor = ccgxkObj.indexToArgs.get(i).insColor;  //+ 颜色的设置
-                console.log(insColor);
                 if(insColor) {
                     cubeDATA[i].b = insColor;
                 }
