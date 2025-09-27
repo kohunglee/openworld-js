@@ -61,11 +61,14 @@ export default function(ccgxkObj) {
 
         // 辅助函数，批量设置 EdiArgsInput 的 number 的 step
         setInputsStep : (stepValue) => {
+            const G = ccgxkObj.centerDot.init;
             const EdiArgsInput = document.querySelectorAll('.EdiArgsInput');  // 那一大堆 OBJ 属性框
             EdiArgsInput.forEach(input => {
+                G.stepValue = stepValue;
                 input.step = stepValue;
             })
         },
+        stepValue : 0.1,
 
         // 返回 0~360 度之内的度数
         nDeg : (degree) => {

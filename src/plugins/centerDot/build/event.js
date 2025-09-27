@@ -7,7 +7,6 @@
 export default function(ccgxkObj) {
 
     var g = {
-
         // 热点事件
         hotAction : (index) => {
             const G = ccgxkObj.centerDot.init;
@@ -52,10 +51,6 @@ export default function(ccgxkObj) {
         keyEvent : (e) => {
             const G = ccgxkObj.centerDot.init;
             const key = e.key.toLowerCase();
-            // if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
-            //     e.preventDefault(); // 防止默认行为（如保存页面）
-            //     alert('保存');
-            // }  
             if(G.disListen() === false && document.activeElement.tagName !== 'INPUT') {  // 仅在编辑器打开且未激活 input 有效
                 if(key >= "0" && key <= "9" || key === '-') {  // 数字键，激活【神奇数字叠加值】
                     magicNum.hidden = false;
@@ -70,7 +65,8 @@ export default function(ccgxkObj) {
                     const sidewaysSign = initialSideSign * (isSpaceWarped ? -1 : 1);
                     const isForwardMove = action.type === 'forward';  // 确定是前进还是侧移
                     const directionSign = isForwardMove ? forwardSign : sidewaysSign;  // 最终的推力方向
-                    var delta = action.dir * directionSign * 0.1;  // 计算步长
+                    const step = G.stepValue;
+                    var delta = action.dir * directionSign * step;  // 计算步长
                     const feet = { x: objPosX, z: objPosZ };  // 机器人的两个轴
                     const forwardAxisName = G.forwardAxis.axis;  // 确定朝向轴
                     const targetAxisName = isForwardMove ? forwardAxisName : (forwardAxisName === 'x' ? 'z' : 'x');
@@ -78,8 +74,7 @@ export default function(ccgxkObj) {
                     if(magicNum.value){
                         delta = delta > 0 ? magicNum.value : -magicNum.value;
                         delta = Number(delta);
-                        magicNum.value = '';
-                        magicNum.hidden = true;
+                        G.clearMagicNum();
                     }
                     targetFoot.value = G.f(+targetFoot.value + delta);  // 修改参数
                     G.modelUpdate();  // 重绘世界
