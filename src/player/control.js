@@ -190,7 +190,7 @@ export default {
             mPVbody.velocity.set(0, 0, 0);  // 速度归 0 一下
         }
         this.lastIsShiftPress = this.isShiftPress;
-        RY = this.keys.turnRight;
+        RY = this.keys.turnRight;  // 主角旋转角度其实是这个控制的，注意！
         RX = this.keys.turnUp;
         return {  x: X,  y: Y,  z: Z,  rx: RX,  ry: RY,  rz: RZ  }
     },

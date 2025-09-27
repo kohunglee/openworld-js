@@ -48,18 +48,14 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     });
 
     var lastPos = k?.lastPos || {x:21, y:5.00, z:15, rX:0, rY:0, rZ:0};
-    const lastQuat = k.eulerToQuaternion({  // 将欧拉角转换为四元数
-        rX: 0,
-        rY: 156,
-        rZ: 0
-    });
+    k.keys.turnRight = lastPos.rY;
     k.mainVPlayer = k.addBox({  // 创建一个立方体，并设置为主角
         name: 'mainPlayer',
         DPZ : 1,
         colliGroup: 1,
         isShadow: 'ok',
         X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z,
-        quat: lastQuat, mixValue:0.7,
+        mixValue:0.7,
         width: 1, depth: 1, height: 1,
         mass: 50,
         background : '#333',
