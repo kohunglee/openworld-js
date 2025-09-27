@@ -54,7 +54,7 @@ export default function(ccgxkObj) {
                 if(isRealTimeUpdata.checked === false){ return 0; }
                 if(rollerPlus.checked === false){ return 0; }
                 event.preventDefault();
-                var step = 0.1;
+                var step = 0.001;  // 滚轮精确到毫米
                 var minValue = input.min;
                 var currentValue = +input.value;
                 if (event.deltaY > 0) { step = -step }  // 滚轮向下，step 负值

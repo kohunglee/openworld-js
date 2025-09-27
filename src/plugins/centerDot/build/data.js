@@ -35,7 +35,7 @@ export default function(ccgxkObj) {
                     d: phy[p_offset + 3],
                 }
                 for (const key in cubeDATA[i]) {  // 删去为 0 的值
-                    cubeDATA[i][key] = G.f( +cubeDATA[i][key].toFixed(2) );
+                    cubeDATA[i][key] = G.f( +cubeDATA[i][key].toFixed(3) );
                     if (!cubeDATA[i][key] || +cubeDATA[i][key] === 0) {
                         delete cubeDATA[i][key];
                     }
@@ -45,17 +45,16 @@ export default function(ccgxkObj) {
                 }
             }
             for (let i = 0; i < total; i++) {  // 单独其他选项，后续测试一下是否有性能区别
-                var insColor = ccgxkObj.indexToArgs.get(i).insColor;  //+ 颜色的设置
+                const insColor = ccgxkObj.indexToArgs.get(i).insColor;  //+ 颜色的设置
+                console.log(insColor);
                 if(insColor) {
                     cubeDATA[i].b = insColor;
                 }
                 if(cubeDATA[i].x > 999_999_999){  // 被删除内容的标识
                     cubeDATA[i] = {del:1};
                 }
-                // g.removeDefaults(cubeDATA[i]);
             }
-            // console.timeEnd('生成所有数据');  
-            if(isDownload){
+            if(isDownload){  // 下载
                 const jsonScroll = JSON.stringify(cubeDATA, null, 2);
                 const blob = new Blob([jsonScroll], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);

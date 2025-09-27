@@ -25,7 +25,7 @@ export default function(ccgxkObj) {
         },
 
         // 保留小数使用
-        f : (num, digits = 2) => {
+        f : (num, digits = 3) => {
             if (typeof num !== 'number' || num % 1 === 0) {
                 return num;
             }
@@ -246,9 +246,9 @@ const htmlCode = `
                 index: <input type="number" id="objID" name="objID" min="0" max="99999999" step="1" readonly>
                 <button class="texture-copyCubes" id="textureCopyCubes">复制(+1)</button>
                 <hr>
-                <span id="etext_w">宽:</span> <input type="number" class="EdiArgsInput" id="objWidth" name="objWidth" min="0.1">
-                高: <input type="number" class="EdiArgsInput" id="objHeight" name="objHeight" min="0.1">
-                <span id="etext_d">纵:</span> <input type="number" class="EdiArgsInput" id="objDepth" name="objDepth" min="0.1">&nbsp;<button id="e_presets">预设</button><br><br>
+                <span id="etext_w">宽:</span> <input type="number" class="EdiArgsInput" id="objWidth" name="objWidth" min="0.001">
+                高: <input type="number" class="EdiArgsInput" id="objHeight" name="objHeight" min="0.001">
+                <span id="etext_d">纵:</span> <input type="number" class="EdiArgsInput" id="objDepth" name="objDepth" min="0.001">&nbsp;<button id="e_presets">预设</button><br><br>
                 <span id="etext_x">X:</span> <input type="number" class="EdiArgsInput" id="objPosX" name="objPosX">
                 Y: <input type="number" class="EdiArgsInput" id="objPosY" name="objPosY">
                 <span id="etext_z">Z:</span> <input type="number" class="EdiArgsInput" id="objPosZ" name="objPosZ">&nbsp;&nbsp;&nbsp;&nbsp;<button id="e_round">归整</button><br><br>

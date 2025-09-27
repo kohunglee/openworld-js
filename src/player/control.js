@@ -114,9 +114,6 @@ export default {
         this.hooks.emit('handlekey', this, this.keys);  // 钩子：键盘事件
     },
 
-    // 向前（后）移动的加速度辅助计算值
-    forwardAcc : 0,
-
     // 显示主角的实时位置
     displayPOS : function(){
         const posInfo = document.getElementById('posInfo');
@@ -181,12 +178,11 @@ export default {
             this.hooks.emit('forwardBackward', this);  // 钩子：前后移动
         }
         if (keys.viewLeft || keys.viewRight) {  // 左右平移
-            Z += (-keys.viewLeft + keys.viewRight) * Math.cos((RY + 90) * Math.PI / 180) / 10;
-            X += (-keys.viewLeft + keys.viewRight) * Math.sin((RY + 90) * Math.PI / 180) / 10;
+            Z += (-keys.viewLeft + keys.viewRight) * Math.cos((RY + 90) * Math.PI / 180) / 10 * 8 * this.WALK_SPEED;
+            X += (-keys.viewLeft + keys.viewRight) * Math.sin((RY + 90) * Math.PI / 180) / 10 * 8 * this.WALK_SPEED;
             this.displayPOS();
         }
-        if(this.lastIsShiftPress !== this.isShiftPress && this.lastIsShiftPress){  // 松开 Q 的瞬间，
-            this.forwardAcc = 10;  // 加速度归 0
+        if(this.lastIsShiftPress !== this.isShiftPress && this.lastIsShiftPress){  // 松开 Q 的瞬间
             mPVbody.velocity.set(0, 0, 0);  // 速度归 0 一下
         }
         this.lastIsShiftPress = this.isShiftPress;

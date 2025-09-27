@@ -49,6 +49,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
 
     var lastPos = k?.lastPos || {x:21, y:5.00, z:15, rX:0, rY:0, rZ:0};
     k.keys.turnRight = lastPos.rY;
+    const mainVPSize = 0.1;  // 主角的大小，方便建造
     k.mainVPlayer = k.addBox({  // 创建一个立方体，并设置为主角
         name: 'mainPlayer',
         DPZ : 1,
@@ -56,17 +57,24 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         isShadow: 'ok',
         X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z,
         mixValue:0.7,
-        width: 1, depth: 1, height: 1,
+        width: mainVPSize, depth: mainVPSize, height: mainVPSize * 2,
         mass: 50,
         background : '#333',
         texture: greenStone,
     });
+    k.WALK_SPEED = 1/90;  //+ 慢速度
+    k.SPRINT_MIN_SPEED = 1;
+    k.SPRINT_MAX_SPEED = 1.5;
+    k.jumpYVel = 0.8;
+    k.world.gravity.set(0, -9.82/4, 0);  // 临时
+    k.JUMP_HOLD_LIMIT = 0.5;
 
     /* ---------------------------------------------[ 新主角 ]------------------------- */
     k.W.cube({  // 隐藏显示原主角
         n:'mainPlayer',
         // b : '#f0f8ff42',
         hidden: true,
+        size: mainVPSize,
     });
 
     k.W.sphere({  // 主角的头
@@ -256,6 +264,10 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             isInvisible: true,  // 只被探测，而不可见
             // isFictBody: true,
         });
+        if(cubeInstances[index]?.b){  // 别忘了，还要把颜色加入到档案 insColor 里
+            const args = k.indexToArgs.get(index);
+            args.insColor = cubeInstances[index].b;
+        }
     }
     k.W.cube({  // 渲染实例化
         n: 'manyCubes',
@@ -273,9 +285,12 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         }
         const result = {  // 添加一个立方体
             x: data.x, y: data?.y||1, z: data.z,
-            w: data?.w || 1, d: data?.d || 1, h: data?.h || 1, b: data.b,
+            w: data?.w || 1, d: data?.d || 1, h: data?.h || 1,
             rx: data?.rx||0, ry:data?.ry||0, rz:data?.rz||0,
         };
+        if(data?.b){
+            result.b = data.b;
+        }
         cubeInstances.push(result);
         if(isHidden !== true){
             k.visCubeLen = cubeIndex;  // 记录，有多少显示的，不过用处不大

@@ -27,6 +27,7 @@ export default {
         this.initW(this.canvas);
         this.world = new CANNON.World();
         this.world.gravity.set(0, -9.82, 0); // 地球重力9.82m/s²
+        // this.world.gravity.set(0, -9.82/4, 0);  // 临时
         // this.world.broadphase = new CANNON.SAPBroadphase(this.world); // 宽相检测算法
         this.world.broadphase = new CANNON.NaiveBroadphase(); // 宽相检测算法
         this.world.solver.iterations = 10; // 物理迭代
