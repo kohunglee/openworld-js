@@ -11,7 +11,7 @@ export default function(ccgxkObj){
         const mPos = mvp.body.position;  //+2 储存主角的位置到 COOKIE
         setObjectCookie('lastPos_mvp', {
             x: mPos.x, y: mPos.y, z: mPos.z,
-            rX: mvp.rX, rY:mvp.rY, rZ:mvp.rZ,  // 暂时不研究了，好像没法储存旋转
+            rX: mvp.rX, rY:ccgxkObj.keys.turnRight, rZ:mvp.rZ,  // 暂时不研究了，好像没法储存旋转
         }); // 存储对象到Cookie
     }, 1000)
 
