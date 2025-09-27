@@ -79,16 +79,20 @@ export default function(ccgxkObj) {
 
         // 魔法数字的离开事件
         magicNumBlur : (e) => {
-            const G = ccgxkObj.centerDot.init;
             if(!(e.key >= 0 && e.key <= 9)){
                 if(e.key !== 'Backspace'){
-                    console.log(e.key);
                     e.preventDefault();
                     e.target.blur();
                 }
                 
             }
         },
+
+        // 魔法数字的 clear
+        clearMagicNum : () => {
+            magicNum.value = '';
+            magicNum.hidden = true;
+        }
     };
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};

@@ -15,13 +15,11 @@ export default function(ccgxkObj) {
             input.addEventListener('keydown', (e)=>{  // 主要用于处理魔法数字
                 if(magicNum.value){
                     if(e.key === 'ArrowUp') {
-                        e.preventDefault();
                         input.value = (+magicNum.value + +input.value);
                         G.modelUpdate();
                     }
                     if(e.key.slice(0, 5) === 'Arrow') {
-                        magicNum.value = '';
-                        magicNum.hidden = true;
+                        G.clearMagicNum();
                     }
                 }
             })
@@ -36,9 +34,7 @@ export default function(ccgxkObj) {
                     var step;
                     if(magicNum.value) {
                         step = Number(magicNum.value);
-                        magicNum.value = '';
-                        magicNum.hidden = true;
-                        console.log('he');
+                        G.clearMagicNum();
                     } else {return 0}
                     var currentValue = +input.value;
                     input.value = G.f(currentValue+step);
@@ -67,8 +63,7 @@ export default function(ccgxkObj) {
                         if(step > 0){
                             step = Number(magicNum.value);
                         }
-                        magicNum.value = '';
-                        magicNum.hidden = true;
+                        G.clearMagicNum();
                     }
                     input.value = G.f(currentValue+step);
                     G.deformationBase(input.id, step);  // 基点操作的逻辑
