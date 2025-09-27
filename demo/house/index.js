@@ -49,7 +49,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
 
     var lastPos = k?.lastPos || {x:21, y:5.00, z:15, rX:0, rY:0, rZ:0};
     k.keys.turnRight = lastPos.rY;
-    const mainVPSize = 0.1;  // 主角的大小，方便建造
+    const mainVPSize = 0.5;  // 主角的大小，方便建造
     k.mainVPlayer = k.addBox({  // 创建一个立方体，并设置为主角
         name: 'mainPlayer',
         DPZ : 1,
@@ -57,7 +57,8 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         isShadow: 'ok',
         X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z,
         mixValue:0.7,
-        width: mainVPSize, depth: mainVPSize, height: mainVPSize * 2,
+        // width: mainVPSize, depth: mainVPSize, height: mainVPSize * 2,
+        size: mainVPSize,
         mass: 50,
         background : '#333',
         texture: greenStone,
@@ -274,7 +275,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         // t: checkerboard,  // 棋格
         t: dls,  // 大理石
         instances: cubeInstances, // 实例属性的数组
-        mix: 0.5,
+        mix: 0.7,
     });
     function addInsLD (data, isHidden = false) {  // 添加方块的函数
         if(data.del) {  // 【删除】标记，按照【空模型】处理
@@ -301,6 +302,18 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     console.timeEnd('load');
 
 });
+
+k.star = (index) => {
+    if(k.starInt){
+        clearInterval(k.starInt);
+        k.W.next['T'+ index].hidden = true;
+        return k.starInt = null;
+    }
+    k.starInt = setInterval( (i = index) => { 
+        k.W.next['T'+ i].hidden = !k.W.next['T'+ i].hidden;
+    }, 100 );
+
+}
 
 
 

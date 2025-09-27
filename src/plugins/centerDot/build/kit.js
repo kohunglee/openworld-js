@@ -121,7 +121,8 @@ const htmlCode = `
             margin-top: 6em;
             width: 370px;
             text-align: center;
-            background-color: #ffffff08;
+            /* background-color: #ffffff08; */
+            background-color: #ffffff6b;
             padding: 20px;
             backdrop-filter: blur(1px);
         }
