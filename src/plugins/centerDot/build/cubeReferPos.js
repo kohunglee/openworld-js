@@ -12,10 +12,10 @@ export default function(ccgxkObj) {
         displayRefer: () => {
             const G = ccgxkObj.centerDot.init;
             const W = ccgxkObj.W;
-            const totalModes = 3; // 总共有3个模式 (0, 1, 2)
+            const totalModes = 2; // 总共有 2 个模式 (0, 1)
             G.newCubePosType = (G.newCubePosType + 1) % totalModes;
             switch (G.newCubePosType) {
-                case 1:  // 围绕模式
+                case 1:  // 正交模式
                     W.cube({
                         g: 'mainPlayer',
                         n: CUBE_NAME,
@@ -23,25 +23,16 @@ export default function(ccgxkObj) {
                         w: 1, h: 1, d: 1,
                         b: '#bbbbbb46',
                     });
-                    break;
-                case 2:  // 正交模式
-                    W.cube({
-                        n: CUBE_NAME,
-                        b: '#ff3d3d26',
+                    ccgxkObj.hooks.on('mouseMove', function(o, e, mode = G.newCubePosType, obj = ccgxkObj){
+                        if(mode === 1){
+                            const mVP = obj.mainVPlayer;
+                            const new_ry = ((mVP.rX)? 1: -1) * mVP.rY;
+                            W.cube({
+                                n: CUBE_NAME,
+                                ry: new_ry,  // 让方块的旋转角度始终以正交模式添加
+                            });
+                        }
                     });
-                    if(G.addcubeType2Hook !== true){
-                        ccgxkObj.hooks.on('mouseMove', function(o, e, mode = G.newCubePosType, obj = ccgxkObj){
-                            if(mode === 2){
-                                const mVP = obj.mainVPlayer;
-                                const new_ry = ((mVP.rX)? 1: -1) * mVP.rY;
-                                W.cube({
-                                    n: CUBE_NAME,
-                                    ry: new_ry,  // 让方块的旋转角度始终以正交模式添加
-                                });
-                            }
-                        });             
-                        G.addcubeType2Hook = true;  // 防止重复添加，小小优化
-                    }
                     break;
                 case 0:  // 关闭模式
                     W.delete(CUBE_NAME);

@@ -41,11 +41,11 @@ export default function(ccgxkObj) {
             } else if (G.deformationBaseType === 1){  // 上基点
                 if(inputID === 'objHeight'){
                     step = -step;
-                    objPosY.value = (yValue+step/2).toFixed(2);
+                    objPosY.value = (yValue+step/2).toFixed(3);
                 }
             } else if (G.deformationBaseType === 3){  // 下基点
                 if(inputID === 'objHeight'){
-                    objPosY.value = (yValue+step/2).toFixed(2);
+                    objPosY.value = (yValue+step/2).toFixed(3);
                 }
             }
         },

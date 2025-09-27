@@ -80,11 +80,10 @@ export default function(ccgxkObj) {
         // 魔法数字的离开事件
         magicNumBlur : (e) => {
             if(!(e.key >= 0 && e.key <= 9)){
-                if(e.key !== 'Backspace'){
+                if(e.key !== 'Backspace' && e.key !== '.'){
                     e.preventDefault();
                     e.target.blur();
                 }
-                
             }
         },
 
