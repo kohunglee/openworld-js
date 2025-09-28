@@ -92,6 +92,7 @@ export default function(ccgxkObj) {
             if(objColor.value !== '#888888'){  // 如果 颜色 不是默认颜色，则添加一个 insColor
                 lastArgs.insColor = objColor.value.replace('#', '');
             }
+            lastArgs.isInvisible = false;  // 注意！！！注意！！！注意！！！临时调试
             const orgs_Args = {...ccgxkObj.indexToArgs.get(index)};
             ccgxkObj.indexToArgs.set(index, {...orgs_Args, ...lastArgs});  // 合并操作，赋予源对象
             const newInstanceData = {  // !!!! 下面以 'manyCubes' 为名称进行测试
@@ -131,7 +132,7 @@ export default function(ccgxkObj) {
             }
             ccgxkObj.currentlyActiveIndices.delete(index);  // 重新激活一下这个模型
             if(customIndex !== -1){  // 如果是新加模型，需要重新计算一下区块
-                const DPZ = 2;  // 假设 DPZ 是 2
+                const DPZ = 4;  // 假设 DPZ 是 2
                 const _this = ccgxkObj;
                 const gridKey = `${DPZ}_${Math.floor(lastArgs.X / _this.gridsize[DPZ])}_${Math.floor(lastArgs.Z / _this.gridsize[DPZ])}`;
                 let indicesInCell = _this.spatialGrid.get(gridKey);

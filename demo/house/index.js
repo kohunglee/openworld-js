@@ -41,15 +41,15 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     k.addBox({  // 创建地面
         DPZ : 1,
         colliGroup: 1,
-        tiling : 100,
+        tiling : 20,
         name: 'groundPlane', X: 0, Y: -0.5, Z: 0,
-        mass: 0, width: 300, depth: 300, height: 2,
+        mass: 0, width: 200, depth: 200, height: 2,
         texture: greenStoneborder, background: '#287A17', mixValue: 0.5,
     });
 
     var lastPos = k?.lastPos || {x:21, y:5.00, z:15, rX:0, rY:0, rZ:0};
     k.keys.turnRight = lastPos.rY;
-    const mainVPSize = 0.5;  // 主角的大小，方便建造
+    const mainVPSize = 1;  // 主角的大小，方便建造
     k.mainVPlayer = k.addBox({  // 创建一个立方体，并设置为主角
         name: 'mainPlayer',
         DPZ : 1,
@@ -63,12 +63,13 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         background : '#333',
         texture: greenStone,
     });
-    k.WALK_SPEED = 1/90;  //+ 慢速度
-    k.SPRINT_MIN_SPEED = 1;
-    k.SPRINT_MAX_SPEED = 1.5;
-    k.jumpYVel = 0.8;
-    k.world.gravity.set(0, -9.82/4, 0);  // 临时
-    k.JUMP_HOLD_LIMIT = 0.5;
+    // k.WALK_SPEED = 1/90;  //+ 慢速度
+    // k.SPRINT_MIN_SPEED = 1;
+    // k.SPRINT_MAX_SPEED = 1.5;
+    // k.jumpYVel = 0.8;
+    // k.world.gravity.set(0, -9.82/4, 0);  // 临时
+    // k.JUMP_HOLD_LIMIT = 0.5;
+    // k.centerDot.setCamView(2);  // 设置视角 类型2
 
     /* ---------------------------------------------[ 新主角 ]------------------------- */
     k.W.cube({  // 隐藏显示原主角
@@ -236,6 +237,25 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     for (let index = 0; index < cubeDatas.length; index++) {  // 数据，填充我的容器
         addInsLD(cubeDatas[index]);
     }
+
+    /***
+     * ------【实验区】一楼搞好--------------------------------------
+     */
+
+
+
+
+
+
+
+
+    
+    /***
+     * ----------【结束】----------------------------------
+     */
+
+
+
     // console.log(totalCube - k.visCubeLen);  // 空模型总数
     for (let index = 0; index < totalCube - k.visCubeLen; index++) {  // 空模型
         addInsLD({
@@ -262,7 +282,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             rX: cubeInstances[index].rx,
             rY: cubeInstances[index].ry,
             rZ: cubeInstances[index].rz,
-            isInvisible: true,  // 只被探测，而不可见
+            // isInvisible: true,  // 只被探测，而不可见
             // isFictBody: true,
         });
         if(cubeInstances[index]?.b){  // 别忘了，还要把颜色加入到档案 insColor 里

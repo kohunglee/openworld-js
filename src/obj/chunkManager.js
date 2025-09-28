@@ -17,8 +17,14 @@ export default {
         return zindex + dirctionA + numberA + dirctionB + numberB;
     },
 
+    /**
+     * DPZ 的单个区块面积大小，可认为该单位半径圆外接方内有效
+     * 物理效果生效的前提是，物体最长长度应小于该 DPZ 的值的两倍，如 DPZ=4，就要小于 2*5=10。
+     * （与 DPZ 值挨个对应，从 0 开始）
+     */
+    gridsize : new Uint16Array([10000, 1000, 100, 20, 5, 1]),
+
     // 新的 dynaNodes（适用于长宽 40 以内的物体），lab 版本
-    gridsize : new Uint16Array([10000, 1000, 100, 20, 5]),  // 单个区块面积大小（与 DPZ 挨个对应）
     currentlyActiveIndices : new Set(),  // 当前激活状态的物体。也可保存本次的激活物体列表，供下一次使用
     activationQueue : new Array(),  // 激活任务队列
     dynaNodes_lab : function(){
