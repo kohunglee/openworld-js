@@ -97,6 +97,23 @@ export default function(ccgxkObj) {
             const quadrantIndex = Math.round(delta / 90) % 4;
             return directions[quadrantIndex];
         },
+
+        // // 智能计算出合适的 DPZ
+        // smartDPZ : (w, h, d, isRot = false) => {
+        //     max = g.max3(w, h, d);
+        //     for (let i = 0, n = gs.length; i < n; ++i) {
+        //         const v = gs[i];
+        //         if (max > v * 2) return i;
+        //     }
+        //     return -1;
+        // },
+
+        // // 计算三者最大值
+        // max3 : (a, b, c) => {
+        //     if (a < b) a = b;
+        //     if (a < c) a = c;
+        //     return a;
+        // },
     }
 
     ccgxkObj.centerDot.init = {...g, ...ccgxkObj.centerDot.init};
