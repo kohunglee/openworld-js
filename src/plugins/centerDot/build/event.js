@@ -81,6 +81,14 @@ export default function(ccgxkObj) {
                 }
                 return 0;
             }
+
+            if(key === 'e') {  // 在冻结物体情况下，按 e 键，可以解除冻结
+                const mvpBody = ccgxkObj.mainVPlayer.body;
+                if(mvpBody.mass === 0){
+                    mvpBody.mass = 50;  // 重量还原
+                }
+            }
+
             if(key === 'f') {  // 键盘上的 f 键被按下（冻结物体）
                 const mvpBody = ccgxkObj.mainVPlayer.body;
                 if(mvpBody.mass === 0){
@@ -95,6 +103,8 @@ export default function(ccgxkObj) {
                     G.music('frozen');
                 }
             }
+
+
             if(key === 'r') {  // 添加一个新的方块（跟随）
                 // G.operaCube(1);
                 // G.hotAction(ccgxkObj.visCubeLen + 1 );

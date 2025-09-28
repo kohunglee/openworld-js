@@ -108,7 +108,7 @@ export default function(ccgxkObj) {
         },
 
         // 获取（和下载）当前的所有方块数据
-        setCamView : (viewType) => {
+        setCamView : (viewType = null) => {
             const G = ccgxkObj.centerDot;
             if(viewType === 'first'){
                 ccgxkObj.mainCamera.pos = G.camViewData[G.firstCamViewType];
@@ -118,15 +118,19 @@ export default function(ccgxkObj) {
                 ccgxkObj.mainCamera.pos = G.camViewData[G.thirdCamViewType];
                 return 0;
             }
+            
             if(ccgxkObj.centerDot.status) return 0;
             const totalType  = Object.keys(G.camViewData).length;
             G.currentCamType = (G.currentCamType + 1) % totalType;
+            if(viewType){
+                G.currentCamType = viewType;
+            }
             if(G.currentCamType){
                 G.thirdCamViewType = G.currentCamType;
             }
             ccgxkObj.mainCamera.pos = G.camViewData[G.currentCamType];
         },
-        currentCamType : 1,
+        currentCamType : 1,  // 默认视角
         firstCamViewType : 0,
         thirdCamViewType : 1,
 
