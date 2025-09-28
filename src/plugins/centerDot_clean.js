@@ -209,6 +209,7 @@ export default function(ccgxkObj) {
     }
 
     ccgxkObj.hooks.on('pointer_lock_click', function(ccgxkObj, e){
+        if(ccgxkObj.notCenterDot) return;  // 禁用状态
         if(ccgxkObj.centerPointColorUpdatax || e.button === 2){  
             if(ccgxkObj.hotPoint >= 0 && e.button !== 2) {  // 如果有热点，单击热点后，触发热点事件
                 ccgxkObj.hooks.emitSync('hot_action', ccgxkObj, e);  // 钩子：鼠标单击热点事件 hotAction()

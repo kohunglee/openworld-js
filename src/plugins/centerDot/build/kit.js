@@ -36,7 +36,8 @@ export default function(ccgxkObj) {
 
         // 一些在模态框显示时的禁止监听键盘事件的场景
         disListen : () => {
-            if(myHUDModal.hidden === false){ return false;}
+            if(myHUDModal.hidden === false){ return false }
+            return true;
         },
 
         // 音效映射关系
@@ -45,7 +46,7 @@ export default function(ccgxkObj) {
             'openEdi'  : 'coin0',
             'closePoint'   : 'wood',
             'openPoint'    : 'wood',
-            'jump'         : 'sa',
+            // 'jump'         : 'sa',
             'frozen'       : 'alien',
             'unfrozen'     : 'unfrozen',
             'addCube0'     : 'ting',
@@ -56,7 +57,9 @@ export default function(ccgxkObj) {
             const G = ccgxkObj.centerDot.init;
             const obj = ccgxkObj;
             const list = obj.sound;
-            obj.audio(list[G.musicMap[myevent]]);
+            if(G?.musicMap[myevent]){
+                obj.audio(list[G.musicMap[myevent]]);
+            }
         },
 
         // 辅助函数，批量设置 EdiArgsInput 的 number 的 step

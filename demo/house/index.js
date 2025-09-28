@@ -57,7 +57,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         isShadow: 'ok',
         X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z,
         mixValue:0.7,
-        // width: mainVPSize, depth: mainVPSize, height: mainVPSize * 2,
+        // width: mainVPSize, depth: mainVPSize, height: mainVPSize * 1.12,  // 脚会悬空，等待其他解决方式吧
         size: mainVPSize,
         mass: 50,
         background : '#333',
@@ -69,7 +69,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     // k.jumpYVel = 0.8;
     // k.world.gravity.set(0, -9.82/4, 0);  // 临时
     // k.JUMP_HOLD_LIMIT = 0.5;
-    // k.centerDot.setCamView(2);  // 设置视角 类型2
+    k.centerDot.setCamView(2);  // 设置视角 类型2
 
     /* ---------------------------------------------[ 新主角 ]------------------------- */
     k.W.cube({  // 隐藏显示原主角
@@ -282,7 +282,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             rX: cubeInstances[index].rx,
             rY: cubeInstances[index].ry,
             rZ: cubeInstances[index].rz,
-            // isInvisible: true,  // 只被探测，而不可见
+            isInvisible: true,  // 只被探测，而不可见
             // isFictBody: true,
         });
         if(cubeInstances[index]?.b){  // 别忘了，还要把颜色加入到档案 insColor 里
