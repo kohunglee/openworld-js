@@ -112,6 +112,7 @@ export default function(ccgxkObj) {
 
             if(key === 'x' && G.newCubePosType) {  // 添加一个新的方块（固定）
                 G.operaCube(1, true);
+                G.displayRefer();      // 关闭参考模型
             }
 
             if(key === 'z'){  // 添加方块时的参考
