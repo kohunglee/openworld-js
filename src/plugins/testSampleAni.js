@@ -136,21 +136,20 @@ export default function(ccgxkObj) {
     // 按下 W，就告诉导演“上演跑步”；松开，就告诉导演“全部停下”。
     const keyState = { KeyW: false, KeyE: false };
 
-    window.addEventListener('keydown', (event) => {
-        if (!keyState[event.code]) {
-            keyState[event.code] = true;
-            if (event.code === 'KeyW') animationManager.play('jog');
-            // if (event.code === 'KeyE') animationManager.play('jump');
-        }
-    });
+    // window.addEventListener('keydown', (event) => {
+    //     if (!keyState[event.code]) {
+    //         keyState[event.code] = true;
+    //         if (event.code === 'KeyW') animationManager.play('jog');
+    //     }
+    // });
 
-    window.addEventListener('keyup', (event) => {
-        if (keyState[event.code]) {
-            keyState[event.code] = false;
-            // 只有当两个键都松开时才停止动画，或者根据您的需求调整
-            // 这里简化为，任何一个键松开，都停止当前动画
-            // animationManager.stopCurrent();
-            if (event.code === 'KeyW') animationManager.stopCurrent();
-        }
-    });
+    // window.addEventListener('keyup', (event) => {
+    //     if (keyState[event.code]) {
+    //         keyState[event.code] = false;
+    //         // 只有当两个键都松开时才停止动画，或者根据您的需求调整
+    //         // 这里简化为，任何一个键松开，都停止当前动画
+    //         // animationManager.stopCurrent();
+    //         if (event.code === 'KeyW') animationManager.stopCurrent();
+    //     }
+    // });
 }

@@ -41,15 +41,15 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     k.addBox({  // 创建地面
         DPZ : 1,
         colliGroup: 1,
-        tiling : 20,
+        tiling : 200,
         name: 'groundPlane', X: 0, Y: -0.5, Z: 0,
-        mass: 0, width: 200, depth: 200, height: 2,
+        mass: 0, width: 2000, depth: 2000, height: 2,
         texture: greenStoneborder, background: '#287A17', mixValue: 0.5,
     });
 
     var lastPos = k?.lastPos || {x:21, y:5.00, z:15, rX:0, rY:0, rZ:0};
     k.keys.turnRight = lastPos.rY;
-    const mainVPSize = 1;  // 主角的大小，方便建造
+    const mainVPSize = 0.5;  // 主角的大小，方便建造
     k.mainVPlayer = k.addBox({  // 创建一个立方体，并设置为主角
         name: 'mainPlayer',
         DPZ : 1,
@@ -63,13 +63,15 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         background : '#333',
         texture: greenStone,
     });
+    k.centerDot.setCamView(2);  // 设置视角 类型2
+    /* */
     // k.WALK_SPEED = 1/90;  //+ 慢速度
     // k.SPRINT_MIN_SPEED = 1;
     // k.SPRINT_MAX_SPEED = 1.5;
     // k.jumpYVel = 0.8;
     // k.world.gravity.set(0, -9.82/4, 0);  // 临时
     // k.JUMP_HOLD_LIMIT = 0.5;
-    k.centerDot.setCamView(2);  // 设置视角 类型2
+    
 
     /* ---------------------------------------------[ 新主角 ]------------------------- */
     k.W.cube({  // 隐藏显示原主角
@@ -224,7 +226,6 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     // 浏览器储存
     if (!localStorage.getItem('ow_' + cellpageid)) {  // 初始化存储
         localStorage.setItem('ow_' + cellpageid, JSON.stringify([]));
-        // cubeDatas = [];
         cubeDatas = testcubedata;  // 使用我的本地测试数据
     } else {
         cubeDatas = JSON.parse(localStorage.getItem('ow_' + cellpageid));
@@ -241,6 +242,92 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     /***
      * ------【实验区】一楼搞好--------------------------------------
      */
+
+
+    const d_floor = 10;
+    const d_ceil = 49;
+    const d_table = [1, 9];
+    const d_tinybookshelf = [11, 20];  // 小书架
+    const d_bigbookshelf = [22, 35];  // 大书架
+    const d_Pillar = [37, 40];  // 柱子
+    const d_thinwall = 43;  // 隔断墙
+    const d_windoWall = [40, 48];
+
+    const d_bigPillar = 37;  // 大柱子
+    // const test = 12;
+    // const space_x = 5.143;  // 里屋宽
+
+    const sym_axis_x = 45;
+
+    const items = [  // 对称队列
+        d_tinybookshelf,
+        d_bigbookshelf,
+    ];
+
+    const items_0 = [  // 偏移队列
+        [54, 63],  // 对称后的 小柜子
+        [64, 77],  // 对称后的 大柜子
+        d_tinybookshelf,
+        d_bigbookshelf,
+        d_thinwall,
+        d_Pillar,
+        d_ceil,  // 屋顶
+        d_floor,  // 地板
+        d_table,
+        d_windoWall,
+    ];
+
+    // k.notSymOff = true;
+
+    const symopera = (items) => {  // 对称操作
+        if(k.notSymOff) return 0;
+        var orig_data = cubeDatas[items];
+        var agent = {...orig_data};
+        agent.x -= (orig_data.x - sym_axis_x) * 2;
+        cubeDatas.push(agent);
+    }
+
+    const offsetopera = (items, times) => {  // 偏移操作
+        if(k.notSymOff) return 0;
+        var orig_data = cubeDatas[items];
+        var agent = {...orig_data};
+        agent.x -= 5.145 * times;
+        addInsLD(agent);
+    }
+
+    // console.log('开始对称');
+
+    for (const it of items) {  // 对称
+        if (Array.isArray(it)) {
+            for (let n = it[0]; n <= it[1]; n++) {
+                symopera(n);
+            }
+            // console.log('---');
+        } else {
+            symopera(it);
+            // console.log('------');
+        }
+    }
+
+    // console.log('开始偏移');
+
+    for (let index = 0; index < 130; index++) {  // 偏移
+        for (const it of items_0) {
+            if (Array.isArray(it)) {
+                for (let n = it[0]; n <= it[1]; n++) {
+                    // console.log(n);
+                    offsetopera(n, index);
+                }
+                // console.log('---');
+            } else {
+                offsetopera(it, index);
+                // console.log('------');
+            }
+        }
+    }
+
+    
+
 
 
 
@@ -265,7 +352,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     }
     for (let index = 0; index < cubeInstances.length; index++) {  // 为「实例」加上简单的物理引擎
         k.addTABox({
-            DPZ : 2,
+            DPZ : 4,
             isPhysical: true,
             mass: 0,
             background: '#f6a1a1ff',
@@ -317,7 +404,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             k.visCubeLen = cubeIndex;  // 记录，有多少显示的，不过用处不大
         }
         isHiddenVis[cubeIndex] = isHidden;
-        cubeIndex++;
+        return cubeIndex++;
     }
     console.timeEnd('load');
 
@@ -326,13 +413,18 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
 k.star = (index) => {
     if(k.starInt){
         clearInterval(k.starInt);
-        k.W.next['T'+ index].hidden = true;
-        return k.starInt = null;
+        if(k.W.next['T'+ k.starID]?.hidden){
+            k.W.next['T'+ k.starID].hidden = true;
+        }
     }
-    k.starInt = setInterval( (i = index) => { 
-        k.W.next['T'+ i].hidden = !k.W.next['T'+ i].hidden;
-    }, 100 );
-
+    if(index){
+        k.starInt = setInterval( (i = index) => {
+            if(k.W?.next['T'+ i]){
+                k.W.next['T'+ i].hidden = !k.W.next['T'+ i].hidden;
+            }
+        }, 100 );
+        k.starID = index;
+    }
 }
 
 

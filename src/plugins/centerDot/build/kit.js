@@ -137,8 +137,8 @@ const htmlCode = `
             z-index: 999;
         }
         .myHUD-modalPos {
-            margin-left: calc(25% - 140px);
-            margin-top: 18%;
+            margin-left: 15px;
+            margin-top: 30px;
             width: 370px;
             text-align: center;
             /* background-color: #ffffff08; */
