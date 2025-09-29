@@ -243,6 +243,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
      * ------【实验区】一楼搞好--------------------------------------
      */
 
+    // k.notSymOff = true;  // 禁止 对称 排列
 
     const d_floor = 10;
     const d_ceil = 49;
@@ -277,7 +278,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         d_windoWall,
     ];
 
-    // k.notSymOff = true;
+    
 
     const symopera = (items) => {  // 对称操作
         if(k.notSymOff) return 0;
@@ -297,34 +298,55 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
 
     // console.log('开始对称');
 
-    for (const it of items) {  // 对称
-        if (Array.isArray(it)) {
-            for (let n = it[0]; n <= it[1]; n++) {
-                symopera(n);
-            }
-            // console.log('---');
-        } else {
-            symopera(it);
-            // console.log('------');
-        }
-    }
-
-    // console.log('开始偏移');
-
-    for (let index = 0; index < 130; index++) {  // 偏移
-        for (const it of items_0) {
+    // 对称数组内的物体
+    const symo = (items) => {  
+        for (const it of items) {
             if (Array.isArray(it)) {
                 for (let n = it[0]; n <= it[1]; n++) {
-                    // console.log(n);
-                    offsetopera(n, index);
+                    symopera(n);
                 }
-                // console.log('---');
             } else {
-                offsetopera(it, index);
-                // console.log('------');
+                symopera(it);
             }
         }
     }
+
+    // 偏移数组内的物体
+    const offset = (items, n) => {
+        for (let index = 0; index < n; index++) {  // 偏移
+            for (const it of items) {
+                if (Array.isArray(it)) {
+                    for (let n = it[0]; n <= it[1]; n++) {
+                        // console.log(n);
+                        offsetopera(n, index);
+                    }
+                    // console.log('---');
+                } else {
+                    offsetopera(it, index);
+                    // console.log('------');
+                }
+            }
+        }
+    }
+
+    symo(items);  // 第一次对称，对称大小书柜
+    offset(items_0, 5);  // 第二次，将样板重复到共 6 次
+
+    
+    // for (let index = 0; index < 5; index++) {  // 偏移
+    //     for (const it of items_0) {
+    //         if (Array.isArray(it)) {
+    //             for (let n = it[0]; n <= it[1]; n++) {
+    //                 // console.log(n);
+    //                 offsetopera(n, index);
+    //             }
+    //             // console.log('---');
+    //         } else {
+    //             offsetopera(it, index);
+    //             // console.log('------');
+    //         }
+    //     }
+    // }
 
     
 
@@ -335,7 +357,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
 
 
 
-
+    console.log('共', k.visCubeLen, '个可见方块');
     
     /***
      * ----------【结束】----------------------------------
