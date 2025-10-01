@@ -6,7 +6,7 @@ export default {
     speedL: 10,              // 最低速度的反数
     speedAdd: 0.1,          // 速度的增加率
     jumpYVel: 5,            // 跳跃时向上的加速度
-    fov:35,                 // 相机视野
+    fov:60,                 // 相机视野
     colorClear: "#7A4141",  // 画布背景色
     displayViewTime: 0.9,      // 显示清晰度
 
