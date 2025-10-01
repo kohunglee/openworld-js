@@ -63,7 +63,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         background : '#333',
         texture: greenStone,
     });
-    k.centerDot.setCamView(2);  // 设置视角 类型2
+    // k.centerDot.setCamView(2);  // 设置视角 类型2
     /* */
     // k.WALK_SPEED = 1/90;  //+ 慢速度
     // k.SPRINT_MIN_SPEED = 1;
