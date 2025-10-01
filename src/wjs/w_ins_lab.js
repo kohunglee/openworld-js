@@ -170,15 +170,30 @@ const W = {
         } else {
           state.isInstanced = false;
         }
-        if(state.fov){  // 根据 fov 计算【投影矩阵】
-          var viewLimit = W.viewLimit;
-          W.projection =
-            new DOMMatrix([
-              (1 / Math.tan(state.fov * Math.PI / 180)) / (W.canvas.width / W.canvas.height), 0, 0, 0, 
-              0, (1 / Math.tan(state.fov * Math.PI / 180)), 0, 0, 
-              0, 0, -(viewLimit + 0.1) / (viewLimit - 0.1), -1,
-              0, 0, -(2 * viewLimit * 0.1) / (viewLimit - 0.1), 0
-            ]);
+        // if(state.fov){  // 根据 fov 计算【投影矩阵】
+        //   var viewLimit = W.viewLimit;
+        //   W.projection =
+        //     new DOMMatrix([
+        //       (1 / Math.tan(state.fov * Math.PI / 180)) / (W.canvas.width / W.canvas.height), 0, 0, 0, 
+        //       0, (1 / Math.tan(state.fov * Math.PI / 180)), 0, 0, 
+        //       0, 0, -(viewLimit + 0.1) / (viewLimit - 0.1), -1,
+        //       0, 0, -(2 * viewLimit * 0.1) / (viewLimit - 0.1), 0
+        //     ]);
+        // }
+        if (state.fov) {  // 根据 fov 计算【投影矩阵】
+          const aspect = W.canvas.width / W.canvas.height;
+          const near = 0.1;
+          const far = W.viewLimit;
+
+          // 关键修正：使用 (fov/2)，并转成弧度
+          const f = 1 / Math.tan((state.fov * 0.5) * Math.PI / 180);
+
+          W.projection = new DOMMatrix([
+            f / aspect, 0, 0, 0,
+            0, f, 0, 0,
+            0, 0, -(far + near) / (far - near), -1,
+            0, 0, -(2 * far * near) / (far - near), 0
+          ]);
         }
         state = {  // 保存和初始化对象的类型
           type,

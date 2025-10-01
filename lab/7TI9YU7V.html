@@ -1,0 +1,293 @@
+<meta charset="utf-8"><!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网址ID查询工具</title>
+    <style>
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="upload-section">
+            <h2>1. 上传数据文件</h2>
+            <input type="file" id="fileInput" accept=".txt">
+            <div class="progress-bar" id="progressContainer" style="display: none;">
+                <div class="progress" id="progressBar"></div>
+            </div>
+            <div class="status" id="uploadStatus"></div>
+        </div>
+        
+        <div class="query-section">
+            <h2>2. 输入要查询的网址</h2>
+            <textarea id="queryInput" rows="10" placeholder="每行输入一个网址，例如：
+springwoodsystems.net
+963kklz.com
+lovetomoon.com"></textarea>
+            <button id="queryButton" disabled>查询ID</button>
+            <div class="status" id="queryStatus"></div>
+        </div>
+        
+        <div class="result-section">
+            <h2>3. 查询结果</h2>
+            <div class="result" id="resultOutput"></div>
+        </div>
+    </div>
+
+    <script>
+        // 数据库相关变量
+        let db;
+        const DB_NAME = 'UrlIdDatabase';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'urls';
+        
+        // DOM元素
+        const fileInput = document.getElementById('fileInput');
+        const queryInput = document.getElementById('queryInput');
+        const queryButton = document.getElementById('queryButton');
+        const resultOutput = document.getElementById('resultOutput');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const queryStatus = document.getElementById('queryStatus');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        
+        // 初始化数据库
+        function initDatabase() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = () => {
+                    reject('无法打开数据库');
+                };
+                
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve();
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    
+                    // 如果对象存储不存在，则创建
+                    if (!database.objectStoreNames.contains(STORE_NAME)) {
+                        const store = database.createObjectStore(STORE_NAME, { keyPath: 'url' });
+                        store.createIndex('id', 'id', { unique: true });
+                    }
+                };
+            });
+        }
+        
+        // 将数据存储到IndexedDB
+        function storeDataInDB(data) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                
+                // 先清空存储
+                const clearRequest = store.clear();
+                
+                clearRequest.onsuccess = () => {
+                    let completed = 0;
+                    const total = data.length;
+                    
+                    // 批量添加数据
+                    data.forEach(item => {
+                        const request = store.add(item);
+                        
+                        request.onsuccess = () => {
+                            completed++;
+                            const progress = (completed / total) * 100;
+                            progressBar.style.width = `${progress}%`;
+                            
+                            if (completed === total) {
+                                resolve();
+                            }
+                        };
+                        
+                        request.onerror = () => {
+                            reject(`无法存储数据: ${item.url}`);
+                        };
+                    });
+                };
+                
+                clearRequest.onerror = () => {
+                    reject('无法清空数据库');
+                };
+            });
+        }
+        
+        // 从IndexedDB查询URL
+        function queryUrlFromDB(url) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get(url);
+                
+                request.onsuccess = () => {
+                    resolve(request.result);
+                };
+                
+                request.onerror = () => {
+                    reject(`查询失败: ${url}`);
+                };
+            });
+        }
+        
+        // 处理文件上传
+        fileInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            try {
+                uploadStatus.textContent = '正在初始化数据库...';
+                await initDatabase();
+                
+                uploadStatus.textContent = '正在读取文件...';
+                const text = await readFileAsText(file);
+                
+                uploadStatus.textContent = '正在解析数据...';
+                const data = parseFileData(text);
+                
+                uploadStatus.textContent = '正在存储数据...';
+                progressContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+                
+                await storeDataInDB(data);
+                
+                uploadStatus.textContent = `数据加载完成！共加载 ${data.length} 条记录`;
+                queryButton.disabled = false;
+                
+                // 3秒后隐藏进度条
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                }, 3000);
+                
+            } catch (error) {
+                uploadStatus.textContent = `错误: ${error}`;
+                console.error(error);
+            }
+        });
+        
+        // 读取文件为文本
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                
+                reader.onload = () => {
+                    resolve(reader.result);
+                };
+                
+                reader.onerror = () => {
+                    reject('无法读取文件');
+                };
+                
+                reader.readAsText(file);
+            });
+        }
+        
+        // 解析文件数据
+        function parseFileData(text) {
+            const lines = text.split('\n');
+            const data = [];
+            
+            for (const line of lines) {
+                const trimmedLine = line.trim();
+                if (!trimmedLine) continue;
+                
+                const parts = trimmedLine.split('\t');
+                if (parts.length >= 2) {
+                    const id = parts[0].trim();
+                    const url = parts[1].trim();
+                    
+                    if (id && url) {
+                        data.push({ url, id });
+                    }
+                }
+            }
+            
+            return data;
+        }
+        
+        // 处理查询
+        queryButton.addEventListener('click', async () => {
+            const queryText = queryInput.value.trim();
+            if (!queryText) {
+                queryStatus.textContent = '请输入要查询的网址';
+                return;
+            }
+            
+            try {
+                queryStatus.textContent = '正在查询...';
+                queryButton.disabled = true;
+                
+                const urls = queryText.split('\n')
+                    .map(url => url.trim())
+                    .filter(url => url);
+                
+                const results = [];
+                
+                for (const url of urls) {
+                    const result = await queryUrlFromDB(url);
+                    if (result) {
+                        results.push(`${result.id}\t${url}`);
+                    } else {
+                        results.push(`0\t${url}`);
+                    }
+                }
+                
+                resultOutput.innerHTML = results.join('<br>');
+                queryStatus.textContent = `查询完成！共查询 ${urls.length} 个网址`;
+                
+            } catch (error) {
+                queryStatus.textContent = `查询错误: ${error}`;
+                console.error(error);
+            } finally {
+                queryButton.disabled = false;
+            }
+        });
+        
+        // 页面加载时尝试初始化数据库
+        window.addEventListener('load', async () => {
+            try {
+                await initDatabase();
+                
+                // 检查数据库中是否有数据
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const countRequest = store.count();
+                
+                countRequest.onsuccess = () => {
+                    if (countRequest.result > 0) {
+                        uploadStatus.textContent = `数据库已加载，包含 ${countRequest.result} 条记录`;
+                        queryButton.disabled = false;
+                    } else {
+                        uploadStatus.textContent = '请上传数据文件';
+                    }
+                };
+                
+            } catch (error) {
+                uploadStatus.textContent = '数据库初始化失败';
+                console.error(error);
+            }
+        });
+    </script>
+    <!---
+
+
+// 字符串网址提取器
+const extract = str => {
+const urls = [...str.matchAll(/https?:\/\/[^\s/]+/gi)].map(m=>m[0]);
+const hosts = urls.map(u=>u.replace(/^https?:\/\/(www\.)?/i,'').split('/')[0].toLowerCase());
+const slds = hosts.map(h=>{
+const parts = h.split('.');
+const t = parts.slice(-2).join('.');
+ // 简单处理像 "co.uk" / "ac.jp" 这种二级国家域名
+return (['co','ac','gov','org','net'].includes(parts[parts.length-2]) && parts.length>2)?parts.slice(-3).join('.'):t;
+});
+console.log([...new Set(slds)].join('\n'));
+}
+
+    -->
+</body>
+</html>
