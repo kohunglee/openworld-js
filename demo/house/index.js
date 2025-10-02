@@ -214,6 +214,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     var cellpageid, cubeDatas;
     var urlParams = new URLSearchParams(window.location.search);  // 获取 URL
     k.cellpageid_geturl = urlParams.get('id');  // 获取 url 的 id 参数
+    k.isLogicAdd = urlParams.get('logicadd');  // 获取 url 的 id 参数
     if(k.cellpageid_geturl) {
         cellpageid = k.cellpageid_geturl;
     } else {
@@ -235,9 +236,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     const cubeInstances = [];  // 立方体对象【实例】的容器
     const isHiddenVis = [];  // 【隐藏显示】表
     var cubeIndex = 0;  // 计数器
-    for (let index = 0; index < cubeDatas.length; index++) {  // 数据，填充我的容器
-        addInsLD(cubeDatas[index]);
-    }
+
 
     /***
      * ------【实验区】一楼搞好--------------------------------------
@@ -258,105 +257,123 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     // const test = 12;
     // const space_x = 5.143;  // 里屋宽
 
-    const sym_axis_x = 45;
+    
 
-    const items = [  // 对称队列
-        d_tinybookshelf,
-        d_bigbookshelf,
-    ];
 
-    const items_0 = [  // 偏移队列
-        [54, 63],  // 对称后的 小柜子
-        [64, 77],  // 对称后的 大柜子
-        d_tinybookshelf,
-        d_bigbookshelf,
-        d_thinwall,
-        d_Pillar,
-        d_ceil,  // 屋顶
-        d_floor,  // 地板
-        d_table,
-        d_windoWall,
-    ];
+
 
     
 
-    const symopera = (items) => {  // 对称操作
+    const symopera = (items, axes={}) => {  // 对称操作
         if(k.notSymOff) return 0;
         var orig_data = cubeDatas[items];
         var agent = {...orig_data};
-        agent.x -= (orig_data.x - sym_axis_x) * 2;
-        cubeDatas.push(agent);
+        for (const axis of ["x", "y", "z"]) {
+            if (axes[axis] !== undefined) {
+                agent[axis] -= (orig_data[axis] - axes[axis]) * 2;
+            }
+        }
+        return cubeDatas.push(agent);
     }
 
-    const offsetopera = (items, times) => {  // 偏移操作
+    const offsetopera = (items, distancs, times = 0, axes = 'x') => {  // 偏移操作
         if(k.notSymOff) return 0;
         var orig_data = cubeDatas[items];
         var agent = {...orig_data};
-        agent.x -= 5.145 * times;
-        addInsLD(agent);
+        // agent.x -= 5.145 * times;
+        for (const axis of ["x", "y", "z"]) {
+            if (axes === axis) {
+                agent[axis] -= distancs * times;
+                // agent.x -= distancs * times;
+            }
+        }
+        return cubeDatas.push(agent);
     }
-
-    // console.log('开始对称');
 
     // 对称数组内的物体
-    const symo = (items) => {  
+    const symo = (items, axes = {}) => { 
+        const addInfo = [];
         for (const it of items) {
             if (Array.isArray(it)) {
                 for (let n = it[0]; n <= it[1]; n++) {
-                    symopera(n);
+                    addInfo.push(symopera(n, axes)); 
                 }
             } else {
-                symopera(it);
+                addInfo.push(symopera(it, axes));
             }
         }
+        addInfo.pop();
+        return addInfo;
     }
 
     // 偏移数组内的物体
-    const offset = (items, n) => {
-        for (let index = 0; index < n; index++) {  // 偏移
+    const offset = (items, distance, times, axes) => {
+        const addInfo = [];
+        for (let index = 1; index < times; index++) {  // 偏移
             for (const it of items) {
                 if (Array.isArray(it)) {
                     for (let n = it[0]; n <= it[1]; n++) {
-                        // console.log(n);
-                        offsetopera(n, index);
+                        addInfo.push(offsetopera(n, distance, index, axes));
                     }
-                    // console.log('---');
                 } else {
-                    offsetopera(it, index);
-                    // console.log('------');
+                    addInfo.push(offsetopera(it, distance, index, axes));
                 }
             }
         }
+        addInfo.pop();
+        return addInfo;
     }
 
-    symo(items);  // 第一次对称，对称大小书柜
-    offset(items_0, 5);  // 第二次，将样板重复到共 6 次
+    // ---------
+
+
+    if(k.isLogicAdd === '1'){
+        const sym_axis_x = 45;
+        const items = [  // 对称队列
+            d_tinybookshelf,
+            d_bigbookshelf,
+        ];
+
+        const addShelf = symo(items, {x:sym_axis_x});  // 第一次对称，对称大小书柜
+
+        console.log(addShelf);
+
+        const items_0 = [  // 偏移队列
+            // 54,
+            ...addShelf,  // 对称后的 大小柜子
+            d_tinybookshelf,
+            d_bigbookshelf,
+            d_thinwall,
+            d_Pillar,
+            d_ceil,  // 屋顶
+            d_floor,  // 地板
+            d_table,
+            d_windoWall,
+        ];
+
+
+
+        const offinfo = offset(items_0, 5.145, 6);  // 第二次，将样板重复到共 6 次
+        console.log(offinfo);
+        const off_floor = offset([54,], 5.145, 6);  // 地板重复 6 次
+
+        symo([...offinfo, ...addShelf, ...items_0], {z:-30});  // 第二次对称，将左侧的6房间搞到右侧内容， 按 Z=-30 对称
+
+        // const d_centerFloor = 1033;  // 中间地板
+        // offset([d_centerFloor], 5.145, 6);
+        const testBook = offset([55,], -0.035, 29, 'z');  // 测试书籍
+    }
 
     
-    // for (let index = 0; index < 5; index++) {  // 偏移
-    //     for (const it of items_0) {
-    //         if (Array.isArray(it)) {
-    //             for (let n = it[0]; n <= it[1]; n++) {
-    //                 // console.log(n);
-    //                 offsetopera(n, index);
-    //             }
-    //             // console.log('---');
-    //         } else {
-    //             offsetopera(it, index);
-    //             // console.log('------');
-    //         }
-    //     }
-    // }
-
-    
 
 
 
 
+    // ---------
 
-
-
-
+    for (let index = 0; index < cubeDatas.length; index++) {  // 数据，填充我的容器
+        addInsLD(cubeDatas[index]);
+    }
     console.log('共', k.visCubeLen, '个可见方块');
     
     /***
