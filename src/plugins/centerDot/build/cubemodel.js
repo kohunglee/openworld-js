@@ -39,6 +39,7 @@ export default function(ccgxkObj) {
             const newIndex = obj.visCubeLen + 1;  // !!!! 一个临时的解决方案，新开辟了 visCubeLen
             if(type === 0){  // 复制一个方块
                 G.modelUpdate(null, newIndex);
+                G.music('copyCube');
             }
             if(type === 1){  // 添加一个方块
                 const mVP = obj.mainVPlayer;

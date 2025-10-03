@@ -63,15 +63,403 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         background : '#333',
         texture: greenStone,
     });
-    // k.centerDot.setCamView(2);  // 设置视角 类型2
+    k.centerDot.setCamView(2);  // 设置视角 类型2
     /* */
-    // k.WALK_SPEED = 1/90;  //+ 慢速度
-    // k.SPRINT_MIN_SPEED = 1;
-    // k.SPRINT_MAX_SPEED = 1.5;
-    // k.jumpYVel = 0.8;
-    // k.world.gravity.set(0, -9.82/4, 0);  // 临时
-    // k.JUMP_HOLD_LIMIT = 0.5;
+    k.WALK_SPEED = 1/20;  //+ 慢速度
+    k.SPRINT_MIN_SPEED = 5;
+    k.SPRINT_MAX_SPEED = 15.5;
+    k.jumpYVel = 0.8;
+    k.world.gravity.set(0, -9.82/4, 0);  // 临时
+    k.JUMP_HOLD_LIMIT = 0.5;
     
+
+    
+
+    console.time('load');
+
+    // Url 参数
+    var cellpageid, cubeDatas;
+    var urlParams = new URLSearchParams(window.location.search);  // 获取 URL
+    k.cellpageid_geturl = urlParams.get('id');  // 获取 url 的 id 参数
+    k.isLogicAdd = urlParams.get('logicadd');  // 获取 url 的 id 参数
+    if(k.cellpageid_geturl) {
+        cellpageid = k.cellpageid_geturl;
+    } else {
+        cellpageid = Math.random().toString(36).slice(2,7);  // 随机5字符作为ID
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.set('id',cellpageid);
+    history.pushState({}, '', url.toString());  // 将这个新的随机字符放置到地址栏
+
+    // 浏览器储存
+    if (!localStorage.getItem('ow_' + cellpageid)) {  // 初始化存储
+        localStorage.setItem('ow_' + cellpageid, JSON.stringify([]));
+        cubeDatas = testcubedata;  // 使用我的本地测试数据
+    } else {
+        cubeDatas = JSON.parse(localStorage.getItem('ow_' + cellpageid));
+    }
+
+    
+    // console.log(localStorage.getItem('ow_' + cellpageid));
+
+
+    // console.log(localStorage.getItem('ow_' + cellpageid));
+    
+    const totalCube = 10000;  // 计划的总方块数
+    const cubeInstances = [];  // 立方体对象【实例】的容器
+    const isHiddenVis = [];  // 【隐藏显示】表
+    var cubeIndex = 0;  // 计数器
+
+
+    /***
+     * ------【实验区】一楼搞好--------------------------------------
+     */
+
+    const symopera = (items, axes={}) => {  // 对称操作
+        if(k.notSymOff) return 0;
+        var orig_data = cubeDatas[items];
+        var agent = {...orig_data};
+        for (const axis of ["x", "y", "z"]) {
+            if (axes[axis] !== undefined) {
+                agent[axis] -= (orig_data[axis] - axes[axis]) * 2;
+            }
+        }
+        return cubeDatas.push(agent);
+    }
+
+    const offsetopera = (items, distancs, times = 0, axes = 'x') => {  // 偏移操作
+        if(k.notSymOff) return 0;
+        var orig_data = cubeDatas[items];
+        var agent = {...orig_data};
+        for (const axis of ["x", "y", "z"]) {
+            if (axes === axis) {
+                agent[axis] -= distancs * times;
+            }
+        }
+        return cubeDatas.push(agent);
+    }
+    
+    const symo = (items, axes = {}) => {  // 对称数组内的物体
+        const addInfo = [];
+        for (const it of items) {
+            if(it === -1) continue;
+            if (Array.isArray(it)) {
+                for (let n = it[0]; n <= it[1]; n++) {
+                    addInfo.push(symopera(n, axes) - 1); 
+                }
+            } else {
+                addInfo.push(symopera(it, axes) - 1);
+            }
+        }
+        return addInfo;
+    }
+    
+    const offset = (items, distance, times, axes) => {  // 偏移数组内的物体
+        const addInfo = [];
+        for (let index = 1; index < times; index++) {  // 偏移
+            for (const it of items) {
+                if(it === -1) continue;
+                if (Array.isArray(it)) {
+                    for (let n = it[0]; n <= it[1]; n++) {
+                        addInfo.push(offsetopera(n, distance, index, axes) - 1);
+                    }
+                } else {
+                    addInfo.push(offsetopera(it, distance, index, axes) - 1);
+                }
+            }
+        }
+        return addInfo;
+    }
+
+    // --------- 开始逻辑操作
+
+    if(k.isLogicAdd === '1'){
+
+        myHUDObjEditor.style.backgroundColor = 'blue';
+
+        // -- 一楼 --
+
+        const d_floor = 10;  // 里间地板
+        const d_ceil = 49;   // 里间天花板
+        const d_table = [1, 9];  // 里间 桌子
+        const d_tinybookshelf = [11, 20];  // 小书架
+        const ad_bigbookshelf = [[22, 35], 60, 61];  // 大书架
+        const d_Pillar = [37, 40];  // 柱子
+        const d_thinwall = 43;  // 隔断墙
+        const d_windoWall = [41, 48];  // 窗墙
+        const sym_axis_x = 45;  // 第一次对称的 X 轴
+        const littleFloor = 55;  // 一号屋后小地板
+        const ad_xlittileWall = [-1,59,62];  // 屋后的2个小墙
+        const d_eastWall = 57;  // 东北墙
+        const d_eastCenterWall = 58;  // 东墙中间
+        
+        const addShelf = symo([  // 第一次对称，对称大小书柜
+            d_tinybookshelf,
+            ...ad_bigbookshelf,
+        ], {x:sym_axis_x});
+
+        const showFlat = [  // 样板间的内容
+            ...addShelf,  // 对称后的 大小柜子
+            d_tinybookshelf,
+            ...ad_bigbookshelf,
+            d_ceil,  // 屋顶
+            d_floor,  // 地板
+            d_table,
+            d_windoWall,
+            d_thinwall, 
+            d_Pillar,
+        ]
+
+        const offinfo = offset([  // 将样板重复到共 6 次偏移
+            ...showFlat,
+        ], 5.145, 6);
+        
+        const off_floor = offset([  // 地板重复 6 次
+            54,
+        ], 5.145, 6);
+
+        const floorOne = symo([  // 第二次对称，将左侧的6房间搞到右侧内容， 按 Z=-30 对称
+            ...offinfo, 
+            ...addShelf,
+            ...showFlat, 
+            // ...d_inWall,
+            littleFloor,
+            d_Pillar,
+            d_eastWall,
+            ...ad_xlittileWall,
+        ], {z:-30});
+
+        // - 二楼 -
+
+        // const d_xFloor = 65;
+        // const d_southWall = 77;
+        const ad_bigRoomthing = [
+            -1,
+            76,
+            77,
+            65,
+            66,
+            67,
+            73,
+            68,
+            74,
+            73,
+            70, 71, 72,  // 楼梯栅栏
+         ]
+        const d_2_ThinWall = 84;  // 二楼隔断墙
+        const d_inRoom3wall = [78, 80];  // 内屋的3块墙
+        const d_2Fense = 69;  // 二楼围栏
+
+        const d_shelfLS = 82;  // 廊柜 竖
+        const d_shelfLH = 83;  // 廊柜 横
+        const d_shelfLM = 85;  // 廊柜 面
+
+        const d_shelfCS = 90;  // 长柜 竖
+        const d_shelfCH = 91;  // 长柜 横
+        const d_shelfCM = 89;  // 长柜 面
+
+        const d_shelfTS = 86;  // 统柜 竖
+        const d_shelfTH = 87;  // 统柜 横
+        const d_shelfTM = 88;  // 统柜 面
+
+        const d_westHW_BigFence = 96;   // 西走廊 大栅栏
+        const d_westHW_xFence = 95;     // 西走廊 小栅栏
+        const d_westHW_BigFloor = 92;   // 西走廊 大地板
+        const d_westHW_xFloor = 93;     // 西走廊 小地板
+        const d_westInRoom_xFence = 94; // 西里屋 小栅栏
+
+        const shelfLS_info = offset([  // 廊柜 竖
+            d_shelfLS,
+        ], 1.25, 4, 'z');
+
+        const shelfLH_info = offset([  // 廊柜
+            d_shelfLH,
+        ], 0.345, 7, 'y');
+
+        const shelfLH = [  // 廊柜 汇总
+            d_shelfLS,
+            d_shelfLH,
+            d_shelfLM,
+            ...shelfLS_info,
+            ...shelfLH_info,
+        ];
+
+        // --
+
+        const shelfCS_info = offset([  // 长柜 竖
+            d_shelfCS,
+        ], -1.1, 7, 'z');
+
+        const shelfCH_info = offset([  // 长柜
+            d_shelfCH,
+        ], 0.352, 8, 'y');
+
+        const shelfCH = [  // 长柜汇总
+            ...shelfCS_info,
+            ...shelfCH_info,
+            d_shelfCS,
+            d_shelfCH,
+            d_shelfCM,
+        ];
+
+        // --
+
+        const shelfTS_info = offset([  // 统柜 竖
+            d_shelfTS,
+        ], -1.316, 6, 'z');
+
+        const shelfTH_info = offset([  // 统柜
+            d_shelfTH,
+        ], 0.352, 8, 'y');
+
+        // console.log(shelfTH_info);
+
+        const ad_shelfTSigle = [  // 单个的 统柜
+            d_shelfTS,
+            d_shelfTH,
+            d_shelfTM,
+            ...shelfTS_info,
+            ...shelfTH_info,
+        ]
+
+        const ad_shelfTSymo = symo(ad_shelfTSigle, {x:47.567});  // 对称第一个 统柜
+
+        const d_2Shelf = offset([  // 11个柜子和隔断门
+            d_2_ThinWall,
+            ...ad_shelfTSigle,
+            ...ad_shelfTSymo,
+        ], 2.57, 11, 'x');
+
+        const d_inroom3wall = offset([  // 6个外墙
+            d_inRoom3wall,
+        ], 5.143, 6, 'x');
+
+        const d_inroomFence = offset([  // 5个栅栏
+            d_2Fense,
+        ], 5.143, 5, 'x');
+
+        const westOutWall_1 = offset([  // 西南外墙
+            57,
+        ], -2.7, 2, 'y');
+
+        const westOutWall_2 = offset([  // 西中墙
+            58,
+        ], -2.7, 2, 'y');
+
+        const secondFloor = symo([  // 二楼 直接对称的内容
+            ...ad_bigRoomthing,
+            d_westHW_xFence,
+            d_westHW_xFloor,
+            d_westInRoom_xFence,
+            d_2Fense,
+            ...d_2Shelf,
+            ...d_inroom3wall,
+            ...d_inroomFence,
+            d_2_ThinWall,
+            ...ad_shelfTSigle,
+            ...ad_shelfTSymo,
+            d_inRoom3wall,
+            ...westOutWall_1,
+            ...shelfLH,
+            ...shelfCH,
+            
+        ], {z:-30});
+
+        const secondFloor_hwShelf = offset([  // 走廊的书柜
+            ...shelfLH,
+        ], 3.907, 2, 'z');
+
+
+
+
+
+
+
+
+    }
+
+    
+    
+
+
+
+
+    // ---------
+
+    for (let index = 0; index < cubeDatas.length; index++) {  // 数据，填充我的容器
+        addInsLD(cubeDatas[index]);
+    }
+    console.log('共', k.visCubeLen, '个可见方块');
+    
+    /***
+     * ----------【结束】----------------------------------
+     */
+
+
+
+    // console.log(totalCube - k.visCubeLen);  // 空模型总数
+    for (let index = 0; index < totalCube - k.visCubeLen; index++) {  // 空模型
+        addInsLD({
+            x: 999999999, y: 999999999, z: 999999999,
+            w: 0.001, d: 0.001, h: 0.001,
+        }, true);
+    }
+    for (let index = 0; index < cubeInstances.length; index++) {  // 为「实例」加上简单的物理引擎
+        k.addTABox({
+            DPZ : 4,
+            isPhysical: true,
+            mass: 0,
+            background: '#f6a1a1ff',
+            mixValue: 0.5,
+            // colliGroup: 2,
+            isShadow: false,
+            // isVisualMode: false,
+            X: cubeInstances[index].x,
+            Y: cubeInstances[index].y,
+            Z: cubeInstances[index].z,
+            width: cubeInstances[index].w,
+            depth: cubeInstances[index].d,
+            height: cubeInstances[index].h,
+            rX: cubeInstances[index].rx,
+            rY: cubeInstances[index].ry,
+            rZ: cubeInstances[index].rz,
+            isInvisible: true,  // 只被探测，而不可见
+            // isFictBody: true,
+        });
+        if(cubeInstances[index]?.b){  // 别忘了，还要把颜色加入到档案 insColor 里
+            const args = k.indexToArgs.get(index);
+            args.insColor = cubeInstances[index].b;
+        }
+    }
+    k.W.cube({  // 渲染实例化
+        n: 'manyCubes',
+        // t: checkerboard,  // 棋格
+        t: dls,  // 大理石
+        instances: cubeInstances, // 实例属性的数组
+        mix: 0.7,
+    });
+    function addInsLD (data, isHidden = false) {  // 添加方块的函数
+        if(data.del) {  // 【删除】标记，按照【空模型】处理
+            data = {
+                x: 999999999, y: 999999999, z: 999999999,
+                w: 0.001, d: 0.001, h: 0.001,
+            };
+        }
+        const result = {  // 添加一个立方体
+            x: data.x, y: data?.y||1, z: data.z,
+            w: data?.w || 1, d: data?.d || 1, h: data?.h || 1,
+            rx: data?.rx||0, ry:data?.ry||0, rz:data?.rz||0,
+        };
+        if(data?.b){
+            result.b = data.b;
+        }
+        cubeInstances.push(result);
+        if(isHidden !== true){
+            k.visCubeLen = cubeIndex;  // 记录，有多少显示的，不过用处不大
+        }
+        isHiddenVis[cubeIndex] = isHidden;
+        return cubeIndex++;
+    }
 
     /* ---------------------------------------------[ 新主角 ]------------------------- */
     k.W.cube({  // 隐藏显示原主角
@@ -207,244 +595,6 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     });
 
 /**************** 结束 */
-
-    console.time('load');
-
-    // Url 参数
-    var cellpageid, cubeDatas;
-    var urlParams = new URLSearchParams(window.location.search);  // 获取 URL
-    k.cellpageid_geturl = urlParams.get('id');  // 获取 url 的 id 参数
-    k.isLogicAdd = urlParams.get('logicadd');  // 获取 url 的 id 参数
-    if(k.cellpageid_geturl) {
-        cellpageid = k.cellpageid_geturl;
-    } else {
-        cellpageid = Math.random().toString(36).slice(2,7);  // 随机5字符作为ID
-    }
-    const url = new URL(window.location.href);
-    url.searchParams.set('id',cellpageid);
-    history.pushState({}, '', url.toString());  // 将这个新的随机字符放置到地址栏
-
-    // 浏览器储存
-    if (!localStorage.getItem('ow_' + cellpageid)) {  // 初始化存储
-        localStorage.setItem('ow_' + cellpageid, JSON.stringify([]));
-        cubeDatas = testcubedata;  // 使用我的本地测试数据
-    } else {
-        cubeDatas = JSON.parse(localStorage.getItem('ow_' + cellpageid));
-    }
-    
-    const totalCube = 10000;  // 计划的总方块数
-    const cubeInstances = [];  // 立方体对象【实例】的容器
-    const isHiddenVis = [];  // 【隐藏显示】表
-    var cubeIndex = 0;  // 计数器
-
-
-    /***
-     * ------【实验区】一楼搞好--------------------------------------
-     */
-
-    // k.notSymOff = true;  // 禁止 对称 排列
-
-    const d_floor = 10;
-    const d_ceil = 49;
-    const d_table = [1, 9];
-    const d_tinybookshelf = [11, 20];  // 小书架
-    const d_bigbookshelf = [22, 35];  // 大书架
-    const d_Pillar = [37, 40];  // 柱子
-    const d_thinwall = 43;  // 隔断墙
-    const d_windoWall = [40, 48];
-
-    const d_bigPillar = 37;  // 大柱子
-    // const test = 12;
-    // const space_x = 5.143;  // 里屋宽
-
-    
-
-
-
-
-    
-
-    const symopera = (items, axes={}) => {  // 对称操作
-        if(k.notSymOff) return 0;
-        var orig_data = cubeDatas[items];
-        var agent = {...orig_data};
-        for (const axis of ["x", "y", "z"]) {
-            if (axes[axis] !== undefined) {
-                agent[axis] -= (orig_data[axis] - axes[axis]) * 2;
-            }
-        }
-        return cubeDatas.push(agent);
-    }
-
-    const offsetopera = (items, distancs, times = 0, axes = 'x') => {  // 偏移操作
-        if(k.notSymOff) return 0;
-        var orig_data = cubeDatas[items];
-        var agent = {...orig_data};
-        // agent.x -= 5.145 * times;
-        for (const axis of ["x", "y", "z"]) {
-            if (axes === axis) {
-                agent[axis] -= distancs * times;
-                // agent.x -= distancs * times;
-            }
-        }
-        return cubeDatas.push(agent);
-    }
-
-    // 对称数组内的物体
-    const symo = (items, axes = {}) => { 
-        const addInfo = [];
-        for (const it of items) {
-            if (Array.isArray(it)) {
-                for (let n = it[0]; n <= it[1]; n++) {
-                    addInfo.push(symopera(n, axes)); 
-                }
-            } else {
-                addInfo.push(symopera(it, axes));
-            }
-        }
-        addInfo.pop();
-        return addInfo;
-    }
-
-    // 偏移数组内的物体
-    const offset = (items, distance, times, axes) => {
-        const addInfo = [];
-        for (let index = 1; index < times; index++) {  // 偏移
-            for (const it of items) {
-                if (Array.isArray(it)) {
-                    for (let n = it[0]; n <= it[1]; n++) {
-                        addInfo.push(offsetopera(n, distance, index, axes));
-                    }
-                } else {
-                    addInfo.push(offsetopera(it, distance, index, axes));
-                }
-            }
-        }
-        addInfo.pop();
-        return addInfo;
-    }
-
-    // ---------
-
-
-    if(k.isLogicAdd === '1'){
-        const sym_axis_x = 45;
-        const items = [  // 对称队列
-            d_tinybookshelf,
-            d_bigbookshelf,
-        ];
-
-        const addShelf = symo(items, {x:sym_axis_x});  // 第一次对称，对称大小书柜
-
-        console.log(addShelf);
-
-        const items_0 = [  // 偏移队列
-            // 54,
-            ...addShelf,  // 对称后的 大小柜子
-            d_tinybookshelf,
-            d_bigbookshelf,
-            d_thinwall,
-            d_Pillar,
-            d_ceil,  // 屋顶
-            d_floor,  // 地板
-            d_table,
-            d_windoWall,
-        ];
-
-
-
-        const offinfo = offset(items_0, 5.145, 6);  // 第二次，将样板重复到共 6 次
-        console.log(offinfo);
-        const off_floor = offset([54,], 5.145, 6);  // 地板重复 6 次
-
-        symo([...offinfo, ...addShelf, ...items_0], {z:-30});  // 第二次对称，将左侧的6房间搞到右侧内容， 按 Z=-30 对称
-
-        // const d_centerFloor = 1033;  // 中间地板
-        // offset([d_centerFloor], 5.145, 6);
-        const testBook = offset([55,], -0.035, 29, 'z');  // 测试书籍
-    }
-
-    
-
-
-
-
-    // ---------
-
-    for (let index = 0; index < cubeDatas.length; index++) {  // 数据，填充我的容器
-        addInsLD(cubeDatas[index]);
-    }
-    console.log('共', k.visCubeLen, '个可见方块');
-    
-    /***
-     * ----------【结束】----------------------------------
-     */
-
-
-
-    // console.log(totalCube - k.visCubeLen);  // 空模型总数
-    for (let index = 0; index < totalCube - k.visCubeLen; index++) {  // 空模型
-        addInsLD({
-            x: 999999999, y: 999999999, z: 999999999,
-            w: 0.001, d: 0.001, h: 0.001,
-        }, true);
-    }
-    for (let index = 0; index < cubeInstances.length; index++) {  // 为「实例」加上简单的物理引擎
-        k.addTABox({
-            DPZ : 4,
-            isPhysical: true,
-            mass: 0,
-            background: '#f6a1a1ff',
-            mixValue: 0.5,
-            // colliGroup: 2,
-            isShadow: false,
-            // isVisualMode: false,
-            X: cubeInstances[index].x,
-            Y: cubeInstances[index].y,
-            Z: cubeInstances[index].z,
-            width: cubeInstances[index].w,
-            depth: cubeInstances[index].d,
-            height: cubeInstances[index].h,
-            rX: cubeInstances[index].rx,
-            rY: cubeInstances[index].ry,
-            rZ: cubeInstances[index].rz,
-            isInvisible: true,  // 只被探测，而不可见
-            // isFictBody: true,
-        });
-        if(cubeInstances[index]?.b){  // 别忘了，还要把颜色加入到档案 insColor 里
-            const args = k.indexToArgs.get(index);
-            args.insColor = cubeInstances[index].b;
-        }
-    }
-    k.W.cube({  // 渲染实例化
-        n: 'manyCubes',
-        // t: checkerboard,  // 棋格
-        t: dls,  // 大理石
-        instances: cubeInstances, // 实例属性的数组
-        mix: 0.7,
-    });
-    function addInsLD (data, isHidden = false) {  // 添加方块的函数
-        if(data.del) {  // 【删除】标记，按照【空模型】处理
-            data = {
-                x: 999999999, y: 999999999, z: 999999999,
-                w: 0.001, d: 0.001, h: 0.001,
-            };
-        }
-        const result = {  // 添加一个立方体
-            x: data.x, y: data?.y||1, z: data.z,
-            w: data?.w || 1, d: data?.d || 1, h: data?.h || 1,
-            rx: data?.rx||0, ry:data?.ry||0, rz:data?.rz||0,
-        };
-        if(data?.b){
-            result.b = data.b;
-        }
-        cubeInstances.push(result);
-        if(isHidden !== true){
-            k.visCubeLen = cubeIndex;  // 记录，有多少显示的，不过用处不大
-        }
-        isHiddenVis[cubeIndex] = isHidden;
-        return cubeIndex++;
-    }
     console.timeEnd('load');
 
 });
