@@ -51,7 +51,7 @@ export default function(ccgxkObj) {
         },
 
         // 基点的设置
-        bassSet : (e, type) => {
+        bassSet : (e, type, sound = true) => {
             const G = ccgxkObj.centerDot.init;
             if(type === G.deformationBaseType){
                 type = G.deformationBaseType = -1;
@@ -61,6 +61,9 @@ export default function(ccgxkObj) {
             e_bassT.style.backgroundColor = (type === 1)? 'red' : 'revert';
             e_bassR.style.backgroundColor = (type === 2)? 'red' : 'revert';
             e_bassB.style.backgroundColor = (type === 3)? 'red' : 'revert';
+            if(sound){
+                G.music('bassSet');
+            }
         },
 
     };

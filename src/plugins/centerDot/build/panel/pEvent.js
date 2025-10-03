@@ -30,7 +30,7 @@ export default function(ccgxkObj) {
             G.displayHotModel(true);
             G.removeFDicon();  // 清除绘制的箭头标识
             G.music('closeEdi');
-            G.bassSet(null, -1);
+            G.bassSet(null, -1, false);
         },
 
         // 形状的预设事件

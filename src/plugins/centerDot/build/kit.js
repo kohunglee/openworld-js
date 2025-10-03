@@ -46,10 +46,11 @@ export default function(ccgxkObj) {
             'openEdi'  : 'coin0',
             'closePoint'   : 'wood',
             'openPoint'    : 'wood',
-            // 'jump'         : 'sa',
+            'bassSet'      : 'duong',
             'frozen'       : 'alien',
             'unfrozen'     : 'unfrozen',
             'addCube0'     : 'ting',
+            'copyCube'     : 'lock',
         },
 
         // 音乐播放器
@@ -172,6 +173,7 @@ const htmlCode = `
         }
         #hotPointInfo td {
             min-width: 80px;
+            text-shadow: 0px 0px 8px black;
         }
 
         /* webgl canvas */

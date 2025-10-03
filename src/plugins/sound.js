@@ -49,6 +49,14 @@ export default function(ccgxkObj){
         sa : function(i){  // 沙沙声
             return (Math.random() - 0.5) * 0.3 * Math.exp(-i/2000);
         },
+
+        lock : function(i){  // 钟声
+            return (Math.sin(i*0.02) + 0.5*Math.sin(i*0.03) + 0.25*Math.sin(i*0.06)) * Math.exp(-i/8000);
+        },
+
+        duong : function(i){  // 度翁
+            return Math.sin(i/100 + 20 * Math.sin(i/4000)) * Math.exp(-i/1000);
+        },
         
     }
     ccgxkObj.sound = sound;
