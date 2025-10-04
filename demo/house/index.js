@@ -88,6 +88,10 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
                     k.JUMP_HOLD_LIMIT = 0.5;
                     k.world.gravity.set(0, -9.82/4, 0);
                 }
+            } else {
+                k.jumpYVel = orig_jumpYVel;
+                k.JUMP_HOLD_LIMIT = orig_jumpHoldLimit;
+                k.world.gravity.set(0, -9.82, 0);
             }
         }
     , 100);
@@ -532,8 +536,10 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         n: 'manyCubes',
         // t: checkerboard,  // 棋格
         t: dls,  // 大理石
+        // t: greenStone,
         instances: cubeInstances, // 实例属性的数组
         mix: 0.7,
+        // mix: 0.95,
     });
     function addInsLD (data, isHidden = false) {  // 添加方块的函数
         if(data.del) {  // 【删除】标记，按照【空模型】处理
