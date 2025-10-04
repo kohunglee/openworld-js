@@ -171,218 +171,206 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         return addInfo;
     }
 
+
     // --------- 开始逻辑操作
 
     if(k.isLogicAdd === '1'){
 
         myHUDObjEditor.style.backgroundColor = 'blue';
 
-        // -- 一楼 --
+        var D = {  // 初始化这个临时变量
+            floor1: {},
+            floor2: { shelf: { L: {}, C: {}, T: {}, CD: {}, }, }
+        }
 
-        const d_floor = 10;  // 里间地板
-        const d_ceil = 49;   // 里间天花板
-        const d_table = [1, 9];  // 里间 桌子
-        const d_tinybookshelf = [11, 20];  // 小书架
-        const ad_bigbookshelf = [[22, 35], 60, 61];  // 大书架
-        const d_Pillar = [37, 40];  // 柱子
-        const d_thinwall = 43;  // 隔断墙
-        const d_windoWall = [41, 48];  // 窗墙
-        const sym_axis_x = 45;  // 第一次对称的 X 轴
-        const littleFloor = 55;  // 一号屋后小地板
-        const ad_xlittileWall = [-1,59,62];  // 屋后的2个小墙
-        const d_eastWall = 57;  // 东北墙
-        const d_eastCenterWall = 58;  // 东墙中间
-        
-        const addShelf = symo([  // 第一次对称，对称大小书柜
-            d_tinybookshelf,
-            ...ad_bigbookshelf,
-        ], {x:sym_axis_x});
+        // 第一层
+        if(true) {
+            // 里屋，对称大小书柜
+            D.floor1.bookshelf2 = symo([
+                [11, 20],  // 小书架
+                ...[[22, 35], 60, 61],  // 大书架
+            ], {x:45});
 
-        const showFlat = [  // 样板间的内容
-            ...addShelf,  // 对称后的 大小柜子
-            d_tinybookshelf,
-            ...ad_bigbookshelf,
-            d_ceil,  // 屋顶
-            d_floor,  // 地板
-            d_table,
-            d_windoWall,
-            d_thinwall, 
-            d_Pillar,
-        ]
+            // 整理样板间的内容
+            D.floor1.showFlat = [  
+                ...D.floor1.bookshelf2,  // 对称后的 大小书架
+                [11, 20],  // 小书架
+                ...[[22, 35], 60, 61],  // 大书架
+                49,  // 屋顶
+                10,  // 地板
+                [1, 9],  // 桌子
+                [41, 48],  // 窗墙
+                43, // 隔断墙
+                [37, 40]  // 柱子,  // 柱子
+            ]
 
-        const offinfo = offset([  // 将样板重复到共 6 次偏移
-            ...showFlat,
-        ], 5.145, 6);
-        
-        const off_floor = offset([  // 地板重复 6 次
-            54,
-        ], 5.145, 6);
-
-        const floorOne = symo([  // 第二次对称，将左侧的6房间搞到右侧内容， 按 Z=-30 对称
-            ...offinfo, 
-            ...addShelf,
-            ...showFlat, 
-            // ...d_inWall,
-            littleFloor,
-            d_Pillar,
-            d_eastWall,
-            ...ad_xlittileWall,
-        ], {z:-30});
-
-        // - 二楼 -
-
-        // const d_xFloor = 65;
-        // const d_southWall = 77;
-        const ad_bigRoomthing = [
-            -1,
-            76,
-            77,
-            65,
-            66,
-            67,
-            73,
-            68,
-            74,
-            73,
-            70, 71, 72,  // 楼梯栅栏
-         ]
-        const d_2_ThinWall = 84;  // 二楼隔断墙
-        const d_inRoom3wall = [78, 80];  // 内屋的3块墙
-        const d_2Fense = 69;  // 二楼围栏
-
-        const d_shelfLS = 82;  // 廊柜 竖
-        const d_shelfLH = 83;  // 廊柜 横
-        const d_shelfLM = 85;  // 廊柜 面
-
-        const d_shelfCS = 90;  // 长柜 竖
-        const d_shelfCH = 91;  // 长柜 横
-        const d_shelfCM = 89;  // 长柜 面
-
-        const d_shelfTS = 86;  // 统柜 竖
-        const d_shelfTH = 87;  // 统柜 横
-        const d_shelfTM = 88;  // 统柜 面
-
-        const d_westHW_BigFence = 96;   // 西走廊 大栅栏
-        const d_westHW_xFence = 95;     // 西走廊 小栅栏
-        const d_westHW_BigFloor = 92;   // 西走廊 大地板
-        const d_westHW_xFloor = 93;     // 西走廊 小地板
-        const d_westInRoom_xFence = 94; // 西里屋 小栅栏
-
-        const shelfLS_info = offset([  // 廊柜 竖
-            d_shelfLS,
-        ], 1.25, 4, 'z');
-
-        const shelfLH_info = offset([  // 廊柜
-            d_shelfLH,
-        ], 0.345, 7, 'y');
-
-        const shelfLH = [  // 廊柜 汇总
-            d_shelfLS,
-            d_shelfLH,
-            d_shelfLM,
-            ...shelfLS_info,
-            ...shelfLH_info,
-        ];
-
-        // --
-
-        const shelfCS_info = offset([  // 长柜 竖
-            d_shelfCS,
-        ], -1.1, 7, 'z');
-
-        const shelfCH_info = offset([  // 长柜
-            d_shelfCH,
-        ], 0.352, 8, 'y');
-
-        const shelfCH = [  // 长柜汇总
-            ...shelfCS_info,
-            ...shelfCH_info,
-            d_shelfCS,
-            d_shelfCH,
-            d_shelfCM,
-        ];
-
-        // --
-
-        const shelfTS_info = offset([  // 统柜 竖
-            d_shelfTS,
-        ], -1.316, 6, 'z');
-
-        const shelfTH_info = offset([  // 统柜
-            d_shelfTH,
-        ], 0.352, 8, 'y');
-
-        // console.log(shelfTH_info);
-
-        const ad_shelfTSigle = [  // 单个的 统柜
-            d_shelfTS,
-            d_shelfTH,
-            d_shelfTM,
-            ...shelfTS_info,
-            ...shelfTH_info,
-        ]
-
-        const ad_shelfTSymo = symo(ad_shelfTSigle, {x:47.567});  // 对称第一个 统柜
-
-        const d_2Shelf = offset([  // 11个柜子和隔断门
-            d_2_ThinWall,
-            ...ad_shelfTSigle,
-            ...ad_shelfTSymo,
-        ], 2.57, 11, 'x');
-
-        const d_inroom3wall = offset([  // 6个外墙
-            d_inRoom3wall,
-        ], 5.143, 6, 'x');
-
-        const d_inroomFence = offset([  // 5个栅栏
-            d_2Fense,
-        ], 5.143, 5, 'x');
-
-        const westOutWall_1 = offset([  // 西南外墙
-            57,
-        ], -2.7, 2, 'y');
-
-        const westOutWall_2 = offset([  // 西中墙
-            58,
-        ], -2.7, 2, 'y');
-
-        const secondFloor = symo([  // 二楼 直接对称的内容
-            ...ad_bigRoomthing,
-            d_westHW_xFence,
-            d_westHW_xFloor,
-            d_westInRoom_xFence,
-            d_2Fense,
-            ...d_2Shelf,
-            ...d_inroom3wall,
-            ...d_inroomFence,
-            d_2_ThinWall,
-            ...ad_shelfTSigle,
-            ...ad_shelfTSymo,
-            d_inRoom3wall,
-            ...westOutWall_1,
-            ...shelfLH,
-            ...shelfCH,
+            // 将样板重复到共 6 次偏移
+            D.floor1.offset6room = offset([
+                ...D.floor1.showFlat,
+            ], 5.145, 6);
             
-        ], {z:-30});
+            // 大厅地板重复 6 次
+            D.floor1.offsetCenterFloor = offset([
+                54,  // 大厅中央地板
+            ], 5.145, 6);
 
-        const secondFloor_hwShelf = offset([  // 走廊的书柜
-            ...shelfLH,
-        ], 3.907, 2, 'z');
+            // 将左侧的6房间搞到右侧内容， 按 Z=-30 对称
+            D.floor1.leftall = symo([  
+                ...D.floor1.offset6room,   // 6 个屋子
+                ...D.floor1.showFlat, // 样板间
+                55,  // 一号屋后小地板
+                [37, 40],  // 柱子
+                57,  // 东北墙
+                ...[-1,59,62],  // 屋后的2个小墙
+            ], {z:-30});
+        }
 
+        // 第二层
+        if(true){
+            // 二楼一些无需分类的杂物
+            D.floor2.xthing = [
+                -1, 76, 77, 65, 66, 67,
+                73, 68, 74, 73, 70, 71, 72,
+            ];
 
+            // 三叠型外墙，阵列 6 个
+            D.floor2.wall6 = offset([
+                [78, 80],  // 三叠型外墙
+            ], 5.143, 6, 'x')
 
+            // 栅栏 5 个
+            D.floor2.mfence5 = offset([  // 5个栅栏
+                69,  // 栅栏
+            ], 5.143, 5, 'x');
 
+            // 将 1 楼的西南外墙 Y 轴阵列
+            D.floor2.wallSW = offset([
+                57,  // 西南外墙（一楼）
+            ], -2.7, 2, 'y');
 
+            // 将 1 楼的西中外墙 Y 轴阵列
+            D.floor2.wallW = offset([  // 西中墙
+                58,  // 西中外墙（一楼）
+            ], -2.7, 2, 'y');
 
+            // 二楼的柜子三部曲初始化
+            if(true){
+                // 侧短柜 三部曲（外加一次对称）
+                D.floor2.shelf.CD.offS = offset([  
+                    97, // 侧短柜 竖
+                ], -0.6, 2, 'x');
+                D.floor2.shelf.CD.offS2 = offset([  
+                    97, // 侧短柜 竖
+                ], -1.79, 2, 'x');
+                D.floor2.shelf.CD.offH = offset([
+                    99, // 侧短柜 横
+                ], 0.352, 8, 'y');
+                D.floor2.shelf.CD = [
+                    ...D.floor2.shelf.CD.offS2,
+                    ...D.floor2.shelf.CD.offS,
+                    ...D.floor2.shelf.CD.offH,
+                    99, 97, 98, 
+                ];
+                D.floor2.shelf.CDsymo = symo(
+                    D.floor2.shelf.CD, {x:50.143}
+                );
 
+                // 廊柜 三部曲
+                D.floor2.shelf.L.offS = offset([
+                    82, // 廊柜 竖
+                ], 1.25, 4, 'z');
+                D.floor2.shelf.L.offH = offset([
+                    83, // 廊柜 横
+                ], 0.345, 7, 'y');
+                D.floor2.shelf.L = [
+                    82, 83, 85,
+                    ...D.floor2.shelf.L.offS,
+                    ...D.floor2.shelf.L.offH,
+                ];
+
+                // 长柜 三部曲
+                D.floor2.shelf.C.offS = offset([
+                    90, // 长柜 竖
+                ], -1.1, 7, 'z');
+                D.floor2.shelf.C.offH = offset([
+                    91, // 长柜 横
+                ], 0.352, 8, 'y');
+                D.floor2.shelf.C = [
+                    90, 91, 89,
+                    ...D.floor2.shelf.C.offS,
+                    ...D.floor2.shelf.C.offH,
+                ];
+
+                // 统柜 三部曲
+                D.floor2.shelf.T.offS = offset([
+                    86, // 统柜 竖
+                ], -1.316, 6, 'z');
+                D.floor2.shelf.T.offH = offset([
+                    87, // 统柜 横
+                ], 0.352, 8, 'y');
+                D.floor2.shelf.T = [
+                    86, 87, 88,
+                    ...D.floor2.shelf.T.offS,
+                    ...D.floor2.shelf.T.offH,
+                ];
+            }
+
+            // 二楼柜子的对称镜像操作
+            if(true){
+                // 对称统柜
+                D.floor2.shelf.Tsymo = symo([
+                    ...D.floor2.shelf.T,
+                ], {x:47.567});
+
+                // 阵列统柜（和隔断门） 11 个
+                D.floor2.shelf.T11 = offset([
+                    84,  // 隔断门
+                    ...D.floor2.shelf.T,
+                    ...D.floor2.shelf.Tsymo,
+                ], 2.57, 11, 'x');
+
+                // 将长柜、廊柜、对称
+                D.floor2.shelf.symo = symo([
+                    ...D.floor2.shelf.C,
+                    ...D.floor2.shelf.L,
+                    ...D.floor2.shelf.CD,
+                    ...D.floor2.shelf.CDsymo,
+                ], {z: -30});
+
+                // 走廊的书柜偏移一下
+                D.floor2.shelf.Loff = offset(
+                    D.floor2.shelf.L, 3.907, 2, 'z'
+                );
+
+                // 将最东侧的书柜，偏移到最西侧
+                D.floor2.shelf.symo2West = symo(
+                    [
+                        ...D.floor2.shelf.C,
+                        ...D.floor2.shelf.L,
+                        ...D.floor2.shelf.CD,
+                        ...D.floor2.shelf.CDsymo,
+                        ...D.floor2.shelf.symo,
+                        ...D.floor2.shelf.Loff,
+                    ], {x: 34.7}
+                );
+            }
+
+            // 对称 2 楼南侧的内容
+            D.floor2.symoSouth = symo([
+                ...D.floor2.xthing,
+                95, 93, 94, 69, // 栅栏地板
+                ...D.floor2.shelf.T11,
+                ...D.floor2.wall6,
+                ...D.floor2.mfence5,
+                ...D.floor2.shelf.T,
+                ...D.floor2.shelf.Tsymo,
+                [78, 80],  // 三叠型外墙
+                ...D.floor2.wallSW,
+            ], {z:-30});
+        }
+        D = null;  // 释放内存
 
     }
-
-    
-    
-
-
-
 
     // ---------
 
@@ -395,9 +383,6 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
      * ----------【结束】----------------------------------
      */
 
-
-
-    // console.log(totalCube - k.visCubeLen);  // 空模型总数
     for (let index = 0; index < totalCube - k.visCubeLen; index++) {  // 空模型
         addInsLD({
             x: 999999999, y: 999999999, z: 999999999,
@@ -616,6 +601,3 @@ k.star = (index) => {
     }
 }
 
-
-
-// k.offAudio = true;

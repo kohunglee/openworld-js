@@ -35,7 +35,12 @@ export default function(ccgxkObj) {
 
         // 形状的预设事件
         e_presets: ()=>{
-            console.log('形状预设');
+            // console.log('形状预设');
+            const G = ccgxkObj.centerDot.init;
+            const temp =  objWidth.value;
+            objWidth.value = objDepth.value;
+            objDepth.value = temp;
+            G.modelUpdate();
         },
         
         // 位置的归整事件
