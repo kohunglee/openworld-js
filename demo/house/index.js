@@ -68,9 +68,34 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     k.WALK_SPEED = 1/20;  //+ 慢速度
     k.SPRINT_MIN_SPEED = 5;
     k.SPRINT_MAX_SPEED = 15.5;
-    k.jumpYVel = 0.8;
-    k.world.gravity.set(0, -9.82/4, 0);  // 临时
-    k.JUMP_HOLD_LIMIT = 0.5;
+
+    const orig_jumpYVel = k.jumpYVel;
+    const orig_jumpHoldLimit = k.JUMP_HOLD_LIMIT;
+    const mvp = k.mainVPlayer;
+
+    setInterval(  // 动态调整人物的跳跃、地心引力
+        () => {
+            const x = mvp.X;
+            const z = mvp.Z;
+            if(x < 52.3 && x > 17.1 && z < -15.7 && z > -44.5) {
+                if(x < 50.5  && x > 19.1 &&
+                   z < -22.9 && z > -37.1){  // 在大厅
+                    k.jumpYVel = orig_jumpYVel;
+                    k.JUMP_HOLD_LIMIT = orig_jumpHoldLimit;
+                    k.world.gravity.set(0, -9.82, 0);
+                } else {  // 在图书区
+                    k.jumpYVel = 0.8;
+                    k.JUMP_HOLD_LIMIT = 0.5;
+                    k.world.gravity.set(0, -9.82/4, 0);
+                }
+            }
+        }
+    , 100);
+
+    // k.world.gravity.set(0, -9.82/4, 0);  // 临时
+    
+
+
     
 
     
@@ -368,6 +393,56 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
                 ...D.floor2.wallSW,
             ], {z:-30});
         }
+
+        // 研究第三层
+        if(true){
+            D.floor3 = {};  // 初始化第三层容器
+
+            // 地板，（由屋顶 Y 轴提上来）
+            D.floor3.floor = offset([
+                49,  // 屋顶（一楼）
+            ], -2.7, 6, 'y');
+
+            // 对称地板
+            D.floor3.floorSymo = symo(
+                D.floor3.floor, {z: -30},
+            );
+
+            // 地板，阵列 6 个
+            D.floor3.floor6 = offset([
+                ...D.floor3.floor,
+                ...D.floor3.floorSymo,
+            ], 5.143, 6, 'x')
+
+            // 搜集第二层可直接偏移的内容
+            D.floor3.xthing = [
+                ...D.floor2.xthing,  // 杂乱
+                92, 95, 96, 93, 94, 64, 81, 75, // 栅栏地板
+                [78, 80], ...D.floor2.wall6,  // 6外墙
+                ...D.floor2.shelf.T11,
+                69, ...D.floor2.mfence5,  // 栅栏
+                ...D.floor2.wallSW,  // 西南墙
+                ...D.floor2.wallW,  // 西中墙
+                ...D.floor2.shelf.T,  // 统柜
+                ...D.floor2.shelf.Tsymo,  // 统柜（对称版）
+                ...D.floor2.symoSouth,  // 南侧对称
+                ...D.floor2.shelf.symo,  // 对称后的长柜、廊柜
+                ...D.floor2.shelf.C,  //+5 未对称的柜子
+                ...D.floor2.shelf.L,
+                ...D.floor2.shelf.CD,
+                ...D.floor2.shelf.Loff,
+                ...D.floor2.shelf.CDsymo,
+                ...D.floor2.shelf.symo2West,  // 对称到最西侧的柜子
+            ];
+
+            // 第一次阵列
+            D.floor3.firstOff = offset(
+                D.floor3.xthing,-2.7, 5, 'y'
+            );
+
+        }
+
+
         D = null;  // 释放内存
 
     }
@@ -382,6 +457,43 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     /***
      * ----------【结束】----------------------------------
      */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
     for (let index = 0; index < totalCube - k.visCubeLen; index++) {  // 空模型
         addInsLD({
