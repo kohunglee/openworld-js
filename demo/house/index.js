@@ -151,20 +151,42 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         for (const axis of ["x", "y", "z"]) {
             if (axes[axis] !== undefined) {
                 agent[axis] -= (orig_data[axis] - axes[axis]) * 2;
+                const rot = (axis === 'z') ? 'x' : 'z';
+                if(agent['r' + rot]){
+                    agent['r' + rot] = - orig_data['r' + rot];
+                }
             }
         }
         return cubeDatas.push(agent);
     }
 
-    const offsetopera = (items, distancs, times = 0, axes = 'x') => {  // 偏移操作
+    const offsetopera = (items, distance, times = 0, axes = 'x', distance2, axes2, distance3, axes3) => {  // 偏移操作
         if(k.notSymOff) return 0;
         var orig_data = cubeDatas[items];
         var agent = {...orig_data};
         for (const axis of ["x", "y", "z"]) {
             if (axes === axis) {
-                agent[axis] -= distancs * times;
+                agent[axis] -= distance * times;
             }
         }
+        
+        if(distance2) {
+            // agent['z']  -= distance2 * times;
+
+
+            for (const axis of ["x", "y", "z"]) {
+                if (axes2 === axis) {
+                    agent[axis] -= distance2 * times;
+                }
+            }
+        }
+        // if(distance3) {
+        //     for (const axis of ["x", "y", "z"]) {
+        //         if (axes3 === axis) {
+        //             agent[axis] -= distance3 * times;
+        //         }
+        //     }
+        // }
         return cubeDatas.push(agent);
     }
     
@@ -183,17 +205,17 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         return addInfo;
     }
     
-    const offset = (items, distance, times, axes) => {  // 偏移数组内的物体
+    const offset = (items, distance, times, axes, distance2, axes2, distance3, axes3) => {  // 偏移数组内的物体
         const addInfo = [];
         for (let index = 1; index < times; index++) {  // 偏移
             for (const it of items) {
                 if(it === -1) continue;
                 if (Array.isArray(it)) {
                     for (let n = it[0]; n <= it[1]; n++) {
-                        addInfo.push(offsetopera(n, distance, index, axes) - 1);
+                        addInfo.push(offsetopera(n, distance, index, axes, distance2, axes2, distance3, axes3) - 1);
                     }
                 } else {
-                    addInfo.push(offsetopera(it, distance, index, axes) - 1);
+                    addInfo.push(offsetopera(it, distance, index, axes, distance2, axes2, distance3, axes3) - 1);
                 }
             }
         }
@@ -258,9 +280,20 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         if(true){
             // 二楼一些无需分类的杂物
             D.floor2.xthing = [
-                -1, 76, 77, 65, 66, 67,
+                -1, 76, 77, 65, 66, 67, 100,
                 73, 68, 74, 73, 70, 71, 72,
             ];
+
+            // 台阶阵列
+            D.floor2.stair = offset([
+                73,
+            ], 0.25, 12, 'y', 0.45, 'z');
+
+            // 台阶栅栏偏移
+            D.floor2.stairFenceOff = offset([
+                101,
+            ], 1.05, 2, 'x');
+
 
             // 三叠型外墙，阵列 6 个
             D.floor2.wall6 = offset([
@@ -387,12 +420,14 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             // 对称 2 楼南侧的内容
             D.floor2.symoSouth = symo([
                 ...D.floor2.xthing,
+                ...D.floor2.stair,
                 95, 93, 94, 69, // 栅栏地板
                 ...D.floor2.shelf.T11,
                 ...D.floor2.wall6,
                 ...D.floor2.mfence5,
                 ...D.floor2.shelf.T,
                 ...D.floor2.shelf.Tsymo,
+                101, ...D.floor2.stairFenceOff,  // 台阶栅栏
                 [78, 80],  // 三叠型外墙
                 ...D.floor2.wallSW,
             ], {z:-30});
@@ -424,6 +459,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
                 92, 95, 96, 93, 94, 64, 81, 75, // 栅栏地板
                 [78, 80], ...D.floor2.wall6,  // 6外墙
                 ...D.floor2.shelf.T11,
+                ...D.floor2.stair,
                 69, ...D.floor2.mfence5,  // 栅栏
                 ...D.floor2.wallSW,  // 西南墙
                 ...D.floor2.wallW,  // 西中墙
@@ -432,6 +468,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
                 ...D.floor2.symoSouth,  // 南侧对称
                 ...D.floor2.shelf.symo,  // 对称后的长柜、廊柜
                 ...D.floor2.shelf.C,  //+5 未对称的柜子
+                101, ...D.floor2.stairFenceOff,  // 台阶栅栏
                 ...D.floor2.shelf.L,
                 ...D.floor2.shelf.CD,
                 ...D.floor2.shelf.Loff,
@@ -719,3 +756,104 @@ k.star = (index) => {
     }
 }
 
+
+
+// 测试合并模型
+
+
+const cube = {
+    vertices: [
+        .5, .5, .5,  -.5, .5, .5,  -.5,-.5, .5,
+        .5, .5, .5,  -.5,-.5, .5,   .5,-.5, .5,
+        .5, .5,-.5,   .5, .5, .5,   .5,-.5, .5,
+        .5, .5,-.5,   .5,-.5, .5,   .5,-.5,-.5,
+        .5, .5,-.5,  -.5, .5,-.5,  -.5, .5, .5,
+        .5, .5,-.5,  -.5, .5, .5,   .5, .5, .5,
+        -.5, .5, .5,  -.5, .5,-.5,  -.5,-.5,-.5,
+        -.5, .5, .5,  -.5,-.5,-.5,  -.5,-.5, .5,
+        -.5, .5,-.5,   .5, .5,-.5,   .5,-.5,-.5,
+        -.5, .5,-.5,   .5,-.5,-.5,  -.5,-.5,-.5,
+        .5,-.5, .5,  -.5,-.5, .5,  -.5,-.5,-.5,
+        .5,-.5, .5,  -.5,-.5,-.5,   .5,-.5,-.5
+    ],
+    uv: Array(12).fill([1,1,0,1,0,0,1,1,0,0,1,0]).flat()
+};
+
+
+function mergeCubes(cube, positions) {
+    const vertices = [];
+    const uvs = [];
+
+    for (const [dx, dy, dz] of positions) {
+        // 复制顶点并加上偏移
+        for (let i = 0; i < cube.vertices.length; i += 3) {
+            vertices.push(
+                cube.vertices[i] + dx,
+                cube.vertices[i + 1] + dy,
+                cube.vertices[i + 2] + dz
+            );
+        }
+        // UV 直接附加
+        uvs.push(...cube.uv);
+    }
+
+    return { vertices, uv: uvs };
+}
+
+console.time('实例合并测试');
+
+const num = 4; // 每边立方体数量
+const kkk = 17;           // 每边数量
+const spacing = 2; // 每个立方体之间的间距（例如边长+空隙）
+
+const positions = [];
+
+for (let x = 0; x < num; x++) {
+  for (let y = 0; y < num; y++) {
+    for (let z = 0; z < num; z++) {
+      positions.push([
+        x * spacing,
+        y * spacing,
+        z * spacing,
+      ]);
+    }
+  }
+}
+const merged = mergeCubes(cube, positions);
+const objName = 'mylearn';
+// 输入我的模型
+k.W.add("hexahedron", merged);
+k.W.models['hexahedron'].verticesBuffer = null;
+
+
+const spacing002 = 20;    // 每个格子间距
+const testHBSLHInst = [];
+
+for (let x = 0; x < kkk; x++) {
+  for (let y = 0; y < kkk; y++) {
+    for (let z = 0; z < kkk; z++) {
+      testHBSLHInst.push({
+        x: x * spacing002,
+        y: y * spacing002,
+        z: z * spacing002
+      });
+    }
+  }
+  
+}
+
+console.log('合并数量', positions.length);
+
+console.log('实例数量', testHBSLHInst.length);
+
+console.log('总数量', positions.length * testHBSLHInst.length);
+
+k.W.hexahedron({  // 渲染实例化
+    n: 'testHBSLH',
+    t: dls,  // 大理石
+    instances: testHBSLHInst, // 实例属性的数组
+    b:'fffb00',
+    mix: 0.5,
+});
+
+console.timeEnd('实例合并测试');

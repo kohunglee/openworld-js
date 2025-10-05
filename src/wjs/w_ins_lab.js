@@ -195,6 +195,9 @@ const W = {
           ...state,
           f:0
         };
+
+
+
         if(W.models[state.type]?.vertices && !W.models?.[state.type].verticesBuffer){  // 构建顶点
           W.gl.bindBuffer(34962 , W.models[state.type].verticesBuffer = W.gl.createBuffer());
           W.gl.bufferData(34962 , new Float32Array(W.models[state.type].vertices), 35044 );
@@ -204,6 +207,9 @@ const W = {
             W.gl.bufferData(34962 , new Float32Array(W.models[state.type].normals.flat()), 35044 ); 
           }
         }
+
+
+
         if(W.models[state.type]?.uv && !W.models[state.type].uvBuffer){  // 构建 UV
           W.gl.bindBuffer(34962 , W.models[state.type].uvBuffer = W.gl.createBuffer());
           W.gl.bufferData(34962 , new Float32Array( W.models[state.type].uv), 35044 );
@@ -313,6 +319,14 @@ const W = {
             }
         }
         if(!just_compute){  // 渲染可见物体
+
+          W.gl.disableVertexAttribArray(W.attribLocations.uv);  // 安全重置所有 attribute 状态（防止空绑定）by chatgpt
+          W.gl.disableVertexAttribArray(W.attribLocations.normal);
+          W.gl.disableVertexAttribArray(W.attribLocations.col);
+          const instLoc = W.attribLocations.instanceModelMatrix;
+          for (let i = 0; i < 4; i++) W.gl.disableVertexAttribArray(instLoc + i);
+
+
           if(!W.models[object.type]?.verticesBuffer) {  // 热更新模型时会报错，一个勉强的解法。以后再优化
             return 0;
           }
@@ -360,6 +374,7 @@ const W = {
             0
           );
           const colorAttribLoc = W.attribLocations.col;
+
           if (object.isInstanced) {  // （实例化和普通）颜色->着色器（col）
             W.gl.enableVertexAttribArray(colorAttribLoc);
             W.gl.bindBuffer(W.gl.ARRAY_BUFFER, W.instanceColorBuffers[object.n]);
@@ -368,6 +383,7 @@ const W = {
           } else {
             W.gl.vertexAttrib4fv(colorAttribLoc, W.col(object.b || '888'));
           }
+
           if(object.uncullface) {  // 面剔除的判断，不知道这样写是否会影响性能
             W.gl.disable(2884);
             W.cullface = false;
