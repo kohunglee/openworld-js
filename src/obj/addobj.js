@@ -80,6 +80,7 @@ export default {
         shape: 'cube',
         isFictBody: false,    // 物理假体，视觉比真实物理体小一圈，用于颜色探测
         isInvisible: false,  // 在 webgl 留档但不渲染（实验，用于减少渲染压力）
+        other: null,
     },
 
     // 激活 TA 物体
@@ -161,6 +162,20 @@ export default {
                 shadow: args.isShadow,
                 hidden: args.isInvisible,
             });
+            if(args.other !== null){  // 添加其他属性
+                // this.W[args.shape]({
+                //     n: 'T' + index,
+                //     ...args.other,
+                // })
+                k.W.cube({  // 渲染实例化
+                    // n: 'testIns001',
+                    n: 'T' + index,
+                    instances: k.testInsData, // 实例属性的数组
+                    x: 9,
+                    y: 3,
+                    z: 9,
+                });
+            }
             if(textureError){  // 纹理加载失败，尝试换上自定义纹理（id 还是原 id）
                 const expRatio = 40;  // 缩放比例
                 const cWidth = (physicalProp[1] - utter) * expRatio;

@@ -285,6 +285,8 @@ const W = {
             W.lastReportTime = now;
         }
   },
+
+
   
   // 渲染对象
   render: (object, dt, just_compute = ['camera','light','group'].includes(object.type), buffer) => {
@@ -496,6 +498,35 @@ W.smooth = (state, dict = {}, vertices = [], iterate, iterateSwitch, i, j, A, B,
   }
 }
 
+  // 安全矩阵封装器
+function safeMatrix(m) {
+  try {
+    const arr = Object.values(m);
+    for (let i = 0; i < arr.length; i++) {
+      const v = arr[i];
+      if (!Number.isFinite(v)) {
+        arr[i] = (i % 5 === 0) ? 1 : 0; // 对角线为1，其余为0
+      }
+    }
+    return new DOMMatrix(arr);
+  } catch {
+    return new DOMMatrix(); // 保底安全矩阵
+  }
+}
+
+// 全局拦截 render 中的 DOMMatrix 使用
+const _orig_DOMMatrix_toString = DOMMatrixReadOnly.prototype.toString;
+DOMMatrixReadOnly.prototype.toString = function() {
+  // 检查是否含 NaN 或 Infinity
+  for (const v of Object.values(this)) {
+    if (!Number.isFinite(v)) {
+      console.warn('[safeMatrix] detected NaN/Infinity in DOMMatrix, auto-repair.');
+      return safeMatrix(this)._orig_toString?.() || 'matrix(1,0,0,1,0,0)';
+    }
+  }
+  return _orig_DOMMatrix_toString.call(this);
+};
+
 
 // 3D模型
 // ========
@@ -522,8 +553,7 @@ W.add("plane", {
 });
 W.add("billboard", W.models.plane);
 
-// 立方体
-W.add("cube", {
+W.cubeData = {
   vertices: [
     .5, .5, .5,  -.5, .5, .5,  -.5,-.5, .5, // front
     .5, .5, .5,  -.5,-.5, .5,   .5,-.5, .5,
@@ -531,28 +561,18 @@ W.add("cube", {
     .5, .5,-.5,   .5,-.5, .5,   .5,-.5,-.5,
     .5, .5,-.5,  -.5, .5,-.5,  -.5, .5, .5, // up
     .5, .5,-.5,  -.5, .5, .5,   .5, .5, .5,
-   -.5, .5, .5,  -.5, .5,-.5,  -.5,-.5,-.5, // left
-   -.5, .5, .5,  -.5,-.5,-.5,  -.5,-.5, .5,
-   -.5, .5,-.5,   .5, .5,-.5,   .5,-.5,-.5, // back
-   -.5, .5,-.5,   .5,-.5,-.5,  -.5,-.5,-.5,
+    -.5, .5, .5,  -.5, .5,-.5,  -.5,-.5,-.5, // left
+    -.5, .5, .5,  -.5,-.5,-.5,  -.5,-.5, .5,
+    -.5, .5,-.5,   .5, .5,-.5,   .5,-.5,-.5, // back
+    -.5, .5,-.5,   .5,-.5,-.5,  -.5,-.5,-.5,
     .5,-.5, .5,  -.5,-.5, .5,  -.5,-.5,-.5, // down
     .5,-.5, .5,  -.5,-.5,-.5,   .5,-.5,-.5
   ],
-  uv: [
-    1, 1,   0, 1,   0, 0, // front
-    1, 1,   0, 0,   1, 0,            
-    1, 1,   0, 1,   0, 0, // right
-    1, 1,   0, 0,   1, 0, 
-    1, 1,   0, 1,   0, 0, // up
-    1, 1,   0, 0,   1, 0,
-    1, 1,   0, 1,   0, 0, // left
-    1, 1,   0, 0,   1, 0,
-    1, 1,   0, 1,   0, 0, // back
-    1, 1,   0, 0,   1, 0,
-    1, 1,   0, 1,   0, 0, // down
-    1, 1,   0, 0,   1, 0
-  ]
-});
+  uv: Array(12).fill([1,1,0,1,0,0,1,1,0,0,1,0]).flat(),
+};
+
+// 立方体
+W.add("cube", W.cubeData);
 W.cube = settings => W.setState(settings, 'cube');
 
 // 金字塔

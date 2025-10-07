@@ -41,7 +41,7 @@ export default function(ccgxkObj) {
     });
 
     ccgxkObj.hooks.on('ctrlSEvent', function(ccgxkObj, e){  // Ctrl + S 保存事件
-        G.saveToLocalSt();
+        // G.saveToLocalSt();
     });
 
     ccgxkObj.hooks.on('jump', function(ccgxkObj, e){  // 热点事件

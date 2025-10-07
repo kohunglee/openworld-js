@@ -93,6 +93,12 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
                 k.JUMP_HOLD_LIMIT = orig_jumpHoldLimit;
                 k.world.gravity.set(0, -9.82, 0);
             }
+
+            // 保证人物不掉地面
+            if(k.mainVPlayer.body.position.y < 0){
+                k.mainVPlayer.body.position.y = 50;
+            }
+        
         }
     , 100);
 
@@ -169,24 +175,20 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
                 agent[axis] -= distance * times;
             }
         }
-        
         if(distance2) {
-            // agent['z']  -= distance2 * times;
-
-
             for (const axis of ["x", "y", "z"]) {
                 if (axes2 === axis) {
                     agent[axis] -= distance2 * times;
                 }
             }
         }
-        // if(distance3) {
-        //     for (const axis of ["x", "y", "z"]) {
-        //         if (axes3 === axis) {
-        //             agent[axis] -= distance3 * times;
-        //         }
-        //     }
-        // }
+        if(distance3) {
+            for (const axis of ["x", "y", "z"]) {
+                if (axes3 === axis) {
+                    agent[axis] -= distance3 * times;
+                }
+            }
+        }
         return cubeDatas.push(agent);
     }
     
@@ -228,6 +230,19 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     if(k.isLogicAdd === '1'){
 
         myHUDObjEditor.style.backgroundColor = 'blue';
+
+        const indices = [
+            82, 83, 85,
+            89, 90, 91,
+            86, 87, 88,
+        ];
+        indices.forEach(index => {
+            if (cubeDatas[index]) {  // 添加安全检查，防止undefined错误
+                cubeDatas[index].st = 1;
+            }
+        });
+
+        cubeDatas[90].st = 1;
 
         var D = {  // 初始化这个临时变量
             floor1: {},
@@ -482,11 +497,17 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             );
 
         }
-
-
         D = null;  // 释放内存
-
+        [
+            58, 63,
+        ].forEach(index => {
+            if (cubeDatas[index]) {  // 添加安全检查，防止undefined错误
+                cubeDatas[index] = {del : 1};
+            }
+        });
     }
+
+   
 
     // ---------
 
@@ -499,37 +520,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
      * ----------【结束】----------------------------------
      */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    console.log(cubeDatas[90]);
 
 
 
@@ -545,7 +536,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     for (let index = 0; index < cubeInstances.length; index++) {  // 为「实例」加上简单的物理引擎
         k.addTABox({
             DPZ : 4,
-            isPhysical: true,
+            isPhysical: (cubeDatas[index]?.st) ? false : true,
             mass: 0,
             background: '#f6a1a1ff',
             mixValue: 0.5,
@@ -561,7 +552,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             rX: cubeInstances[index].rx,
             rY: cubeInstances[index].ry,
             rZ: cubeInstances[index].rz,
-            isInvisible: true,  // 只被探测，而不可见
+            // isInvisible: true,  // 只被探测，而不可见
             // isFictBody: true,
         });
         if(cubeInstances[index]?.b){  // 别忘了，还要把颜色加入到档案 insColor 里
@@ -758,102 +749,155 @@ k.star = (index) => {
 
 
 
-// 测试合并模型
+
+// 不行，有卡顿，必须得想办法将方块优化到极致
 
 
-const cube = {
-    vertices: [
-        .5, .5, .5,  -.5, .5, .5,  -.5,-.5, .5,
-        .5, .5, .5,  -.5,-.5, .5,   .5,-.5, .5,
-        .5, .5,-.5,   .5, .5, .5,   .5,-.5, .5,
-        .5, .5,-.5,   .5,-.5, .5,   .5,-.5,-.5,
-        .5, .5,-.5,  -.5, .5,-.5,  -.5, .5, .5,
-        .5, .5,-.5,  -.5, .5, .5,   .5, .5, .5,
-        -.5, .5, .5,  -.5, .5,-.5,  -.5,-.5,-.5,
-        -.5, .5, .5,  -.5,-.5,-.5,  -.5,-.5, .5,
-        -.5, .5,-.5,   .5, .5,-.5,   .5,-.5,-.5,
-        -.5, .5,-.5,   .5,-.5,-.5,  -.5,-.5,-.5,
-        .5,-.5, .5,  -.5,-.5, .5,  -.5,-.5,-.5,
-        .5,-.5, .5,  -.5,-.5,-.5,   .5,-.5,-.5
-    ],
-    uv: Array(12).fill([1,1,0,1,0,0,1,1,0,0,1,0]).flat()
-};
+// const cube = {
+//   vertices: [
+//     .5, .5, .5,  -.5, .5, .5,  -.5,-.5, .5,
+//     .5, .5, .5,  -.5,-.5, .5,   .5,-.5, .5,
+//     .5, .5,-.5,   .5, .5, .5,   .5,-.5, .5,
+//     .5, .5,-.5,   .5,-.5, .5,   .5,-.5,-.5,
+// //     .5, .5,-.5,  -.5, .5,-.5,  -.5, .5, .5,
+// //     .5, .5,-.5,  -.5, .5, .5,   .5, .5, .5,
+// //    -.5, .5, .5,  -.5, .5,-.5,  -.5,-.5,-.5,
+// //    -.5, .5, .5,  -.5,-.5,-.5,  -.5,-.5, .5,
+// //    -.5, .5,-.5,   .5, .5,-.5,   .5,-.5,-.5,
+// //    -.5, .5,-.5,   .5,-.5,-.5,  -.5,-.5,-.5,
+// //     .5,-.5, .5,  -.5,-.5, .5,  -.5,-.5,-.5,
+// //     .5,-.5, .5,  -.5,-.5,-.5,   .5,-.5,-.5
+//   ],
+//   uv: Array(8).fill([1,1,0,1,0,0,1,1,0,0,1,0]).flat()
+// };
+
+// // 测试合并模型
+// function mergeCubes(cube, positions) {
+//     const vertices = [];
+//     const uvs = [];
+
+//     for (const [dx, dy, dz] of positions) {
+//         // 复制顶点并加上偏移
+//         for (let i = 0; i < cube.vertices.length; i += 3) {
+//             vertices.push(
+//                 cube.vertices[i] + dx,
+//                 cube.vertices[i + 1] + dy,
+//                 cube.vertices[i + 2] + dz
+//             );
+//         }
+//         // UV 直接附加
+//         uvs.push(...cube.uv);
+//     }
+
+//     return { vertices, uv: uvs };
+// }
+
+// console.time('实例合并测试');
+
+// // const num = 4; // 合并 每边立方体数量
+// // const kkk = 17; // 实例化 每边数量
+// const hbX = 4;
+// const hbY = (70/hbX) | 0;
+// console.log(hbY);
+
+// const num = hbX; // 合并 每边立方体数量
+// const kkk = hbY; // 实例化 每边数量
+
+// const spacing = 2; // 每个立方体之间的间距（例如边长+空隙）
+
+// const positions = [];
+
+// for (let x = 0; x < num; x++) {
+//   for (let y = 0; y < num; y++) {
+//     for (let z = 0; z < num; z++) {
+//       positions.push([
+//         x * spacing,
+//         y * spacing,
+//         z * spacing,
+//       ]);
+//     }
+//   }
+// }
+// const merged = mergeCubes(cube, positions);
+// const objName = 'mylearn';
+// // 输入我的模型
+// k.W.add("hexahedron", merged);
+// k.W.models['hexahedron'].verticesBuffer = null;
 
 
-function mergeCubes(cube, positions) {
-    const vertices = [];
-    const uvs = [];
+// const spacing002 = 20;    // 每个格子间距
+// const testHBSLHInst = [];
 
-    for (const [dx, dy, dz] of positions) {
-        // 复制顶点并加上偏移
-        for (let i = 0; i < cube.vertices.length; i += 3) {
-            vertices.push(
-                cube.vertices[i] + dx,
-                cube.vertices[i + 1] + dy,
-                cube.vertices[i + 2] + dz
-            );
-        }
-        // UV 直接附加
-        uvs.push(...cube.uv);
-    }
-
-    return { vertices, uv: uvs };
-}
-
-console.time('实例合并测试');
-
-const num = 4; // 每边立方体数量
-const kkk = 17;           // 每边数量
-const spacing = 2; // 每个立方体之间的间距（例如边长+空隙）
-
-const positions = [];
-
-for (let x = 0; x < num; x++) {
-  for (let y = 0; y < num; y++) {
-    for (let z = 0; z < num; z++) {
-      positions.push([
-        x * spacing,
-        y * spacing,
-        z * spacing,
-      ]);
-    }
-  }
-}
-const merged = mergeCubes(cube, positions);
-const objName = 'mylearn';
-// 输入我的模型
-k.W.add("hexahedron", merged);
-k.W.models['hexahedron'].verticesBuffer = null;
-
-
-const spacing002 = 20;    // 每个格子间距
-const testHBSLHInst = [];
-
-for (let x = 0; x < kkk; x++) {
-  for (let y = 0; y < kkk; y++) {
-    for (let z = 0; z < kkk; z++) {
-      testHBSLHInst.push({
-        x: x * spacing002,
-        y: y * spacing002,
-        z: z * spacing002
-      });
-    }
-  }
+// for (let x = 0; x < kkk; x++) {
+//   for (let y = 0; y < kkk; y++) {
+//     for (let z = 0; z < kkk; z++) {
+//       testHBSLHInst.push({
+//         x: x * spacing002,
+//         y: y * spacing002,
+//         z: z * spacing002
+//       });
+//     }
+//   }
   
-}
+// }
 
-console.log('合并数量', positions.length);
+// console.log('合并数量', positions.length);
 
-console.log('实例数量', testHBSLHInst.length);
+// console.log('实例数量', testHBSLHInst.length);
 
-console.log('总数量', positions.length * testHBSLHInst.length);
+// console.log('总数量', positions.length * testHBSLHInst.length);
 
-k.W.hexahedron({  // 渲染实例化
-    n: 'testHBSLH',
-    t: dls,  // 大理石
-    instances: testHBSLHInst, // 实例属性的数组
-    b:'fffb00',
-    mix: 0.5,
-});
+// k.W.hexahedron({  // 渲染实例化
+//     n: 'testHBSLH',
+//     t: dls,  // 大理石
+//     instances: testHBSLHInst, // 实例属性的数组
+//     b:'fffb00',
+//     mix: 0.5,
+// });
 
-console.timeEnd('实例合并测试');
+// console.timeEnd('实例合并测试');
+
+    k.testInsData = [];
+
+    k.testInsData.push({
+        x: 0,
+        y: 10,
+        z: 0,
+        w: 1,
+        h: 10,
+        d: 1,
+    });
+
+    k.W.cube({  // 渲染实例化
+        n: 'testIns001',
+        instances: {}, // 实例属性的数组
+        x: 32,
+        y: 3,
+        z: 32,
+        mix: 0.7,
+    });
+
+    // k.W.cube({  // 渲染实例化
+    //     n: 'testIns001',
+    //     instances: k.testInsData, // 实例属性的数组
+    //     x: 9,
+    //     y: 3,
+    //     z: 9,
+    // });
+
+
+
+    // { 
+    //     instances: k.testInsData,
+    //     x: 9,
+    //     y: 3,
+    //     z: 9,
+    // }
+
+    const args111 = k.indexToArgs.get(102);
+            args111.other =     { 
+        instances: k.testInsData,
+        x: 9,
+        y: 3,
+        z: 9,
+    };
