@@ -8,12 +8,12 @@ export default function(ccgxkObj) {
     var g = {
 
         // 获取（和下载）当前的所有方块数据
-        getCubesData : (isDownload = false) => {
+        getCubesData : (isDownload = false, rangeA = 0, rangeB = ccgxkObj.visCubeLen, isJson = false) => {
             // console.time('生成所有数据');
             const G = ccgxkObj.centerDot.init;
             var cubeDATA = [];
-            const total = ccgxkObj.visCubeLen + 1;  // 当前方块总数
-            for (let i = 0; i < total; i++) {
+            rangeB++;
+            for (let i = rangeA; i < rangeB; i++) {
                 var p_offset = i * 8;
                 const pos = ccgxkObj.positionsStatus;
                 const phy = ccgxkObj.physicsProps;
@@ -44,7 +44,7 @@ export default function(ccgxkObj) {
                     }
                 }
             }
-            for (let i = 0; i < total; i++) {  // 单独其他选项，后续测试一下是否有性能区别
+            for (let i = rangeA; i < rangeB; i++) {  // 单独其他选项，后续测试一下是否有性能区别
                 const insColor = ccgxkObj.indexToArgs.get(i).insColor;  //+ 颜色的设置
                 if(insColor) {
                     cubeDATA[i].b = insColor;
@@ -63,7 +63,7 @@ export default function(ccgxkObj) {
                 link.click();
                 URL.revokeObjectURL(url); // 释放这个临时URL
             } else {
-                return cubeDATA;
+                return isJson ?  JSON.stringify(cubeDATA) : cubeDATA;
             }
 
             
@@ -74,8 +74,7 @@ export default function(ccgxkObj) {
             const G = ccgxkObj.centerDot.init;
             const cubeDATA = g.getCubesData();
             if (ccgxkObj.cellpageid_geturl) {
-                localStorage.setItem(`ow_${ccgxkObj.cellpageid_geturl}`, JSON.stringify(cubeDATA)); 
-                // new Blob([localStorage.getItem(`ow_${ccgxkObj.cellpageid_geturl}`)]).size;  // 输出当前数据的储存长度
+                localStorage.setItem(`ow_${ccgxkObj.cellpageid_geturl}`, JSON.stringify(cubeDATA));
                 alert('保存到 localStorage 成功！');
             } else {
                 alert('当前页面没有 id 参数，无法保存到本地');

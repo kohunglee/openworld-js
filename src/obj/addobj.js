@@ -163,18 +163,11 @@ export default {
                 hidden: args.isInvisible,
             });
             if(args.other !== null){  // 添加其他属性
-                // this.W[args.shape]({
-                //     n: 'T' + index,
-                //     ...args.other,
-                // })
-                k.W.cube({  // 渲染实例化
-                    // n: 'testIns001',
+                this.W[args.shape]({  // 渲染实例化
                     n: 'T' + index,
-                    instances: k.testInsData, // 实例属性的数组
-                    x: 9,
-                    y: 3,
-                    z: 9,
+                    ...args.other,
                 });
+                console.log(args.other);
             }
             if(textureError){  // 纹理加载失败，尝试换上自定义纹理（id 还是原 id）
                 const expRatio = 40;  // 缩放比例

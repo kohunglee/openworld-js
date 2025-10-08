@@ -31,6 +31,10 @@ const W = {
     W.drawTime = 0;         // 初始化 绘制 时间
     W.lastReportTime = 0;   // 时间戳临时变量（用于确定一秒）
 
+    // DOMMatrixReadOnly.prototype.toString = function(){  // 防止崩溃，检测到矩阵中有 NaN 或 Infinity → 自动替换为安全的单位矩阵字符串（ChatGPT）
+    //   return [...Object.values(this)].some(v=>!Number.isFinite(v)) ? 'matrix(1,0,0,1,0,0)' : DOMMatrix.prototype.toString.call(this);
+    // };
+
     var t;
     W.gl.shaderSource(
           // 默认顶点着色器
@@ -497,36 +501,6 @@ W.smooth = (state, dict = {}, vertices = [], iterate, iterateSwitch, i, j, A, B,
     W.models[state.type].normals[Ci] = dict[C[0]+"_"+C[1]+"_"+C[2]] = dict[C[0]+"_"+C[1]+"_"+C[2]].map((a,i) => a + normal[i]);
   }
 }
-
-  // 安全矩阵封装器
-function safeMatrix(m) {
-  try {
-    const arr = Object.values(m);
-    for (let i = 0; i < arr.length; i++) {
-      const v = arr[i];
-      if (!Number.isFinite(v)) {
-        arr[i] = (i % 5 === 0) ? 1 : 0; // 对角线为1，其余为0
-      }
-    }
-    return new DOMMatrix(arr);
-  } catch {
-    return new DOMMatrix(); // 保底安全矩阵
-  }
-}
-
-// 全局拦截 render 中的 DOMMatrix 使用
-const _orig_DOMMatrix_toString = DOMMatrixReadOnly.prototype.toString;
-DOMMatrixReadOnly.prototype.toString = function() {
-  // 检查是否含 NaN 或 Infinity
-  for (const v of Object.values(this)) {
-    if (!Number.isFinite(v)) {
-      console.warn('[safeMatrix] detected NaN/Infinity in DOMMatrix, auto-repair.');
-      return safeMatrix(this)._orig_toString?.() || 'matrix(1,0,0,1,0,0)';
-    }
-  }
-  return _orig_DOMMatrix_toString.call(this);
-};
-
 
 // 3D模型
 // ========

@@ -93,9 +93,11 @@ export default function(ccgxkObj) {
                 const mvpBody = ccgxkObj.mainVPlayer.body;
                 if(mvpBody.mass === 0){
                     mvpBody.mass = 50;  // 重量还原
+                    // mvpBody.collisionFilterMask = 0xFFFFFFFF;
                     G.music('unfrozen');
                 } else {
                     mvpBody.mass = 0;  // 重量归 0
+                    // mvpBody.collisionFilterMask = 0;
                     mvpBody.velocity.set(0, 0, 0);  // 设置线速度为0
                     mvpBody.angularVelocity.set(0, 0, 0);  // 设置角速度为0
                     mvpBody.force.set(0, 0, 0);  // 清除所有作用力

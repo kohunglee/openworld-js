@@ -57,22 +57,19 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         isShadow: 'ok',
         X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z,
         mixValue:0.7,
-        // width: mainVPSize, depth: mainVPSize, height: mainVPSize * 1.12,  // 脚会悬空，等待其他解决方式吧
         size: mainVPSize,
         mass: 50,
         background : '#333',
         texture: greenStone,
     });
-    k.centerDot.setCamView(2);  // 设置视角 类型2
-    /* */
+    k.centerDot.setCamView(2);  // 设置默认视角 类型2
     k.WALK_SPEED = 1/20;  //+ 慢速度
     k.SPRINT_MIN_SPEED = 5;
     k.SPRINT_MAX_SPEED = 15.5;
-
     const orig_jumpYVel = k.jumpYVel;
     const orig_jumpHoldLimit = k.JUMP_HOLD_LIMIT;
     const mvp = k.mainVPlayer;
-
+    const mvpBody = k.mainVPlayer.body;
     setInterval(  // 动态调整人物的跳跃、地心引力
         () => {
             const x = mvp.X;
@@ -98,17 +95,15 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             if(k.mainVPlayer.body.position.y < 0){
                 k.mainVPlayer.body.position.y = 50;
             }
-        
+
+            if(mvpBody.mass === 0){
+                mvpBody.velocity.set(0, 0, 0);  // 设置线速度为0
+                mvpBody.angularVelocity.set(0, 0, 0);  // 设置角速度为0
+                mvpBody.force.set(0, 0, 0);  // 清除所有作用力
+                mvpBody.torque.set(0, 0, 0);  // 清除所有扭矩
+            }
         }
     , 100);
-
-    // k.world.gravity.set(0, -9.82/4, 0);  // 临时
-    
-
-
-    
-
-    
 
     console.time('load');
 
@@ -133,11 +128,6 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     } else {
         cubeDatas = JSON.parse(localStorage.getItem('ow_' + cellpageid));
     }
-
-    
-    // console.log(localStorage.getItem('ow_' + cellpageid));
-
-
     // console.log(localStorage.getItem('ow_' + cellpageid));
     
     const totalCube = 10000;  // 计划的总方块数
@@ -145,9 +135,8 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     const isHiddenVis = [];  // 【隐藏显示】表
     var cubeIndex = 0;  // 计数器
 
-
     /***
-     * ------【实验区】一楼搞好--------------------------------------
+     * ------【实验区】搞好建筑--------------------------------------
      */
 
     const symopera = (items, axes={}) => {  // 对称操作
@@ -225,16 +214,18 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     }
 
 
-    // --------- 开始逻辑操作
+    // --------- 开始建造的逻辑操作
 
     if(k.isLogicAdd === '1'){
+        myHUDObjEditor.style.backgroundColor = 'blue';  // 提醒自己，不要按动保存
 
-        myHUDObjEditor.style.backgroundColor = 'blue';
-
-        const indices = [
+        const indices = [  // 静态物体，不参与物理计算
             82, 83, 85,
             89, 90, 91,
             86, 87, 88,
+            11, 12, 13, 14, 15, 16, 17, 18, 19, 20,  // 小书架
+            22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,  //+ 大书架
+            60, 61,
         ];
         indices.forEach(index => {
             if (cubeDatas[index]) {  // 添加安全检查，防止undefined错误
@@ -242,14 +233,12 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             }
         });
 
-        cubeDatas[90].st = 1;
-
-        var D = {  // 初始化这个临时变量
+        var D = {  // 初始化临时变量，放置自己的临时计算数据
             floor1: {},
             floor2: { shelf: { L: {}, C: {}, T: {}, CD: {}, }, }
         }
 
-        // 第一层
+        // 建造第一层
         if(true) {
             // 里屋，对称大小书柜
             D.floor1.bookshelf2 = symo([
@@ -437,6 +426,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
                 ...D.floor2.xthing,
                 ...D.floor2.stair,
                 95, 93, 94, 69, // 栅栏地板
+                84,
                 ...D.floor2.shelf.T11,
                 ...D.floor2.wall6,
                 ...D.floor2.mfence5,
@@ -471,7 +461,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             // 搜集第二层可直接偏移的内容
             D.floor3.xthing = [
                 ...D.floor2.xthing,  // 杂乱
-                92, 95, 96, 93, 94, 64, 81, 75, // 栅栏地板
+                92, 95, 96, 93, 94, 64, 81, 75, 84, // 栅栏地板
                 [78, 80], ...D.floor2.wall6,  // 6外墙
                 ...D.floor2.shelf.T11,
                 ...D.floor2.stair,
@@ -491,21 +481,127 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
                 ...D.floor2.shelf.symo2West,  // 对称到最西侧的柜子
             ];
 
-            // 第一次阵列
+            // 阵列
             D.floor3.firstOff = offset(
                 D.floor3.xthing,-2.7, 5, 'y'
             );
-
         }
+
+        // 书 系统
+        if(true) {
+            D.book = {};  // 初始化 书 容器
+
+            // D.book.n30102 = offset(
+            //     [103], -0.314, 2, 'y'
+            // );
+
+            // D.book.n30101 = offset(
+            //     [...D.book.n30102], 1.28, 2, 'z'
+            // );
+
+            // const book30108 = cubeDatas[103];
+            // var bookdata = fillBooks({...book30108, seed: 30108});
+            // bookdata.forEach(book => {
+            //     cubeDatas.push({...book, st: 1});  // st:1, 书必须的静态
+            // })
+
+            // const book30102 = cubeDatas[D.book.n30102[0]];
+            // var bookdata = fillBooks({...book30102, seed: 30102});
+            // bookdata.forEach(book => {
+            //     cubeDatas.push({...book, st: 1});  // st:1, 书必须的静态
+            // })
+
+            // const book30101 = cubeDatas[D.book.n30101[0]];
+            // var bookdata = fillBooks({...book30101, seed: 30101});
+            // bookdata.forEach(book => {
+            //     cubeDatas.push({...book, st: 1});  // st:1, 书必须的静态
+            // })
+
+            const shelfDefs = [  // 书格规则表
+                { id: 30102, ref: 103, off: [-0.314, 'y'] },
+                { id: 30101, ref: 'n30102', off: [1.28, 'z'] },
+                { id: 30103, ref: 'n30102', off: [-1.22, 'z', -0.09, 'y'], maxlen: 1.08, count: 30 },
+                { id: 30104, ref: 'n30103', off: [-1.28, 'z'] },
+                { id: 30105, ref: 'n30104', off: [-1.2, 'z'] , maxlen: 1.2, count: 35},
+                { id: 30106, ref: 'n30105', off: [-1.36, 'z'] , maxlen: 0.9, count: 25},
+
+                { id: 30107, ref: 103, off: [1.28, 'z'] },
+                { id: 30108, ref: 103, off: [0, 'z'] },
+                { id: 30109, ref: 'n30103', off: [0.255, 'y'] },
+                { id: 30110, ref: 'n30104', off: [0.255, 'y'] },
+                { id: 30111, ref: 'n30105', off: [0.255, 'y'] , maxlen: 1.2, count: 35},
+                { id: 30112, ref: 'n30106', off: [0.255, 'y'] , maxlen: 0.9, count: 25},
+
+                { id: 30113, ref: 'n30107', off: [0.28, 'y']},
+                { id: 30114, ref: 'n30108', off: [0.28, 'y']},
+                { id: 30115, ref: 'n30109', off: [0.255, 'y']},
+                { id: 30116, ref: 'n30110', off: [0.255, 'y']},
+                { id: 30117, ref: 'n30111', off: [0.255, 'y'], maxlen: 1.2, count: 35},
+                { id: 30118, ref: 'n30112', off: [0.255, 'y'], maxlen: 0.9, count: 25},
+
+                { id: 30119, ref: 'n30115', off: [0.2, 'y'] },
+                { id: 30120, ref: 'n30116', off: [0.2, 'y'] },
+                { id: 30121, ref: 'n30117', off: [0.2, 'y'], maxlen: 1.2, count: 35 },
+                { id: 30122, ref: 'n30118', off: [0.2, 'y'], maxlen: 0.9, count: 25 },
+
+                { id: 30123, ref: 'n30113', off: [0.45, 'y', 0.3, 'x'] },
+                { id: 30124, ref: 'n30123', off: [-1.28, 'z'] },
+                { id: 30125, ref: 'n30124', off: [-1.2, 'z'] },
+                { id: 30126, ref: 'n30125', off: [-1.2, 'z'] },
+                // { id: 30127, ref: 'n30114', off: [0.45, 'y', 0.3, 'x'] },
+                // { id: 30128, ref: 'n30114', off: [0.45, 'y', 0.3, 'x'] },
+
+            ];
+
+            // 整格书 注册函数
+            function registerBookshelf({ id, ref, off, maxlen = 1.05, count = 30, }) {
+                const base = typeof ref === 'number'
+                    ? [ref]
+                    : [...D.book[ref]];
+                D.book[`n${id}`] = offset(base, off[0], 2, off[1], off[2], off[3]);  // 偏移
+                const firstBook = cubeDatas[D.book[`n${id}`][0]];  // 得到左侧第一本书的数据
+                const bookSet = fillBooks({ ...firstBook, seed: id }, maxlen, count);  // 生成整格数据
+                for (const book of bookSet) {  // 推入数据流
+                    cubeDatas.push({ ...book, st: 1 }); // st:1 表示静态书
+                }
+            }
+            shelfDefs.forEach(registerBookshelf);  // 按格 生成书的数据
+        }
+
+        
+
+        // const bookdata = fillBooks({
+        //     x: 47.449,   // 格子中心 x 坐标
+        //     y: 2.6,      // 格子中心 y 坐标
+        //     z: -21.836,  // 格子中心 z 坐标
+        //     w: 0.15,     // 书的深度
+        //     h: 0.2,     
+        //     d: 0.05,     // 书脊的宽度
+        //     seed: 30108,
+        // });
+
+        // bookdata.forEach(book => {
+        //     cubeDatas.push({...book, st: 1});  // st:1, 书必须的静态
+        // })
+
+
         D = null;  // 释放内存
-        [
-            58, 63,
-        ].forEach(index => {
-            if (cubeDatas[index]) {  // 添加安全检查，防止undefined错误
+        [58, 63,].forEach(index => {  // 门洞
+            if (cubeDatas[index]) {
                 cubeDatas[index] = {del : 1};
             }
         });
+
+        // [103].forEach(index => {  // 书 103
+        //     if (cubeDatas[index]) {
+        //         cubeDatas[index] = {del : 1};
+        //     }
+        // });
     }
+
+    /*
+        书架上的书的数据开始
+    */
 
    
 
@@ -519,13 +615,6 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     /***
      * ----------【结束】----------------------------------
      */
-
-    console.log(cubeDatas[90]);
-
-
-
-
-    
 
     for (let index = 0; index < totalCube - k.visCubeLen; index++) {  // 空模型
         addInsLD({
@@ -542,7 +631,6 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             mixValue: 0.5,
             // colliGroup: 2,
             isShadow: false,
-            // isVisualMode: false,
             X: cubeInstances[index].x,
             Y: cubeInstances[index].y,
             Z: cubeInstances[index].z,
@@ -552,8 +640,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
             rX: cubeInstances[index].rx,
             rY: cubeInstances[index].ry,
             rZ: cubeInstances[index].rz,
-            // isInvisible: true,  // 只被探测，而不可见
-            // isFictBody: true,
+            isInvisible: true,  // 只被探测，而不可见
         });
         if(cubeInstances[index]?.b){  // 别忘了，还要把颜色加入到档案 insColor 里
             const args = k.indexToArgs.get(index);
@@ -562,12 +649,9 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     }
     k.W.cube({  // 渲染实例化
         n: 'manyCubes',
-        // t: checkerboard,  // 棋格
         t: dls,  // 大理石
-        // t: greenStone,
         instances: cubeInstances, // 实例属性的数组
         mix: 0.7,
-        // mix: 0.95,
     });
     function addInsLD (data, isHidden = false) {  // 添加方块的函数
         if(data.del) {  // 【删除】标记，按照【空模型】处理
@@ -725,9 +809,14 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         w:1,  h:6,  d:1,
     });
 
+    const args111 = k.indexToArgs.get(102);
+    args111.other =     { 
+        instances: k.testInsData,
+        hidden: false,
+    };
+
 /**************** 结束 */
     console.timeEnd('load');
-
 });
 
 k.star = (index) => {
@@ -894,10 +983,55 @@ k.star = (index) => {
     //     z: 9,
     // }
 
-    const args111 = k.indexToArgs.get(102);
-            args111.other =     { 
-        instances: k.testInsData,
-        x: 9,
-        y: 3,
-        z: 9,
-    };
+    // const args111 = k.indexToArgs.get(102);
+    //         args111.other =     { 
+    //     instances: k.testInsData,
+    //     x: 9,
+    //     y: 3,
+    //     z: 9,
+    // };
+
+
+function fillBooks(baseBook, totalLength = 1.05, count = 30) {
+    const books = [];
+    let currentZ = baseBook.z;
+
+    const seed = baseBook?.seed || 1;  // 随机数种子
+    const random = k.genPR(seed, 2 * count );
+
+    // 计算书的底面 Y 坐标（底边固定）
+    const baseBottomY = baseBook.y - baseBook.h / 2;
+
+    // 先生成随机深度（相对比例），再缩放总长度
+    const rawDepths = Array.from({ length: count }, () =>
+        baseBook.d * (0.9 + Math.random() * 0.8) // 深度变化 ±40%
+    );
+    const rawSum = rawDepths.reduce((a, b) => a + b, 0);
+    const scale = totalLength / rawSum;
+    const depths = rawDepths.map(d => d * scale);
+
+    for (let i = 0; i < count; i++) {
+        const d = depths[i];
+        const w = baseBook.w * (0.7 + random[i * 2] * 0.3); // 深度变化 ±10%
+        const h = baseBook.h * (0.9 + random[i * 2 + 1] * 0.1); // 高度变化 ±20%
+
+        if (i > 0) {
+            const prev = books[i - 1];
+            currentZ = prev.z + (prev.d / 2 + d / 2) + 0.0025;
+        }
+
+        // 调整中心 y，让底面固定
+        const y = baseBottomY + h / 2;
+
+        books.push({
+            x: baseBook.x,
+            y,
+            z: currentZ,
+            w,
+            h,
+            d,
+        });
+    }
+
+    return books;
+}
