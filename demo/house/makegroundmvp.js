@@ -34,7 +34,7 @@ function makeGroundMvp(){
         texture: greenStone,
     });
     k.centerDot.setCamView(2);  // 设置默认视角 类型2
-    k.WALK_SPEED = 1/20;  //+ 慢速度
+    k.WALK_SPEED = 1/80;  //+ 慢速度
     k.SPRINT_MIN_SPEED = 5;
     k.SPRINT_MAX_SPEED = 15.5;
     const orig_jumpYVel = k.jumpYVel;
@@ -52,9 +52,9 @@ function makeGroundMvp(){
                     k.JUMP_HOLD_LIMIT = orig_jumpHoldLimit;
                     k.world.gravity.set(0, -9.82, 0);
                 } else {  // 在图书区
-                    k.jumpYVel = 0.8;
+                    k.jumpYVel = 0.4;
                     k.JUMP_HOLD_LIMIT = 0.5;
-                    k.world.gravity.set(0, -9.82/4, 0);
+                    k.world.gravity.set(0, -9.82/8, 0);
                 }
             } else {
                 k.jumpYVel = orig_jumpYVel;

@@ -26,7 +26,8 @@ export default function(ccgxkObj){
 
   // 日本国旗
   const drawjpflag = function(ctx, w, h) {
-    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#00000046';
+    ctx.fillRect(0, 0, w, h);
     const radius = 150;
     ctx.beginPath();
     ctx.arc(w / 2, h / 2, radius, 0, Math.PI * 2);
@@ -45,7 +46,7 @@ export default function(ccgxkObj){
         if ((i + j) % 2 === 0) {
           ctx.fillStyle = '#fff'; // 白色瓷砖
         } else {
-          ctx.fillStyle = '#000'; // 黑色瓷砖
+          ctx.fillStyle = '#000000ff'; // 黑色瓷砖
         }
         const x = j * squareWidth;
         const y = i * squareHeight;
@@ -66,7 +67,7 @@ export default function(ccgxkObj){
       { id:'frosted', type: 'svg-rasterize', svgCode: frosted },
 
       // 日本国旗
-      {func:drawjpflag, id:'jpflag', type: 'jpg'},
+      {func:drawjpflag, id:'jpflag', type: 'png'},
 
       // 5*5 棋格图
       {func:drawCheckerboard, id:'checkerboard', type: 'jpg'},

@@ -1,8 +1,11 @@
 import openworldApp from '../../src/openworld.js';
+import svgTextureLib from '../../src/plugins/svgTextureLib.js';
+
+
 
 window.k = openworldApp;  // 初始化沙盒
 k.initWorld('c');
-
+svgTextureLib(k);   // 纹理预设库
 
 // ========================= 插件加载 =========================
 import calCity from '../../src/plugins/calCity.js';
@@ -207,3 +210,19 @@ document.addEventListener('keydown', (e)=>{
         k.mainVPlayer.body.position.y = 150;
     }
 });
+
+// // 测试透明纹理
+// k.loadTexture(k.svgTextureLib).then(loadedImage => {
+
+//     globalThis.jpflag = k.textureMap.get('jpflag');
+//     k.W.cube({
+//         n: 'testPng',
+//         x: 14.39, y: 6.62, z: -35.61,
+//         t:jpflag,
+//         // b:'#00000046',
+//     });
+
+// });
+
+
+
