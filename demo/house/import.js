@@ -27,3 +27,20 @@ centerDot(k);       // 开启中心点取物
 sound(k);           // 声音插件
 build(k);           // 构建方块器
 testSampleAni(k);   // 简单的人物动画实现
+
+k.star = (index) => {  // 闪烁按照 ID 寻找方块
+    if(k.starInt){
+        clearInterval(k.starInt);
+        if(k.W.next['T'+ k.starID]?.hidden){
+            k.W.next['T'+ k.starID].hidden = true;
+        }
+    }
+    if(index){
+        k.starInt = setInterval( (i = index) => {
+            if(k.W?.next['T'+ i]){
+                k.W.next['T'+ i].hidden = !k.W.next['T'+ i].hidden;
+            }
+        }, 100 );
+        k.starID = index;
+    }
+}
