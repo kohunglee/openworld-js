@@ -1,20 +1,18 @@
-function dataProcess() {  // 数据处理
+/**
+ * 数据处理
+ * -----------
+ * 开始按照既定的规则，把 cubeDatas 给绘制出来
+ */
+function dataProcess() {
 
-    D = null;  // 释放内存
-   
-
-    // ---------
+    D = null;  // 释放内存（删去临时数据产生的内存）
 
     for (let index = 0; index < cubeDatas.length; index++) {  // 数据，填充我的容器
         addInsLD(cubeDatas[index]);
     }
     console.log('共', k.visCubeLen, '个可见方块');
 
-    /***
-     * ----------【结束】----------------------------------
-     */
-
-    for (let index = 0; index < totalCube - k.visCubeLen; index++) {  // 空模型
+    for (let index = 0; index < totalCube - k.visCubeLen; index++) {  // 空模型，填充容器里多余的空间
         addInsLD({
             x: 999999999, y: 999999999, z: 999999999,
             w: 0.001, d: 0.001, h: 0.001,

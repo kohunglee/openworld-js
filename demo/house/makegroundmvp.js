@@ -1,10 +1,13 @@
+/**
+ * 创建地面、人物
+ */
 function makeGroundMvp(){
     // 主题变量
-    window.greenStone = k.textureMap.get('greenStone');
-    window.greenStoneborder = k.textureMap.get('greenStoneborder');
-    window.frosted = k.textureMap.get('frosted');
-    window.jpflag = k.textureMap.get('jpflag');
-    window.checkerboard = k.textureMap.get('checkerboard');
+    globalThis.greenStone = k.textureMap.get('greenStone');
+    globalThis.greenStoneborder = k.textureMap.get('greenStoneborder');
+    globalThis.frosted = k.textureMap.get('frosted');
+    globalThis.jpflag = k.textureMap.get('jpflag');
+    globalThis.checkerboard = k.textureMap.get('checkerboard');
 
     k.addBox({  // 创建地面
         DPZ : 1,
@@ -38,7 +41,7 @@ function makeGroundMvp(){
     const orig_jumpHoldLimit = k.JUMP_HOLD_LIMIT;
     const mvp = k.mainVPlayer;
     const mvpBody = k.mainVPlayer.body;
-    setInterval(  // 动态调整人物的跳跃、地心引力
+    setInterval(  // 动态调整人物的跳跃、地心引力等，每秒走一遍
         () => {
             const x = mvp.X;
             const z = mvp.Z;
