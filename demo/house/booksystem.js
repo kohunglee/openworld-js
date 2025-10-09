@@ -100,7 +100,7 @@ function bookSystem(){  // 书 系统
 
 
     // 生成书
-    // shelfDefs.forEach(registerBookshelf);  // 按格 生成书的数据
+    shelfDefs.forEach(registerBookshelf);  // 按格 生成书的数据
     function registerBookshelf({ id, ref, off, maxlen = 1.05, count = 30, }) {  // 整格书 注册函数
         const base = typeof ref === 'number'
             ? [ref]
@@ -109,7 +109,7 @@ function bookSystem(){  // 书 系统
         const firstBook = cubeDatas[D.book[`n${id}`][0]];  // 得到左侧第一本书的数据
         const bookSet = fillBooks({ ...firstBook, seed: id }, maxlen, count);  // 生成整格数据
         for (const book of bookSet) {  // 推入数据流
-            // cubeDatas.push({ ...book, st: 1, iv: true, unIns:1, }); // st:1 表示静态书, unIns:1 代表不统一实例化
+            cubeDatas.push({ ...book, st: 1, iv: true, unIns:1, }); // st:1 表示静态书, unIns:1 代表不统一实例化
             // bookDataIns.push({ ...book, st: 1 }); // st:1 表示静态书
         }
     }
@@ -119,7 +119,7 @@ function bookSystem(){  // 书 系统
         const firstBookIndex = D.book[key][0];
         cubeDatas[firstBookIndex] = {del : 1};
     }
-    cubeDatas[103] = {del : 1};
+    // cubeDatas[103] = {del : 1};
 
 
     console.log(bookDataIns);
@@ -140,9 +140,6 @@ function bookSystem(){  // 书 系统
         t: testimg,
         mix: 1,
     });
-
-
-
 }
 
 

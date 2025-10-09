@@ -1,16 +1,11 @@
-function logicData(){  // 建造的逻辑代码
+/**
+ * 建造的逻辑代码
+ * --------------
+ * 就按照这个文件里的步骤指示，建造我的图书柜
+ */
+function logicData(){  // 
 
-
-
-    /***
-     * ------【实验区】搞好建筑--------------------------------------
-     */
-
-
-
-    // --------- 开始建造的逻辑操作
-
-    window.D = {  // 初始化临时变量，放置自己的临时计算数据
+    globalThis.D = {  // 初始化临时变量，放置自己的临时计算数据
         floor1: {},
         floor2: { shelf: { L: {}, C: {}, T: {}, CD: {}, }, }
     }
@@ -32,8 +27,6 @@ function logicData(){  // 建造的逻辑代码
                 cubeDatas[index].st = 1;
             }
         });
-
-
 
         // 建造第一层
         if(true) {
@@ -94,7 +87,6 @@ function logicData(){  // 建造的逻辑代码
             D.floor2.stairFenceOff = offset([
                 101,
             ], 1.05, 2, 'x');
-
 
             // 三叠型外墙，阵列 6 个
             D.floor2.wall6 = offset([
@@ -283,7 +275,8 @@ function logicData(){  // 建造的逻辑代码
                 D.floor3.xthing,-2.7, 5, 'y'
             );
         }
-        [58, 63,].forEach(index => {  // 门洞
+
+        [58, 63,].forEach(index => {  // 删除门洞
             if (cubeDatas[index]) {
                 cubeDatas[index] = {del : 1};
             }

@@ -1,5 +1,10 @@
-function logicFunc(){  // 逻辑建造工具
-    window.symopera = (items, axes={}) => {  // 对称操作
+/**
+ * 逻辑建造工具
+ * ----------
+ * 定义建造时的 偏移阵列、镜像 逻辑函数
+ */
+function logicFunc(){  // 
+    globalThis.symopera = (items, axes={}) => {  // 对称操作
         if(k.notSymOff) return 0;
         var orig_data = cubeDatas[items];
         var agent = {...orig_data};
@@ -15,7 +20,7 @@ function logicFunc(){  // 逻辑建造工具
         return cubeDatas.push(agent);
     }
 
-    window.offsetopera = (items, distance, times = 0, axes = 'x', distance2, axes2, distance3, axes3) => {  // 偏移操作
+    globalThis.offsetopera = (items, distance, times = 0, axes = 'x', distance2, axes2, distance3, axes3) => {  // 偏移操作
         if(k.notSymOff) return 0;
         var orig_data = cubeDatas[items];
         var agent = {...orig_data};
@@ -41,7 +46,7 @@ function logicFunc(){  // 逻辑建造工具
         return cubeDatas.push(agent);
     }
     
-    window.symo = (items, axes = {}) => {  // 对称数组内的物体
+    globalThis.symo = (items, axes = {}) => {  // 对称数组内的物体
         const addInfo = [];
         for (const it of items) {
             if(it === -1) continue;
@@ -56,7 +61,7 @@ function logicFunc(){  // 逻辑建造工具
         return addInfo;
     }
     
-    window.offset = (items, distance, times, axes, distance2, axes2, distance3, axes3) => {  // 偏移数组内的物体
+    globalThis.offset = (items, distance, times, axes, distance2, axes2, distance3, axes3) => {  // 偏移数组内的物体
         const addInfo = [];
         for (let index = 1; index < times; index++) {  // 偏移
             for (const it of items) {
