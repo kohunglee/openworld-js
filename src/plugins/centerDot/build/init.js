@@ -117,7 +117,7 @@ export default function(ccgxkObj) {
 
     // 所有编辑框在按住 shift 的同时，增幅变为 1
     G.setInputsStep('0.1');
-    document.addEventListener('keydown', (event) => { if (event.key === 'Shift') { G.setInputsStep('1') } });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Shift') { G.setInputsStep('0.001') } });
     document.addEventListener('keyup', (event) => { if (event.key === 'Shift') { G.setInputsStep('0.1') } });
     window.addEventListener('blur', () => { G.setInputsStep('0.1') });  // 窗口失去焦点时，增幅变为 0.1
 

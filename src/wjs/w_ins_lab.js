@@ -31,10 +31,6 @@ const W = {
     W.drawTime = 0;         // 初始化 绘制 时间
     W.lastReportTime = 0;   // 时间戳临时变量（用于确定一秒）
 
-    // DOMMatrixReadOnly.prototype.toString = function(){  // 防止崩溃，检测到矩阵中有 NaN 或 Infinity → 自动替换为安全的单位矩阵字符串（ChatGPT）
-    //   return [...Object.values(this)].some(v=>!Number.isFinite(v)) ? 'matrix(1,0,0,1,0,0)' : DOMMatrix.prototype.toString.call(this);
-    // };
-
     var t;
     W.gl.shaderSource(
           // 默认顶点着色器
