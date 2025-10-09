@@ -64,8 +64,8 @@ export default {
     dToBase64 : function(drawItem) {  // 【之后优化】复用同一个 canvas 元素（清空并重绘），可以避免频繁创建和销毁 canvas 元素。
         if(drawItem.type === 'svg') {
             const svgString = drawItem.svgCode;
-            const safeSvgString = svgString.replace(/#/g, '%23');  // 对'#'进行编码，确保URL正确
-            return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(safeSvgString);
+            // const safeSvgString = svgString.replace(/#/g, '%23');  // 对'#'进行编码，确保URL正确
+            return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString);
         }
         const canvas = this.canvasObj;
         canvas.width = drawItem.width || 400;
