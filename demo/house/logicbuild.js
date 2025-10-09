@@ -73,3 +73,4 @@ function logicFunc(){  // 逻辑建造工具
         return addInfo;
     }
 }
+
