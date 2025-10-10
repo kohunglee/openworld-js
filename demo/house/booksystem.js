@@ -93,7 +93,7 @@ function bookSystem(){  // 书 系统
         return books;
     }
 
-
+    /**** ---- 【生成书的数据】 ------ */
 
     // 生成书
     shelfDefs.forEach(registerBookshelf);  // 按格 生成书的数据
@@ -115,10 +115,13 @@ function bookSystem(){  // 书 系统
         const firstBookIndex = D.book[key][0];
         cubeDatas[firstBookIndex] = {del : 1};
     }
-    cubeDatas[103] = {del : 1};  // 书架定位书
-    cubeDatas[102] = {del : 1};  // 辅助 svg 片片儿 定位 模型
+    cubeDatas[103] = {del : 1};  // 删除，书架定位书
+    cubeDatas[102] = {del : 1};  // 删除，辅助 svg 片片儿 定位 模型
+
+    /**** ---- 【根据数据，渲染书】 ------ */
 
     k.testInsData = bookDataIns;
+
     k.W.cube({  // 渲染实例化
         n: 'testIns001',
         instances: k.testInsData, // 实例属性的数组
@@ -130,25 +133,17 @@ function bookSystem(){  // 书 系统
 
     console.time('svg');
 
+    const svgClearVal = 1;  // 清晰度
     const pool = "憨狗天地玄黄宇宙洪荒日月盈AabcdeFGHIJ昃辰宿列张寒来暑往秋收冬藏";
     const poolLen = pool.length;
-    function randCN() {
+    const randCN = () => {  // 输出 1~8 位随机字符
         let len = (Math.random() * 5 | 0) + 4;
         let s = '';
         for (let i = 0; i < len; i++) s += pool[Math.random() * poolLen | 0];
         return s;
     }
 
-    // for (let i = 0; i < 681; i++) {  // PS 上层 681 个
-    //     if(bookDataIns[i]?.z === undefined){
-    //         continue;
-    //     }
-    //     const x = fix3(bookDataIns[i].z - (-23.116)) * 1000 ;
-    //     const y = fix3(bookDataIns[i].y - 2.898) * 1000;
-    //     myTextCode += `<text x="${(60 + x + 10) * svgClearVal}" y="${(170 - y  + 20) * svgClearVal}">${randCN()}</text>`;
-    // }
-
-    const svgTextCodeBuild = (x, y, w_z, w_y, data) => {
+    const svgTextCodeBuild = (x, y, w_z, w_y, data) => {  // 生成 SVG 里的文字代码
         let textCode = '';
         for (let i = 0; i < data.length; i++) {
             const x1 = fix3(data[i].z - w_z) * 1000 ;
@@ -158,8 +153,7 @@ function bookSystem(){  // 书 系统
         return textCode;
     }
 
-        const svgCodeMake = (width, height, textCode) => {
-
+    const svgCodeMake = (width, height, textCode) => {  // 生成 SVG 代码
             return svgTestCode = `
     <svg xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 ${width} ${height}"
@@ -185,10 +179,8 @@ function bookSystem(){  // 书 系统
         </g>
     </svg>
             `;
-
     }
 
-    const svgClearVal = 1;  // 清晰度
     const up_TextCode = svgTextCodeBuild(60, 170, -23.116, 2.898, bookDataIns.slice(0, 681));  // 上层 681 个
     const down_TextCode = svgTextCodeBuild(77, 282, -23.116, 1.853, bookDataIns.slice(681, bookDataIns.length));  // 下层 其余的
     const upSvg = svgCodeMake(7400 * svgClearVal, 940 * svgClearVal, up_TextCode);  // 上层的 SVG 数据
@@ -198,6 +190,7 @@ function bookSystem(){  // 书 系统
         { id:'upSvgPng', type: 'svg', svgCode: upSvg },
         { id:'downSvgPng', type: 'svg', svgCode: downSvg },
     ];
+
     k.loadTexture(textureAlp).then(loadedImage => {
         const upSvgPng = k.textureMap.get('upSvgPng');
         const downSvgPng = k.textureMap.get('downSvgPng');
@@ -215,19 +208,7 @@ function bookSystem(){  // 书 系统
             w: 7.4, h: 0.935, ry: -90,
             t: downSvgPng,
         });
-
-
-    })
-
-
-
-
-
-
-
-
-
-
+    });
 
     /**** ---------- */
     console.timeEnd('svg');
