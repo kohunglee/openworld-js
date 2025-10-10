@@ -6,7 +6,6 @@ export default {
     gridKeyCurrentTime : 0,  // 辅助更新 gridKey 的工具时间值
     updataBodylist : function(){
         this.dynaNodes_lab();  // 一帧计算区块一次
-
         for (const index of this.currentlyActiveIndices) {  // 暂时选择遍历吧，反正也显示不了几个，也兼容后续的 mass 改变
             const p_offset = index * 8;
             if(this.positionsStatus[p_offset + 7] > 0){  // 选择 状态码/mass 大于 0 的物体

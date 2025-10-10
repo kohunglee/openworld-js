@@ -29,9 +29,10 @@ export default {
                 X = 5, Y = 5, Z = 5,
                 quat = {x: 0, y: 0, z: 0, w: 1},
                 mass = 0, width = 1, depth = 1, height = 1, size = 1,
-                rX= 0, rY= 0, rZ= 0,
+                rX = 0, rY = 0, rZ = 0,
             } = {}){
         const myargs = Array.from(arguments)[0];  // 提取参数
+        myargs.deleteFunc = null;  // 删除（临时）时会执行的函数
         if(size !== 1){  // 处理体积大小
             width =  depth =  height = size;
         }
@@ -80,7 +81,7 @@ export default {
         shape: 'cube',
         isFictBody: false,    // 物理假体，视觉比真实物理体小一圈，用于颜色探测
         isInvisible: false,  // 在 webgl 留档但不渲染（实验，用于减少渲染压力）
-        other: null,
+        activeFunc: null,  // 激活时执行的函数
     },
 
     // 激活 TA 物体
@@ -162,12 +163,8 @@ export default {
                 shadow: args.isShadow,
                 hidden: args.isInvisible,
             });
-            if(args.other !== null){  // 添加其他属性
-                this.W[args.shape]({  // 渲染实例化
-                    n: 'T' + index,
-                    ...args.other,
-                });
-                console.log(args.other);
+            if(args.activeFunc !== null){  // 激活时执行的函数
+                args.activeFunc(index);
             }
             if(textureError){  // 纹理加载失败，尝试换上自定义纹理（id 还是原 id）
                 const expRatio = 40;  // 缩放比例
@@ -199,6 +196,9 @@ export default {
         }
         if(org_args.isVisualMode !== false){
             this.W.delete('T' + index);
+        }
+        if(org_args.deleteFunc !== null){  // 删除时执行的函数
+            org_args.deleteFunc(index);
         }
     },
 

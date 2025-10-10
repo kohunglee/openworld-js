@@ -6,6 +6,31 @@
 function dataProcess() {
 
     D = null;  // 释放内存（删去临时数据产生的内存）
+    function addInsLD (data, isHidden = false) {  // 添加方块的函数
+        if(data.del) {  // 【删除】标记，按照【空模型】处理
+            data = {
+                x: 999999999, y: 999999999, z: 999999999,
+                w: 0.001, d: 0.001, h: 0.001,
+            };
+        }
+        const result = {  // 添加一个立方体
+            x: data.x, y: data?.y||1, z: data.z,
+            w: data?.w || 1, d: data?.d || 1, h: data?.h || 1,
+            rx: data?.rx||0, ry:data?.ry||0, rz:data?.rz||0,
+        };
+        if(data?.b){
+            result.b = data.b;
+        }
+        if(data?.unIns){
+            result.unIns = data.unIns;
+        }
+        cubeInstances.push(result);
+        if(isHidden !== true){
+            k.visCubeLen = cubeIndex;  // 记录，有多少显示的，不过用处不大
+        }
+        isHiddenVis[cubeIndex] = isHidden;
+        return cubeIndex++;
+    }
 
     for (let index = 0; index < cubeDatas.length; index++) {  // 数据，填充我的容器
         addInsLD(cubeDatas[index]);
@@ -44,41 +69,17 @@ function dataProcess() {
             const args = k.indexToArgs.get(index);
             args.insColor = cubeInstances[index].b;
         }
-
         if(cubeInstances[index]?.unIns === 1){  // 不在实例化里显示（unIns），则剔除
             cubeInstances[index] = { x:999999999 }
         }
     }
+
     k.W.cube({  // 渲染实例化
         n: 'manyCubes',
         t: dls,  // 大理石
         instances: cubeInstances, // 实例属性的数组
         mix: 0.7,
     });
-    function addInsLD (data, isHidden = false) {  // 添加方块的函数
-        if(data.del) {  // 【删除】标记，按照【空模型】处理
-            data = {
-                x: 999999999, y: 999999999, z: 999999999,
-                w: 0.001, d: 0.001, h: 0.001,
-            };
-        }
-        const result = {  // 添加一个立方体
-            x: data.x, y: data?.y||1, z: data.z,
-            w: data?.w || 1, d: data?.d || 1, h: data?.h || 1,
-            rx: data?.rx||0, ry:data?.ry||0, rz:data?.rz||0,
-        };
-        if(data?.b){
-            result.b = data.b;
-        }
-        if(data?.unIns){
-            result.unIns = data.unIns;
-        }
-        cubeInstances.push(result);
-        if(isHidden !== true){
-            k.visCubeLen = cubeIndex;  // 记录，有多少显示的，不过用处不大
-        }
-        isHiddenVis[cubeIndex] = isHidden;
-        return cubeIndex++;
-    }
-    
+
+    cubeInstances = null;  // 释放内存
 }
