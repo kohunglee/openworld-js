@@ -14,7 +14,7 @@ function makeGroundMvp(){
         colliGroup: 1,
         tiling : 200,
         name: 'groundPlane', X: 0, Y: -0.5, Z: 0,
-        mass: 0, width: 2000, depth: 2000, height: 2,
+        mass: 0, width: 200, depth: 200, height: 2,
         texture: greenStoneborder, background: '#287A17', mixValue: 0.5,
     });
 
@@ -33,8 +33,10 @@ function makeGroundMvp(){
         background : '#333',
         texture: greenStone,
     });
-    k.centerDot.setCamView(2);  // 设置默认视角 类型2
-    k.WALK_SPEED = 1/80;  //+ 慢速度
+    if(k?.centerDot){
+        k.centerDot.setCamView(2);  // 设置默认视角 类型2
+    }
+
     k.SPRINT_MIN_SPEED = 5;
     k.SPRINT_MAX_SPEED = 15.5;
     const orig_jumpYVel = k.jumpYVel;
@@ -47,17 +49,25 @@ function makeGroundMvp(){
             const z = mvp.Z;
             if(x < 52.3 && x > 17.1 && z < -15.7 && z > -44.5) {
                 if(x < 50.5  && x > 19.1 &&
-                   z < -22.9 && z > -37.1){  // 在大厅
-                    k.jumpYVel = orig_jumpYVel;
+                   z < -24.9 && z > -35.5){  // 在大厅以及其他区域
+
+                    k.WALK_SPEED = 1/20;  //+ 走路使用快速度
+                    k.jumpYVel = orig_jumpYVel;  //+ 跳跃为原力度
                     k.JUMP_HOLD_LIMIT = orig_jumpHoldLimit;
                     k.world.gravity.set(0, -9.82, 0);
+
                 } else {  // 在图书区
-                    k.jumpYVel = 0.4;
+
+                    k.WALK_SPEED = 1/40;  //+ 走路使用慢速度
+                    k.jumpYVel = 0.8;  //+ 减弱跳跃力度
                     k.JUMP_HOLD_LIMIT = 0.5;
-                    k.world.gravity.set(0, -9.82/8, 0);
+                    k.world.gravity.set(0, -9.82/4, 0);
+
                 }
             } else {
-                k.jumpYVel = orig_jumpYVel;
+
+                k.WALK_SPEED = 1/20;  //+ 走路使用快速度
+                k.jumpYVel = orig_jumpYVel;  //+ 跳跃为原力度
                 k.JUMP_HOLD_LIMIT = orig_jumpHoldLimit;
                 k.world.gravity.set(0, -9.82, 0);
             }
