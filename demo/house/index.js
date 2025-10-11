@@ -8,6 +8,11 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     logicFunc();
     logicData();
     dataProcess();
+
+    /********/
     // bookSystem();
+    bookSysRegis();
+    /********/
+
     console.timeEnd('load');
 });
