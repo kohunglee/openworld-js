@@ -184,6 +184,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             if(dirc === 4){
                 flip = -1;
                 svgWidth = 0;
+                off = -130;
             }
             
             if(dirc === 1){
@@ -197,10 +198,6 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             for (let i = 0; i < data.length; i++) {
                 const x1 = fix3(data[i].z - w_z) * 1000;
                 const y1 = fix3(data[i].y - w_y) * 1000;
-                // console.log((svgWidth + (x + x1 + off) * flip));
-                console.log(svgWidth, x, data[i].z,  w_z, x1, off, flip);
-                // 7400 77 -43.03 -36.884 -6146 10 1
-                // console.log('------');
                 const result_x = (svgWidth + (x + x1 + off) * flip) * svgClearVal;
                 textCode += `<text x="${result_x}" y="${((y - y1  + 20)) * svgClearVal}">${i + randCN()}</text>`;
             }
@@ -244,13 +241,11 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             svgWidth: 7400
         });  
         const down_TextCode = svgTextCodeBuild({  // 下层 其余的，svg 字
-            x: 77, y: 282, w_z: baseZ, w_y: 1.853, data: k.bookDataIns.slice(681, k.bookDataIns.length),
+            x: 77, y: 282, w_z: baseZ + 0.018, w_y: 1.853, data: k.bookDataIns.slice(681, k.bookDataIns.length),
             svgWidth: 7400
         })
         const upSvg = svgCodeMake(7400 * svgClearVal, 940 * svgClearVal, up_TextCode);  // 上层的 SVG 数据
         const downSvg = svgCodeMake(7400 * svgClearVal, 935 * svgClearVal, down_TextCode);  // 下层的 SVG 数据
-
-        console.log(upSvg);
 
         const textureAlp = [
             { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
@@ -299,7 +294,6 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
     
 
     /**** ---- 【将 book 数据，写入 openworld 档案】 ------ */
-    // console.log(bookDataIns);
     for (let index = 0; index < bookDataIns.length; index++) {  // 为「实例」加上简单的物理引擎
         k.addTABox({
             DPZ : 5,
