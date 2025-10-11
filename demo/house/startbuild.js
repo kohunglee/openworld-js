@@ -18,13 +18,15 @@ function startBuild(){
     url.searchParams.set('id',cellpageid);
     history.pushState({}, '', url.toString());  // 将这个新的随机字符放置到地址栏
 
-    // 浏览器储存
-    if (!localStorage.getItem('ow_' + cellpageid)) {  // 初始化存储
-        localStorage.setItem('ow_' + cellpageid, JSON.stringify([]));
-        globalThis.cubeDatas = testcubedata;  // 使用我的本地测试数据
-    } else {
-        globalThis.cubeDatas = JSON.parse(localStorage.getItem('ow_' + cellpageid));
-    }
+    // // 浏览器储存
+    // if (!localStorage.getItem('ow_' + cellpageid)) {  // 初始化存储
+    //     localStorage.setItem('ow_' + cellpageid, JSON.stringify([]));
+    //     globalThis.cubeDatas = testcubedata;  // 使用我的本地测试数据
+    // } else {
+    //     globalThis.cubeDatas = JSON.parse(localStorage.getItem('ow_' + cellpageid));
+    // }
+
+    globalThis.cubeDatas = testcubedata;  // 使用我的本地测试数据
     // console.log(localStorage.getItem('ow_' + cellpageid));
     
     globalThis.totalCube = 1_0000;  // 计划的总方块数
