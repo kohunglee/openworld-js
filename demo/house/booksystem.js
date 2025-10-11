@@ -170,13 +170,41 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             return s;
         }
 
-        const svgTextCodeBuild = (x, y, w_z, w_y, data) => {  // 生成 SVG 里的文字代码
-            let textCode = '';
-            for (let i = 0; i < data.length; i++) {
-                const x1 = fix3(data[i].z - w_z) * 1000 ;
-                const y1 = fix3(data[i].y - w_y) * 1000;
-                textCode += `<text x="${(x + x1 + 10) * svgClearVal}" y="${(y - y1  + 20) * svgClearVal}">${randCN()}</text>`;
+        const svgTextCodeBuild = (param = {  // 生成 SVG 里的文字代码
+            x, y, w_z, w_y, data, svgWidth,
+        }) => {  // 生成 SVG 里的文字代码
+            let { x, y, w_z, w_y, data, svgWidth} = param;
+            let textCode = '', flip = 1, off = 10;
+
+            if(dirc === 2){  // 处理对称
+                flip = -1;
+                off = -5;
+            } 
+
+            if(dirc === 4){
+                flip = -1;
+                svgWidth = 0;
             }
+            
+            if(dirc === 1){
+                svgWidth = 0;
+            }
+
+            if(dirc === 3){
+                off = -115;
+            }
+
+            for (let i = 0; i < data.length; i++) {
+                const x1 = fix3(data[i].z - w_z) * 1000;
+                const y1 = fix3(data[i].y - w_y) * 1000;
+                // console.log((svgWidth + (x + x1 + off) * flip));
+                console.log(svgWidth, x, data[i].z,  w_z, x1, off, flip);
+                // 7400 77 -43.03 -36.884 -6146 10 1
+                // console.log('------');
+                const result_x = (svgWidth + (x + x1 + off) * flip) * svgClearVal;
+                textCode += `<text x="${result_x}" y="${((y - y1  + 20)) * svgClearVal}">${i + randCN()}</text>`;
+            }
+
             return textCode;
         }
 
@@ -208,33 +236,62 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                 `;
         }
 
-        const up_TextCode = svgTextCodeBuild(60, 170, -23.116, 2.898, k.bookDataIns.slice(0, 681));  // 上层 681 个
-        const down_TextCode = svgTextCodeBuild(77, 282, -23.116, 1.853, k.bookDataIns.slice(681, k.bookDataIns.length));  // 下层 其余的
+
+        const baseZ = (dirc === 3 || dirc === 4) ? -36.884 : -23.116;  // 基准 Z 值，定位 svg 文本
+
+        const up_TextCode = svgTextCodeBuild({  // 上层 681 个，svg 字
+            x: 60, y: 170, w_z: baseZ, w_y: 2.898, data: k.bookDataIns.slice(0, 681),
+            svgWidth: 7400
+        });  
+        const down_TextCode = svgTextCodeBuild({  // 下层 其余的，svg 字
+            x: 77, y: 282, w_z: baseZ, w_y: 1.853, data: k.bookDataIns.slice(681, k.bookDataIns.length),
+            svgWidth: 7400
+        })
         const upSvg = svgCodeMake(7400 * svgClearVal, 940 * svgClearVal, up_TextCode);  // 上层的 SVG 数据
         const downSvg = svgCodeMake(7400 * svgClearVal, 935 * svgClearVal, down_TextCode);  // 下层的 SVG 数据
 
+        console.log(upSvg);
+
         const textureAlp = [
-            { id:'upSvgPng', type: 'svg', svgCode: upSvg },
-            { id:'downSvgPng', type: 'svg', svgCode: downSvg },
+            { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
+            { id:'downSvgPng' + shelfID, type: 'svg', svgCode: downSvg },
         ];
 
         const shelfDefsX = cubeDatas[shelfID].x;
 
         k.loadTexture(textureAlp).then(loadedImage => {
-            const upSvgPng = k.textureMap.get('upSvgPng');
-            const downSvgPng = k.textureMap.get('downSvgPng');
+            const upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
+            const downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
+
+            let flip = 1;
+
+            if(dirc === 2){
+                flip = -1;
+            }
+
+            if(dirc === 4){
+                flip = -1;
+            }
+
+            // console.log(upSvgPng);
+
+            let currentZ = -19.478;
+            if(dirc === 3 || dirc === 4){
+                currentZ = -19.478 - (-19.478 - (-30)) * 2;  // 对称过来了
+            }
 
             k.W.plane({  // 上大书架
                 n: 'n010101',
-                x: shelfDefsX - 0.076, y: 2.681, z: -19.478,
-                w: 7.4, h: 0.94, ry: -90,
+                x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
+                w: 7.4, h: 0.94, 
+                ry: -90 * flip,
                 t: upSvgPng,
             });
 
             k.W.plane({  // 下小书架
                 n: 'n010102',
-                x: shelfDefsX - 0.377, y: 1.75, z: -19.497,
-                w: 7.4, h: 0.935, ry: -90,
+                x: shelfDefsX - 0.377 * flip, y: 1.75, z: currentZ,
+                w: 7.4, h: 0.935, ry: -90 * flip,
                 t: downSvgPng,
             });
         });
