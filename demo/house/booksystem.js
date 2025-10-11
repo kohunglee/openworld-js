@@ -6,8 +6,7 @@
  * @param {*} type 使用哪个规则生成 第一楼统一样式1、第二楼统一样式2
  */
 function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
-
-    console.time('book');
+    // console.time('book');
 
     k.bookContainer = {};    // 初始化 书 容器，临时储存 ID 使用
     k.bookDataInsTemp = [];      // 书的实例数据，会由 registerBookshelf 生成
@@ -15,13 +14,11 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
     let bookDataIns = k.bookShelfInsData.get(shelfID);  // 书的实例数据
 
     if(bookDataIns === undefined){  // 该书架没有 ins 数据，生成（先不考虑 svg）
-        console.log('no data '+ shelfID);
+        // console.log('no data '+ shelfID);
 
         // 生成书
         if(true){
             const shelfDefs = getshelfDefs(1, shelfID);  // 获取书架规则表
-            // shelfDefs.forEach(registerBookshelf);        // 按格 循环 生成书的数据
-            // 展开写法（性能更高，可调试更方便）
             for (let i = 0, len = shelfDefs.length; i < len; i++) {
                 const def = shelfDefs[i];
                 registerBookshelf(def, shelfID);
@@ -53,40 +50,63 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             }
         }
 
-    }
+        // （没有数据）SVG 生成
+        if(true){
+            const svgClearVal = 1;  // 清晰度
+            const baseZ = (dirc === 3 || dirc === 4) ? -36.884 : -23.116;  // 基准 Z 值，定位 svg 文本
+            const up_TextCode = svgTextCodeBuild({  // 上层 681 个，svg 字
+                x: 60, y: 170, w_z: baseZ, w_y: 2.898, data: bookDataIns.slice(0, 681),
+                svgWidth: 7400, svgClearVal: svgClearVal,
+            });  
+            const down_TextCode = svgTextCodeBuild({  // 下层 其余的，svg 字
+                x: 77, y: 282, w_z: baseZ + 0.018, w_y: 1.853, data: bookDataIns.slice(681, bookDataIns.length),
+                svgWidth: 7400, svgClearVal: svgClearVal,
+            })
+            const upSvg = svgCodeMake(7400 * svgClearVal, 940 * svgClearVal, up_TextCode, svgClearVal);      // 上层的 SVG 数据
+            const downSvg = svgCodeMake(7400 * svgClearVal, 935 * svgClearVal, down_TextCode, svgClearVal);  // 下层的 SVG 数据
 
-    // 渲染实例化
-    if(true){
-        k.W.cube({
-            n: 'booksInsDisplay' + shelfID,
-            instances: bookDataIns, // 实例属性的数组
-            t: greenStoneborder,
-            mix: 0.8,
-        });
-    }
+            // console.log(upSvg);
+            const textureAlp = [
+                { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
+                { id:'downSvgPng' + shelfID, type: 'svg', svgCode: downSvg },
+            ];
+            const shelfDefsX = cubeDatas[shelfID].x;
+            k.loadTexture(textureAlp).then(loadedImage => {
+                console.log('实时生成的 svg');
+                const upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
+                const downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
+                let flip = 1;
+                if(dirc === 2){
+                    flip = -1;
+                }
+                if(dirc === 4){
+                    flip = -1;
+                }
+                let currentZ = -19.478;
+                if(dirc === 3 || dirc === 4){
+                    currentZ = -19.478 - (-19.478 - (-30)) * 2;  // 对称过来了
+                }
+                k.W.plane({  // 上大书架
+                    n: 'bookupsvg' + shelfID,
+                    x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
+                    w: 7.4, h: 0.94, 
+                    ry: -90 * flip,
+                    t: upSvgPng,
+                });
+                k.W.plane({  // 下小书架
+                    n: 'bookdnsvg' + shelfID,
+                    x: shelfDefsX - 0.377 * flip, y: 1.75, z: currentZ,
+                    w: 7.4, h: 0.935, ry: -90 * flip,
+                    t: downSvgPng,
+                });
+            });
+        }
+    } else {  // 有数据模式
 
-    // （没有）SVG 生成
-    if(true){
-        const svgClearVal = 1;  // 清晰度
-        const baseZ = (dirc === 3 || dirc === 4) ? -36.884 : -23.116;  // 基准 Z 值，定位 svg 文本
-        const up_TextCode = svgTextCodeBuild({  // 上层 681 个，svg 字
-            x: 60, y: 170, w_z: baseZ, w_y: 2.898, data: bookDataIns.slice(0, 681),
-            svgWidth: 7400, svgClearVal: svgClearVal,
-        });  
-        const down_TextCode = svgTextCodeBuild({  // 下层 其余的，svg 字
-            x: 77, y: 282, w_z: baseZ + 0.018, w_y: 1.853, data: bookDataIns.slice(681, bookDataIns.length),
-            svgWidth: 7400, svgClearVal: svgClearVal,
-        })
-        const upSvg = svgCodeMake(7400 * svgClearVal, 940 * svgClearVal, up_TextCode, svgClearVal);      // 上层的 SVG 数据
-        const downSvg = svgCodeMake(7400 * svgClearVal, 935 * svgClearVal, down_TextCode, svgClearVal);  // 下层的 SVG 数据
-
-        // console.log(upSvg);
-        const textureAlp = [
-            { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
-            { id:'downSvgPng' + shelfID, type: 'svg', svgCode: downSvg },
-        ];
-        const shelfDefsX = cubeDatas[shelfID].x;
-        k.loadTexture(textureAlp).then(loadedImage => {
+        // （有数据）svg 展示
+        if(true){
+            console.log('现成的 svg');
+            const shelfDefsX = cubeDatas[shelfID].x;
             const upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
             const downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
             let flip = 1;
@@ -113,16 +133,28 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                 w: 7.4, h: 0.935, ry: -90 * flip,
                 t: downSvgPng,
             });
+        }
+    }
+
+    // 渲染实例化
+    if(true){
+        k.W.cube({
+            n: 'booksInsDisplay' + shelfID,
+            instances: bookDataIns, // 实例属性的数组
+            t: greenStoneborder,
+            mix: 0.8,
         });
     }
 
-    console.timeEnd('book');
+    // console.timeEnd('book');
 }
 
 
 // 当主角走远后，临时卸载书架内容
 function removeBookShelf(shelfID){
     k.W.delete('booksInsDisplay' + shelfID);
+    k.W.delete('bookupsvg' + shelfID);
+    k.W.delete('bookdnsvg' + shelfID);
 }
 
 // 为每本书都注册一下渲染和显示事件
