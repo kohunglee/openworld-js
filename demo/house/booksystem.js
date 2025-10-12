@@ -50,67 +50,19 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
         }
 
         // k.myRestDoFunc.add(()=>{console.log('生成svg，函数', shelfID)});
+    }
 
-        // （没有数据）SVG 生成
-        if(true){
-            const svgClearVal = 1;  // 清晰度
-            const baseZ = (dirc === 3 || dirc === 4) ? -36.884 : -23.116;  // 基准 Z 值，定位 svg 文本
-            const up_TextCode = svgTextCodeBuild({  // 上层 681 个，svg 字
-                x: 60, y: 170, w_z: baseZ, w_y: 2.898, data: bookDataIns.slice(0, 681),
-                svgWidth: 7400, svgClearVal: svgClearVal,
-            });  
-            const down_TextCode = svgTextCodeBuild({  // 下层 其余的，svg 字
-                x: 77, y: 282, w_z: baseZ + 0.018, w_y: 1.853, data: bookDataIns.slice(681, bookDataIns.length),
-                svgWidth: 7400, svgClearVal: svgClearVal,
-            })
-            const upSvg = svgCodeMake(7400 * svgClearVal, 940 * svgClearVal, up_TextCode, svgClearVal);      // 上层的 SVG 数据
-            const downSvg = svgCodeMake(7400 * svgClearVal, 935 * svgClearVal, down_TextCode, svgClearVal);  // 下层的 SVG 数据
-            // console.log(upSvg);
-            const textureAlp = [
-                { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
-                { id:'downSvgPng' + shelfID, type: 'svg', svgCode: downSvg },
-            ];
-            const shelfDefsX = cubeDatas[shelfID].x;
-            k.myRestDoFunc.add(()=>{
-                k.loadTexture(textureAlp).then(loadedImage => {
-                    console.log('实时生成的 svg ' + shelfID);
-                    const upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
-                    const downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
-                    let flip = 1;
-                    if(dirc === 2){ flip = -1 }
-                    if(dirc === 4){ flip = -1 }
-                    let currentZ = -19.478;
-                    if(dirc === 3 || dirc === 4){ currentZ = -19.478 - (-19.478 - (-30)) * 2 }  // 对称过来了 
-                    k.W.plane({  // 上大书架
-                        n: 'bookupsvg' + shelfID,
-                        x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
-                        w: 7.4, h: 0.94, 
-                        ry: -90 * flip,
-                        t: upSvgPng,
-                    });
-                    k.W.plane({  // 下小书架
-                        n: 'bookdnsvg' + shelfID,
-                        x: shelfDefsX - 0.377 * flip, y: 1.75, z: currentZ,
-                        w: 7.4, h: 0.935, ry: -90 * flip,
-                        t: downSvgPng,
-                    });
-                });
-            });
-            
-        }
-    } else {  // 有数据模式
-
-        // （已经有数据了）svg 展示
-        if(true){
-            // console.log('现成的 svg');
-            const shelfDefsX = cubeDatas[shelfID].x;
-            const upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
-            const downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
-            let flip = 1;
-            if(dirc === 2){ flip = -1 }
-            if(dirc === 4){ flip = -1 }
-            let currentZ = -19.478;
-            if(dirc === 3 || dirc === 4){ currentZ = -19.478 - (-19.478 - (-30)) * 2 }  // 对称过来了 
+    // svg 内容
+    if(true){
+        let flip = 1;  //+ 几行兼容不同朝向的数据
+        if(dirc === 2){ flip = -1 }
+        if(dirc === 4){ flip = -1 }
+        let currentZ = -19.478;
+        if(dirc === 3 || dirc === 4){ currentZ = -19.478 - (-19.478 - (-30)) * 2 }  // 对称过来了 
+        const shelfDefsX = cubeDatas[shelfID].x;
+        const upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
+        const downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
+        if(upSvgPng && downSvgPng){  // 有数据，直接上 webgl
             k.W.plane({  // 上大书架
                 n: 'bookupsvg' + shelfID,
                 x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
@@ -124,8 +76,48 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                 w: 7.4, h: 0.935, ry: -90 * flip,
                 t: downSvgPng,
             });
+        } else {  // 没有数据，生成和渲染 svg
+            const svgClearVal = 1;  // 清晰度
+            const baseZ = (dirc === 3 || dirc === 4) ? -36.884 : -23.116;  // 基准 Z 值，定位 svg 文本
+            const up_TextCode = svgTextCodeBuild({  // 上层 681 个，svg 字
+                x: 60, y: 170, w_z: baseZ, w_y: 2.898, data: bookDataIns.slice(0, 681),
+                svgWidth: 7400, svgClearVal: svgClearVal,
+            });  
+            const down_TextCode = svgTextCodeBuild({  // 下层 其余的，svg 字
+                x: 77, y: 282, w_z: baseZ + 0.018, w_y: 1.853, data: bookDataIns.slice(681, bookDataIns.length),
+                svgWidth: 7400, svgClearVal: svgClearVal,
+            })
+            const upSvg = svgCodeMake(7400 * svgClearVal, 940 * svgClearVal, up_TextCode, svgClearVal);      // 上层的 SVG 数据
+            const downSvg = svgCodeMake(7400 * svgClearVal, 935 * svgClearVal, down_TextCode, svgClearVal);  // 下层的 SVG 数据
+            const textureAlp = [
+                { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
+                { id:'downSvgPng' + shelfID, type: 'svg', svgCode: downSvg },
+            ];
+            k.myRestDoFunc.add(()=>{
+                k.loadTexture(textureAlp).then(loadedImage => {
+                    console.log('实时生成的 svg ' + shelfID);
+                    const upSvgPng_live = k.textureMap.get('upSvgPng' + shelfID);
+                    const downSvgPng_live = k.textureMap.get('downSvgPng' + shelfID);
+                    k.W.plane({  // 上大书架
+                        n: 'bookupsvg' + shelfID,
+                        x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
+                        w: 7.4, h: 0.94, 
+                        ry: -90 * flip,
+                        t: upSvgPng_live,
+                    });
+                    k.W.plane({  // 下小书架
+                        n: 'bookdnsvg' + shelfID,
+                        x: shelfDefsX - 0.377 * flip, y: 1.75, z: currentZ,
+                        w: 7.4, h: 0.935, ry: -90 * flip,
+                        t: downSvgPng_live,
+                    });
+                });
+            });
         }
     }
+
+    const upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
+    const downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
 
     // 渲染实例化
     if(true){
