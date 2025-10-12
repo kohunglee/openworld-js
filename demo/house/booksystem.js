@@ -71,30 +71,32 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                 { id:'downSvgPng' + shelfID, type: 'svg', svgCode: downSvg },
             ];
             const shelfDefsX = cubeDatas[shelfID].x;
-            k.myRestDoFunc.add(()=>{console.log('生成svg，函数', shelfID)});
-            k.loadTexture(textureAlp).then(loadedImage => {
-                // console.log('实时生成的 svg');
-                const upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
-                const downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
-                let flip = 1;
-                if(dirc === 2){ flip = -1 }
-                if(dirc === 4){ flip = -1 }
-                let currentZ = -19.478;
-                if(dirc === 3 || dirc === 4){ currentZ = -19.478 - (-19.478 - (-30)) * 2 }  // 对称过来了 
-                k.W.plane({  // 上大书架
-                    n: 'bookupsvg' + shelfID,
-                    x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
-                    w: 7.4, h: 0.94, 
-                    ry: -90 * flip,
-                    t: upSvgPng,
-                });
-                k.W.plane({  // 下小书架
-                    n: 'bookdnsvg' + shelfID,
-                    x: shelfDefsX - 0.377 * flip, y: 1.75, z: currentZ,
-                    w: 7.4, h: 0.935, ry: -90 * flip,
-                    t: downSvgPng,
+            k.myRestDoFunc.add(()=>{
+                k.loadTexture(textureAlp).then(loadedImage => {
+                    console.log('实时生成的 svg ' + shelfID);
+                    const upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
+                    const downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
+                    let flip = 1;
+                    if(dirc === 2){ flip = -1 }
+                    if(dirc === 4){ flip = -1 }
+                    let currentZ = -19.478;
+                    if(dirc === 3 || dirc === 4){ currentZ = -19.478 - (-19.478 - (-30)) * 2 }  // 对称过来了 
+                    k.W.plane({  // 上大书架
+                        n: 'bookupsvg' + shelfID,
+                        x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
+                        w: 7.4, h: 0.94, 
+                        ry: -90 * flip,
+                        t: upSvgPng,
+                    });
+                    k.W.plane({  // 下小书架
+                        n: 'bookdnsvg' + shelfID,
+                        x: shelfDefsX - 0.377 * flip, y: 1.75, z: currentZ,
+                        w: 7.4, h: 0.935, ry: -90 * flip,
+                        t: downSvgPng,
+                    });
                 });
             });
+            
         }
     } else {  // 有数据模式
 
