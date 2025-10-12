@@ -44,7 +44,8 @@ function makeGroundMvp(){
     const mvp = k.mainVPlayer;
     const mvpBody = k.mainVPlayer;
     const mp = k.mainVPlayer.body.position;
-    let Last_mvpBodyPos = (mp.x + mp.y + mp.z).toFixed(2);  // 用于判断主角是否停下脚步的辅助
+    const mk = k.keys;
+    let Last_mvpBodyPos = (mp.x + mp.y + mp.z + mk.turnRight).toFixed(2);  // 用于判断主角是否停下脚步的辅助
     k.myRestDoFunc = dofunc();  // 静止时要执行的函数队列
     setInterval(  // 动态调整人物的跳跃、地心引力等，每秒走一遍
         () => {
@@ -95,10 +96,10 @@ function makeGroundMvp(){
 
             // 在人物运动、静止时执行的函数
             if(true){
-                if((mp.x + mp.y + mp.z).toFixed(2) === Last_mvpBodyPos) {  // 人物处于静止状态
+                if((mp.x + mp.y + mp.z + mk.turnRight).toFixed(2) === Last_mvpBodyPos) {  // 人物处于静止状态
                     k.myRestDoFunc();
                 } else {  // 人物处于运动状态
-                    Last_mvpBodyPos = (mp.x + mp.y + mp.z).toFixed(2);
+                    Last_mvpBodyPos = (mp.x + mp.y + mp.z + mk.turnRight).toFixed(2);
                 }
             }
             

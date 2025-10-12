@@ -129,9 +129,6 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
         }
     }
 
-    const upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
-    const downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
-
     // 渲染实例化
     if(true){
         k.W.cube({
@@ -325,16 +322,18 @@ function svgCodeMake(width, height, textCode, svgClearVal = 1) {
         <g font-family=" 'Noto Sans SC', 'PingFang SC', 'Microsoft Yahei', 'Heiti SC', 'Source Han Sans SC', sans-serif "
             font-size="${15 * svgClearVal}"
             fill="#000000ff"
+            stroke="#000"
+            stroke-width="${0.7 * svgClearVal}"
+            paint-order="stroke"
             writing-mode="vertical-rl"
             text-orientation="upright"
             text-anchor="start"
             dominant-baseline="hanging">
-
-            <text x="60" y="170">水调歌头</text>
+        <text x="60" y="170">水调歌头</text>
             ${textCode}
         </g>
     </svg>
-    `;
+    `;  // PS：stroke 颜色，后期也可以研究一下，有用
     }
 
 // 整格书 生成 注册函数
