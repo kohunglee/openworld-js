@@ -12,6 +12,8 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
     k.bookDataInsTemp = [];      // 书的实例数据，会由 registerBookshelf 生成
     k.currBookDirc = dirc;   // 保存当前方向
     let bookDataIns = k.bookShelfInsData.get(shelfID);  // 书的实例数据
+    const mvpPos = k.mainVPlayer.body.position;
+    const shelfInfo = cubeDatas[shelfID];
 
     if(bookDataIns === undefined){  // 该书架没有 ins 数据，生成（先不考虑 svg）
 
@@ -48,8 +50,6 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                 });
             }
         }
-
-        // k.myRestDoFunc.add(()=>{console.log('生成svg，函数', shelfID)});
     }
 
     // svg 内容
@@ -93,9 +93,14 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                 { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
                 { id:'downSvgPng' + shelfID, type: 'svg', svgCode: downSvg },
             ];
-            k.myRestDoFunc.add(()=>{
+
+            // const xyDistence = dist2D(mvpPos.x, mvpPos.z, shelfInfo.x, shelfInfo.z);  // 人物与书架的 xy 距离
+            // if(xyDistence > 5){ return 0}
+            // console.log(xyDistence);
+            const renderSvg = () => {  // 挂载到【任务队列模式】的内容，人物静止时执行
+                
                 k.loadTexture(textureAlp).then(loadedImage => {
-                    console.log('实时生成的 svg ' + shelfID);
+                    // console.log('实时生成的 svg ' + shelfID);
                     const upSvgPng_live = k.textureMap.get('upSvgPng' + shelfID);
                     const downSvgPng_live = k.textureMap.get('downSvgPng' + shelfID);
                     k.W.plane({  // 上大书架
@@ -112,7 +117,9 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                         t: downSvgPng_live,
                     });
                 });
-            });
+            }
+
+            k.myRestDoFunc.add(renderSvg);
         }
     }
 
@@ -396,3 +403,10 @@ function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal 
     }
     return texts.join('');
 };
+
+// 计算 2 维距离
+function dist2D(x1, y1, x2, y2) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  return Math.sqrt(dx * dx + dy * dy);
+}
