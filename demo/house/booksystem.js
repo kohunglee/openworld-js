@@ -150,7 +150,7 @@ function removeBookShelf(shelfID){
 
 // 为每本书都注册一下渲染和显示事件
 function bookSysRegis(){
-    k.bookShelfInsData = new Map();  // 初始化 book 实例化数据表，储存已经计算好的实例数据，也用于判断该书架有没有被初始化过
+    k.bookShelfInsData = new Map();  // 初始化 book 实例化数据表，储存已经计算好的实例数据
 
     let arr;
 
@@ -199,7 +199,7 @@ function bookSysRegis(){
     }
 }
 
-/**** -----[ 下面都是函数或变量库了...... 不要太去管了啊啊 ]----- */
+/**** -----[ 下面都是函数或变量库了...... 不要太去管了啊啊 ]----------------------------------------------------------------- */
 
 function getshelfDefs(type, id){  // 获取规则
     const shelfID = id;

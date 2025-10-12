@@ -48,6 +48,7 @@ function makeGroundMvp(){
     k.myRestDoFunc = dofunc();  // 静止时要执行的函数队列
     setInterval(  // 动态调整人物的跳跃、地心引力等，每秒走一遍
         () => {
+            if(k.W.lastReportTime < 2000){ return 0 }  // 项目启动前 2s 不运行，防止看起来卡顿
 
             // 不同区域的跳跃和速度不一样的实现逻辑
             if(true){
