@@ -175,6 +175,51 @@ function bookSysRegis(){
 
     /** ----【开始试验第二层】----- */
     // bookSystem(104, 1, 2);
+    console.log(k.bookS.floor2);
+    let arr;
+    arr = k.bookS.floor2.dire1; // 朝向为 1
+    for (let i = 0, n = arr.length; i < n; i++) {
+        const v = arr[i];
+        k.indexToArgs.get(v).activeFunc = (i)=>{
+            bookSystem(v, 1, 2); 
+        } 
+        k.indexToArgs.get(v).deleteFunc = (i)=>{
+            removeBookShelf(v); 
+        } 
+    }
+
+    arr = k.bookS.floor2.dire2; // 朝向为 2
+    for (let i = 0, n = arr.length; i < n; i++) {
+        const v = arr[i];
+        k.indexToArgs.get(v).activeFunc = (i)=>{
+            bookSystem(v, 2, 2); 
+        } 
+        k.indexToArgs.get(v).deleteFunc = (i)=>{
+            removeBookShelf(v); 
+        } 
+    }
+
+    arr = k.bookS.floor2.dire3; // 朝向为 3
+    for (let i = 0, n = arr.length; i < n; i++) {
+        const v = arr[i];
+        k.indexToArgs.get(v).activeFunc = (i)=>{
+            bookSystem(v, 3, 2); 
+        } 
+        k.indexToArgs.get(v).deleteFunc = (i)=>{
+            removeBookShelf(v); 
+        } 
+    }
+
+    arr = k.bookS.floor2.dire4; // 朝向为 4
+    for (let i = 0, n = arr.length; i < n; i++) {
+        const v = arr[i];
+        k.indexToArgs.get(v).activeFunc = (i)=>{
+            bookSystem(v, 4, 2); 
+        } 
+        k.indexToArgs.get(v).deleteFunc = (i)=>{
+            removeBookShelf(v); 
+        } 
+    }
 
 
 }
