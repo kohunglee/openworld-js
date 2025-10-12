@@ -153,52 +153,23 @@ function removeBookShelf(shelfID){
 // 为每本书都注册一下渲染和显示事件
 function bookSysRegis(){
     k.bookShelfInsData = new Map();  // 初始化 book 实例化数据表，储存已经计算好的实例数据
+    
+    const floor = k.bookS.floor1;
 
-    let arr;
+    const get = k.indexToArgs.get.bind(k.indexToArgs);
+    function makeActive(v, dir){ bookSystem(v, dir); }  //+ 激活和释放函数
+    function makeDelete(v){ removeBookShelf(v); }
 
-    arr = [103, 184, 262, 340, 418, 496];  // 朝向为 1
-    for (let i = 0, n = arr.length; i < n; i++) {
-        const v = arr[i];
-        k.indexToArgs.get(v).activeFunc = (i)=>{  // 激活函数
-            bookSystem(v, 1);
-        }
-        k.indexToArgs.get(v).deleteFunc = (i)=>{  // 删除函数
-            removeBookShelf(v);
+    for (let dir = 1; dir <= 4; dir++) {  // 遍历 4 个方向
+        const arr = floor[`dire${dir}`];
+        for (let i = 0, n = arr.length; i < n; i++) {  // 遍历每个方向的数组
+            const v = arr[i];  // 当前的元素 index
+            const o = get(v);  // 当前的元素属性
+            o.activeFunc = makeActive.bind(null, v, dir);
+            o.deleteFunc = makeDelete.bind(null, v);
         }
     }
 
-    arr = [130, 157, 235, 313, 391, 469];  // 朝向为 2
-    for (let i = 0, n = arr.length; i < n; i++) {
-        const v = arr[i];
-        k.indexToArgs.get(v).activeFunc = (i)=>{  // 激活函数
-            bookSystem(v, 2);
-        }
-        k.indexToArgs.get(v).deleteFunc = (i)=>{  // 删除函数
-            removeBookShelf(v);
-        }
-    }
-
-    arr = [891, 813, 735, 657, 579, 969];  // 朝向为 3
-    for (let i = 0, n = arr.length; i < n; i++) {
-        const v = arr[i];
-        k.indexToArgs.get(v).activeFunc = (i)=>{  // 激活函数
-            bookSystem(v, 3);
-        }
-        k.indexToArgs.get(v).deleteFunc = (i)=>{  // 删除函数
-            removeBookShelf(v);
-        }
-    }
-
-    arr = [942, 552, 630, 708, 786, 864];  // 朝向为 4
-    for (let i = 0, n = arr.length; i < n; i++) {
-        const v = arr[i];
-        k.indexToArgs.get(v).activeFunc = (i)=>{  // 激活函数
-            bookSystem(v, 4);
-        }
-        k.indexToArgs.get(v).deleteFunc = (i)=>{  // 删除函数
-            removeBookShelf(v);
-        }
-    }
 }
 
 /**** -----[ 下面都是函数或变量库了...... 不要太去管了啊啊 ]----------------------------------------------------------------- */
@@ -372,7 +343,7 @@ function registerBookshelf({ id, ref, off, maxlen = 1.05, count = 30}, currentSh
     k.bookDataInsTemp.push({del:1}); // 方便检索数据，按书格添加 del
 }
 
-const pool = "憨狗天地玄黄宇宙洪荒月盈昃辰宿列张寒来暑往秋收冬藏";
+const pool = "憨狗担友号显却监材且春居适除红半买充陈火搞";
 const poolLen = pool.length;
 const randCN = () => {  // 输出 1~8 位随机字符
     let len = (Math.random() * 5 | 0) + 4;

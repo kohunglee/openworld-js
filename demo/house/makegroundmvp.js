@@ -103,7 +103,6 @@ function makeGroundMvp(){
                     Last_mvpBodyPos = (mp.x + mp.y + mp.z + mk.turnRight).toFixed(2);
                 }
             }
-            
         }
     , 100);
 }
@@ -116,7 +115,7 @@ function makeGroundMvp(){
  * 主要用于在人物静止时加载 svg ，防止画面卡帧、卡顿
  * @param interval {number} 间隔时间，默认100ms
  */
-function dofunc(interval = 100) {
+function dofunc(interval = 10) {
   let q = [], timer = null;
 
   function run() {
