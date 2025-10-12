@@ -94,13 +94,19 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                 { id:'downSvgPng' + shelfID, type: 'svg', svgCode: downSvg },
             ];
 
-            // const xyDistence = dist2D(mvpPos.x, mvpPos.z, shelfInfo.x, shelfInfo.z);  // 人物与书架的 xy 距离
-            // if(xyDistence > 5){ return 0}
-            // console.log(xyDistence);
             const renderSvg = () => {  // 挂载到【任务队列模式】的内容，人物静止时执行
-                
+
+                const xzDistence = dist2D(mvpPos.x, mvpPos.z, shelfInfo.x, shelfInfo.z);  // 人物与书架的 xy 距离
+                const yDistence = Math.abs(mvpPos.y - shelfInfo.y);
+
+                if(xzDistence > 4.5 || yDistence > 1.5){  // 距离过远，不渲染
+                    k.myRestDoFunc.add(renderSvg);
+                    return 0
+                }
+
+                console.log('svg ' + shelfID +'  '+ xzDistence.toFixed(2));
+
                 k.loadTexture(textureAlp).then(loadedImage => {
-                    // console.log('实时生成的 svg ' + shelfID);
                     const upSvgPng_live = k.textureMap.get('upSvgPng' + shelfID);
                     const downSvgPng_live = k.textureMap.get('downSvgPng' + shelfID);
                     k.W.plane({  // 上大书架
@@ -119,7 +125,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                 });
             }
 
-            k.myRestDoFunc.add(renderSvg);
+            k.myRestDoFunc.add(renderSvg);  // 挂载到【任务队列模式】
         }
     }
 
