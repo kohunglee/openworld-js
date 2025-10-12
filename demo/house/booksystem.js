@@ -14,7 +14,6 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
     let bookDataIns = k.bookShelfInsData.get(shelfID);  // 书的实例数据
 
     if(bookDataIns === undefined){  // 该书架没有 ins 数据，生成（先不考虑 svg）
-        // console.log('no data '+ shelfID);
 
         // 生成书
         if(true){
@@ -25,7 +24,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             }
             k.bookShelfInsData.set(shelfID, k.bookDataInsTemp);  // 保存数据，也意味着以后不用再生成了，可以在主函数里判断了
             bookDataIns = k.bookShelfInsData.get(shelfID);
-            k.bookDataInsTemp = [];  // 清空
+            k.bookDataInsTemp = [];  //+ 清空临时数据
             k.bookContainer = null;
         }
 
@@ -50,6 +49,8 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             }
         }
 
+        // k.myRestDoFunc.add(()=>{console.log('生成svg，函数', shelfID)});
+
         // （没有数据）SVG 生成
         if(true){
             const svgClearVal = 1;  // 清晰度
@@ -64,28 +65,22 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             })
             const upSvg = svgCodeMake(7400 * svgClearVal, 940 * svgClearVal, up_TextCode, svgClearVal);      // 上层的 SVG 数据
             const downSvg = svgCodeMake(7400 * svgClearVal, 935 * svgClearVal, down_TextCode, svgClearVal);  // 下层的 SVG 数据
-
             // console.log(upSvg);
             const textureAlp = [
                 { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
                 { id:'downSvgPng' + shelfID, type: 'svg', svgCode: downSvg },
             ];
             const shelfDefsX = cubeDatas[shelfID].x;
+            k.myRestDoFunc.add(()=>{console.log('生成svg，函数', shelfID)});
             k.loadTexture(textureAlp).then(loadedImage => {
-                console.log('实时生成的 svg');
+                // console.log('实时生成的 svg');
                 const upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
                 const downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
                 let flip = 1;
-                if(dirc === 2){
-                    flip = -1;
-                }
-                if(dirc === 4){
-                    flip = -1;
-                }
+                if(dirc === 2){ flip = -1 }
+                if(dirc === 4){ flip = -1 }
                 let currentZ = -19.478;
-                if(dirc === 3 || dirc === 4){
-                    currentZ = -19.478 - (-19.478 - (-30)) * 2;  // 对称过来了
-                }
+                if(dirc === 3 || dirc === 4){ currentZ = -19.478 - (-19.478 - (-30)) * 2 }  // 对称过来了 
                 k.W.plane({  // 上大书架
                     n: 'bookupsvg' + shelfID,
                     x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
@@ -103,23 +98,17 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
         }
     } else {  // 有数据模式
 
-        // （有数据）svg 展示
+        // （已经有数据了）svg 展示
         if(true){
-            console.log('现成的 svg');
+            // console.log('现成的 svg');
             const shelfDefsX = cubeDatas[shelfID].x;
             const upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
             const downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
             let flip = 1;
-            if(dirc === 2){
-                flip = -1;
-            }
-            if(dirc === 4){
-                flip = -1;
-            }
+            if(dirc === 2){ flip = -1 }
+            if(dirc === 4){ flip = -1 }
             let currentZ = -19.478;
-            if(dirc === 3 || dirc === 4){
-                currentZ = -19.478 - (-19.478 - (-30)) * 2;  // 对称过来了
-            }
+            if(dirc === 3 || dirc === 4){ currentZ = -19.478 - (-19.478 - (-30)) * 2 }  // 对称过来了 
             k.W.plane({  // 上大书架
                 n: 'bookupsvg' + shelfID,
                 x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
@@ -208,92 +197,9 @@ function bookSysRegis(){
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**** -----[ 下面都是函数或变量库了...... 不要太去管了啊啊 ]----- */
 
-function getshelfDefs(type, id){
+function getshelfDefs(type, id){  // 获取规则
     const shelfID = id;
     if(type === 1){
         return [  // 规则 ①，一楼书架
@@ -460,7 +366,7 @@ function registerBookshelf({ id, ref, off, maxlen = 1.05, count = 30}, currentSh
     k.bookDataInsTemp.push({del:1}); // 方便检索数据，按书格添加 del
 }
 
-const pool = "憨狗天地玄黄宇宙洪荒日月盈AabcdeFGHIJ昃辰宿列张寒来暑往秋收冬藏";
+const pool = "憨狗天地玄黄宇宙洪荒月盈昃辰宿列张寒来暑往秋收冬藏";
 const poolLen = pool.length;
 const randCN = () => {  // 输出 1~8 位随机字符
     let len = (Math.random() * 5 | 0) + 4;
@@ -492,7 +398,7 @@ function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal 
         const x1 = fix3(data[i].z - w_z) * 1000;
         const y1 = fix3(data[i].y - w_y) * 1000;
         const result_x = (svgWidth + (x + x1 + off) * flip) * svgClearVal;
-        texts[i] = `<text x="${result_x}" y="${((y - y1 + 20)) * svgClearVal}">${i + randCN()}</text>`;
+        texts[i] = `<text x="${result_x}" y="${((y - y1 + 20)) * svgClearVal}">${randCN() + ' ' + i}</text>`;
     }
     return texts.join('');
 };
