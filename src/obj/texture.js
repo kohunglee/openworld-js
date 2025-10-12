@@ -43,6 +43,8 @@ export default {
                     const svgBlob = new Blob([drawItem.svgCode], { type: 'image/svg+xml' });
                     svgImage.src = URL.createObjectURL(svgBlob);
                 } else {
+
+
                     const img = new Image();
                     img.onload = () => {
                         this.textureMap.set(drawItem.id, img);
@@ -50,7 +52,8 @@ export default {
                         resolve(img);
                     }
                     img.id = drawItem.id + '-' + this.loadTextureIndex;
-                    img.src = this.dToBase64(drawItem);
+                    img.src = this.dToBase64(drawItem);   //  <------  目前怀疑是这里
+
                 }
             });
             texturePromises.push(promise);
@@ -64,7 +67,8 @@ export default {
     dToBase64 : function(drawItem) {  // 【之后优化】复用同一个 canvas 元素（清空并重绘），可以避免频繁创建和销毁 canvas 元素。
         if(drawItem.type === 'svg') {
             const svgString = drawItem.svgCode;
-            return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString);
+            const pngBase64 = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString);
+            return pngBase64;
         }
         const canvas = this.canvasObj;
         canvas.width = drawItem.width || 400;
@@ -89,3 +93,54 @@ export default {
         _this.hooks.emitSync('errorTexture_diy', ctx, width, height, drawItem, _this);  // 钩子：'自定义错误纹理' (后续再修改值，记得清除 textureMap)
     },
 };
+
+
+
+/*
+
+
+------------ texture.js:63:29
+img set src：2 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 7 texture.js:61:29
+帧间隔 5 texture.js:61:29
+img set src：1 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：1 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 152 2 texture.js:61:29
+img set src：2 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：0 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 14 2 texture.js:61:29
+img set src：2 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：1 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 5 2 texture.js:61:29
+img set src：3 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：0 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 147 2 texture.js:61:29
+img set src：2 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：0 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 10 2 texture.js:61:29
+img set src：2 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：1 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 15 texture.js:61:29
+帧间隔 14 texture.js:61:29
+img set src：1 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：1 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 158 texture.js:61:29
+
+
+
+ */
