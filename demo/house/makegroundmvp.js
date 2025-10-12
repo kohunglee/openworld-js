@@ -86,6 +86,7 @@ function makeGroundMvp(){
 
             // 防止在 F 冻结模式，碰障碍物后失重移动
             if(true){
+                const mvpBody = k.mainVPlayer.body;
                 if(mvpBody.mass === 0){
                     mvpBody.velocity.set(0, 0, 0);  // 设置线速度为0
                     mvpBody.angularVelocity.set(0, 0, 0);  // 设置角速度为0
@@ -113,14 +114,23 @@ function makeGroundMvp(){
  * 任务队列模式。
  * ------------
  * 主要用于在人物静止时加载 svg ，防止画面卡帧、卡顿
+ * @param interval {number} 间隔时间，默认100ms
  */
-function dofunc() {
-  let q = [];
+function dofunc(interval = 100) {
+  let q = [], timer = null;
+
   function run() {
-    const a = q;
-    q = [];
-    for (let i = 0; i < a.length; i++) a[i]();
+    if (timer || !q.length) return;
+    timer = setInterval(() => {
+      const fn = q.shift();
+      if (fn) fn();
+      if (!q.length) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }, interval);
   }
-  run.add = f => q[q.length] = f;
+
+  run.add = f => q.push(f);
   return run;
 }
