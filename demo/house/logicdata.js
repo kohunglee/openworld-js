@@ -9,6 +9,7 @@ function logicData(){  //
         floor1: {},
         floor2: { shelf: { L: {}, C: {}, T: {}, CD: {}, }, }
     }
+    k.bookS = {};  // 初始化 书 管理系统，储存 书架定位书
 
     if(k.isLogicAdd === '1'){
         if(document.getElementById('myHUDObjEditor')){
@@ -36,7 +37,7 @@ function logicData(){  //
             D.floor1.bookshelf2 = symo([
                 [11, 20],  // 小书架
                 ...[[22, 35], 60, 61],  // 大书架
-                103,  // 书架定位书
+                // 103,  // 书架定位书
             ], {x:45});
 
             // 整理样板间的内容
@@ -44,7 +45,7 @@ function logicData(){  //
                 ...D.floor1.bookshelf2,  // 对称后的 大小书架
                 [11, 20],  // 小书架
                 ...[[22, 35], 60, 61],  // 大书架
-                103,  // 书架定位书
+                // 103,  // 书架定位书
                 49,  // 屋顶
                 10,  // 地板
                 [1, 9],  // 桌子
@@ -72,6 +73,42 @@ function logicData(){  //
                 57,  // 东北墙
                 ...[-1,59,62],  // 屋后的2个小墙
             ], {z:-30});
+
+            // 一楼的书（独立的建造逻辑系统）
+            if(true){
+                k.bookS.floor1 = {};
+                k.bookS.floor1.first = 103;  // 一楼的定位书
+
+                // 楼定位书的对称书
+                k.bookS.floor1.symo = symo([
+                    k.bookS.floor1.first,
+                ], {x:45});
+
+                // 楼定位书的偏移（朝向：1）
+                k.bookS.floor1.dire1 = offset([
+                    k.bookS.floor1.first,
+                ], 5.145, 6);
+                k.bookS.floor1.dire1.push(k.bookS.floor1.first);
+
+                // 楼定位书的对称书的偏移（朝向：2）
+                k.bookS.floor1.dire2 = offset([
+                    k.bookS.floor1.symo[0]
+                ], 5.145, 6);
+                k.bookS.floor1.dire2.push(k.bookS.floor1.symo[0]);
+
+                // 楼定位书的中轴线对称书（朝向：3）
+                k.bookS.floor1.dire3 = symo([
+                    ...k.bookS.floor1.dire1,
+                ], {z:-30});
+
+                // 楼定位书的中轴线对称书（朝向：4）
+                k.bookS.floor1.dire4 = symo([
+                    ...k.bookS.floor1.dire2,
+                ], {z:-30});
+
+                // // 楼定位书的中轴线对称书的对称书（朝向：4）
+                // k.bookS.floor1.dire4 = symo
+            }
         }
 
         // 第二层
@@ -280,10 +317,10 @@ function logicData(){  //
             );
         }
 
-        // [58, 63,].forEach(index => {  // 删除门洞
-        //     if (cubeDatas[index]) {
-        //         cubeDatas[index] = {del : 1};
-        //     }
-        // });
+        [58, 63,].forEach(index => {  // 删除门洞
+            if (cubeDatas[index]) {
+                cubeDatas[index] = {del : 1};
+            }
+        });
     }
 }
