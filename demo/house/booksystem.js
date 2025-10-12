@@ -104,7 +104,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                     return 0
                 }
 
-                console.log('svg ' + shelfID +'  '+ xzDistence.toFixed(2));
+                // console.log('svg ' + shelfID +'  '+ xzDistence.toFixed(2));
 
                 k.loadTexture(textureAlp).then(loadedImage => {
                     const upSvgPng_live = k.textureMap.get('upSvgPng' + shelfID);
