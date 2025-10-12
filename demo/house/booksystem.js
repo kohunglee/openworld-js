@@ -367,7 +367,7 @@ function fillBooks(baseBook, dirc, totalLength = 1.05, count = 30) {
         if (i > 0) {
             const prev = books[i - 1];
             if(dirc === 3 || dirc === 4){
-                currentZ = prev.z - (prev.d / 2 + d / 2);
+                currentZ = prev.z - (prev.d / 2 + d / 2);  // 书与书之间的距离
             } else {
                 currentZ = prev.z + (prev.d / 2 + d / 2);
             }
@@ -439,9 +439,9 @@ function registerBookshelf({ id, ref, off, maxlen = 1.05, count = 30}, currentSh
     const firstBook = cubeDatas[k.bookContainer[`n${id}`][0]];  // 得到 新书格 第一本书的数据  // 未来可以考虑 哈希表
     const bookSet = fillBooks({ ...firstBook, seed: currentShelfID + id }, dirc, maxlen, count);  // 生成整格数据
     if(dirc === 2 || dirc === 3) {  // 对称到另一侧、对称到对面，的情况
-        const off = (dirc === 2) ? 0.1 : -0.1;
+        const off = (dirc === 2) ? 1 : -1;
         for(let i = 0; i < bookSet.length; i++){  // 对称到另一侧的情况，要 Z 平移一下，看起来更自然一点
-            bookSet[i].z += off;
+            bookSet[i].z += off * 0.05;
         }
     }
     for (const book of bookSet) {  // 推入数据流
