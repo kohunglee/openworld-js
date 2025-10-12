@@ -74,7 +74,7 @@ function logicData(){  //
                 ...[-1,59,62],  // 屋后的2个小墙
             ], {z:-30});
 
-            // 一楼的书（独立的建造逻辑系统）
+            // 一楼的书（独立的储存逻辑系统）
             if(true){
                 k.bookS.floor1 = {};
                 k.bookS.floor1.first = 103;  // 一楼的定位书
@@ -105,9 +105,6 @@ function logicData(){  //
                 k.bookS.floor1.dire4 = symo([
                     ...k.bookS.floor1.dire2,
                 ], {z:-30});
-
-                // // 楼定位书的中轴线对称书的对称书（朝向：4）
-                // k.bookS.floor1.dire4 = symo
             }
         }
 
@@ -209,6 +206,39 @@ function logicData(){  //
                     ...D.floor2.shelf.T.offS,
                     ...D.floor2.shelf.T.offH,
                 ];
+            }
+
+            // 二楼的书（独立的储存逻辑系统）
+            if(true){
+                k.bookS.floor2 = {};
+                k.bookS.floor2.first = 104;  // 二楼的定位书
+
+                // 楼定位书的对称书
+                k.bookS.floor2.symo = symo([
+                    k.bookS.floor2.first,
+                ], {x:47.567});
+
+                // 楼定位书的偏移（朝向：1）
+                k.bookS.floor2.dire1 = offset([
+                    k.bookS.floor2.first,
+                ], 2.57, 11);
+                k.bookS.floor2.dire1.push(k.bookS.floor2.first);
+
+                // 楼定位书的对称书的偏移（朝向：2）
+                k.bookS.floor2.dire2 = offset([
+                    k.bookS.floor2.symo[0]
+                ], 2.57, 11);
+                k.bookS.floor2.dire2.push(k.bookS.floor2.symo[0]);
+
+                // 楼定位书的中轴线对称书（朝向：3）
+                k.bookS.floor2.dire3 = symo([
+                    ...k.bookS.floor2.dire1,
+                ], {z:-30});
+
+                // 楼定位书的中轴线对称书（朝向：4）
+                k.bookS.floor2.dire4 = symo([
+                    ...k.bookS.floor2.dire2,
+                ], {z:-30});
             }
 
             // 二楼柜子的对称镜像操作

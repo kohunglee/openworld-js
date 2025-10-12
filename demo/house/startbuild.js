@@ -9,14 +9,14 @@ function startBuild(){
     var urlParams = new URLSearchParams(globalThis.location.search);  // 获取 URL
     k.cellpageid_geturl = urlParams.get('id');  // 获取 url 的 id 参数
     k.isLogicAdd = urlParams.get('logicadd');  // 获取 url 的 id 参数
-    if(k.cellpageid_geturl) {
-        cellpageid = k.cellpageid_geturl;
-    } else {
-        cellpageid = Math.random().toString(36).slice(2,7);  // 随机5字符作为ID
-    }
-    const url = new URL(globalThis.location.href);
-    url.searchParams.set('id',cellpageid);
-    history.pushState({}, '', url.toString());  // 将这个新的随机字符放置到地址栏
+    // if(k.cellpageid_geturl) {
+    //     cellpageid = k.cellpageid_geturl;
+    // } else {
+    //     cellpageid = Math.random().toString(36).slice(2,7);  // 随机5字符作为ID
+    // }
+    // const url = new URL(globalThis.location.href);
+    // url.searchParams.set('id',cellpageid);
+    // history.pushState({}, '', url.toString());  // 将这个新的随机字符放置到地址栏
 
     // // 浏览器储存
     // if (!localStorage.getItem('ow_' + cellpageid)) {  // 初始化存储
