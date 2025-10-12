@@ -42,47 +42,83 @@ function makeGroundMvp(){
     const orig_jumpYVel = k.jumpYVel;
     const orig_jumpHoldLimit = k.JUMP_HOLD_LIMIT;
     const mvp = k.mainVPlayer;
-    const mvpBody = k.mainVPlayer.body;
+    const mvpBody = k.mainVPlayer;
+    const mp = k.mainVPlayer.body.position;
+    let Last_mvpBodyPos = (mp.x + mp.y + mp.z).toFixed(2);  // 用于判断主角是否停下脚步的辅助
+    k.myRestDoFunc = dofunc();  // 静止时要执行的函数队列
     setInterval(  // 动态调整人物的跳跃、地心引力等，每秒走一遍
         () => {
-            const x = mvp.X;
-            const z = mvp.Z;
-            if(x < 52.3 && x > 17.1 && z < -15.7 && z > -44.5) {
-                if(x < 50.5  && x > 19.1 &&
-                   z < -24.9 && z > -35.5){  // 在大厅以及其他区域
 
+            // 不同区域的跳跃和速度不一样的实现逻辑
+            if(true){
+                const x = mvp.X;
+                const z = mvp.Z;
+                if(x < 52.3 && x > 17.1 && z < -15.7 && z > -44.5) {
+                    if(x < 50.5  && x > 19.1 &&
+                    z < -24.9 && z > -35.5){  // 在大厅以及其他区域
+                        k.WALK_SPEED = 1/20;  //+ 走路使用快速度
+                        k.jumpYVel = orig_jumpYVel;  //+ 跳跃为原力度
+                        k.JUMP_HOLD_LIMIT = orig_jumpHoldLimit;
+                        k.world.gravity.set(0, -9.82, 0);
+                    } else {  // 在图书区
+                        k.WALK_SPEED = 1/40;  //+ 走路使用慢速度
+                        k.jumpYVel = 0.8;  //+ 减弱跳跃力度
+                        k.JUMP_HOLD_LIMIT = 0.5;
+                        k.world.gravity.set(0, -9.82/4, 0);
+
+                    }
+                } else {
                     k.WALK_SPEED = 1/20;  //+ 走路使用快速度
                     k.jumpYVel = orig_jumpYVel;  //+ 跳跃为原力度
                     k.JUMP_HOLD_LIMIT = orig_jumpHoldLimit;
                     k.world.gravity.set(0, -9.82, 0);
-
-                } else {  // 在图书区
-
-                    k.WALK_SPEED = 1/40;  //+ 走路使用慢速度
-                    k.jumpYVel = 0.8;  //+ 减弱跳跃力度
-                    k.JUMP_HOLD_LIMIT = 0.5;
-                    k.world.gravity.set(0, -9.82/4, 0);
-
                 }
-            } else {
-
-                k.WALK_SPEED = 1/20;  //+ 走路使用快速度
-                k.jumpYVel = orig_jumpYVel;  //+ 跳跃为原力度
-                k.JUMP_HOLD_LIMIT = orig_jumpHoldLimit;
-                k.world.gravity.set(0, -9.82, 0);
             }
 
             // 保证人物不掉地面
-            if(k.mainVPlayer.body.position.y < 0){
-                k.mainVPlayer.body.position.y = 50;
+            if(true){
+                if(k.mainVPlayer.body.position.y < 0){
+                    k.mainVPlayer.body.position.y = 50;
+                }
             }
 
-            if(mvpBody.mass === 0){
-                mvpBody.velocity.set(0, 0, 0);  // 设置线速度为0
-                mvpBody.angularVelocity.set(0, 0, 0);  // 设置角速度为0
-                mvpBody.force.set(0, 0, 0);  // 清除所有作用力
-                mvpBody.torque.set(0, 0, 0);  // 清除所有扭矩
+            // 防止在 F 冻结模式，碰障碍物后失重移动
+            if(true){
+                if(mvpBody.mass === 0){
+                    mvpBody.velocity.set(0, 0, 0);  // 设置线速度为0
+                    mvpBody.angularVelocity.set(0, 0, 0);  // 设置角速度为0
+                    mvpBody.force.set(0, 0, 0);  // 清除所有作用力
+                    mvpBody.torque.set(0, 0, 0);  // 清除所有扭矩
+                }
             }
+
+            // 在人物运动、静止时执行的函数
+            if(true){
+                if((mp.x + mp.y + mp.z).toFixed(2) === Last_mvpBodyPos) {  // 人物处于静止状态
+                    k.myRestDoFunc();
+                } else {  // 人物处于运动状态
+                    Last_mvpBodyPos = (mp.x + mp.y + mp.z).toFixed(2);
+                }
+            }
+            
         }
     , 100);
+}
+
+
+
+/**
+ * 任务队列模式。
+ * ------------
+ * 主要用于在人物静止时加载 svg ，防止画面卡帧、卡顿
+ */
+function dofunc() {
+  let q = [];
+  function run() {
+    const a = q;
+    q = [];
+    for (let i = 0; i < a.length; i++) a[i]();
+  }
+  run.add = f => q[q.length] = f;
+  return run;
 }
