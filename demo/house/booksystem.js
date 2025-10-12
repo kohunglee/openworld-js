@@ -19,7 +19,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
 
         // 生成书
         if(true){
-            const shelfDefs = getshelfDefs(1, shelfID);  // 获取书架规则表
+            const shelfDefs = getshelfDefs(type, shelfID);  // 获取书架规则表
             for (let i = 0, len = shelfDefs.length; i < len; i++) {
                 const def = shelfDefs[i];
                 registerBookshelf(def, shelfID);
@@ -52,8 +52,19 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
         }
     }
 
-    // svg 内容
+
+    // 渲染实例化
     if(true){
+        k.W.cube({
+            n: 'booksInsDisplay' + shelfID,
+            instances: bookDataIns, // 实例属性的数组
+            t: greenStoneborder,
+            mix: 0.8,
+        });
+    }
+
+    // svg 内容
+    if(false){
         let flip = 1;  //+ 几行兼容不同朝向的数据
         if(dirc === 2){ flip = -1 }
         if(dirc === 4){ flip = -1 }
@@ -129,15 +140,6 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
         }
     }
 
-    // 渲染实例化
-    if(true){
-        k.W.cube({
-            n: 'booksInsDisplay' + shelfID,
-            instances: bookDataIns, // 实例属性的数组
-            t: greenStoneborder,
-            mix: 0.8,
-        });
-    }
 
     // console.timeEnd('book');
 }
@@ -154,12 +156,13 @@ function removeBookShelf(shelfID){
 function bookSysRegis(){
     k.bookShelfInsData = new Map();  // 初始化 book 实例化数据表，储存已经计算好的实例数据
     
-    const floor = k.bookS.floor1;
-
     const get = k.indexToArgs.get.bind(k.indexToArgs);
     function makeActive(v, dir){ bookSystem(v, dir); }  //+ 激活和释放函数
     function makeDelete(v){ removeBookShelf(v); }
 
+    let floor;
+
+    floor = k.bookS.floor1;  
     for (let dir = 1; dir <= 4; dir++) {  // 遍历 4 个方向
         const arr = floor[`dire${dir}`];
         for (let i = 0, n = arr.length; i < n; i++) {  // 遍历每个方向的数组
@@ -169,6 +172,10 @@ function bookSysRegis(){
             o.deleteFunc = makeDelete.bind(null, v);
         }
     }
+
+    /** ----【开始试验第二层】----- */
+    // bookSystem(104, 1, 2);
+
 
 }
 
@@ -220,6 +227,61 @@ function getshelfDefs(type, id){  // 获取规则
             { id: 32, ref: 'n31', off: [-1.27, 'z'] },
             { id: 33, ref: 'n27', off: [0.45, 'y'], maxlen: 1.2, count: 35 },
             { id: 34, ref: 'n28', off: [0.45, 'y'], maxlen: 0.9, count: 25 },
+        ];
+    }
+
+    if(type === 2){
+        const count = {maxlen: 1.2, count: 35};
+        return [  // 规则 ②，二楼书架
+
+            // 1
+            { id: 3, ref: shelfID, off: [-0.352 * 3, 'y'], ...count},
+            { id: 4, ref: 'n3', off: [-1.316, 'z'], ...count},
+            { id: 5, ref: 'n3', off: [-1.316 * 2, 'z'], ...count},
+            { id: 1, ref: 'n3', off: [-1.316 * -2, 'z'], ...count},
+            { id: 2, ref: 'n3', off: [-1.316 * -1, 'z'], ...count},
+
+            // 2
+            { id: 8, ref: shelfID, off: [-0.352 * 2, 'y'], ...count},
+            { id: 9, ref: 'n8', off: [-1.316, 'z'], ...count},
+            { id: 10, ref: 'n8', off: [-1.316 * 2, 'z'], ...count},
+            { id: 6, ref: 'n8', off: [-1.316 * -2, 'z'], ...count},
+            { id: 7, ref: 'n8', off: [-1.316 * -1, 'z'], ...count},
+
+            // 3
+            { id: 13, ref: shelfID, off: [-0.352, 'y'], ...count},
+            { id: 14, ref: 'n13', off: [-1.316, 'z'], ...count},
+            { id: 15, ref: 'n13', off: [-1.316 * 2, 'z'], ...count},
+            { id: 11, ref: 'n13', off: [-1.316 * -2, 'z'], ...count},
+            { id: 12, ref: 'n13', off: [-1.316 * -1, 'z'], ...count},
+            
+            // 4
+            { id: 18, ref: shelfID, off: [-0.352 * 0, 'y'], ...count},
+            { id: 19, ref: 'n18', off: [-1.316, 'z'], ...count},
+            { id: 20, ref: 'n18', off: [-1.316 * 2, 'z'], ...count},
+            { id: 16, ref: 'n18', off: [-1.316 * -2, 'z'], ...count},
+            { id: 17, ref: 'n18', off: [-1.316 * -1, 'z'], ...count},
+
+            // 5
+            { id: 24, ref: shelfID, off: [-0.352 * -1, 'y'], ...count},
+            { id: 25, ref: 'n24', off: [-1.316, 'z'], ...count},
+            { id: 21, ref: 'n24', off: [-1.316 * 2, 'z'], ...count},
+            { id: 22, ref: 'n24', off: [-1.316 * -2, 'z'], ...count},
+            { id: 23, ref: 'n24', off: [-1.316 * -1, 'z'], ...count},
+
+            // 6
+            { id: 29, ref: shelfID, off: [-0.352 * -2, 'y'], ...count},
+            { id: 30, ref: 'n29', off: [-1.316, 'z'], ...count},
+            { id: 26, ref: 'n29', off: [-1.316 * 2, 'z'], ...count},
+            { id: 27, ref: 'n29', off: [-1.316 * -2, 'z'], ...count},
+            { id: 28, ref: 'n29', off: [-1.316 * -1, 'z'], ...count},
+
+            // 7
+            { id: 34, ref: shelfID, off: [-0.352 * -3, 'y'], ...count},
+            { id: 35, ref: 'n34', off: [-1.316, 'z'], ...count},
+            { id: 31, ref: 'n34', off: [-1.316 * 2, 'z'], ...count},
+            { id: 32, ref: 'n34', off: [-1.316 * -2, 'z'], ...count},
+            { id: 33, ref: 'n34', off: [-1.316 * -1, 'z'], ...count},
         ];
     }
 }
