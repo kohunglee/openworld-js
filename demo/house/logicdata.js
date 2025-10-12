@@ -280,10 +280,10 @@ function logicData(){  //
             );
         }
 
-        [58, 63,].forEach(index => {  // 删除门洞
-            if (cubeDatas[index]) {
-                cubeDatas[index] = {del : 1};
-            }
-        });
+        // [58, 63,].forEach(index => {  // 删除门洞
+        //     if (cubeDatas[index]) {
+        //         cubeDatas[index] = {del : 1};
+        //     }
+        // });
     }
 }
