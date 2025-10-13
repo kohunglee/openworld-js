@@ -6,8 +6,6 @@
  * @param {*} type 使用哪个规则生成 第一楼统一样式1、第二楼统一样式2
  */
 function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
-    // console.time('book');
-
     k.bookContainer = {};    // 初始化 书 容器，临时储存 ID 使用
     k.bookDataInsTemp = [];      // 书的实例数据，会由 registerBookshelf 生成
     k.currBookDirc = dirc;   // 保存当前方向
@@ -68,9 +66,9 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
 
         let currentZ, flip;
 
-        // 类型 1，一楼书架
-        if (false) {
-            let flip = 1;  //+ 几行兼容不同朝向的数据
+        // 类型 1，一楼书架（目前想的就是，把 5 个类型，一口气全搞完吧，最后稳定了，再优化缩减代码.... 反正也不影响性能）
+        if (type === 1) {
+            flip = 1;  //+ 几行兼容不同朝向的数据
             currentZ = -19.478;
             if(dirc === 2){ flip = -1 }
             if(dirc === 4){ flip = -1 }
@@ -78,7 +76,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
         }
 
         // 类型 2，二楼书架
-        if (true) {
+        if (type === 2) {
             flip = 1;  //+ 几行兼容不同朝向的数据
             currentZ = -19.88;
             if(dirc === 2){ flip = -1 }
@@ -91,13 +89,13 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
         let upSvgPng, downSvgPng;
 
         // 类型 1，一楼书架
-        if(false){
+        if(type === 1){
             upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
             downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
         }
 
         // 类型 2，二楼书架
-        if(true){
+        if(type === 2){
             upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
             downSvgPng = 1;
         }
@@ -106,7 +104,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
         if(upSvgPng && downSvgPng){  // 有数据，直接上 webgl
 
             // 类型 1，一楼书架
-            if(false){
+            if(type === 1){
                 k.W.plane({  // 上大书架
                     n: 'bookupsvg' + shelfID,
                     x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
@@ -123,7 +121,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             }
 
             // 类型 2，二楼书架
-            if(true){
+            if(type === 2){
                 k.W.plane({  // 上大书架
                     n: 'bookupsvg' + shelfID,
                     x: shelfDefsX - 0.076 * flip, y: 5.397, z: currentZ,
@@ -137,7 +135,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             let textureAlp;
 
             // 类型 1，一楼书架
-            if(false){
+            if(type === 1){
                 const svgClearVal = 1;  // 清晰度
                 const baseZ = (dirc === 3 || dirc === 4) ? -36.884 : -23.116;  // 基准 Z 值，定位 svg 文本
                 const up_TextCode = svgTextCodeBuild({  // 上层 681 个，svg 字
@@ -157,7 +155,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             }
 
             // 类型 2，二楼书架
-            if(true){
+            if(type === 2){
                 const svgClearVal = 1;  // 清晰度
                 let baseZ;  // 不同方向的神秘 Z 基准
                 if(dirc === 1){ baseZ = -23.121; }
@@ -180,9 +178,11 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             const renderSvg = () => {  // 挂载到【任务队列模式】的内容，人物静止时执行
 
                 const xzDistence = dist2D(mvpPos.x, mvpPos.z, shelfInfo.x, shelfInfo.z);  // 人物与书架的 xy 距离
+                // const xDistence = Math.abs(mvpPos.x - shelfInfo.x);  // 垂直面对距离
+                // const zDistence = Math.abs(mvpPos.z - shelfInfo.z);  
                 const yDistence = Math.abs(mvpPos.y - shelfInfo.y);
 
-                if(xzDistence > 4.5 || yDistence > 1.5){  // 距离过远，不渲染
+                if(xzDistence > 4.5 || yDistence > 1.5){  // 距离过远，不渲染，同时删除
                     k.myRestDoFunc.add(renderSvg);
                     return 0
                 }
@@ -190,7 +190,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                 k.loadTexture(textureAlp).then(loadedImage => {
 
                     // 类型 1，一楼书架
-                    if(false){
+                    if(type === 1){
                         const upSvgPng_live = k.textureMap.get('upSvgPng' + shelfID);
                         const downSvgPng_live = k.textureMap.get('downSvgPng' + shelfID);
                         k.W.plane({  // 上大书架
@@ -209,7 +209,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                     }
 
                     // 类型 2，二楼书架
-                    if(true){
+                    if(type === 2){
                         const upSvgPng_live = k.textureMap.get('upSvgPng' + shelfID);
                         k.W.plane({  // 上大书架
                             n: 'bookupsvg' + shelfID,
@@ -225,10 +225,23 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             k.myRestDoFunc.add(renderSvg);  // 挂载到【任务队列模式】
         }
     }
-
-
-    // console.timeEnd('book');
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // 当主角走远后，临时卸载书架内容
