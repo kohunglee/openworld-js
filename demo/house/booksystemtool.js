@@ -101,6 +101,70 @@ function getshelfDefs(type, id){  // 获取规则
             { id: 33, ref: 'n34', off: [-1.316 * -1, 'z'], ...count},
         ];
     }
+
+    if(type === 3){
+        const count = {maxlen: 1.0, count: 30};
+        return [  // 规则 ③，二楼书架长书架
+
+            // 1
+            { id: 3, ref: shelfID, off: [-0.352 * 3, 'y'], ...count},
+            { id: 4, ref: 'n3', off: [-1.1, 'z'], ...count},
+            { id: 5, ref: 'n3', off: [-1.1 * 2, 'z'], ...count},
+            { id: 1, ref: 'n3', off: [-1.1 * -2, 'z'], ...count},
+            { id: 2, ref: 'n3', off: [-1.1 * -1, 'z'], ...count},
+
+            // 2
+            { id: 8, ref: shelfID, off: [-0.352 * 2, 'y'], ...count},
+            { id: 9, ref: 'n8', off: [-1.1, 'z'], ...count},
+            { id: 10, ref: 'n8', off: [-1.1 * 2, 'z'], ...count},
+            { id: 6, ref: 'n8', off: [-1.1 * -2, 'z'], ...count},
+            { id: 7, ref: 'n8', off: [-1.1 * -1, 'z'], ...count},
+
+            // 3
+            { id: 13, ref: shelfID, off: [-0.352, 'y'], ...count},
+            { id: 14, ref: 'n13', off: [-1.1, 'z'], ...count},
+            { id: 15, ref: 'n13', off: [-1.1 * 2, 'z'], ...count},
+            { id: 11, ref: 'n13', off: [-1.1 * -2, 'z'], ...count},
+            { id: 12, ref: 'n13', off: [-1.1 * -1, 'z'], ...count},
+            
+            // 4
+            { id: 18, ref: shelfID, off: [-0.352 * 0, 'y'], ...count},
+            { id: 19, ref: 'n18', off: [-1.1, 'z'], ...count},
+            { id: 20, ref: 'n18', off: [-1.1 * 2, 'z'], ...count},
+            { id: 16, ref: 'n18', off: [-1.1 * -2, 'z'], ...count},
+            { id: 17, ref: 'n18', off: [-1.1 * -1, 'z'], ...count},
+
+            // 5
+            { id: 24, ref: shelfID, off: [-0.352 * -1, 'y'], ...count},
+            { id: 25, ref: 'n24', off: [-1.1, 'z'], ...count},
+            { id: 21, ref: 'n24', off: [-1.1 * 2, 'z'], ...count},
+            { id: 22, ref: 'n24', off: [-1.1 * -2, 'z'], ...count},
+            { id: 23, ref: 'n24', off: [-1.1 * -1, 'z'], ...count},
+
+            // 6
+            { id: 29, ref: shelfID, off: [-0.352 * -2, 'y'], ...count},
+            { id: 30, ref: 'n29', off: [-1.1, 'z'], ...count},
+            { id: 26, ref: 'n29', off: [-1.1 * 2, 'z'], ...count},
+            { id: 27, ref: 'n29', off: [-1.1 * -2, 'z'], ...count},
+            { id: 28, ref: 'n29', off: [-1.1 * -1, 'z'], ...count},
+
+            // 7
+            { id: 34, ref: shelfID, off: [-0.352 * -3, 'y'], ...count},
+            { id: 35, ref: 'n34', off: [-1.1, 'z'], ...count},
+            { id: 31, ref: 'n34', off: [-1.1 * 2, 'z'], ...count},
+            { id: 32, ref: 'n34', off: [-1.1 * -2, 'z'], ...count},
+            { id: 33, ref: 'n34', off: [-1.1 * -1, 'z'], ...count},
+
+            // 最左侧
+            { id: 36, ref: 'n1', off: [-1.1 * -1, 'z'], ...count},
+            { id: 37, ref: 'n36', off: [-0.352 * -1, 'y'], ...count},
+            { id: 38, ref: 'n36', off: [-0.352 * -2, 'y'], ...count},
+            { id: 39, ref: 'n36', off: [-0.352 * -3, 'y'], ...count},
+            { id: 40, ref: 'n36', off: [-0.352 * -4, 'y'], ...count},
+            { id: 41, ref: 'n36', off: [-0.352 * -5, 'y'], ...count},
+            { id: 42, ref: 'n36', off: [-0.352 * -6, 'y'], ...count},
+        ];
+    }
 }
 
 // 保留三位小数
@@ -264,4 +328,22 @@ function dist2D(x1, y1, x2, y2) {
   const dx = x2 - x1;
   const dy = y2 - y1;
   return Math.sqrt(dx * dx + dy * dy);
+}
+
+// 调试使用，按下 M 键渲染 svg
+let mKeyPressed = false;
+document.addEventListener('keydown', e => {
+    if ((e.key === 'm' || e.key === 'M') && !mKeyPressed) {
+        mKeyPressed = true;
+        doSomething();
+    }
+});
+document.addEventListener('keyup', e => {
+    if (e.key === 'm' || e.key === 'M') {
+        mKeyPressed = false;
+    }
+});
+function doSomething() {
+    // console.log('执行 M 事件逻辑');
+    k.myRestDoFunc();
 }

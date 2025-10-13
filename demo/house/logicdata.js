@@ -224,7 +224,7 @@ function logicData(){  //
                 ], 2.57, 11);
                 k.bookS.floor2.dire1.push(k.bookS.floor2.first);
 
-                // 楼定位书的对称书的偏移（朝向：2）
+                // 楼定位书的对称书的偏移
                 k.bookS.floor2.dire2 = offset([
                     k.bookS.floor2.symo[0]
                 ], 2.57, 11);
@@ -239,6 +239,26 @@ function logicData(){  //
                 k.bookS.floor2.dire4 = symo([
                     ...k.bookS.floor2.dire2,
                 ], {z:-30});
+
+                
+
+                // 二楼的长柜书的定位书，以及对称一下
+                k.bookS.floor2.cdbook = 105;  // （朝向：1）
+                k.bookS.floor2.cdbookdire2 = symo([  // （朝向：2）
+                    k.bookS.floor2.cdbook
+                ], {x:34.7});
+
+                // 二楼的长柜书的定位书（朝向：3）
+                k.bookS.floor2.cdbookdire3 = symo([
+                    k.bookS.floor2.cdbook,
+                ], {z:-30});
+
+                // 二楼的长柜书的定位书（朝向：4）
+                k.bookS.floor2.cdbookdire4 = symo([
+                    ...k.bookS.floor2.cdbookdire2,
+                ], {z:-30});
+
+                
             }
 
             // 二楼柜子的对称镜像操作
