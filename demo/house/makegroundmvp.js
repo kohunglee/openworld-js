@@ -98,8 +98,7 @@ function makeGroundMvp(){
             // 在人物运动、静止时执行的函数
             if(true){
                 if((mp.x + mp.y + mp.z + mk.turnRight).toFixed(2) === Last_mvpBodyPos) {  // 人物处于静止状态
-                    k.myRestDoFunc();
-                    Last_mvpBodyPos = null;
+                    // k.myRestDoFunc();
                 } else {  // 人物处于运动状态
                     Last_mvpBodyPos = (mp.x + mp.y + mp.z + mk.turnRight).toFixed(2);
                 }
