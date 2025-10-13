@@ -165,6 +165,43 @@ function getshelfDefs(type, id){  // 获取规则
             { id: 42, ref: 'n36', off: [-0.352 * -6, 'y'], ...count},
         ];
     }
+
+    if(type === 4){
+        const count = {maxlen: 1.18, count: 35};
+        return [  // 规则 ③，二楼书架长书架
+
+            // 2
+            { id: 8, ref: shelfID, off: [-0.345 * 2, 'y'], ...count},
+            { id: 9, ref: 'n8', off: [-1.25, 'z'], ...count},
+            { id: 7, ref: 'n8', off: [-1.25 * -1, 'z'], ...count},
+
+            // 3
+            { id: 13, ref: shelfID, off: [-0.345, 'y'], ...count},
+            { id: 14, ref: 'n13', off: [-1.25, 'z'], ...count},
+            { id: 12, ref: 'n13', off: [-1.25 * -1, 'z'], ...count},
+            
+            // 4
+            { id: 18, ref: shelfID, off: [-0.345 * 0, 'y'], ...count},
+            { id: 19, ref: 'n18', off: [-1.25, 'z'], ...count},
+            { id: 17, ref: 'n18', off: [-1.25 * -1, 'z'], ...count},
+
+            // 5
+            { id: 24, ref: shelfID, off: [-0.345 * -1, 'y'], ...count},
+            { id: 25, ref: 'n24', off: [-1.25, 'z'], ...count},
+            { id: 23, ref: 'n24', off: [-1.25 * -1, 'z'], ...count},
+
+            // 6
+            { id: 29, ref: shelfID, off: [-0.345 * -2, 'y'], ...count},
+            { id: 30, ref: 'n29', off: [-1.25, 'z'], ...count},
+            { id: 28, ref: 'n29', off: [-1.25 * -1, 'z'], ...count},
+
+            // 7
+            { id: 34, ref: shelfID, off: [-0.345 * -3, 'y'], ...count},
+            { id: 35, ref: 'n34', off: [-1.25, 'z'], ...count},
+            { id: 33, ref: 'n34', off: [-1.25 * -1, 'z'], ...count},
+
+        ];
+    }
 }
 
 // 保留三位小数
@@ -228,14 +265,14 @@ function svgCodeMake(width, height, textCode, svgClearVal = 1) {
         preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="三个红色方块 与 你好啊" style="width:500px">
-        <rect x="0" y="0" width="100%" height="100%" fill="rgba(0, 0, 0, 0)"/>
+        <rect x="0" y="0" width="100%" height="100%" fill="rgba(0, 0, 0, 0.73)"/>
         <rect x="60"  y="30" width="40" height="40" fill="#e63946" rx="4"/>
         <rect x="110" y="20" width="40" height="80" fill="#e63946" rx="4"/>
         <rect x="160" y="35" width="40" height="50" fill="#e63946" rx="4"/>
 
         <g font-family=" 'Noto Sans SC', 'PingFang SC', 'Microsoft Yahei', 'Heiti SC', 'Source Han Sans SC', sans-serif "
             font-size="${15 * svgClearVal}"
-            fill="#000000ff"
+            fill="#000"
             stroke="#000"
             stroke-width="${0.7 * svgClearVal}"
             paint-order="stroke"
@@ -330,16 +367,16 @@ function dist2D(x1, y1, x2, y2) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-// 调试使用，按下 M 键渲染 svg
+// 调试使用，按下 R 键渲染 svg
 let mKeyPressed = false;
 document.addEventListener('keydown', e => {
-    if ((e.key === 'm' || e.key === 'M') && !mKeyPressed) {
+    if ((e.key === 'r' || e.key === 'R') && !mKeyPressed) {
         mKeyPressed = true;
         doSomething();
     }
 });
 document.addEventListener('keyup', e => {
-    if (e.key === 'm' || e.key === 'M') {
+    if (e.key === 'r' || e.key === 'R') {
         mKeyPressed = false;
     }
 });
