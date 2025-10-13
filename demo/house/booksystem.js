@@ -64,46 +64,118 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
     }
 
     // svg 内容
-    if(false){
-        let flip = 1;  //+ 几行兼容不同朝向的数据
-        if(dirc === 2){ flip = -1 }
-        if(dirc === 4){ flip = -1 }
-        let currentZ = -19.478;
-        if(dirc === 3 || dirc === 4){ currentZ = -19.478 - (-19.478 - (-30)) * 2 }  // 对称过来了 
+    if(true){
+
+        let currentZ, flip;
+
+        // 类型 1，一楼书架
+        if (false) {
+            let flip = 1;  //+ 几行兼容不同朝向的数据
+            currentZ = -19.478;
+            if(dirc === 2){ flip = -1 }
+            if(dirc === 4){ flip = -1 }
+            if(dirc === 3 || dirc === 4){ currentZ = -19.478 - (-19.478 - (-30)) * 2 }  // 对称过来了 
+        }
+
+        // 类型 2，二楼书架
+        if (true) {
+            flip = 1;  //+ 几行兼容不同朝向的数据
+            currentZ = -19.88;
+            if(dirc === 2){ flip = -1 }
+            if(dirc === 4){ flip = -1 }
+            if(dirc === 3 || dirc === 4){ currentZ = -19.88 - (-19.88 - (-30)) * 2 }  // 对称过来了 
+        }
+
         const shelfDefsX = cubeDatas[shelfID].x;
-        const upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
-        const downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
+
+        let upSvgPng, downSvgPng;
+
+        // 类型 1，一楼书架
+        if(false){
+            upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
+            downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
+        }
+
+        // 类型 2，二楼书架
+        if(true){
+            upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
+            downSvgPng = 1;
+        }
+
+
         if(upSvgPng && downSvgPng){  // 有数据，直接上 webgl
-            k.W.plane({  // 上大书架
-                n: 'bookupsvg' + shelfID,
-                x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
-                w: 7.4, h: 0.94, 
-                ry: -90 * flip,
-                t: upSvgPng,
-            });
-            k.W.plane({  // 下小书架
-                n: 'bookdnsvg' + shelfID,
-                x: shelfDefsX - 0.377 * flip, y: 1.75, z: currentZ,
-                w: 7.4, h: 0.935, ry: -90 * flip,
-                t: downSvgPng,
-            });
+
+            // 类型 1，一楼书架
+            if(false){
+                k.W.plane({  // 上大书架
+                    n: 'bookupsvg' + shelfID,
+                    x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
+                    w: 7.4, h: 0.94, 
+                    ry: -90 * flip,
+                    t: upSvgPng,
+                });
+                k.W.plane({  // 下小书架
+                    n: 'bookdnsvg' + shelfID,
+                    x: shelfDefsX - 0.377 * flip, y: 1.75, z: currentZ,
+                    w: 7.4, h: 0.935, ry: -90 * flip,
+                    t: downSvgPng,
+                });
+            }
+
+            // 类型 2，二楼书架
+            if(true){
+                k.W.plane({  // 上大书架
+                    n: 'bookupsvg' + shelfID,
+                    x: shelfDefsX - 0.076 * flip, y: 5.397, z: currentZ,
+                    w: 6.625, h: 2.501, 
+                    ry: -90 * flip,
+                    t: upSvgPng,
+                });
+            }
         } else {  // 没有数据，生成和渲染 svg
-            const svgClearVal = 1;  // 清晰度
-            const baseZ = (dirc === 3 || dirc === 4) ? -36.884 : -23.116;  // 基准 Z 值，定位 svg 文本
-            const up_TextCode = svgTextCodeBuild({  // 上层 681 个，svg 字
-                x: 60, y: 170, w_z: baseZ, w_y: 2.898, data: bookDataIns.slice(0, 681),
-                svgWidth: 7400, svgClearVal: svgClearVal,
-            });  
-            const down_TextCode = svgTextCodeBuild({  // 下层 其余的，svg 字
-                x: 77, y: 282, w_z: baseZ + 0.018, w_y: 1.853, data: bookDataIns.slice(681, bookDataIns.length),
-                svgWidth: 7400, svgClearVal: svgClearVal,
-            })
-            const upSvg = svgCodeMake(7400 * svgClearVal, 940 * svgClearVal, up_TextCode, svgClearVal);      // 上层的 SVG 数据
-            const downSvg = svgCodeMake(7400 * svgClearVal, 935 * svgClearVal, down_TextCode, svgClearVal);  // 下层的 SVG 数据
-            const textureAlp = [
-                { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
-                { id:'downSvgPng' + shelfID, type: 'svg', svgCode: downSvg },
-            ];
+
+            let textureAlp;
+
+            // 类型 1，一楼书架
+            if(false){
+                const svgClearVal = 1;  // 清晰度
+                const baseZ = (dirc === 3 || dirc === 4) ? -36.884 : -23.116;  // 基准 Z 值，定位 svg 文本
+                const up_TextCode = svgTextCodeBuild({  // 上层 681 个，svg 字
+                    x: 60, y: 170, w_z: baseZ, w_y: 2.898, data: bookDataIns.slice(0, 681),
+                    svgWidth: 7400, svgClearVal: svgClearVal,
+                });  
+                const down_TextCode = svgTextCodeBuild({  // 下层 其余的，svg 字
+                    x: 77, y: 282, w_z: baseZ + 0.018, w_y: 1.853, data: bookDataIns.slice(681, bookDataIns.length),
+                    svgWidth: 7400, svgClearVal: svgClearVal,
+                })
+                const upSvg = svgCodeMake(7400 * svgClearVal, 940 * svgClearVal, up_TextCode, svgClearVal);      // 上层的 SVG 数据
+                const downSvg = svgCodeMake(7400 * svgClearVal, 935 * svgClearVal, down_TextCode, svgClearVal);  // 下层的 SVG 数据
+                textureAlp = [
+                    { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
+                    { id:'downSvgPng' + shelfID, type: 'svg', svgCode: downSvg },
+                ];
+            }
+
+            // 类型 2，二楼书架
+            if(true){
+                const svgClearVal = 1;  // 清晰度
+                let baseZ;  // 不同方向的神秘 Z 基准
+                if(dirc === 1){ baseZ = -23.121; }
+                if(dirc === 2){ baseZ = -23.895; }
+                if(dirc === 3){ baseZ = -36.085; }
+                if(dirc === 4){ baseZ = -36.86; }
+                const up_TextCode = svgTextCodeBuild({  // 上层 681 个，svg 字
+                    x: 70, y: 185,  // 左上第三本的 svg 坐标
+                    w_z: baseZ, w_y: 6.379,  // 左上第三本的 webgl 坐标
+                    data: bookDataIns,
+                    svgWidth: 7400, svgClearVal: svgClearVal,
+                });
+                const upSvg = svgCodeMake(6625 * svgClearVal, 2501 * svgClearVal, up_TextCode, svgClearVal);      // 上层的 SVG 数据
+                textureAlp = [
+                    { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
+                ];
+            }
+            
 
             const renderSvg = () => {  // 挂载到【任务队列模式】的内容，人物静止时执行
 
@@ -115,24 +187,38 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                     return 0
                 }
 
-                // console.log('svg ' + shelfID +'  '+ xzDistence.toFixed(2));
-
                 k.loadTexture(textureAlp).then(loadedImage => {
-                    const upSvgPng_live = k.textureMap.get('upSvgPng' + shelfID);
-                    const downSvgPng_live = k.textureMap.get('downSvgPng' + shelfID);
-                    k.W.plane({  // 上大书架
-                        n: 'bookupsvg' + shelfID,
-                        x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
-                        w: 7.4, h: 0.94, 
-                        ry: -90 * flip,
-                        t: upSvgPng_live,
-                    });
-                    k.W.plane({  // 下小书架
-                        n: 'bookdnsvg' + shelfID,
-                        x: shelfDefsX - 0.377 * flip, y: 1.75, z: currentZ,
-                        w: 7.4, h: 0.935, ry: -90 * flip,
-                        t: downSvgPng_live,
-                    });
+
+                    // 类型 1，一楼书架
+                    if(false){
+                        const upSvgPng_live = k.textureMap.get('upSvgPng' + shelfID);
+                        const downSvgPng_live = k.textureMap.get('downSvgPng' + shelfID);
+                        k.W.plane({  // 上大书架
+                            n: 'bookupsvg' + shelfID,
+                            x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
+                            w: 7.4, h: 0.94, 
+                            ry: -90 * flip,
+                            t: upSvgPng_live,
+                        });
+                        k.W.plane({  // 下小书架
+                            n: 'bookdnsvg' + shelfID,
+                            x: shelfDefsX - 0.377 * flip, y: 1.75, z: currentZ,
+                            w: 7.4, h: 0.935, ry: -90 * flip,
+                            t: downSvgPng_live,
+                        });
+                    }
+
+                    // 类型 2，二楼书架
+                    if(true){
+                        const upSvgPng_live = k.textureMap.get('upSvgPng' + shelfID);
+                        k.W.plane({  // 上大书架
+                            n: 'bookupsvg' + shelfID,
+                            x: shelfDefsX - 0.076 * flip, y: 5.397, z: currentZ,
+                            w: 6.625, h: 2.501, 
+                            ry: -90 * flip,
+                            t: upSvgPng_live,
+                        });
+                    }
                 });
             }
 
@@ -175,7 +261,6 @@ function bookSysRegis(){
 
     /** ----【开始试验第二层】----- */
     // bookSystem(104, 1, 2);
-    console.log(k.bookS.floor2);
     let arr;
     arr = k.bookS.floor2.dire1; // 朝向为 1
     for (let i = 0, n = arr.length; i < n; i++) {
@@ -222,274 +307,4 @@ function bookSysRegis(){
     }
 
 
-}
-
-/**** -----[ 下面都是函数或变量库了...... 不要太去管了啊啊 ]----------------------------------------------------------------- */
-
-function getshelfDefs(type, id){  // 获取规则
-    const shelfID = id;
-    if(type === 1){
-        return [  // 规则 ①，一楼书架
-            { id: 2, ref: shelfID, off: [-0.314, 'y'] },
-            { id: 1, ref: 'n2', off: [1.28, 'z'] },
-            { id: 3, ref: 'n2', off: [-1.22, 'z', -0.09, 'y'], maxlen: 1.08, count: 30 },
-            { id: 4, ref: 'n3', off: [-1.28, 'z'] },
-            { id: 5, ref: 'n4', off: [-1.2, 'z'] , maxlen: 1.2, count: 35},
-            { id: 6, ref: 'n5', off: [-1.36, 'z'] , maxlen: 0.9, count: 25},
-
-            { id: 7, ref: shelfID, off: [1.28, 'z'] },
-            { id: 8, ref: shelfID, off: [0, 'z'] },
-            { id: 9, ref: 'n3', off: [0.255, 'y'] },
-            { id: 10, ref: 'n4', off: [0.255, 'y'] },
-            { id: 11, ref: 'n5', off: [0.255, 'y'] , maxlen: 1.2, count: 35},
-            { id: 12, ref: 'n6', off: [0.255, 'y'] , maxlen: 0.9, count: 25},
-
-            { id: 13, ref: 'n7', off: [0.28, 'y']},
-            { id: 14, ref: 'n8', off: [0.28, 'y']},
-            { id: 15, ref: 'n9', off: [0.255, 'y']},
-            { id: 16, ref: 'n10', off: [0.255, 'y']},
-            { id: 17, ref: 'n11', off: [0.255, 'y'], maxlen: 1.2, count: 35},
-            { id: 18, ref: 'n12', off: [0.255, 'y'], maxlen: 0.9, count: 25},
-
-            // 多余的四个
-            { id: 19, ref: 'n15', off: [0.2, 'y'] },
-            { id: 20, ref: 'n16', off: [0.2, 'y'] },
-            { id: 21, ref: 'n17', off: [0.2, 'y'], maxlen: 1.2, count: 35 },
-            { id: 22, ref: 'n18', off: [0.2, 'y'], maxlen: 0.9, count: 25 },
-
-            // 大书架 上层
-            { id: 23, ref: 'n13', off: [0.45, 'y', 0.3, 'x'] },
-            { id: 24, ref: 'n23', off: [-1.28, 'z'] },
-            { id: 25, ref: 'n24', off: [-1.2, 'z'] },
-            { id: 26, ref: 'n25', off: [-1.27, 'z'] },
-            { id: 27, ref: 'n21', off: [0.45, 'y', 0.3, 'x'], maxlen: 1.2, count: 35 },
-            { id: 28, ref: 'n22', off: [0.45, 'y', 0.3, 'x'], maxlen: 0.9, count: 25 },
-
-            // 大书架 下层
-            { id: 29, ref: 'n23', off: [0.44, 'y',] },
-            { id: 30, ref: 'n29', off: [-1.28, 'z'] },
-            { id: 31, ref: 'n30', off: [-1.2, 'z'] },
-            { id: 32, ref: 'n31', off: [-1.27, 'z'] },
-            { id: 33, ref: 'n27', off: [0.45, 'y'], maxlen: 1.2, count: 35 },
-            { id: 34, ref: 'n28', off: [0.45, 'y'], maxlen: 0.9, count: 25 },
-        ];
-    }
-
-    if(type === 2){
-        const count = {maxlen: 1.2, count: 35};
-        return [  // 规则 ②，二楼书架
-
-            // 1
-            { id: 3, ref: shelfID, off: [-0.352 * 3, 'y'], ...count},
-            { id: 4, ref: 'n3', off: [-1.316, 'z'], ...count},
-            { id: 5, ref: 'n3', off: [-1.316 * 2, 'z'], ...count},
-            { id: 1, ref: 'n3', off: [-1.316 * -2, 'z'], ...count},
-            { id: 2, ref: 'n3', off: [-1.316 * -1, 'z'], ...count},
-
-            // 2
-            { id: 8, ref: shelfID, off: [-0.352 * 2, 'y'], ...count},
-            { id: 9, ref: 'n8', off: [-1.316, 'z'], ...count},
-            { id: 10, ref: 'n8', off: [-1.316 * 2, 'z'], ...count},
-            { id: 6, ref: 'n8', off: [-1.316 * -2, 'z'], ...count},
-            { id: 7, ref: 'n8', off: [-1.316 * -1, 'z'], ...count},
-
-            // 3
-            { id: 13, ref: shelfID, off: [-0.352, 'y'], ...count},
-            { id: 14, ref: 'n13', off: [-1.316, 'z'], ...count},
-            { id: 15, ref: 'n13', off: [-1.316 * 2, 'z'], ...count},
-            { id: 11, ref: 'n13', off: [-1.316 * -2, 'z'], ...count},
-            { id: 12, ref: 'n13', off: [-1.316 * -1, 'z'], ...count},
-            
-            // 4
-            { id: 18, ref: shelfID, off: [-0.352 * 0, 'y'], ...count},
-            { id: 19, ref: 'n18', off: [-1.316, 'z'], ...count},
-            { id: 20, ref: 'n18', off: [-1.316 * 2, 'z'], ...count},
-            { id: 16, ref: 'n18', off: [-1.316 * -2, 'z'], ...count},
-            { id: 17, ref: 'n18', off: [-1.316 * -1, 'z'], ...count},
-
-            // 5
-            { id: 24, ref: shelfID, off: [-0.352 * -1, 'y'], ...count},
-            { id: 25, ref: 'n24', off: [-1.316, 'z'], ...count},
-            { id: 21, ref: 'n24', off: [-1.316 * 2, 'z'], ...count},
-            { id: 22, ref: 'n24', off: [-1.316 * -2, 'z'], ...count},
-            { id: 23, ref: 'n24', off: [-1.316 * -1, 'z'], ...count},
-
-            // 6
-            { id: 29, ref: shelfID, off: [-0.352 * -2, 'y'], ...count},
-            { id: 30, ref: 'n29', off: [-1.316, 'z'], ...count},
-            { id: 26, ref: 'n29', off: [-1.316 * 2, 'z'], ...count},
-            { id: 27, ref: 'n29', off: [-1.316 * -2, 'z'], ...count},
-            { id: 28, ref: 'n29', off: [-1.316 * -1, 'z'], ...count},
-
-            // 7
-            { id: 34, ref: shelfID, off: [-0.352 * -3, 'y'], ...count},
-            { id: 35, ref: 'n34', off: [-1.316, 'z'], ...count},
-            { id: 31, ref: 'n34', off: [-1.316 * 2, 'z'], ...count},
-            { id: 32, ref: 'n34', off: [-1.316 * -2, 'z'], ...count},
-            { id: 33, ref: 'n34', off: [-1.316 * -1, 'z'], ...count},
-        ];
-    }
-}
-
-// 保留三位小数
-function fix3(v) {
-    return Number(v.toFixed(3));
-}
-
-// 书脊颜色 库
-globalThis.book_colors = [
-    '#A59A8C',
-    '#8E8E88',
-    '#A8AEB5',
-    '#9B928A',
-    '#7F8682',
-    '#8C8C8C'
-];
-
-// 生成书格数据
-function fillBooks(baseBook, dirc, totalLength = 1.05, count = 30) {
-    const books = [];
-    let currentZ = baseBook.z;
-    const ks = 3;  // 每本书使用几个随机数
-    const seed = baseBook.seed || 1;  // 随机数种子
-    const random = k.genPR(seed, ks * count );
-    const baseBottomY = baseBook.y - baseBook.h / 2;  // 计算书的底面 Y 坐标（底边固定）
-    const rawDepths = Array.from({ length: count }, (_, i) =>
-        baseBook.d * (0.9 + (1 - random[i * ks + 1]) * 0.8) // 深度变化 ±40%（书脊宽）
-    );
-    const rawSum = rawDepths.reduce((a, b) => a + b, 0);
-    const scale = totalLength / rawSum;
-    const depths = rawDepths.map(d => d * scale);
-    for (let i = 0; i < count; i++) {
-        const d = depths[i];
-        const w = baseBook.w; // 深度变化 ±10%（书脊对齐）
-        const h = baseBook.h * (0.9 + random[i * ks + 1] * 0.1); // 高度变化 ±20%
-        if (i > 0) {
-            const prev = books[i - 1];
-            if(dirc === 3 || dirc === 4){
-                currentZ = prev.z - (prev.d / 2 + d / 2);  // 书与书之间的距离
-            } else {
-                currentZ = prev.z + (prev.d / 2 + d / 2);
-            }
-        }
-        const y = baseBottomY + h / 2;  // 调整中心 y，让底面固定
-        const color = book_colors[Math.floor(random[i * ks + 2] * book_colors.length)];  // 随机书脊颜色
-        books.push({
-            x: fix3(baseBook.x), y: fix3(y), z: fix3(currentZ),
-            w: fix3(w), h: fix3(h), d: fix3(d),
-            b: color,
-        });
-    }
-    return books;
-}
-
-// 生成 SVG 代码
-function svgCodeMake(width, height, textCode, svgClearVal = 1) {  
-            return svgTestCode = `
-    <svg xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 ${width} ${height}"
-        width="${width}" height="${height}"
-        preserveAspectRatio="xMidYMid meet"
-        role="img"
-        aria-label="三个红色方块 与 你好啊" style="width:500px">
-        <rect x="0" y="0" width="100%" height="100%" fill="#00000000"/>
-        <rect x="60"  y="30" width="40" height="40" fill="#e63946" rx="4"/>
-        <rect x="110" y="20" width="40" height="80" fill="#e63946" rx="4"/>
-        <rect x="160" y="35" width="40" height="50" fill="#e63946" rx="4"/>
-
-        <g font-family=" 'Noto Sans SC', 'PingFang SC', 'Microsoft Yahei', 'Heiti SC', 'Source Han Sans SC', sans-serif "
-            font-size="${15 * svgClearVal}"
-            fill="#000000ff"
-            stroke="#000"
-            stroke-width="${0.7 * svgClearVal}"
-            paint-order="stroke"
-            writing-mode="vertical-rl"
-            text-orientation="upright"
-            text-anchor="start"
-            dominant-baseline="hanging">
-        <text x="60" y="170">水调歌头</text>
-            ${textCode}
-        </g>
-    </svg>
-    `;  // PS：stroke 颜色，后期也可以研究一下，有用
-    }
-
-// 整格书 生成 注册函数
-function registerBookshelf({ id, ref, off, maxlen = 1.05, count = 30}, currentShelfID) {
-    const dirc = k.currBookDirc;
-    const base = typeof ref === 'number'
-        ? [ref]
-        : [...k.bookContainer[ref]];
-    if(dirc === 3 || dirc === 4 || dirc === 2) {  // 对称到对面、对称到另一侧、对称到对面，的情况
-        if(off[1] === 'z' && (dirc === 3 || dirc === 4)){  // 中轴线另侧的 Z 方向，要反向
-            off[0] = -off[0];
-        }
-        if(dirc === 2 || dirc === 4) {  // 对称型
-            if(off[1] === 'x'){
-                off[0] = -off[0];
-            }
-            if(off[3] === 'x'){
-                off[2] = -off[2];
-            }
-        }
-        k.bookContainer[`n${id}`] = offset(base, off[0], 2, off[1], off[2], off[3]);  // 偏移操作，生成新书格，第一本书
-    } else {
-        k.bookContainer[`n${id}`] = offset(base, off[0], 2, off[1], off[2], off[3]);  // 偏移操作，生成新书格，第一本书
-    }
-    const firstBook = cubeDatas[k.bookContainer[`n${id}`][0]];  // 得到 新书格 第一本书的数据  // 未来可以考虑 哈希表
-    const bookSet = fillBooks({ ...firstBook, seed: currentShelfID + id }, dirc, maxlen, count);  // 生成整格数据
-    if(dirc === 2 || dirc === 3) {  // 对称到另一侧、对称到对面，的情况
-        const off = (dirc === 2) ? 1 : -1;
-        for(let i = 0; i < bookSet.length; i++){  // 对称到另一侧的情况，要 Z 平移一下，看起来更自然一点
-            bookSet[i].z += off * 0.05;
-        }
-    }
-    for (const book of bookSet) {  // 推入数据流
-        k.bookDataInsTemp.push({ ...book, st: 1 }); // st:1 表示静态书
-    }
-    k.bookDataInsTemp.push({del:1}); // 方便检索数据，按书格添加 del
-}
-
-const pool = "憨狗担友号显却监材且春居适除红半买充陈火搞";
-const poolLen = pool.length;
-const randCN = () => {  // 输出 1~8 位随机字符
-    let len = (Math.random() * 5 | 0) + 4;
-    let s = '';
-    for (let i = 0; i < len; i++) s += pool[Math.random() * poolLen | 0];
-    return s;
-}
-
-// 生成 SVG 里的文字代码
-function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal }) {
-    const dirc = k.currBookDirc;
-    let { x, y, w_z, w_y, data, svgWidth, svgClearVal } = param;
-    let flip = 1, off = 10;
-
-    if (dirc === 2) {  //+ 处理对称
-        flip = -1;
-        off = -5;
-    } else if (dirc === 4) {
-        flip = -1;
-        svgWidth = 0;
-        off = -130;
-    } else if (dirc === 1) {
-        svgWidth = 0;
-    } else if (dirc === 3) {
-        off = -115;
-    }
-    const texts = new Array(data.length); // 预分配数组
-    for (let i = 0; i < data.length; i++) {
-        const x1 = fix3(data[i].z - w_z) * 1000;
-        const y1 = fix3(data[i].y - w_y) * 1000;
-        const result_x = (svgWidth + (x + x1 + off) * flip) * svgClearVal;
-        texts[i] = `<text x="${result_x}" y="${((y - y1 + 20)) * svgClearVal}">${randCN() + ' ' + i}</text>`;
-    }
-    return texts.join('');
-};
-
-// 计算 2 维距离
-function dist2D(x1, y1, x2, y2) {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  return Math.sqrt(dx * dx + dy * dy);
 }
