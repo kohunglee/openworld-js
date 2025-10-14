@@ -50,7 +50,6 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
         }
     }
 
-
     // 渲染实例化
     if(true){
         k.W.cube({
@@ -63,274 +62,144 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
 
     // svg 内容
     if(true){
-
         let currentZ, flip;
 
-        // 类型 1，一楼书架（目前想的就是，把 5 个类型，一口气全搞完吧，最后稳定了，再优化缩减代码.... 反正也不影响性能）
-        if (type === 1) {
-            flip = 1;  //+ 几行兼容不同朝向的数据
-            currentZ = -19.478;
-            if(dirc === 2){ flip = -1 }
-            if(dirc === 4){ flip = -1 }
-            if(dirc === 3 || dirc === 4){ currentZ = -19.478 - (-19.478 - (-30)) * 2 }  // 对称过来了 
+        // 根据 type 和 dirc 计算翻转和 Z 值，供 webgl 使用
+        if(true){
+            const baseZMap = {
+                1: -19.478,  // 一楼书架
+                2: -19.88,   // 二楼书架
+                3: -19.88,   // 二楼长书架
+                4: -26.093,  // 二楼廊柜
+                5: -30,
+            };
+            if (baseZMap[type]) {
+                const baseZ = baseZMap[type];
+                const isMirror = dirc === 2 || dirc === 4;
+                const isSymmetric = dirc === 3 || dirc === 4;
+                flip = isMirror ? -1 : 1;
+                currentZ = isSymmetric ? baseZ - (baseZ - -30) * 2 : baseZ;
+            }
         }
-
-        // 类型 2，二楼书架
-        if (type === 2) {
-            flip = 1;  //+ 几行兼容不同朝向的数据
-            currentZ = -19.88;
-            if(dirc === 2){ flip = -1 }
-            if(dirc === 4){ flip = -1 }
-            if(dirc === 3 || dirc === 4){ currentZ = -19.88 - (-19.88 - (-30)) * 2 }  // 对称过来了 
-        }
-
-        // 类型 3，二楼书架长书架
-        if (type === 3) {
-            flip = 1;  //+ 几行兼容不同朝向的数据
-            currentZ = -19.88;
-            if(dirc === 2){ flip = -1 }
-            if(dirc === 4){ flip = -1 }
-            if(dirc === 3 || dirc === 4){ currentZ = -19.88 - (-19.88 - (-30)) * 2 }  // 对称过来了 
-        }
-
-        // 类型 4，二楼书架廊柜
-        if (type === 4) {
-            flip = 1;  //+ 几行兼容不同朝向的数据
-            currentZ = -26.093;
-            if(dirc === 2){ flip = -1 }
-            if(dirc === 4){ flip = -1 }
-            if(dirc === 3 || dirc === 4){ currentZ = -26.093 - (-26.093 - (-30)) * 2 }  // 对称过来了 
-        }
-
-        const shelfDefsX = cubeDatas[shelfID].x;
 
         let upSvgPng, downSvgPng;
+        upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
+        downSvgPng = type === 1 ? k.textureMap.get('downSvgPng' + shelfID) : 1;  // 只有一楼书架，才有下书架
+        const shelfDefsX = cubeDatas[shelfID].x;
 
-        // 类型 1，一楼书架
-        if(type === 1){
-            upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
-            downSvgPng = k.textureMap.get('downSvgPng' + shelfID);
-        }
+        // 有数据，直接上 webgl
+        if(upSvgPng && downSvgPng){
+            const typeConfig = {  // 定义各类型的书架参数
+                1: [  // 一楼书架（上下两层）
+                    { name: 'bookupsvg', y: 2.681, w: 7.4, h: 0.94, offsetX: -0.076, t: () => upSvgPng },
+                    { name: 'bookdnsvg', y: 1.75,  w: 7.4, h: 0.935, offsetX: -0.377, t: () => downSvgPng },
+                ],
+                2: [  // 二楼书架
+                    { name: 'bookupsvg', y: 5.397, w: 6.625, h: 2.501, offsetX: -0.076, t: () => upSvgPng },
+                ],
+                3: [  // 二楼长书架
+                    { name: 'bookupsvg', y: 5.397, w: 6.625, h: 2.501, offsetX: -0.076, t: () => upSvgPng },
+                ],
+                4: [  // 二楼廊柜
+                    { name: 'bookupsvg', y: 5.196, w: 3.749, h: 2.1, offsetX: -0.076, t: () => upSvgPng },
+                ],
+                5: [  // 二楼廊柜 中央柜
+                    { name: 'bookupsvg', y: 5.196, w: 3.749, h: 2.1, offsetX: -0.076, t: () => upSvgPng },
+                ],
+            };
 
-        // 类型 2，二楼书架
-        if(type === 2){
-            upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
-            downSvgPng = 1;
-        }
-
-        // 类型 3，二楼书架长书架
-        if(type === 3 || type === 4){
-            upSvgPng = k.textureMap.get('upSvgPng' + shelfID);
-            downSvgPng = 1;
-        }
-
-
-        if(upSvgPng && downSvgPng){  // 有数据，直接上 webgl
-
-            // 类型 1，一楼书架
-            if(type === 1){
-                k.W.plane({  // 上大书架
-                    n: 'bookupsvg' + shelfID,
-                    x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
-                    w: 7.4, h: 0.94, 
-                    ry: -90 * flip,
-                    t: upSvgPng,
-                });
-                k.W.plane({  // 下小书架
-                    n: 'bookdnsvg' + shelfID,
-                    x: shelfDefsX - 0.377 * flip, y: 1.75, z: currentZ,
-                    w: 7.4, h: 0.935, ry: -90 * flip,
-                    t: downSvgPng,
-                });
-            }
-
-            // 类型 2，二楼书架
-            if(type === 2){
-                k.W.plane({
-                    n: 'bookupsvg' + shelfID,
-                    x: shelfDefsX - 0.076 * flip, y: 5.397, z: currentZ,
-                    w: 6.625, h: 2.501, 
-                    ry: -90 * flip,
-                    t: upSvgPng,
-                });
-            }
-
-            // 类型 3，二楼书架长书架
-            if(type === 3){
-                k.W.plane({
-                    n: 'bookupsvg' + shelfID,
-                    x: shelfDefsX - 0.076 * flip, y: 5.397, z: currentZ,
-                    w: 6.625, h: 2.501, 
-                    ry: -90 * flip,
-                    t: upSvgPng,
-                });
-            }
-
-            // 类型 4，二楼书架长书架
-            if(type === 4){
-                k.W.plane({
-                    n: 'bookupsvg' + shelfID,
-                    x: shelfDefsX - 0.076 * flip, y: 5.196, z: currentZ,
-                    w: 3.749, h: 2.1, 
-                    ry: -90 * flip,
-                    t: upSvgPng,
-                });
+            const configs = typeConfig[type];  // 获取该 type 书架的 svg 绘制配置
+            if (configs) {
+                for (const cfg of configs) {
+                    k.W.plane({
+                        n: cfg.name + shelfID,
+                        x: shelfDefsX + cfg.offsetX * flip,
+                        y: cfg.y,
+                        z: currentZ,
+                        w: cfg.w,
+                        h: cfg.h,
+                        ry: -90 * flip,
+                        t: cfg.t(),
+                    });
+                }
             }
         } else {  // 没有数据，生成和渲染 svg
-
+            
             let textureAlp;
             const svgClearVal = 0.85;  // 清晰度
 
-            // 类型 1，一楼书架
-            if(type === 1){
-                
-                const baseZ = (dirc === 3 || dirc === 4) ? -36.884 : -23.116;  // 基准 Z 值，定位 svg 文本
-                const up_TextCode = svgTextCodeBuild({  // 上层 681 个，svg 字
-                    x: 60, y: 170, w_z: baseZ, w_y: 2.898, data: bookDataIns.slice(0, 681),
-                    svgWidth: 7400, svgClearVal: svgClearVal,
-                });  
-                const down_TextCode = svgTextCodeBuild({  // 下层 其余的，svg 字
-                    x: 77, y: 282, w_z: baseZ + 0.018, w_y: 1.853, data: bookDataIns.slice(681, bookDataIns.length),
-                    svgWidth: 7400, svgClearVal: svgClearVal,
-                })
-                const upSvg = svgCodeMake(7400 * svgClearVal, 940 * svgClearVal, up_TextCode, svgClearVal);      // 上层的 SVG 数据
-                const downSvg = svgCodeMake(7400 * svgClearVal, 935 * svgClearVal, down_TextCode, svgClearVal);  // 下层的 SVG 数据
-                textureAlp = [
-                    { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
-                    { id:'downSvgPng' + shelfID, type: 'svg', svgCode: downSvg },
-                ];
-            }
+            const baseZmap = {  // 基准 Z 表（神秘 Z 值）
+                2: {1:-23.121,2:-23.895,3:-36.085,4:-36.86},
+                3: {1:-23.121,2:-23.895,3:-36.085,4:-36.86},
+                4: {1:-27.894,2:-31.546,3:-28.433,4:-32.085},
+                5: {1:-31.8 - 0.001,2:-35.453},
+            };
 
-            // 类型 2，二楼书架
-            if(type === 2){
-                let baseZ;  // 不同方向的神秘 Z 基准
-                if(dirc === 1){ baseZ = -23.121; }
-                if(dirc === 2){ baseZ = -23.895; }
-                if(dirc === 3){ baseZ = -36.085; }
-                if(dirc === 4){ baseZ = -36.86; }
-                const up_TextCode = svgTextCodeBuild({  // 上层 681 个，svg 字
-                    x: 70, y: 185,  // 左上第三本的 svg 坐标
-                    w_z: baseZ, w_y: 6.379,  // 左上第三本的 webgl 坐标
-                    data: bookDataIns,
-                    svgWidth: 7400, svgClearVal: svgClearVal,
-                });
-                const upSvg = svgCodeMake(6625 * svgClearVal, 2501 * svgClearVal, up_TextCode, svgClearVal);      // 上层的 SVG 数据
-                textureAlp = [
-                    { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
-                ];
-            }
-
-            // 类型 3，二楼书架长书架
-            if(type === 3){
-                let baseZ;  // 不同方向的神秘 Z 基准
-                if(dirc === 1){ baseZ = -23.121; }
-                if(dirc === 2){ baseZ = -23.895; }
-                if(dirc === 3){ baseZ = -36.085; }
-                if(dirc === 4){ baseZ = -36.86; }
-                const up_TextCode = svgTextCodeBuild({  // 上层 681 个，svg 字
-                    x: 70, y: 185,  // 左上第三本的 svg 坐标
-                    w_z: baseZ, w_y: 6.379,  // 左上第三本的 webgl 坐标
-                    data: bookDataIns,
-                    svgWidth: 7400, svgClearVal: svgClearVal,
-                });
-                const upSvg = svgCodeMake(6625 * svgClearVal, 2501 * svgClearVal, up_TextCode, svgClearVal);      // 上层的 SVG 数据
-                textureAlp = [
-                    { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
-                ];
-            }
-
-            // 类型 4，二楼书架廊柜
-            if(type === 4){
-                let baseZ;  // 不同方向的神秘 Z 基准
-                if(dirc === 1){ baseZ = -27.894; }
-                if(dirc === 2){ baseZ = -27.894 - 3.652; }
-                if(dirc === 3){ baseZ = -27.894 - 0.539; }
-                if(dirc === 4){ baseZ = -27.894 - 4.191; }
-                const up_TextCode = svgTextCodeBuild({  // 上层 681 个，svg 字
-                    x: 70, y: 185,  // 左上第三本的 svg 坐标
-                    w_z: baseZ, w_y: 5.984,  // 左上第三本的 webgl 坐标
-                    data: bookDataIns,
-                    svgWidth: 7400, svgClearVal: svgClearVal,
-                });
-                const upSvg = svgCodeMake(3749 * svgClearVal, 2100 * svgClearVal, up_TextCode, svgClearVal);      // 上层的 SVG 数据
-                // console.log(upSvg);
-                textureAlp = [
-                    { id:'upSvgPng' + shelfID, type: 'svg', svgCode: upSvg },
-                ];
-            }
             
 
+            // 计算 textureAlp
+            switch(type){
+                case 1: { // 一楼书架，上下两层
+                    const baseZ = (dirc===3||dirc===4)?-36.884:-23.116;
+                    const upTxt  = svgTextCodeBuild({x:60,y:170,w_z:baseZ,w_y:2.898,data:bookDataIns.slice(0,681),svgWidth:7400,svgClearVal});
+                    const dnTxt  = svgTextCodeBuild({x:77,y:282,w_z:baseZ+0.018,w_y:1.853,data:bookDataIns.slice(681),svgWidth:7400,svgClearVal});
+                    textureAlp = [
+                        {id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(7400*svgClearVal,940*svgClearVal,upTxt,svgClearVal)},
+                        {id:`downSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(7400*svgClearVal,935*svgClearVal,dnTxt,svgClearVal)}
+                    ];
+                    break;
+                }
+                case 2: case 3: { // 二楼普通 / 长书架
+                    const z = baseZmap[type][dirc];
+                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:6.379,data:bookDataIns,svgWidth:7400,svgClearVal});
+                    textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(6625*svgClearVal,2501*svgClearVal,txt,svgClearVal)}];
+                    break;
+                }
+                case 4: { // 二楼廊柜
+                    const z = baseZmap[4][dirc];
+                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:5.984,data:bookDataIns,svgWidth:7400,svgClearVal});
+                    textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
+                    break;
+                }
+                case 5: { // 二楼廊柜
+                    const z = baseZmap[5][dirc];
+                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:5.984,data:bookDataIns,svgWidth:7400,svgClearVal});
+                    textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
+                    break;
+                }
+            }
+
             const renderSvg = () => {  // 挂载到【任务队列模式】的内容，人物静止时执行
-
-                // const xzDistence = dist2D(mvpPos.x, mvpPos.z, shelfInfo.x, shelfInfo.z);  // 人物与书架的 xy 距离
                 const xDistence = Math.abs(mvpPos.x - shelfInfo.x);
-                const zDistence = Math.abs(mvpPos.z - shelfInfo.z);
                 const yDistence = Math.abs(mvpPos.y - shelfInfo.y);
-
                 if(xDistence > 3 || yDistence > 1.5){  // 距离过远，不渲染，同时删除
                     k.myRestDoFunc.add(renderSvg);
                     return 0
                 }
+                k.loadTexture(textureAlp).then(v => {
+                    const shelfMap = {  // 不同 type 的渲染配置
+                        1: [
+                            {id:'up',   y:2.681, xOff:-0.076, w:7.4, h:0.94},
+                            {id:'down', y:1.75,  xOff:-0.377, w:7.4, h:0.935},
+                        ],
+                        2: [{id:'up', y:5.397, xOff:-0.076, w:6.625, h:2.501}],
+                        3: [{id:'up', y:5.397, xOff:-0.076, w:6.625, h:2.501}],
+                        4: [{id:'up', y:5.196, xOff:-0.076, w:3.749, h:2.1}],
+                        5: [{id:'up', y:5.196, xOff:-0.076, w:3.749, h:2.1}],
+                    };
 
-                k.loadTexture(textureAlp).then(loadedImage => {
-
-                    // 类型 1，一楼书架
-                    if(type === 1){
-                        const upSvgPng_live = k.textureMap.get('upSvgPng' + shelfID);
-                        const downSvgPng_live = k.textureMap.get('downSvgPng' + shelfID);
-                        k.W.plane({  // 上大书架
-                            n: 'bookupsvg' + shelfID,
-                            x: shelfDefsX - 0.076 * flip, y: 2.681, z: currentZ,
-                            w: 7.4, h: 0.94, 
+                    (shelfMap[type] || []).forEach(v=>{  // 渲染书架贴图
+                        const tex = k.textureMap.get(`${v.id}SvgPng${shelfID}`);
+                        if(!tex) return;
+                        k.W.plane({
+                            n: `book${v.id}svg${shelfID}`,
+                            x: shelfDefsX + v.xOff * flip,
+                            y: v.y, z: currentZ,
+                            w: v.w, h: v.h,
                             ry: -90 * flip,
-                            t: upSvgPng_live,
+                            t: tex,
                         });
-                        k.W.plane({  // 下小书架
-                            n: 'bookdnsvg' + shelfID,
-                            x: shelfDefsX - 0.377 * flip, y: 1.75, z: currentZ,
-                            w: 7.4, h: 0.935, ry: -90 * flip,
-                            t: downSvgPng_live,
-                        });
-                    }
-
-                    // 类型 2，二楼书架
-                    if(type === 2){
-                        const upSvgPng_live = k.textureMap.get('upSvgPng' + shelfID);
-                        k.W.plane({  // 上大书架
-                            n: 'bookupsvg' + shelfID,
-                            x: shelfDefsX - 0.076 * flip, y: 5.397, z: currentZ,
-                            w: 6.625, h: 2.501, 
-                            ry: -90 * flip,
-                            t: upSvgPng_live,
-                        });
-                    }
-
-                    // 类型 3，二楼书架长书架
-                    if(type === 3){
-                        const upSvgPng_live = k.textureMap.get('upSvgPng' + shelfID);
-                        k.W.plane({  // 上大书架
-                            n: 'bookupsvg' + shelfID,
-                            x: shelfDefsX - 0.076 * flip, y: 5.397, z: currentZ,
-                            w: 6.625, h: 2.501, 
-                            ry: -90 * flip,
-                            t: upSvgPng_live,
-                        });
-                    }
-
-                    // 类型 4，二楼书架廊柜
-                    if(type === 4){
-                        const upSvgPng_live = k.textureMap.get('upSvgPng' + shelfID);
-                        k.W.plane({  // 上大书架
-                            n: 'bookupsvg' + shelfID,
-                            x: shelfDefsX - 0.076 * flip, y: 5.196, z: currentZ,
-                            w: 3.749, h: 2.1, 
-                            ry: -90 * flip,
-                            t: upSvgPng_live,
-                        });
-                    }
-
-
-                    
+                    });
                 });
             }
 
@@ -349,7 +218,7 @@ function removeBookShelf(shelfID){
     k.W.delete('bookdnsvg' + shelfID);
 }
 
-// 为每本书都注册一下渲染和显示事件
+// 为每本书都注册一下渲染和显示事件，也就是在激活时执行 bookSystem， 删除时 removeBookShelf
 function bookSysRegis(){
     k.bookShelfInsData = new Map();
     const get = k.indexToArgs.get.bind(k.indexToArgs);
@@ -367,26 +236,13 @@ function bookSysRegis(){
         );
     }
 
-
-    regisFloor(k.bookS.floor1, 1);
-    regisFloor(k.bookS.floor2, 2);
+    regisFloor(k.bookS.floor1, 1);  // 一楼
+    regisFloor(k.bookS.floor2, 2);   // 统柜
     regisFloor(k.bookS.floor2.cdbook, 3);  // 长柜
     regisFloor(k.bookS.floor2.LGbook, 4);  // 廊柜
-    
+    regisFloor(k.bookS.floor2.LGCbook, 5);  // 廊柜 中央柜
 
-
-    /** ----【开始试验第二层】----- */
-
-    // /** ----【试验长柜，类型 3】（... 3 和 4 类型，后续也要搞成上面 1 和 2 类型的，加上 bookSystem 和 removeBookShelf）----- */
-    // bookSystem(k.bookS.floor2.cdbook, 1, 3);  // 朝向 1
-    // bookSystem(k.bookS.floor2.cdbookdire2[0], 2, 3);  // 朝向 2
-    // bookSystem(k.bookS.floor2.cdbookdire3[0], 3, 3);  // 朝向 3
-    // bookSystem(k.bookS.floor2.cdbookdire4[0], 4, 3);  // 朝向 4
-
-    /** -----【试验廊柜，类型 4】------ */
-    // bookSystem(k.bookS.floor2.LGbook, 1, 4);  // 朝向 1
-    // bookSystem(k.bookS.floor2.LGbookdire2[0], 2, 4);  // 朝向 2
-    // bookSystem(k.bookS.floor2.LGbookdire3[0], 3, 4);  // 朝向 3
-    // bookSystem(k.bookS.floor2.LGbookdire4[0], 4, 4);  // 朝向 4
+    console.log(k.bookS.floor2.LGbook);
+    console.log(k.bookS.floor2.LGCbook);
 
 }

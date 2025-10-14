@@ -262,20 +262,28 @@ function logicData(){  //
                 // --------
 
                 // 二楼的廊柜书的定位书，以及对称一下
-                k.bookS.floor2.LGbook = {};  // （朝向：1）
+                k.bookS.floor2.LGbook = {};
                 k.bookS.floor2.LGbook.dire1 = [106];  // （朝向：1）
                 k.bookS.floor2.LGbook.dire2 = symo([  // （朝向：2）
                     ...k.bookS.floor2.LGbook.dire1,
                 ], {x:34.7});
-                // 二楼的长柜书的定位书（朝向：3）
+                // 二楼的廊柜书的定位书（朝向：3）
                 k.bookS.floor2.LGbook.dire3 = symo([
                     ...k.bookS.floor2.LGbook.dire1,
-                ], {z:-30});
-                // 二楼的长柜书的定位书（朝向：4）
+                ], {z:-29.985});
+                // 二楼的廊柜书的定位书（朝向：4）
                 k.bookS.floor2.LGbook.dire4 = symo([
                     ...k.bookS.floor2.LGbook.dire2,
                 ], {z:-30});
 
+                // 二楼的廊柜书的中间书架
+                k.bookS.floor2.LGCbook = {};  // （朝向：1）
+                k.bookS.floor2.LGCbook.dire1 = symo([  // （朝向：1）
+                    ...k.bookS.floor2.LGbook.dire1,
+                ], {z:-28.645});
+                k.bookS.floor2.LGCbook.dire2 = symo([  // （朝向：2）
+                    ...k.bookS.floor2.LGCbook.dire1,
+                ], {x:34.7});
                 
             }
 
