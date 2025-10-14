@@ -166,9 +166,9 @@ function getshelfDefs(type, id){  // 获取规则
         ];
     }
 
-    if(type === 4){
+    if(type === 4 || type === 5){
         const count = {maxlen: 1.18, count: 35};
-        return [  // 规则 ③，二楼书架长书架
+        return [  // 规则 ④，二楼书架长书架
 
             // 2
             { id: 8, ref: shelfID, off: [-0.345 * 2, 'y'], ...count},
@@ -314,7 +314,7 @@ function registerBookshelf({ id, ref, off, maxlen = 1.05, count = 30}, currentSh
     if(dirc === 2 || dirc === 3) {  // 对称到另一侧、对称到对面，的情况
         const off = (dirc === 2) ? 1 : -1;
         for(let i = 0; i < bookSet.length; i++){  // 对称到另一侧的情况，要 Z 平移一下，看起来更自然一点
-            bookSet[i].z += off * 0.05;
+            bookSet[i].z += off * 0.03;
         }
     }
     for (const book of bookSet) {  // 推入数据流
