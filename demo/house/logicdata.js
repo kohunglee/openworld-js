@@ -240,36 +240,40 @@ function logicData(){  //
                     ...k.bookS.floor2.dire2,
                 ], {z:-30});
 
+                // --------
 
                 // 二楼的长柜书的定位书，以及对称一下
-                k.bookS.floor2.cdbook = 105;  // （朝向：1）
-                k.bookS.floor2.cdbookdire2 = symo([  // （朝向：2）
-                    k.bookS.floor2.cdbook
+                k.bookS.floor2.cdbook = {};  // （朝向：1）
+                k.bookS.floor2.cdbook.dire1 = [105];  // （朝向：1）
+                k.bookS.floor2.cdbook.dire2 = symo([  // （朝向：2）
+                    ...k.bookS.floor2.cdbook.dire1
                 ], {x:34.7});
 
                 // 二楼的长柜书的定位书（朝向：3）
-                k.bookS.floor2.cdbookdire3 = symo([
-                    k.bookS.floor2.cdbook,
+                k.bookS.floor2.cdbook.dire3 = symo([
+                    ...k.bookS.floor2.cdbook.dire1,
                 ], {z:-30});
 
                 // 二楼的长柜书的定位书（朝向：4）
-                k.bookS.floor2.cdbookdire4 = symo([
-                    ...k.bookS.floor2.cdbookdire2,
+                k.bookS.floor2.cdbook.dire4 = symo([
+                    ...k.bookS.floor2.cdbook.dire2,
                 ], {z:-30});
 
+                // --------
 
                 // 二楼的廊柜书的定位书，以及对称一下
-                k.bookS.floor2.LGbook = 106;  // （朝向：1）
-                k.bookS.floor2.LGbookdire2 = symo([  // （朝向：2）
-                    k.bookS.floor2.LGbook
+                k.bookS.floor2.LGbook = {};  // （朝向：1）
+                k.bookS.floor2.LGbook.dire1 = [106];  // （朝向：1）
+                k.bookS.floor2.LGbook.dire2 = symo([  // （朝向：2）
+                    ...k.bookS.floor2.LGbook.dire1,
                 ], {x:34.7});
                 // 二楼的长柜书的定位书（朝向：3）
-                k.bookS.floor2.LGbookdire3 = symo([
-                    k.bookS.floor2.LGbook,
+                k.bookS.floor2.LGbook.dire3 = symo([
+                    ...k.bookS.floor2.LGbook.dire1,
                 ], {z:-30});
                 // 二楼的长柜书的定位书（朝向：4）
-                k.bookS.floor2.LGbookdire4 = symo([
-                    ...k.bookS.floor2.LGbookdire2,
+                k.bookS.floor2.LGbook.dire4 = symo([
+                    ...k.bookS.floor2.LGbook.dire2,
                 ], {z:-30});
 
                 

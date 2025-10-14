@@ -98,7 +98,7 @@ function makeGroundMvp(){
             // 在人物运动、静止时执行的函数
             if(true){
                 if((mp.x + mp.y + mp.z + mk.turnRight).toFixed(2) === Last_mvpBodyPos) {  // 人物处于静止状态
-                    // k.myRestDoFunc();
+                    k.myRestDoFunc();
                 } else {  // 人物处于运动状态
                     Last_mvpBodyPos = (mp.x + mp.y + mp.z + mk.turnRight).toFixed(2);
                 }
@@ -110,10 +110,9 @@ function makeGroundMvp(){
 
 
 /**
- * 任务队列模式。
+ * 任务队列模式
  * ------------
  * 主要用于在人物静止时加载 svg ，防止画面卡帧、卡顿
- * @param interval {number} 间隔时间，默认100ms
  */
 function dofunc() {
   let q = [];
