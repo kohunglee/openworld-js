@@ -265,7 +265,7 @@ function svgCodeMake(width, height, textCode, svgClearVal = 1) {
         preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="三个红色方块 与 你好啊" style="width:500px">
-        <rect x="0" y="0" width="100%" height="100%" fill="rgba(0, 0, 0, 0.73)"/>
+        <rect x="0" y="0" width="100%" height="100%" fill="rgba(0, 0, 0, 0)"/>
         <rect x="60"  y="30" width="40" height="40" fill="#e63946" rx="4"/>
         <rect x="110" y="20" width="40" height="80" fill="#e63946" rx="4"/>
         <rect x="160" y="35" width="40" height="50" fill="#e63946" rx="4"/>
@@ -367,20 +367,20 @@ function dist2D(x1, y1, x2, y2) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-// 调试使用，按下 R 键渲染 svg
-let mKeyPressed = false;
-document.addEventListener('keydown', e => {
-    if ((e.key === 'r' || e.key === 'R') && !mKeyPressed) {
-        mKeyPressed = true;
-        doSomething();
-    }
-});
-document.addEventListener('keyup', e => {
-    if (e.key === 'r' || e.key === 'R') {
-        mKeyPressed = false;
-    }
-});
-function doSomething() {
-    // console.log('执行 M 事件逻辑');
-    k.myRestDoFunc();
-}
+// // 调试使用，按下 R 键渲染 svg
+// let mKeyPressed = false;
+// document.addEventListener('keydown', e => {
+//     if ((e.key === 'r' || e.key === 'R') && !mKeyPressed) {
+//         mKeyPressed = true;
+//         doSomething();
+//     }
+// });
+// document.addEventListener('keyup', e => {
+//     if (e.key === 'r' || e.key === 'R') {
+//         mKeyPressed = false;
+//     }
+// });
+// function doSomething() {
+//     // console.log('执行 M 事件逻辑');
+//     k.myRestDoFunc();
+// }
