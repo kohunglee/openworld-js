@@ -44,3 +44,5 @@ k.star = (index) => {  // 闪烁按照 ID 寻找方块
         k.starID = index;
     }
 }
+
+k.minY = 1.35;
