@@ -12,10 +12,11 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
     let bookDataIns = k.bookShelfInsData.get(shelfID);  // 书的实例数据
     const mvpPos = k.mainVPlayer.body.position;
     const shelfInfo = cubeDatas[shelfID];
+    const bassY = shelfInfo.y;  // Y 基准值
 
     if(bookDataIns === undefined){  // 该书架没有 ins 数据，生成（先不考虑 svg）
 
-        // 生成书
+        // 生成书的实例模型
         if(true){
             const shelfDefs = getshelfDefs(type, shelfID);  // 获取书架规则表
             for (let i = 0, len = shelfDefs.length; i < len; i++) {
@@ -95,16 +96,16 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                     { name: 'bookdnsvg', y: 1.75,  w: 7.4, h: 0.935, offsetX: -0.377, t: () => downSvgPng },
                 ],
                 2: [  // 二楼书架
-                    { name: 'bookupsvg', y: 5.397, w: 6.625, h: 2.501, offsetX: -0.076, t: () => upSvgPng },
+                    { name: 'bookupsvg', y: bassY + 0.067, w: 6.625, h: 2.501, offsetX: -0.076, t: () => upSvgPng },
                 ],
                 3: [  // 二楼长书架
-                    { name: 'bookupsvg', y: 5.397, w: 6.625, h: 2.501, offsetX: -0.076, t: () => upSvgPng },
+                    { name: 'bookupsvg', y: bassY + 0.067, w: 6.625, h: 2.501, offsetX: -0.076, t: () => upSvgPng },
                 ],
                 4: [  // 二楼廊柜
-                    { name: 'bookupsvg', y: 5.196, w: 3.749, h: 2.1, offsetX: -0.076, t: () => upSvgPng },
+                    { name: 'bookupsvg', y: bassY - 0.106, w: 3.749, h: 2.1, offsetX: -0.076, t: () => upSvgPng },
                 ],
                 5: [  // 二楼廊柜 中央柜
-                    { name: 'bookupsvg', y: 5.196, w: 3.749, h: 2.1, offsetX: -0.076, t: () => upSvgPng },
+                    { name: 'bookupsvg', y: bassY - 0.106, w: 3.749, h: 2.1, offsetX: -0.076, t: () => upSvgPng },
                 ],
             };
 
@@ -135,9 +136,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                 5: {1:-31.8 - 0.001,2:-35.453},
             };
 
-            
-
-            // 计算 textureAlp
+            // 计算 textureAlp（送给 openworld.js 去渲染 img 的数据）
             switch(type){
                 case 1: { // 一楼书架，上下两层
                     const baseZ = (dirc===3||dirc===4)?-36.884:-23.116;
@@ -151,19 +150,19 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                 }
                 case 2: case 3: { // 二楼普通 / 长书架
                     const z = baseZmap[type][dirc];
-                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:6.379,data:bookDataIns,svgWidth:7400,svgClearVal});
+                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+1.049,data:bookDataIns,svgWidth:7400,svgClearVal});
                     textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(6625*svgClearVal,2501*svgClearVal,txt,svgClearVal)}];
                     break;
                 }
                 case 4: { // 二楼廊柜
                     const z = baseZmap[4][dirc];
-                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:5.984,data:bookDataIns,svgWidth:7400,svgClearVal});
+                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.654,data:bookDataIns,svgWidth:7400,svgClearVal});
                     textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
                     break;
                 }
                 case 5: { // 二楼廊柜
                     const z = baseZmap[5][dirc];
-                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:5.984,data:bookDataIns,svgWidth:7400,svgClearVal});
+                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.654,data:bookDataIns,svgWidth:7400,svgClearVal});
                     textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
                     break;
                 }
@@ -182,10 +181,10 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                             {id:'up',   y:2.681, xOff:-0.076, w:7.4, h:0.94},
                             {id:'down', y:1.75,  xOff:-0.377, w:7.4, h:0.935},
                         ],
-                        2: [{id:'up', y:5.397, xOff:-0.076, w:6.625, h:2.501}],
-                        3: [{id:'up', y:5.397, xOff:-0.076, w:6.625, h:2.501}],
-                        4: [{id:'up', y:5.196, xOff:-0.076, w:3.749, h:2.1}],
-                        5: [{id:'up', y:5.196, xOff:-0.076, w:3.749, h:2.1}],
+                        2: [{id:'up', y:bassY + 0.067, xOff:-0.076, w:6.625, h:2.501}],
+                        3: [{id:'up', y:bassY + 0.067, xOff:-0.076, w:6.625, h:2.501}],
+                        4: [{id:'up', y:bassY - 0.106, xOff:-0.076, w:3.749, h:2.1}],
+                        5: [{id:'up', y:bassY - 0.106, xOff:-0.076, w:3.749, h:2.1}],
                     };
 
                     (shelfMap[type] || []).forEach(v=>{  // 渲染书架贴图
@@ -215,7 +214,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
 function removeBookShelf(shelfID){
     k.W.delete('booksInsDisplay' + shelfID);
     k.W.delete('bookupsvg' + shelfID);
-    k.W.delete('bookdnsvg' + shelfID);
+    k.W.delete('bookdownsvg' + shelfID);
 }
 
 // 为每本书都注册一下渲染和显示事件，也就是在激活时执行 bookSystem， 删除时 removeBookShelf
@@ -242,7 +241,7 @@ function bookSysRegis(){
     regisFloor(k.bookS.floor2.LGbook, 4);  // 廊柜
     regisFloor(k.bookS.floor2.LGCbook, 5);  // 廊柜 中央柜
 
-    console.log(k.bookS.floor2.LGbook);
-    console.log(k.bookS.floor2.LGCbook);
+    // --- 三楼
+    regisFloor(k.bookS.floor3, 2);   // 统柜
 
 }
