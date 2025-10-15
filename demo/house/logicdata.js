@@ -915,27 +915,86 @@ function logicData(){  //
                 ], x_diff, 2, 'x', y_diff, 'y', z_diff, 'z')
             });
 
+        // 一楼的假书
+        if(true) {
+            // 初始化
+            k.bookS.floor1.bookSub = {};  // 长柜的假书替身
+            k.bookS.floor1.bookSub.b001 = 107;
+            k.bookS.floor1.bookSub.b002 = 108;
+            k.bookS.floor1.bookSub.b003 = 109;
+            cubeDatas[k.bookS.floor1.bookSub.b001].st = 1;  // 无物理
+            cubeDatas[k.bookS.floor1.bookSub.b002].st = 1;  // 无物理
+            cubeDatas[k.bookS.floor1.bookSub.b003].st = 1;  // 无物理
+
+            k.bookS.floor1.bookSub.ob001 = offset([
+                k.bookS.floor1.bookSub.b001,
+            ], -0.29, 3, 'y');
+            k.bookS.floor1.bookSub.ob002 = offset([
+                k.bookS.floor1.bookSub.b002,
+            ], -0.22, 4, 'y');
+            k.bookS.floor1.bookSub.ob003 = offset([
+                k.bookS.floor1.bookSub.b003,
+            ], -0.45, 2, 'y');
+            const temp = k.bookS.floor1.bookSub;
+            k.bookS.floor1.bookSub.ref = [...temp.ob001, ...temp.ob002, ...temp.ob003, temp.b001, temp.b002, temp.b003];  // 一楼书架假书的参考
+
+            k.bookS.floor1.bookSub.refSymo = symo([  // 对称参考
+                ...k.bookS.floor1.bookSub.ref,
+            ], {x:45});
+
+            k.bookS.floor1.bookSub.refSymoZ = symo([  // 对称参考
+                ...k.bookS.floor1.bookSub.ref,
+            ], {z:-30});
+
+            k.bookS.floor1.bookSub.refSymoZSymo = symo([  // 对称参考
+                ...k.bookS.floor1.bookSub.refSymo,
+            ], {z:-30});
+
+            // // // 辅助计算值，计算相对位置
+            const bookSubx = cubeDatas[k.bookS.floor1.bookSub.b001].x;
+
+            // // console.log(k.bookS.floor2.cd);
+
+            // 假书，二楼统柜方向 1
+            k.bookS.floor1.dire1.forEach((v, i) => {
+                const curr_x = cubeDatas[v].x;
+                const x_diff = bookSubx - curr_x;
+                k.bookS.floor1.bookSub['s'+ v] = offset([
+                    ...k.bookS.floor1.bookSub.ref,
+                ], x_diff, 2)
+            });
+
+            // 假书，二楼统柜方向 2
+            k.bookS.floor1.dire2.forEach((v, i) => {
+                const curr_x = cubeDatas[v].x;
+                const x_diff = bookSubx - curr_x + 0.25;
+                k.bookS.floor1.bookSub['s'+ v] = offset([
+                    ...k.bookS.floor1.bookSub.refSymo,
+                ], x_diff, 2)
+            });
+
+            // 假书，二楼统柜方向 3
+            k.bookS.floor1.dire3.forEach((v, i) => {
+                const curr_x = cubeDatas[v].x;
+                const x_diff = bookSubx - curr_x;
+                k.bookS.floor1.bookSub['s'+ v] = offset([
+                    ...k.bookS.floor1.bookSub.refSymoZ,
+                ], x_diff, 2, 'x',)
+            });
+
+            // 假书，二楼统柜方向 3
+            k.bookS.floor1.dire4.forEach((v, i) => {
+                const curr_x = cubeDatas[v].x;
+                const x_diff = bookSubx - curr_x + 0.25;
+                k.bookS.floor1.bookSub['s'+ v] = offset([
+                    ...k.bookS.floor1.bookSub.refSymoZSymo,
+                ], x_diff, 2, 'x',)
+            });
+        }
 
 
-            // k.bookS.floor3.LGCbook.dire1 = offset([  
-            //     ...k.bookS.floor2.LGCbook.dire1,
-            // ], -2.7, 5, 'y');
-            // k.bookS.floor3.LGCbook.dire2 = offset([  
-            //     ...k.bookS.floor2.LGCbook.dire2,
-            // ], -2.7, 5, 'y');
 
-                // k.bookS.floor2.LGCbook = {};  // （朝向：1）
-                // k.bookS.floor2.LGCbook.dire1 = symo([  // （朝向：1）
-                //     ...k.bookS.floor2.LGbook.dire1,
-                // ], {z:-28.645});
-                // k.bookS.floor2.LGCbook.dire2 = symo([  // （朝向：2）
-                //     ...k.bookS.floor2.LGCbook.dire1,
-                // ], {x:34.7});
 
-            // // console.log(k.bookS.floor2.bookSub);
-
-            // // 清空参考假书模型，防止看起来很奇怪
-            // k.bookS.floor2.bookSub.lg.tgRef = null;
         }
     }
 }
