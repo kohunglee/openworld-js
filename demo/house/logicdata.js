@@ -277,14 +277,13 @@ function logicData(){  //
                 ], {z:-30});
 
                 // 二楼的廊柜书的中间书架
-                k.bookS.floor2.LGCbook = {};  // （朝向：1）
+                k.bookS.floor2.LGCbook = {a:1};  // （朝向：1）
                 k.bookS.floor2.LGCbook.dire1 = symo([  // （朝向：1）
                     ...k.bookS.floor2.LGbook.dire1,
                 ], {z:-28.645});
                 k.bookS.floor2.LGCbook.dire2 = symo([  // （朝向：2）
                     ...k.bookS.floor2.LGCbook.dire1,
                 ], {x:34.7});
-                
             }
 
             // 二楼柜子的对称镜像操作
@@ -394,52 +393,74 @@ function logicData(){  //
 
             // 书系统
             if(true){
-                // k.bookS.floor2.first;  // 二楼定位书（统柜）
                 k.bookS.floor3 = {};  // 初始化第三层书
 
-                // k.bookS.floor3.first = offset([  // 三楼
-                //     k.bookS.floor2.first,
-                // ], -2.7, 2, 'y');
+                // -----  普通书柜（统柜）
 
-                // regisFloor(k.bookS.floor2, 2);   // 统柜
-                // regisFloor(k.bookS.floor2.cdbook, 3);  // 长柜
-                // regisFloor(k.bookS.floor2.LGbook, 4);  // 廊柜
-                // regisFloor(k.bookS.floor2.LGCbook, 5);  // 廊柜 中央柜
-
-                k.bookS.floor3.dire1 = offset([  // 三楼
+                k.bookS.floor3.dire1 = offset([  
                     ...k.bookS.floor2.dire1,
-                ], -2.7, 2, 'y');
+                ], -2.7, 5, 'y');
 
-                k.bookS.floor3.dire2 = offset([  // 三楼
+                k.bookS.floor3.dire2 = offset([  
                     ...k.bookS.floor2.dire2,
-                ], -2.7, 2, 'y');
+                ], -2.7, 5, 'y');
 
-                k.bookS.floor3.dire3 = offset([  // 三楼
+                k.bookS.floor3.dire3 = offset([  
                     ...k.bookS.floor2.dire3,
-                ], -2.7, 2, 'y');
+                ], -2.7, 5, 'y');
 
-                k.bookS.floor3.dire4 = offset([  // 三楼
+                k.bookS.floor3.dire4 = offset([  
                     ...k.bookS.floor2.dire4,
-                ], -2.7, 2, 'y');
+                ], -2.7, 5, 'y');
 
-                // -----
+                // -----  长柜
 
-                k.bookS.floor3.cdbook = {};  // 初始化
-                k.bookS.floor3.cdbook.dire1 = offset([  // 三楼
+                k.bookS.floor3.cdbook = {};
+                k.bookS.floor3.cdbook.dire1 = offset([  
                     ...k.bookS.floor2.cdbook.dire1,
-                ], -2.7, 2, 'y');
+                ], -2.7, 5, 'y');
 
-                k.bookS.floor3.cdbook.dire2 = offset([  // 三楼
+                k.bookS.floor3.cdbook.dire2 = offset([  
                     ...k.bookS.floor2.cdbook.dire2,
-                ], -2.7, 2, 'y');
+                ], -2.7, 5, 'y');
 
-                k.bookS.floor3.cdbook.dire3 = offset([  // 三楼
+                k.bookS.floor3.cdbook.dire3 = offset([  
                     ...k.bookS.floor2.cdbook.dire3,
-                ], -2.7, 2, 'y');
+                ], -2.7, 5, 'y');
 
-                k.bookS.floor3.cdbook.dire4 = offset([  // 三楼
+                k.bookS.floor3.cdbook.dire4 = offset([  
                     ...k.bookS.floor2.cdbook.dire4,
-                ], -2.7, 2, 'y');
+                ], -2.7, 5, 'y');
+
+                // -----  廊柜
+
+                k.bookS.floor3.LGbook = {};
+                k.bookS.floor3.LGbook.dire1 = offset([  
+                    ...k.bookS.floor2.LGbook.dire1,
+                ], -2.7, 5, 'y');
+
+                k.bookS.floor3.LGbook.dire2 = offset([  
+                    ...k.bookS.floor2.LGbook.dire2,
+                ], -2.7, 5, 'y');
+
+                k.bookS.floor3.LGbook.dire3 = offset([  
+                    ...k.bookS.floor2.LGbook.dire3,
+                ], -2.7, 5, 'y');
+
+                k.bookS.floor3.LGbook.dire4 = offset([  
+                    ...k.bookS.floor2.LGbook.dire4,
+                ], -2.7, 5, 'y');
+
+                // -----  廊柜 中央柜
+
+                k.bookS.floor3.LGCbook = {};
+                k.bookS.floor3.LGCbook.dire1 = offset([  
+                    ...k.bookS.floor2.LGCbook.dire1,
+                ], -2.7, 5, 'y');
+                k.bookS.floor3.LGCbook.dire2 = offset([  
+                    ...k.bookS.floor2.LGCbook.dire2,
+                ], -2.7, 5, 'y');
+
 
 
             }

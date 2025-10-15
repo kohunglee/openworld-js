@@ -156,13 +156,13 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                 }
                 case 4: { // 二楼廊柜
                     const z = baseZmap[4][dirc];
-                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.654,data:bookDataIns,svgWidth:7400,svgClearVal});
+                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.67,data:bookDataIns,svgWidth:7400,svgClearVal});
                     textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
                     break;
                 }
                 case 5: { // 二楼廊柜
                     const z = baseZmap[5][dirc];
-                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.654,data:bookDataIns,svgWidth:7400,svgClearVal});
+                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.67,data:bookDataIns,svgWidth:7400,svgClearVal});
                     textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
                     break;
                 }
@@ -243,5 +243,8 @@ function bookSysRegis(){
 
     // --- 三楼
     regisFloor(k.bookS.floor3, 2);   // 统柜
+    regisFloor(k.bookS.floor3.cdbook, 3);   // 长柜
+    regisFloor(k.bookS.floor3.LGbook, 4);   // 廊柜
+    regisFloor(k.bookS.floor3.LGCbook, 5);   // 廊柜
 
 }
