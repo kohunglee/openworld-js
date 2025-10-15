@@ -307,18 +307,42 @@ const W = {
             if(W.next[object.g]){  // 组 处理
               W.next[object.n].m.preMultiplySelf(W.next[object.g].M || W.next[object.g].m);
             }
-            if(!just_compute){  // 可见物体
-              W.gl.uniformMatrix4fv(  // 下一帧矩阵->着色器（m）
-                W.uniformLocations.m,
-                false,
-                (W.next[object.n].M || W.next[object.n].m).toFloat32Array()
-              );
-              W.gl.uniformMatrix4fv(  // 下一帧逆矩阵->着色器（im）
-                W.uniformLocations.im,
-                false,
-                (new DOMMatrix(W.next[object.n].M || W.next[object.n].m)).invertSelf().toFloat32Array()
-              );
+            // if(!just_compute){  // 可见物体
+            //   W.gl.uniformMatrix4fv(  // 下一帧矩阵->着色器（m）
+            //     W.uniformLocations.m,
+            //     false,
+            //     (W.next[object.n].M || W.next[object.n].m).toFloat32Array()
+            //   );
+            //   W.gl.uniformMatrix4fv(  // 下一帧逆矩阵->着色器（im）
+            //     W.uniformLocations.im,
+            //     false,
+            //     (new DOMMatrix(W.next[object.n].M || W.next[object.n].m)).invertSelf().toFloat32Array()
+            //   );
+            // }
+
+            // 测试中，chatgpt 生成的代码，防止出现崩溃
+            if (!just_compute) {  // 可见物体
+              const mat = W.next[object.n].M || W.next[object.n].m;
+
+              // 1️⃣ 检查矩阵合法性
+              const valid = mat && new DOMMatrix(mat).toFloat32Array().every(Number.isFinite);
+              const safeMat = valid ? new DOMMatrix(mat) : new DOMMatrix();
+
+              if (!valid) console.warn('⚠️ Invalid matrix found for', object.n, mat);
+
+              // 2️⃣ 上传正向矩阵
+              W.gl.uniformMatrix4fv(W.uniformLocations.m, false, safeMat.toFloat32Array());
+
+              // 3️⃣ 上传逆矩阵（防崩溃）
+              try {
+                const inv = safeMat.is2D ? safeMat.inverse() : safeMat.invertSelf();
+                W.gl.uniformMatrix4fv(W.uniformLocations.im, false, inv.toFloat32Array());
+              } catch (err) {
+                console.warn('⚠️ Matrix inversion failed for', object.n, safeMat, err);
+                W.gl.uniformMatrix4fv(W.uniformLocations.im, false, new DOMMatrix().toFloat32Array());
+              }
             }
+
         }
         if(!just_compute){  // 渲染可见物体
 
