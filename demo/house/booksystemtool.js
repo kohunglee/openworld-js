@@ -338,7 +338,7 @@ function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal 
     let { x, y, w_z, w_y, data, svgWidth, svgClearVal } = param;
     let flip = 1, off = 10;
 
-    if (dirc === 2) {  //+ 处理对称
+    if (dirc === 2) {  //+ 根据 dirc 方向处理对称
         flip = -1;
         off = -5;
     } else if (dirc === 4) {
@@ -359,13 +359,6 @@ function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal 
     }
     return texts.join('');
 };
-
-// 计算 2 维距离
-function dist2D(x1, y1, x2, y2) {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  return Math.sqrt(dx * dx + dy * dy);
-}
 
 // // 调试使用，按下 R 键渲染 svg
 // let mKeyPressed = false;

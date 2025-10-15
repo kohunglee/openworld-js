@@ -344,7 +344,7 @@ function logicData(){  //
             ], {z:-30});
         }
 
-        // 研究第三层
+        // 研究第三层及以上
         if(true){
             D.floor3 = {};  // 初始化第三层容器
 
@@ -391,6 +391,58 @@ function logicData(){  //
             D.floor3.firstOff = offset(
                 D.floor3.xthing,-2.7, 5, 'y'
             );
+
+            // 书系统
+            if(true){
+                // k.bookS.floor2.first;  // 二楼定位书（统柜）
+                k.bookS.floor3 = {};  // 初始化第三层书
+
+                // k.bookS.floor3.first = offset([  // 三楼
+                //     k.bookS.floor2.first,
+                // ], -2.7, 2, 'y');
+
+                // regisFloor(k.bookS.floor2, 2);   // 统柜
+                // regisFloor(k.bookS.floor2.cdbook, 3);  // 长柜
+                // regisFloor(k.bookS.floor2.LGbook, 4);  // 廊柜
+                // regisFloor(k.bookS.floor2.LGCbook, 5);  // 廊柜 中央柜
+
+                k.bookS.floor3.dire1 = offset([  // 三楼
+                    ...k.bookS.floor2.dire1,
+                ], -2.7, 2, 'y');
+
+                k.bookS.floor3.dire2 = offset([  // 三楼
+                    ...k.bookS.floor2.dire2,
+                ], -2.7, 2, 'y');
+
+                k.bookS.floor3.dire3 = offset([  // 三楼
+                    ...k.bookS.floor2.dire3,
+                ], -2.7, 2, 'y');
+
+                k.bookS.floor3.dire4 = offset([  // 三楼
+                    ...k.bookS.floor2.dire4,
+                ], -2.7, 2, 'y');
+
+                // -----
+
+                k.bookS.floor3.cdbook = {};  // 初始化
+                k.bookS.floor3.cdbook.dire1 = offset([  // 三楼
+                    ...k.bookS.floor2.cdbook.dire1,
+                ], -2.7, 2, 'y');
+
+                k.bookS.floor3.cdbook.dire2 = offset([  // 三楼
+                    ...k.bookS.floor2.cdbook.dire2,
+                ], -2.7, 2, 'y');
+
+                k.bookS.floor3.cdbook.dire3 = offset([  // 三楼
+                    ...k.bookS.floor2.cdbook.dire3,
+                ], -2.7, 2, 'y');
+
+                k.bookS.floor3.cdbook.dire4 = offset([  // 三楼
+                    ...k.bookS.floor2.cdbook.dire4,
+                ], -2.7, 2, 'y');
+
+
+            }
         }
 
         [58, 63,].forEach(index => {  // 删除门洞
