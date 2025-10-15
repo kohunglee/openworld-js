@@ -7,6 +7,7 @@
  */
 function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
     hiddenBookSub(shelfID);  // 隐藏假书
+    // return 0;
     k.bookContainer = {};    // 初始化 书 容器，临时储存 ID 使用
     k.bookDataInsTemp = [];      // 书的实例数据，会由 registerBookshelf 生成
     k.currBookDirc = dirc;   // 保存当前方向
@@ -250,23 +251,19 @@ function bookSysRegis(){
     regisFloor(k.bookS.floor3.LGCbook, 5);   // 廊柜
 }
 
+
+// 隐藏假书（当主角走近时），也可恢复原样
 function hiddenBookSub(index, isRecover = false){
-    // index = index+1;
     const getBookSub = k.bookS.floor2.bookSub['s'+index];
     if(getBookSub){
-        // console.log(index);
-        // console.log(getBookSub);
-        // ccgxkObj.W.updateInstance('manyCubes', index, newInstanceData);  // 更新一下实例化模型
         if(isRecover === false){  // 软删除
             getBookSub.forEach((v, i) => {
                 k.W.updateInstance('manyCubes', v, {y:-100});
             });
-            // console.log(index);
         } else {  // 恢复原样
             getBookSub.forEach((v, i) => {
                 k.W.updateInstance('manyCubes', v, {y:cubeDatas[v].y});
             });
-            console.log(index);
         }
     }
 }
