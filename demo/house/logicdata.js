@@ -460,9 +460,6 @@ function logicData(){  //
                 k.bookS.floor3.LGCbook.dire2 = offset([  
                     ...k.bookS.floor2.LGCbook.dire2,
                 ], -2.7, 5, 'y');
-
-
-
             }
         }
 
@@ -471,5 +468,70 @@ function logicData(){  //
                 cubeDatas[index] = {del : 1};
             }
         });
+
+        // 假书
+        if(true){
+            // 初始化
+            k.bookS.floor2.bookSub = {};  // 假书替身
+            k.bookS.floor2.bookSub.first = 102;
+            cubeDatas[k.bookS.floor2.bookSub.first].st = 1;  // 无物理
+
+            // 二楼 第一统柜的假书 参考假书，后续的书都以此为基准
+            k.bookS.floor2.bookSub.tgRef = offset([
+                k.bookS.floor2.bookSub.first,
+            ], -0.352, 8, 'y');
+            k.bookS.floor2.bookSub.tgRef.push(k.bookS.floor2.bookSub.first);
+
+            // 辅助计算值，计算相对位置
+            const bookSubx = cubeDatas[k.bookS.floor2.bookSub.first].x;
+            const bookSubz = cubeDatas[k.bookS.floor2.bookSub.first].z;
+
+            // 假书，二楼统柜方向 1
+            k.bookS.floor2.dire1.forEach((v, i) => {
+                const curr_x = cubeDatas[v].x;
+                const x_diff = bookSubx - curr_x;
+                k.bookS.floor2.bookSub['s'+ v] = offset([
+                    ...k.bookS.floor2.bookSub.tgRef,
+                ], x_diff, 2)
+            });
+
+            // 假书，二楼统柜方向 2
+            k.bookS.floor2.dire2.forEach((v, i) => {
+                const curr_x = cubeDatas[v].x;
+                const x_diff = bookSubx - curr_x;
+                k.bookS.floor2.bookSub['s'+ v] = offset([
+                    ...k.bookS.floor2.bookSub.tgRef,
+                ], x_diff, 2)
+            });
+
+            // 二楼，统柜，方向 3
+            k.bookS.floor2.dire3.forEach((v, i) => {
+                const curr_x = cubeDatas[v].x;
+                const x_diff = bookSubx - curr_x;
+
+                const curr_z = cubeDatas[v].z;
+                const z_diff = bookSubz - curr_z + 0.61;
+
+                k.bookS.floor2.bookSub['s'+ v] = offset([
+                    ...k.bookS.floor2.bookSub.tgRef,
+                ], x_diff, 2, 'x', z_diff, 'z')
+            });
+
+            // 二楼，统柜，方向 4
+            k.bookS.floor2.dire4.forEach((v, i) => {
+                const curr_x = cubeDatas[v].x;
+                const x_diff = bookSubx - curr_x;
+
+                const curr_z = cubeDatas[v].z;
+                const z_diff = bookSubz - curr_z + 0.61;
+
+                k.bookS.floor2.bookSub['s'+ v] = offset([
+                    ...k.bookS.floor2.bookSub.tgRef,
+                ], x_diff, 2, 'x', z_diff, 'z')
+            });
+
+            // 清空参考假书模型，防止看起来很奇怪
+            k.bookS.floor2.bookSub.tgRef = null;  
+        }
     }
 }

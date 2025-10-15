@@ -27,6 +27,7 @@ export default {
     // 新的 dynaNodes（适用于长宽 40 以内的物体），lab 版本
     currentlyActiveIndices : new Set(),  // 当前激活状态的物体。也可保存本次的激活物体列表，供下一次使用
     activationQueue : new Array(),  // 激活任务队列
+    minY : null,  // 动态调整 Y 激活高度，比如楼层的高度可使用这个值（如层高 2.7，则可设置为 1.35）
     dynaNodes_lab : function(){
         if(this.mainVPlayer === null || this.stopDynaNodes) {return ''};
         const mVP = this.mainVPlayer;
@@ -46,7 +47,8 @@ export default {
             const indicesInGrid = this.spatialGrid.get(key);  // 取物体使用（spatialGrid，物体花名册）
             if (indicesInGrid) {
                 for (const index of indicesInGrid) {
-                    if(Math.abs(this.positionsStatus[index * 8 + 1] - mVP.Y) < this.gridsize[this.physicsProps[index * 8 + 4]]){  // 高度距离（Y）要接近
+                    const minY = this.minY || this.gridsize[this.physicsProps[index * 8 + 4]];
+                    if(Math.abs(this.positionsStatus[index * 8 + 1] - mVP.Y) < minY){  // 高度距离（Y）要接近
                         newActiveIndices.add(index);
                     }
                 }

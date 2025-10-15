@@ -6,6 +6,7 @@
  * @param {*} type 使用哪个规则生成 第一楼统一样式1、第二楼统一样式2
  */
 function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
+    hiddenBookSub(shelfID);  // 隐藏假书
     k.bookContainer = {};    // 初始化 书 容器，临时储存 ID 使用
     k.bookDataInsTemp = [];      // 书的实例数据，会由 registerBookshelf 生成
     k.currBookDirc = dirc;   // 保存当前方向
@@ -93,7 +94,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             const typeConfig = {  // 定义各类型的书架参数
                 1: [  // 一楼书架（上下两层）
                     { name: 'bookupsvg', y: 2.681, w: 7.4, h: 0.94, offsetX: -0.076, t: () => upSvgPng },
-                    { name: 'bookdnsvg', y: 1.75,  w: 7.4, h: 0.935, offsetX: -0.377, t: () => downSvgPng },
+                    { name: 'bookdownsvg', y: 1.75,  w: 7.4, h: 0.935, offsetX: -0.377, t: () => downSvgPng },
                 ],
                 2: [  // 二楼书架
                     { name: 'bookupsvg', y: bassY + 0.067, w: 6.625, h: 2.501, offsetX: -0.076, t: () => upSvgPng },
@@ -215,6 +216,7 @@ function removeBookShelf(shelfID){
     k.W.delete('booksInsDisplay' + shelfID);
     k.W.delete('bookupsvg' + shelfID);
     k.W.delete('bookdownsvg' + shelfID);
+    hiddenBookSub(shelfID, true);
 }
 
 // 为每本书都注册一下渲染和显示事件，也就是在激活时执行 bookSystem， 删除时 removeBookShelf
@@ -246,5 +248,25 @@ function bookSysRegis(){
     regisFloor(k.bookS.floor3.cdbook, 3);   // 长柜
     regisFloor(k.bookS.floor3.LGbook, 4);   // 廊柜
     regisFloor(k.bookS.floor3.LGCbook, 5);   // 廊柜
+}
 
+function hiddenBookSub(index, isRecover = false){
+    // index = index+1;
+    const getBookSub = k.bookS.floor2.bookSub['s'+index];
+    if(getBookSub){
+        // console.log(index);
+        // console.log(getBookSub);
+        // ccgxkObj.W.updateInstance('manyCubes', index, newInstanceData);  // 更新一下实例化模型
+        if(isRecover === false){  // 软删除
+            getBookSub.forEach((v, i) => {
+                k.W.updateInstance('manyCubes', v, {y:-100});
+            });
+            // console.log(index);
+        } else {  // 恢复原样
+            getBookSub.forEach((v, i) => {
+                k.W.updateInstance('manyCubes', v, {y:cubeDatas[v].y});
+            });
+            console.log(index);
+        }
+    }
 }
