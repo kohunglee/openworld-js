@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<!-- saved from url=(0048)http://localhost:8080/demo/house.html?logicadd=1 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="pragma" content="no-cache">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style> body { margin: 0; } </style>
+<title>castle</title>
+<script src="./castle_files/stats.min.js"></script></head><body><img src="./castle_files/texture.jpeg" alt="" id="dls" hidden="">
+<img src="./castle_files/dalishi.jpeg" alt="" id="dalishi" hidden="">
+<img src="./castle_files/testpng.png" alt="" id="testimg" hidden="">
+<canvas id="openworldCanv" style="width:99vw;height:99vh" width="1854" height="514"></canvas>
+
+<script src="./castle_files/cannon29kb.js"></script>
+<!-- <script src="./house/cannon.min.js"></script> -->
+
+<script src="./castle_files/cubedata.js"></script>
+
+<script src="./castle_files/makegroundmvp.js"></script> <!-- 地面和人物初始化 -->
+<script src="./castle_files/newmvp.js"></script> <!-- 新角色 -->
+<script src="./castle_files/startbuild.js"></script> <!-- 开始建造的初始化准备 -->
+<script src="./castle_files/logicbuild.js"></script> <!-- 建造逻辑工具函数 -->
+<script src="./castle_files/logicdata.js"></script> <!-- 建造逻辑 -->
+<script src="./castle_files/booksystem.js"></script> <!-- 书系统 -->
+<script src="./castle_files/booksystemtool.js"></script> <!-- 书系统的工具函数 -->
+<script src="./castle_files/dataprocess.js"></script> <!-- 数据处理 -->
+
+<script type="module" src="./castle_files/import.js"></script> <!-- 导入插件 -->
+<script type="module" src="./castle_files/index.js"></script>
+<style>
+    /* 使用一个独特的 ID 或 class 来限定样式作用域 */
+    #posMap {
+        position: fixed;
+        right: 50px;
+        bottom: 50px;
+        opacity: 0.8;
+        border: 1px solid #ccc; /* 增加边框以便看清 */
+        background-color: #f0f0f0; /* 增加背景色 */
+    }
+</style>
+<canvas id="posMap" width="100" height="100"></canvas>
+
+<style>
+    .myHUD {
+        position: absolute;
+        bottom: 5px;
+        padding: 0.3em;
+        color: #ffffff;
+    }
+</style>
+<div id="myHUD" class="myHUD">
+    <div id="fpsInfo">FPS：75.1  ，渲染：2.70ms</div>
+    <span id="shiftInfo">速度:0 | </span>
+    <span id="posInfo">位置: X:27.92, Y:1.50, Z:-37.38, | </span>
+    <span id="metrics">内存: 102.1MB/2144.0MB | </span>
+    <span id="cpuInfo"></span>
+    <span id="modListCount">当前模型数：1 - ❀0 - 口1 - ⚡️ 670（can 53 | w 33）（16325）（纹理：9） |</span>
+    <span id="posIDMVP">东1北1</span>
+</div>
+
+            <style>
+                .pointObjIndex {
+                    position: fixed;
+                    top: 50px;
+                    left: 10px;
+                    color: white;
+                }
+                .EdiArgsInput, #objID {
+                    background-color: #fff0f066;
+                    width: 50px;
+                }
+            </style>
+            <span id="pointObjIndex" class="pointObjIndex">0</span>
+            <canvas id="centerPoint" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);" width="1" height="1"></canvas>
+        
+    <style>
+        /* 模态框 */
+        .myHUD-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100vw;
+            height: 100vh;
+            transform: translate(-50%, -50%);
+            z-index: 999;
+        }
+        .myHUD-modalPos {
+            margin-left: 15px;
+            margin-top: 30px;
+            width: 370px;
+            text-align: center;
+            /* background-color: #ffffff08; */
+            background-color: #ffffff6b;
+            padding: 20px;
+            backdrop-filter: blur(1px);
+        }
+        .texture-editorBtn-lab {
+            display: inline-block;
+            background: rgb(32 32 32);
+            color: rgb(255, 255, 255);
+            padding: 5px 5px;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14;
+            color: #bbbbbb;
+        }
+        .EdiArgsInput, #objID {
+            background-color: #fff0f066;
+            width: 56px;
+        }
+
+        /* 热点的信息 */
+        #hotPointInfo {
+            position: fixed;
+            top: 72px;
+            left: 10px;
+            font-family: monospace;
+            color: white;
+        }
+        #hotPointInfo td {
+            min-width: 80px;
+            text-shadow: 0px 0px 8px black;
+        }
+
+        /* webgl canvas */
+        /* 可提醒用户单击画面 */
+        #vistaCanv, .myHUD-modal {
+            cursor: pointer;
+        }
+
+        /* 高级选项展开按钮 */
+        .moreopt-btn {
+            cursor: pointer;
+            padding-top: 9px;
+            user-select: none;
+        }
+        /* 高级选项面板 */
+        .moreopt-panel {
+            background: #ffffff0d;
+            padding: 10px;
+            margin-top: 5px;
+        }
+
+        /* 编辑器的字上的前后标志 */
+        .e-panel-T:before {
+            content: '↑';
+            position: absolute;
+            margin-left: -7px;
+            margin-top: -3px;
+            color: #ffffff;
+            font-size: 10px;
+            background: #0000004d;
+        }
+        .e-panel-D:before {
+            content: '↓';
+            position: absolute;
+            margin-left: -7px;
+            margin-top: -3px;
+            color: #ffffff;
+            font-size: 10px;
+            background: #0000004d;
+        }
+
+        /* 基点的临时的样式 */
+        .editor-bass {
+            position: absolute;
+            left: 315px;
+            top: 190px;
+        }
+        .editor-bass button {
+            position: absolute;
+            height: 20px;
+            width: 20px;
+        }
+        button#e_bassL {
+            left: -11px;
+            top: 40px;
+        }
+        button#e_bassB {
+            left: 14px;
+            top: 60px;
+        }
+        button#e_bassR {
+            left: 40px;
+            top: 40px;
+        }
+        button#e_bassT {
+            top: 19px;
+            left: 14px;
+        }
+        span.editor-bass-info {
+            position: absolute;
+            width: 32px;
+            top: 38px;
+            left: 9px;
+        }
+
+        /* 神奇数字叠加值 */
+        div#magicNumDiv {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        input#magicNum {
+            width: 80px;
+        }
+    </style>
+    <div id="hotPointInfo"></div>
+    <div id="myHUDModal" class="myHUD-modal" hidden="">
+        <div class="myHUD-modalPos" id="myHUDObjEditor" style="background-color: blue; cursor: grab;">
+            <div id="objEditor">
+                <div>
+                    <span id="textureEditorInfo"></span>
+                </div>
+                index: <input type="number" id="objID" name="objID" min="0" max="99999999" step="1" readonly="">
+                <button class="texture-copyCubes" id="textureCopyCubes">复制(+1)</button>
+                <hr>
+                <span id="etext_w">宽:</span> <input type="number" class="EdiArgsInput" id="objWidth" name="objWidth" min="0.001" step="0.1">
+                高: <input type="number" class="EdiArgsInput" id="objHeight" name="objHeight" min="0.001" step="0.1">
+                <span id="etext_d">纵:</span> <input type="number" class="EdiArgsInput" id="objDepth" name="objDepth" min="0.001" step="0.1">&nbsp;<button id="e_presets">翻转</button><br><br>
+                <span id="etext_x">X:</span> <input type="number" class="EdiArgsInput" id="objPosX" name="objPosX" step="0.1">
+                Y: <input type="number" class="EdiArgsInput" id="objPosY" name="objPosY" step="0.1">
+                <span id="etext_z">Z:</span> <input type="number" class="EdiArgsInput" id="objPosZ" name="objPosZ" step="0.1">&nbsp;&nbsp;&nbsp;&nbsp;<button id="e_round">归整</button><br><br>
+                <span id="etext_rx">rx:</span> <input type="number" class="EdiArgsInput" id="objRotX" name="objRotX" step="0.1">
+                ry: <input type="number" class="EdiArgsInput" id="objRotY" name="objRotY" step="0.1">
+                <span id="etext_rz">rz:</span> <input type="number" class="EdiArgsInput" id="objRotZ" name="objRotZ" step="0.1">&nbsp;&nbsp;<button id="e_zero">归零</button><br>
+                <div class="editor-bass">
+                    <span class="editor-bass-info">基点</span>
+                    <button class="texture-editorBtn" id="e_bassL"></button>
+                    <button class="texture-editorBtn" id="e_bassT"></button>
+                    <button class="texture-editorBtn" id="e_bassR"></button>
+                    <button class="texture-editorBtn" id="e_bassB"></button>
+                </div>
+                <div class="magicNumDiv-class" id="magicNumDiv">
+                    <input type="number" class="magicNum-input" id="magicNum" name="magicNum" hidden="">
+                </div>
+                <hr>
+                <input type="checkbox" name="isRealTimeUpdata" id="isRealTimeUpdata" checked=""> 实时更新 
+                <input type="checkbox" name="rollerPlus" id="rollerPlus" checked=""> 滚轮加减
+                <br>
+                <button class="texture-editorBtn" id="textureEditorReset">恢复</button>
+                <button class="texture-editorBtn" id="textureEditorOk" hidden="">确认</button>
+                <button class="texture-editorBtn" id="textureEditorClose">关闭</button>
+                <button class="texture-editorBtn" id="textureEditorCancel">退出</button><br>
+                <details>
+                    <summary class="moreopt-btn">更多选项</summary>
+                    <div class="moreopt-panel">
+                        <button class="texture-editorBtn" id="e_delete">删除</button>
+                        &nbsp;&nbsp;
+                        颜色:<input type="color" class="EdiArgsInput" id="objColor" name="objColor" value="#888888" step="0.1">
+                        &nbsp;&nbsp;
+                    </div>
+                </details>
+                <hr>
+                <button class="texture-saveCubeData" id="textureSaveCubeData">保存数据</button>
+                <button class="texture-getCubeData" id="textureGetCubeData">下载数据</button>
+            </div>
+        </div>
+    </div>
+<div style="position: fixed; top: 0px; left: 0px; cursor: pointer; opacity: 0.9; z-index: 10000;"><canvas width="80" height="48" style="width: 80px; height: 48px; display: block;"></canvas><canvas width="80" height="48" style="width: 80px; height: 48px; display: none;"></canvas><canvas width="80" height="48" style="width: 80px; height: 48px; display: none;"></canvas></div></body></html>

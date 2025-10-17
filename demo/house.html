@@ -7,14 +7,15 @@
 <style> body { margin: 0; } </style>
 <title>castle</title>
 <img src="./cbcity/texture.jpeg" alt="" id="dls" hidden>
+<img src="./cbcity/dalishi.jpeg" alt="" id="dalishi" hidden>
 <img src="./img/testpng.png" alt="" id="testimg" hidden>
 <canvas id="openworldCanv" style="width:99vw;height:99vh"></canvas>
 
 <script src="../src/cannon/cannon29kb.js"></script>
 <!-- <script src="./house/cannon.min.js"></script> -->
+<script type="module" src="./house/import.js"></script> <!-- 导入插件 -->
 
-<script src="./house/cubedata.js"></script>
-
+<script src="./house/cubedata.js"></script> <!-- 模型数据 -->
 <script src="./house/makegroundmvp.js"></script> <!-- 地面和人物初始化 -->
 <script src="./house/newmvp.js"></script> <!-- 新角色 -->
 <script src="./house/startbuild.js"></script> <!-- 开始建造的初始化准备 -->
@@ -24,5 +25,4 @@
 <script src="./house/booksystemtool.js"></script> <!-- 书系统的工具函数 -->
 <script src="./house/dataprocess.js"></script> <!-- 数据处理 -->
 
-<script type="module" src="./house/import.js"></script> <!-- 导入插件 -->
 <script type="module" src="./house/index.js" ></script>
