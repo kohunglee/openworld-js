@@ -321,27 +321,62 @@ const W = {
             // }
 
             // 测试中，chatgpt 生成的代码，防止出现崩溃
-            if (!just_compute) {  // 可见物体
-              const mat = W.next[object.n].M || W.next[object.n].m;
+            // if (!just_compute) {  // 可见物体
+            //   const mat = W.next[object.n].M || W.next[object.n].m;
 
-              // 1️⃣ 检查矩阵合法性
-              const valid = mat && new DOMMatrix(mat).toFloat32Array().every(Number.isFinite);
-              const safeMat = valid ? new DOMMatrix(mat) : new DOMMatrix();
+            //   // 1️⃣ 检查矩阵合法性
+            //   const valid = mat && new DOMMatrix(mat).toFloat32Array().every(Number.isFinite);
+            //   const safeMat = valid ? new DOMMatrix(mat) : new DOMMatrix();
 
-              if (!valid) console.warn('⚠️ Invalid matrix found for', object.n, mat);
+            //   if (!valid) console.warn('⚠️ Invalid matrix found for', object.n, mat);
 
-              // 2️⃣ 上传正向矩阵
-              W.gl.uniformMatrix4fv(W.uniformLocations.m, false, safeMat.toFloat32Array());
+            //   // 2️⃣ 上传正向矩阵
+            //   W.gl.uniformMatrix4fv(W.uniformLocations.m, false, safeMat.toFloat32Array());
 
-              // 3️⃣ 上传逆矩阵（防崩溃）
+            //   // 3️⃣ 上传逆矩阵（防崩溃）
+            //   try {
+            //     const inv = safeMat.is2D ? safeMat.inverse() : safeMat.invertSelf();
+            //     W.gl.uniformMatrix4fv(W.uniformLocations.im, false, inv.toFloat32Array());
+            //   } catch (err) {
+            //     console.warn('⚠️ Matrix inversion failed for', object.n, safeMat, err);
+            //     W.gl.uniformMatrix4fv(W.uniformLocations.im, false, new DOMMatrix().toFloat32Array());
+            //   }
+            // }
+
+            /** --- 如果你想 彻底确保 DOMMatrix 永不报错（哪怕 WebGL uniform 坏掉），可以再包一层： */
+            function safeUniformMatrix(gl, location, mat) {
               try {
-                const inv = safeMat.is2D ? safeMat.inverse() : safeMat.invertSelf();
-                W.gl.uniformMatrix4fv(W.uniformLocations.im, false, inv.toFloat32Array());
-              } catch (err) {
-                console.warn('⚠️ Matrix inversion failed for', object.n, safeMat, err);
-                W.gl.uniformMatrix4fv(W.uniformLocations.im, false, new DOMMatrix().toFloat32Array());
+                const arr = mat?.toFloat32Array?.() || [];
+                if (!arr.length || arr.some(v => !Number.isFinite(v))) throw new Error();
+                gl.uniformMatrix4fv(location, false, arr);
+              } catch {
+                gl.uniformMatrix4fv(location, false, new DOMMatrix().toFloat32Array());
               }
             }
+
+            if (!just_compute) {
+              let safeMat;
+              try {
+                const raw = W.next?.[object.n]?.M || W.next?.[object.n]?.m;
+                const arr = new DOMMatrix(raw).toFloat32Array();
+                safeMat = arr.some(v => !Number.isFinite(v)) ? new DOMMatrix() : new DOMMatrix(raw);
+              } catch {
+                safeMat = new DOMMatrix();
+              }
+
+              safeUniformMatrix(W.gl, W.uniformLocations.m, safeMat);
+
+              let inv;
+              try {
+                inv = safeMat.is2D ? safeMat.inverse() : safeMat.invertSelf();
+              } catch {
+                inv = new DOMMatrix();
+              }
+
+              safeUniformMatrix(W.gl, W.uniformLocations.im, inv);
+            }
+
+            /** ---- */
 
         }
         if(!just_compute){  // 渲染可见物体
