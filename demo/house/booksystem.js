@@ -1,4 +1,3 @@
-
 /**
  * 图书模型生成系统
  * @param {*} shelfID 书架定位书的 index

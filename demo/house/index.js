@@ -6,10 +6,7 @@
 // 初始化 openworld 世界
 import openworldApp from '../../src/openworld.js';
 globalThis.k = openworldApp;
-window.k = k;
 k.initWorld('openworldCanv');
-
-console.log(k);
 
 // 导入插件模块
 import xmap from '../../src/plugins/xmap.js';
@@ -62,12 +59,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     logicFunc();
     logicData();
     dataProcess();
-
-    /********/
-    // bookSystem();
     bookSysRegis();
-    /********/
-
     console.timeEnd('load');
 });
 
@@ -78,3 +70,12 @@ script.onload=function(){var stats=new Stats();
 document.body.appendChild(stats.dom);
 requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};
 script.src='https://mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
+
+// baidu tongji
+var _hmt = _hmt || [];
+(function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?7f32626143786db9efbf3749f9a87aed";
+    var s = document.getElementsByTagName("script")[0]; 
+    s.parentNode.insertBefore(hm, s);
+})();
