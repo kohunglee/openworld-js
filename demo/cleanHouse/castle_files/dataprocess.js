@@ -80,7 +80,6 @@ function dataProcess() {
         // t: dalishi,
         instances: cubeInstances, // 实例属性的数组
         mix: 0.7,
-
     });
 
     cubeInstances = null;  // 释放内存
