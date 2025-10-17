@@ -9,7 +9,7 @@ import data from './data.js';
 import inputPanel from './panel/inputPanel.js';
 import event from './event.js';
 import model from './cubemodel.js';
-import cubeReferPosJS from './cubeReferPos.JS';
+import cubeReferPosJS from './cubeReferPos.js';
 import viewCtrl from './viewCtrl.js';
 import pCommEvent from './panel/pCommEvent.js';
 import pEvent from './panel/pEvent.js';
