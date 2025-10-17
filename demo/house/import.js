@@ -6,6 +6,7 @@
 // 初始化 openworld 世界
 import openworldApp from '../../src/openworld.js';
 globalThis.k = openworldApp;
+window.k = k;
 k.initWorld('openworldCanv');
 
 // 导入插件模块
