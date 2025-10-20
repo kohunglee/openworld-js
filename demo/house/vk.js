@@ -40,7 +40,7 @@ function setVK() {
     }, 100);
 
     // 初始化 游客 模型实例
-    const arrIns = Array.from({ length: 10 }, () => ({
+    const arrIns = Array.from({ length: 50 }, () => ({
         x: 0, 
         y: 0, 
         z: 0, 
