@@ -47,8 +47,6 @@ k.star = (index) => {  // 闪烁按照 ID 寻找方块
 
 k.minY = 1.35;
 
-
-
 // 入口
 // 加载预设纹理，开始程序
 k.loadTexture(k.svgTextureLib).then(loadedImage => {
