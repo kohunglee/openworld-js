@@ -1,61 +1,90 @@
+function setVK() {
+    const randomId = Math.floor(Math.random() * 10 ** 7); // 随机7位数字
+    const workerUrl = "wss://realtime-whiteboard.kohunglee.workers.dev";
+    let socket = new WebSocket(workerUrl);
 
+    socket.onopen = () => {  // 连接 wss
+        console.log("连接成功！请开始输入。");
+    };
+    socket.onclose = () => {  // 断开 wss
+        sendMessage({ x: 0, y: 0, z: 0 }, randomId);  // 断开时发送归零位置
+        socket = new WebSocket(workerUrl);
+    };
 
-// function setVK() {
-//     const urlParams = new URLSearchParams(globalThis.location.search);  // 获取 URL
-//     const isKV = urlParams.get('vk');  // 获取 url 的 vk 参数
+    // 将位置信息发送到 wss
+    function sendMessage(pos, randomId) {
+        if (socket.readyState === WebSocket.OPEN) {
+            const payload = {
+                rid: randomId, // 随机ID
+                content: pos
+            };
+            socket.send(JSON.stringify(payload));
+        }
+    }
 
-//         const API = "https://ccgxktestvk.kohunglee.workers.dev";
-//         const page = Math.floor(Math.random()*90000+10000); // 随机5位数字
-//         let last = ""; // 保存上一次的文本
+    // 信息整合和判断主角位置变化后发送
+    const mvp = k.mainVPlayer.body.position;
+    let lastPosCount = null;
+    setInterval(() => {
+        const pos = {};
+        pos.x = mvp.x.toFixed(2);
+        pos.y = mvp.y.toFixed(2);
+        pos.z = mvp.z.toFixed(2);
+        pos.ry = k.keys.turnRight;
+        const totalCount = pos.x + pos.y + pos.z + pos.ry;
+        if(totalCount !== lastPosCount){
+            const posStr = JSON.stringify(pos); // 转换为 JSON 字符串
+            sendMessage(posStr, randomId);
+            lastPosCount = totalCount;
+        }
+    }, 100);
 
-//         async function upload(){
-//             const v = JSON.stringify(k.mainVPlayer.body.position); // 转换为 JSON 字符串
-//             const mvp = k.mainVPlayer.body.position;
-//             const pos = {};
-//             pos.x = mvp.x.toFixed(2);
-//             pos.y = mvp.y.toFixed(2);
-//             pos.z = mvp.z.toFixed(2);
-//             const posStr = JSON.stringify(pos); // 转换为 JSON 字符串
-//             if(posStr && posStr!==last){
-//                 last=posStr;
-//                 await fetch(`${API}/update?page=${page}`,{method:"POST",body:posStr});
-//             }
-//         }
+    // 初始化 游客 模型实例
+    const arrIns = Array.from({ length: 10 }, () => ({
+        x: 0, 
+        y: 0, 
+        z: 0, 
+        w: 0.001, 
+        h: 0.001, 
+        d: 0.001,
+        b: '#f00',
+    }));
+    k.W.cube({  // 渲染实例化
+        n: 'frends',
+        instances: arrIns,
+    });
 
-//         async function refresh(){
-//             if(isKV === '1'){
-//                 try{
-//                     const r = await fetch(`${API}/get-all`);
-//                     const json = await r.json();
-//                     const newIns = [];
-//                     for(const [k,v] of Object.entries(json)){
-//                         const pos = JSON.parse(v);
-//                         newIns.push({
-//                             x: parseFloat(pos.x),
-//                             y: parseFloat(pos.y),
-//                             z: parseFloat(pos.z),
-//                             w: 0.2,
-//                             d: 0.2,
-//                             h: 0.2,
-//                         });
-//                     }
-//                     k.W.cube({  // 渲染实例化
-//                         n: 'frends',
-//                         y: 0.5,
-//                         instances: newIns,
-//                     });
-//                     newIns.length = 0;  // 清空数组
-//                 }catch(e){ }
-//             }
-//         }
-
-//         k.W.cube({  // 渲染实例化
-//             n: 'frends',
-//         });
-
-
-//         setInterval(()=>{upload();refresh();},1000);
-//         refresh();
-        
-//     // }
-// }
+    // 接收事件
+    socket.onmessage = (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            console.log(data);
+            const arr = data['users'];
+            for (let index = 0; index < arr.length; index++) {
+                const element = arr[index];
+                const con = element.content;
+                const rid = element.rid;
+                console.log(rid, randomId);
+                if(rid === randomId){  // 跳过自己的信息
+                    continue;
+                }
+                if(con !== ''){  // 向新实例，添加位置信息
+                    const pos = JSON.parse(con);
+                    k.W.updateInstance('frends', index, {
+                        x: parseFloat(pos.x),
+                        y: parseFloat(pos.y),
+                        z: parseFloat(pos.z),
+                        w: 0.5,
+                        d: 0.5,
+                        h: 0.5,
+                        ry: parseFloat(pos.ry),
+                        rx: 15,
+                    });
+                }
+            }
+        } catch (e) {
+            console.error("无法解析收到的 JSON:", event.data);
+            whiteboard.textContent = "收到错误的数据格式。";
+        }
+    };
+}
