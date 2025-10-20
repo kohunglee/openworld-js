@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh">
+<meta charset="UTF-8">
+<title>KV 实时共享</title>
+<body style="font-family:monospace;padding:20px">
+  <h3>我的文本（每秒自动同步）</h3>
+  <textarea id="txt" style="width:100%;height:80px"></textarea>
+  <pre id="view" style="white-space:pre-wrap;background:#f3f3f3;padding:10px"></pre>
+
+<script>
+const API = "https://ccgxktestvk.kohunglee.workers.dev";
+const page = Math.floor(Math.random()*90000+10000); // 随机5位数字
+const txt = document.getElementById("txt");
+const view = document.getElementById("view");
+let last = "";
+
+async function upload(){
+  const v = txt.value.trim();
+  if(v && v!==last){
+    last=v;
+    await fetch(`${API}/update?page=${page}`,{method:"POST",body:v});
+  }
+}
+
+async function refresh(){
+  try{
+    const r = await fetch(`${API}/get-all`);
+    const json = await r.json();
+    let out = "";
+    for(const [k,v] of Object.entries(json)){
+      out += `${k}：${v}\n\n\n ------------ \n\n\n`;
+    }
+    view.textContent = out || "（暂无内容）";
+  }catch(e){
+    view.textContent = "连接失败：" + e;
+  }
+}
+
+
+setInterval(()=>{upload();refresh();},1000);
+refresh();
+</script>
+</body>
+</html>

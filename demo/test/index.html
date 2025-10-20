@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<body style="margin:0;background:#eee;touch-action:none;">
+
+<!-- 摇杆区 -->
+<div id="pad" style="
+ position:fixed;bottom:10vmin;right:10vmin;width:30vmin;height:30vmin;
+ border-radius:50%;background:rgba(0,0,0,.1);
+ display:flex;align-items:center;justify-content:center;">
+  <div id="knob" style="
+   width:30%;height:30%;border-radius:50%;
+   background:rgba(0,0,0,.4);"></div>
+</div>
+
+<script>
+const pad  = document.getElementById('pad');
+const knob = document.getElementById('knob');
+const stick = { x:0, y:0 };   // 摇杆输出值（-1~1）
+
+let touchId = null;           // 当前控制摇杆的触摸点
+let centerX, centerY;         // 摇杆中心点坐标
+
+pad.ontouchstart = e => {
+  const t = e.touches[0];
+  touchId = t.identifier;
+  const rect = pad.getBoundingClientRect();
+  centerX = rect.left + rect.width  / 2;
+  centerY = rect.top  + rect.height / 2;
+};
+
+pad.ontouchmove = e => {
+  for (const t of e.touches) if (t.identifier === touchId) {
+    let dx = t.clientX - centerX;
+    let dy = t.clientY - centerY;
+    const radius = pad.clientWidth / 2;
+    const dist = Math.hypot(dx, dy);
+    if (dist > radius) { dx *= radius / dist; dy *= radius / dist; }
+    knob.style.transform = `translate(${dx}px, ${dy}px)`;
+    stick.x = dx / radius;
+    stick.y = -dy / radius; // Y 方向取反：上为正
+  }
+};
+
+pad.ontouchend = e => {
+  for (const t of e.changedTouches) if (t.identifier === touchId) {
+    knob.style.transform = '';
+    touchId = null;
+    stick.x = stick.y = 0;
+  }
+};
+
+// 测试输出
+setInterval(() => console.log(stick), 200);
+</script>
+</body>
+</html>

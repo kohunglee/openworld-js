@@ -984,7 +984,6 @@ function logicData(){  //
                 k.bookS.floor1.dire2.forEach((v, i) => {
                     const curr_x = cubeDatas[v].x;
                     const x_diff = bookSubx - curr_x - 4.89;
-                    console.log(v);
                     k.bookS.bookSub['s'+ v] = offset([
                         ...k.bookS.floor1.bookSub.refSymo,
                     ], x_diff, 2)

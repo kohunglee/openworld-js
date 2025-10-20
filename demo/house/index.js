@@ -60,6 +60,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     logicData();
     dataProcess();
     bookSysRegis();
+    setVK();
     console.timeEnd('load');
 });
 
