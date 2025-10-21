@@ -1,6 +1,6 @@
 function setVK() {
     const rId = Math.floor(Math.random() * 10 ** 7); // 随机7位数字，作为 ID 标识
-    const workerUrl = "ws://wsslib.ccgxk.com";
+    const workerUrl = "wss://1251631157-k3oer1a0l3.ap-hongkong.tencentscf.com";
     k.frendMap = new Map(); // 用于存储好友的实例 ID 和对应的实例索引
     const socket = new WebSocket(workerUrl);
 
