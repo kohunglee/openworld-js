@@ -3,6 +3,7 @@ function setVK() {
     const workerUrl = "wss://1251631157-k3oer1a0l3.ap-hongkong.tencentscf.com";
     k.frendMap = new Map(); // 用于存储好友的实例 ID 和对应的实例索引
     const socket = new WebSocket(workerUrl);
+    const defaultPos = { x: 0, y: 0, z: 0, ry: 0 };
 
     socket.onopen = () => {  // 连接 wss
         console.log("连接 socket 成功！");
@@ -78,7 +79,7 @@ function setVK() {
             let index = 0;
 
             for(let i = 0; i < 50; i++) {
-                k.W.updateInstance('frends', i,  { x: 5, y: 5, z: 5, ry: 0 });
+                k.W.updateInstance('frends', i,  defaultPos);
             }
 
             for (const [key, value] of k.frendMap) {
@@ -86,9 +87,8 @@ function setVK() {
                 const updateData = {};
 
                 if (timeDiff > 3 * 1000) {
-                    // console.log(timeDiff);
-                    // 重置位置并标记删除
-                    Object.assign(updateData, { x: 5, y: 5, z: 5, ry: 0 });
+                    console.log(`游客 ${key} 已掉线`);
+                    Object.assign(updateData, defaultPos);
                     k.frendMap.delete(key);
                 } else {
                     Object.assign(updateData, {
@@ -105,7 +105,7 @@ function setVK() {
                 index++;
             }
 
-            console.log('---------');
+            console.log(`当前在线游客数量: ${k.frendMap.size}`);
 
         } catch (e) {
             console.log(event.data);
