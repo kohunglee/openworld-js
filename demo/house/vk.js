@@ -66,19 +66,18 @@ function setVK() {
         instances: arrIns,
     });
 
-
-
     // 接收事件
     socket.onmessage = (event) => {
         try {
             const data = JSON.parse(event.data);
             const pos = JSON.parse(JSON.parse(data.content));
             pos.time = Date.now();
+            if(pos.id === rId) return; // 过滤自己
             k.frendMap.set(pos.id, pos); // 更新好友位置
 
             let index = 0;
 
-            for(let i = 0; i < k.frendMap.size + 1; i++) {
+            for(let i = 0; i < 50; i++) {
                 k.W.updateInstance('frends', i,  { x: 5, y: 5, z: 5, ry: 0 });
             }
 
