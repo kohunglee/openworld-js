@@ -81,14 +81,6 @@ function setVK() {
                     });
                 }
             }
-            for (let j = arrLen; j < 50; j++) {  // 多余实例，缩小隐藏
-                k.W.updateInstance('frends', j, {
-                    w: 0.001,
-                    h: 0.001,
-                    d: 0.001,
-                    x: 9999,
-                });
-            }
         } catch (e) {
             console.error("无法解析收到的 JSON:", event.data);
             whiteboard.textContent = "收到错误的数据格式。";
