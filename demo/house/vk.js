@@ -1,32 +1,26 @@
 function setVK() {
-    const randomId = Math.floor(Math.random() * 10 ** 7); // 随机7位数字
-    const workerUrl = "wss://realtime-whiteboard.kohunglee.workers.dev";
-    let socket = new WebSocket(workerUrl);
+    const rId = Math.floor(Math.random() * 10 ** 7); // 随机7位数字，作为 ID 标识
+    const workerUrl = "ws://wsslib.ccgxk.com";
+    k.frendMap = new Map(); // 用于存储好友的实例 ID 和对应的实例索引
+    const socket = new WebSocket(workerUrl);
 
     socket.onopen = () => {  // 连接 wss
-        console.log("连接成功！请开始输入。");
-    };
-    socket.onclose = () => {  // 断开 wss
-        sendMessage({ x: 0, y: 0, z: 0 }, randomId);  // 断开时发送归零位置
-        socket = new WebSocket(workerUrl);
+        console.log("连接 socket 成功！");
     };
 
     // 将位置信息发送到 wss
-    function sendMessage(pos, randomId) {
+    function sendMessage(pos) {
         if (socket.readyState === WebSocket.OPEN) {
-            const payload = {
-                rid: randomId, // 随机ID
-                content: pos
-            };
-            socket.send(JSON.stringify(payload));
+            socket.send(JSON.stringify(pos));
         }
     }
 
     // 信息整合和判断主角位置变化后发送
     const mvp = k.mainVPlayer.body.position;
     let lastPosCount = null;
-    setInterval(() => {
+    const reMod = setInterval(() => {
         const pos = {};
+        pos.id = rId;
         pos.x = mvp.x.toFixed(2);
         pos.y = mvp.y.toFixed(2);
         pos.z = mvp.z.toFixed(2);
@@ -34,10 +28,28 @@ function setVK() {
         const totalCount = pos.x + pos.y + pos.z + pos.ry;
         if(totalCount !== lastPosCount){
             const posStr = JSON.stringify(pos); // 转换为 JSON 字符串
-            sendMessage(posStr, randomId);
+            sendMessage(posStr);
             lastPosCount = totalCount;
         }
     }, 100);
+
+    socket.onclose = () => {  // 断开 wss
+        console.log("socket 已断开连接。");
+        reMod && clearInterval(reMod);
+        k.frendMap = new Map();
+        k.W.delete('frends');
+        sendMessage({
+            id: rId,
+            x: 0,
+            y: 0,
+            z: 0,
+            ry: 0,
+        });
+        setTimeout(() => {
+            setVK();  // 断线重连
+        }, 1000);
+        
+    };
 
     // 初始化 游客 模型实例
     const arrIns = Array.from({ length: 50 }, () => ({
@@ -54,36 +66,51 @@ function setVK() {
         instances: arrIns,
     });
 
+
+
     // 接收事件
     socket.onmessage = (event) => {
         try {
             const data = JSON.parse(event.data);
-            const arr = data['users'];
-            const arrLen = arr.length;
-            for (let index = 0; index < arrLen; index++) {
-                const element = arr[index];
-                const con = element.content;
-                const rid = element.rid;
-                if(rid === randomId){  // 跳过自己的信息
-                    continue;
-                }
-                if(con !== ''){  // 向新实例，添加位置信息
-                    const pos = JSON.parse(con);
-                    k.W.updateInstance('frends', index, {
-                        x: parseFloat(pos.x),
-                        y: parseFloat(pos.y),
-                        z: parseFloat(pos.z),
-                        w: 0.5,
-                        d: 0.5,
-                        h: 0.5,
-                        ry: parseFloat(pos.ry),
+            const pos = JSON.parse(JSON.parse(data.content));
+            pos.time = Date.now();
+            k.frendMap.set(pos.id, pos); // 更新好友位置
+
+            let index = 0;
+
+            for(let i = 0; i < k.frendMap.size + 1; i++) {
+                k.W.updateInstance('frends', i,  { x: 5, y: 5, z: 5, ry: 0 });
+            }
+
+            for (const [key, value] of k.frendMap) {
+                const timeDiff = Date.now() - Number(value.time);
+                const updateData = {};
+
+                if (timeDiff > 3 * 1000) {
+                    // console.log(timeDiff);
+                    // 重置位置并标记删除
+                    Object.assign(updateData, { x: 5, y: 5, z: 5, ry: 0 });
+                    k.frendMap.delete(key);
+                } else {
+                    Object.assign(updateData, {
+                        x: parseFloat(value.x),
+                        y: parseFloat(value.y),
+                        z: parseFloat(value.z),
+                        w: 0.5, d: 0.5, h: 0.5,
+                        ry: parseFloat(value.ry),
                         rx: 15,
                     });
                 }
+                
+                k.W.updateInstance('frends', index, updateData);
+                index++;
             }
+
+            console.log('---------');
+
         } catch (e) {
-            console.error("无法解析收到的 JSON:", event.data);
-            whiteboard.textContent = "收到错误的数据格式。";
+            console.log(event.data);
+            console.error("无法解析收到的 JSON:");
         }
     };
 }
