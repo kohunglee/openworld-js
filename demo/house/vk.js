@@ -30,7 +30,7 @@ function setVK() {
         pos.x = mvp.x.toFixed(2);
         pos.y = mvp.y.toFixed(2);
         pos.z = mvp.z.toFixed(2);
-        pos.ry = k.keys.turnRight;
+        pos.ry = k.keys.turnRight.toFixed(2);
         const totalCount = pos.x + pos.y + pos.z + pos.ry;
         if(totalCount !== lastPosCount){
             const posStr = JSON.stringify(pos); // 转换为 JSON 字符串
@@ -58,13 +58,12 @@ function setVK() {
     socket.onmessage = (event) => {
         try {
             const data = JSON.parse(event.data);
-            console.log(data);
             const arr = data['users'];
-            for (let index = 0; index < arr.length; index++) {
+            const arrLen = arr.length;
+            for (let index = 0; index < arrLen; index++) {
                 const element = arr[index];
                 const con = element.content;
                 const rid = element.rid;
-                console.log(rid, randomId);
                 if(rid === randomId){  // 跳过自己的信息
                     continue;
                 }
@@ -81,6 +80,14 @@ function setVK() {
                         rx: 15,
                     });
                 }
+            }
+            for (let j = arrLen; j < 50; j++) {  // 多余实例，缩小隐藏
+                k.W.updateInstance('frends', j, {
+                    w: 0.001,
+                    h: 0.001,
+                    d: 0.001,
+                    x: 9999,
+                });
             }
         } catch (e) {
             console.error("无法解析收到的 JSON:", event.data);
