@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<body style="margin:0;background:#eee;touch-action:none;">
+
+<div id="pad" style="
+ position:fixed;bottom:10vmin;left:10vmin;width:30vmin;height:30vmin;
+ border-radius:50%;background:rgba(0,0,0,.1);
+ display:flex;align-items:center;justify-content:center;">
+  <div id="knob" style="
+   width:30%;height:30%;border-radius:50%;
+   background:rgba(0,0,0,.4);"></div>
+</div>
+
+<script>
+const pad  = document.getElementById('pad');
+const knob = document.getElementById('knob');
+const stick = { x:0, y:0 };   // 输出：仅四方向或 0
+let touchId = null, cx, cy;
+
+pad.ontouchstart = e => {
+  const t = e.touches[0]; touchId = t.identifier;
+  const r = pad.getBoundingClientRect();
+  cx = r.left + r.width/2; cy = r.top + r.height/2;
+};
+
+pad.ontouchmove = e => {
+  for (const t of e.touches) if (t.identifier === touchId) {
+    const dx = t.clientX - cx, dy = t.clientY - cy;
+    const absX = Math.abs(dx), absY = Math.abs(dy);
+    const threshold = pad.clientWidth * 0.15; // 有效区
+    stick.x = stick.y = 0;
+    if (absX > threshold || absY > threshold) {
+      if (absX > absY) stick.x = dx > 0 ? 1 : -1;
+      else             stick.y = dy > 0 ? -1 : 1;
+    }
+    knob.style.transform = `translate(${stick.x*30}px, ${-stick.y*30}px)`;
+  }
+};
+
+pad.ontouchend = e => {
+  for (const t of e.changedTouches) if (t.identifier === touchId) {
+    stick.x = stick.y = 0;
+    knob.style.transform = '';
+    touchId = null;
+  }
+};
+
+// 示例输出
+setInterval(()=>console.log(stick),200);
+</script>
+</body>
+</html>
