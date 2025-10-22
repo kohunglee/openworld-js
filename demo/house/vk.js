@@ -157,4 +157,9 @@ function setVK() {
             console.error("无法解析收到的 JSON:");
         }
     };
+
+    // 一个技巧，让它能一直链接，不停旋转
+    setInterval(()=>{
+        k.keys.turnRight = k.keys.turnRight + 0.01;
+    }, 1000);
 }
