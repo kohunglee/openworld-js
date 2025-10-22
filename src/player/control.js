@@ -17,7 +17,7 @@ export default {
         viewRight: 0,
         shiftKeyvalue: 0,
         jumping: 0,
-        frozen: 0,  // 冻结
+        frozen: 0,  // 冻结（无用）
     },
 
     // 键盘按键 与 操作状态值 的对应

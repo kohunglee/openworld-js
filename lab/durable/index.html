@@ -1,93 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <title>实时共享白板 (JSON版)</title>
-    <style>
-        body { font-family: sans-serif; display: flex; justify-content: space-around; padding: 20px; }
-        .panel { display: flex; flex-direction: column; width: 45%; }
-        h2 { text-align: center; }
-        textarea {
-            box-sizing: border-box; width: 100%; height: 60vh;
-            border: 1px solid #ccc; padding: 10px; font-size: 16px; font-family: monospace;
-        }
-        #whiteboard {
-            box-sizing: border-box; width: 100%; height: 60vh; border: 1px solid #ccc;
-            padding: 10px; font-family: monospace; background-color: #f0f0f0; overflow-y: auto;
-        }
-        .user-block { margin-bottom: 15px; border-left: 3px solid #007bff; padding-left: 10px; }
-        .user-location { font-weight: bold; color: #333; }
-        .user-text { white-space: pre-wrap; word-wrap: break-word; color: #555; }
-    </style>
-</head>
-<body>
-
-    <!-- <div class="panel">
-        <h2>我的草稿纸 (在这里输入)</h2>
-        <textarea id="editor" placeholder="正在连接..."></textarea>
-    </div> -->
-
-    <div class="panel">
-        <h2>实时在线人的位置和 IP 信息 (实时同步)</h2>
-        <div id="whiteboard"></div>
-    </div>
-
-    <script>
-        // 【【【【【【 请在这里修改成你自己的 Worker 地址！ 】】】】】】
-        const workerUrl = "wss://realtime-whiteboard.kohunglee.workers.dev"; // 记得替换!
-
-        const editor = document.getElementById('editor');
-        const whiteboard = document.getElementById('whiteboard');
-
-        const socket = new WebSocket(workerUrl);
-
-        socket.onopen = () => {
-            editor.placeholder = "连接成功！请开始输入。";
-        };
-
-        // 【核心改造】接收并渲染 JSON 数据
-        socket.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data);
-                whiteboard.innerHTML = '';
-                if (data.users && Array.isArray(data.users)) {
-                    data.users.forEach(user => {
-                        const userBlock = document.createElement('div');
-                        userBlock.className = 'user-block';
-
-                        const locationDiv = document.createElement('div');
-                        locationDiv.className = 'user-location';
-                        locationDiv.textContent = `[${user.location + ' ' + user.ip}]:`;
-
-                        const textDiv = document.createElement('div');
-                        textDiv.className = 'user-text';
-                        textDiv.textContent = user.content;
-
-                        userBlock.appendChild(locationDiv);
-                        userBlock.appendChild(textDiv);
-                        whiteboard.appendChild(userBlock);
-                    });
-                }
-            } catch (e) {
-                console.error("无法解析收到的 JSON:", event.data);
-                whiteboard.textContent = "收到错误的数据格式。";
-            }
-        };
-
-        socket.onclose = () => {
-            editor.placeholder = "连接已断开，请刷新页面重连。";
-        };
-        
-        // 【核心改造】发送 JSON 数据
-        editor.addEventListener('input', () => {
-            if (socket.readyState === WebSocket.OPEN) {
-                const payload = {
-                    content: editor.value
-                };
-                socket.send(JSON.stringify(payload));
-            }
-        });
-    </script>
-
-</body>
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        此页面已集成到 demo 的右上角的 【更多信息】里
+        <a href="https://ow.ccgxk.com/demo/house?logicadd=1">https://ow.ccgxk.com/demo/house?logicadd=1</a> 
+    </body>
 </html>

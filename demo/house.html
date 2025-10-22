@@ -59,9 +59,60 @@
     #stargazers a {
         text-decoration: none;
     }
+
+    /* 移动端的控制 */
+    .pad{
+        background: transparent;
+        width: 150px;
+        height: 150px;
+        position: fixed;
+        z-index: 1;
+        bottom: 80px;
+        right: 80px;
+        user-select: none;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 6px;
+        padding: 6px;
+        box-sizing: border-box;
+        touch-action: none;
+    }
+    .cell{
+        border: none;
+        background: #ffffff82;
+        font-size: 22px;
+        font-weight: 600;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+    .cell:active{
+        color: #0ff; /* 按下时高亮 */
+        transform: scale(1.1);
+    }
+    .pad{display:none}
+    @media (max-width:820px) and (hover: none) and (pointer: coarse) {
+        .pad{display:grid;}
+    }
 </style>
 <div id="someCtrl">
     <button id="btn01" style="width: 105px;">更多信息</button>
+</div>
+<div id="mCtrl" class="pad">
+  <button class="cell" id="turnL">←</button>
+  <button class="cell" id="goF">前</button>
+  <button class="cell" id="turnR">→</button>
+
+  <button class="cell" id="goL">左</button>
+  <button class="cell" id="goJump">蹦</button>
+  <button class="cell" id="goR">右</button>
+
+  <button class="cell" id="lookUp">上</button>
+  <button class="cell" id="goB">后</button>
+  <button class="cell" id="lookDn">下</button>
 </div>
 <div class="info-modal" id="myinfoModal" hidden>
     <div>
@@ -92,7 +143,7 @@
     <div>
         <h3>简介</h3>
         <p>这是一个由 webgl 开发的 js 库 openworld-js 的测试演示程序。该库仍在开发，目的是成为一个 40kb 的极小体积游戏引擎，里面包含了三维渲染和物理引擎。</p>
-        <p>如您所见，这是一个类似于图书馆的建筑，里面放置了 30万 本「」，目前这些「书」还没有被填充，未来几日会被填充一下（不一定是书）。内置了 websocket 可以实现让我们多人在线互动，相互游玩在建筑之间。非常的有趣！</p>
+        <p>如您所见，这是一个类似于图书馆的建筑，里面放置了 30万 本「书」，目前这些「书」还没有被填充，未来几日会被填充一下（不一定是书）。内置了 websocket 可以实现让我们多人在线互动，相互游玩在建筑之间。非常的有趣！</p>
         <hr>
     </div>
 
@@ -109,14 +160,14 @@
             <li>单击后，圆点可以选择物体，左上角是物体的数字 ID，目前尚在测试，便于建模，请【退出】此模式。</li>
         </ul>
         <h4>移动设备</h4>
-        <p>尚在测试...</p>
+        <p>初步支持，尚在测试，欢迎探索...</p>
         <hr>
     </div>
 
     <div>
         <h3>更新记录</h3>
         <ul>
-            <li>2025/10/22 - 添加了【更多信息】，优化了多人在线</li>
+            <li>2025/10/22 - 添加了【更多信息】，优化了多人在线，增加了移动端的初步控件</li>
         </ul>
         <hr>
     </div>
@@ -186,5 +237,96 @@
         k.keys.turnRight = 90;
     });
 
-
+    // 移动端
+    const turnNum = 0.5;  // 旋转时的单位角度
+    const stepNum = 2;  // 移动时的单位距离
+    // 前
+    const goF = document.getElementById('goF');
+    goF.onmousedown = goF.ontouchstart = () => {
+        k.keys.viewForward = 1;
+    };
+    goF.onmouseup = goF.ontouchend = () => {
+        k.keys.viewForward = 0;
+    };
+    // 后
+    const goB = document.getElementById('goB');
+    goB.onmousedown = goB.ontouchstart = () => {
+        k.keys.viewBackward = 1;
+    };
+    goB.onmouseup = goB.ontouchend = () => {
+        k.keys.viewBackward = 0;
+    };
+    // 左转
+    const turnL = document.getElementById('turnL');
+    let timeturnL = null;
+    turnL.onmousedown = turnL.ontouchstart = () => {
+        if (timeturnL) return;
+        timeturnL = setInterval(() => {
+            k.keys.turnRight+=turnNum;
+        }, 10); // 每 100ms 执行一次
+    };
+    turnL.onmouseup = turnL.ontouchend = () => {
+        clearInterval(timeturnL);
+        timeturnL = null;
+    };
+    // 右转
+    const turnR = document.getElementById('turnR');
+    let timeturnR = null;
+    turnR.onmousedown = turnR.ontouchstart = () => {
+        if (timeturnR) return;
+        timeturnR = setInterval(() => {
+            k.keys.turnRight-=turnNum;
+        }, 10); // 每 100ms 执行一次
+    }
+    turnR.onmouseup = turnR.ontouchend = () => {
+        clearInterval(timeturnR);
+        timeturnR = null;
+    };
+    // 左移
+    const goL = document.getElementById('goL');
+    goL.onmousedown = goL.ontouchstart = () => {
+        k.keys.viewLeft = 1;
+    };
+    goL.onmouseup = goL.ontouchend = () => {
+        k.keys.viewLeft = 0;
+    }
+    // 右移
+    const goR = document.getElementById('goR');
+    goR.onmousedown = goR.ontouchstart = () => {
+        k.keys.viewRight = 1;
+    };
+    goR.onmouseup = goR.ontouchend = () => {
+        k.keys.viewRight = 0;
+    }
+    // 蹦
+    const goJump = document.getElementById('goJump');
+    goJump.onmousedown = goJump.ontouchstart = () => {
+        k.mainVPlayer.body.velocity.y = k.jumpYVel;
+    };
+    // 抬头
+    const lookUp = document.getElementById('lookUp');
+    let timelookUp = null;
+    lookUp.onmousedown = lookUp.ontouchstart = () => {
+        if (timelookUp) return;
+        timelookUp = setInterval(() => {
+            k.keys.turnUp+=turnNum;
+        }, 10); // 每 100ms 执行一次
+    };
+    lookUp.onmouseup = lookUp.ontouchend = () => {
+        clearInterval(timelookUp);
+        timelookUp = null;
+    };
+    // 低头
+    const lookDn = document.getElementById('lookDn');
+    let timelookDn = null;
+    lookDn.onmousedown = lookDn.ontouchstart = () => {
+        if (timelookDn) return;
+        timelookDn = setInterval(() => {
+            k.keys.turnUp-=turnNum;
+        }, 10); // 每 100ms 执行一次
+    };
+    lookDn.onmouseup = lookDn.ontouchend = () => {
+        clearInterval(timelookDn);
+        timelookDn = null;
+    };
 </script>
