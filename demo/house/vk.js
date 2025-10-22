@@ -16,7 +16,7 @@ function setVK() {
 
     // ID 转换为 中文 名字
     const id2name = n => {
-        const dict = "青玄影白寒星竹清语墨尘云归宸光元智星云霄航宇速影蓝新宙能空明林安星云海山风月江晴语润晓远";
+        const dict = "特朗普青玄影白寒星竹清语墨尘云归宸光元智星云霄航宇速影蓝新宙能空明林安星云海山风月江晴语润晓远";
         let h = (n * 2654435761) >>> 0; // Knuth 哈希
         let name = "";
         for (let i = 0; i < 3; i++) {
@@ -80,7 +80,7 @@ function setVK() {
             if (timeDiff > 10 * 1000) {  // 删去 10 秒未更新的游客
                 Object.assign(updateData, defaultPos);
                 k.frendMap.delete(key);
-                console.log(`frendMap 删除游客 ${key}`);
+                console.log(`frendMap 删除游客 ${key}（${id2name(key)}）`);
             } else {
                 Object.assign(updateData, {
                     x: parseFloat(value.x),
