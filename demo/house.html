@@ -34,11 +34,12 @@
         position: fixed;
         top: 25px;
         opacity: 0.5;
-        right: 25px;
+        right: 50px;
     }
     #someCtrl button {
-        width: 45px;
-        height: 30px;
+        width: 160px;
+        height: 50px;
+        font-size: 20px;
     }
     .info-modal {
         position: fixed;
@@ -52,6 +53,11 @@
         overflow: auto;
         padding: 1em;
     }
+
+    /* 感谢部分，<a> 无下划线 */
+    #stargazers a {
+        text-decoration: none;
+    }
 </style>
 <div id="someCtrl">
     <button id="btn01" style="width: 105px;">更多信息</button>
@@ -59,12 +65,64 @@
 <div class="info-modal" id="myinfoModal" hidden>
     <div>
     <button id="closeBtn">关闭</button>
+
+    <a href="//github.com/kohunglee/openworld-js" target="_blank">
+        <img src="https://img.shields.io/github/stars/kohunglee/openworld-js?style=social" 
+            alt="GitHub Repo stars" 
+            style="width: 110px;height: 30px;margin-bottom: -10px;">
+    </a>
+    
     <hr>
 
     <div>
-        <h3>在线</h3>
+        <h3>在线人数详情</h3>
         当前在线人数：<span id="onlineCount">1</span>
-        <ul id="frendPosInfo"></ul>
+        <ul id="frendPosInfo"></ul><hr>
+    </div>
+
+    <div>
+        <h3>操作方式</h3>
+        <h4>电脑</h4>
+        <ul>
+            <li>W A S D,或键盘上的方向键，控制 主角 前后左右移动，老生常谈...</li>
+            <li>鼠标单击画面后，滑动，可以控制视角</li>
+            <li>空格 或 E 为跳跃（推荐使用 E ，敲键盘声音更小）</li>
+            <li>shift 或 Q 为快速跑（推荐使用 Q，小拇指不会酸疼 😂）</li>
+            <li>F 键，frozen ，冻结到空中</li>
+            <li>V 键，可以切换视角，远景、近景、第一人称视角</li>
+            <li>单击后，圆点可以选择物体，左上角是物体的数字 ID，目前尚在测试，便于建模，请【退出】此模式</li>
+        </ul>
+        <h4>移动设备</h4>
+        <p>尚在测试...</p>
+        <hr>
+    </div>
+
+    <div>
+        <h3>注意事项</h3>
+        <ul>
+            <li>本项目仍在开发中，功能不完善，可能存在 BUG ，请多包涵</li>
+            <li>建议使用较新的浏览器，如 Chrome、Firefox 等，以获得更好的体验</li>
+            <li>如果遇到问题，可以在 GitHub 仓库中提交 issue 或 <a href="//www.ccgxk.com">联系作者</a> </li>
+        </ul>
+        <hr>
+    </div>
+
+    <div id="stargazers">
+        <h3>Star</h3>
+        感谢在 github 上 star 了 <a href="//github.com/kohunglee/openworld-js" target="_blank"> 本仓库 </a> 的朋友们：<br><br>
+            <a href="https://github.com/yangxinyu1226" title="yangxinyu1226" target="_blank">
+            <img src="https://avatars.githubusercontent.com/u/206335988?v=4" width="32" height="32" style="border-radius:50%;margin:2px">
+        </a><a href="https://github.com/liukjx" title="liukjx" target="_blank">
+            <img src="https://avatars.githubusercontent.com/u/33191606?v=4" width="32" height="32" style="border-radius:50%;margin:2px">
+        </a><a href="https://github.com/kohunglee" title="kohunglee" target="_blank">
+            <img src="https://avatars.githubusercontent.com/u/33373536?v=4" width="32" height="32" style="border-radius:50%;margin:2px">
+        </a><a href="https://github.com/skylee03" title="skylee03" target="_blank">
+            <img src="https://avatars.githubusercontent.com/u/24489025?v=4" width="32" height="32" style="border-radius:50%;margin:2px">
+        </a><a href="https://github.com/kong1383068" title="kong1383068" target="_blank">
+            <img src="https://avatars.githubusercontent.com/u/24849322?v=4" width="32" height="32" style="border-radius:50%;margin:2px">
+        </a><a href="https://github.com/askshjcn" title="askshjcn" target="_blank">
+            <img src="https://avatars.githubusercontent.com/u/21169734?v=4" width="32" height="32" style="border-radius:50%;margin:2px">
+        </a>
     </div>
 
     <hr>
