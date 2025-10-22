@@ -76,9 +76,24 @@
     <hr>
 
     <div>
-        <h3>在线人数详情</h3>
+        <h3>快捷操作</h3>
+        <button id="goOPOS">到原点</button>
+        <button id="goHall">到大厅</button>
+         <hr>
+    </div>
+
+    <div>
+        <h3></h3>
         当前在线人数：<span id="onlineCount">1</span>
-        <ul id="frendPosInfo"></ul><hr>
+        <ul id="frendPosInfo"></ul>
+        <hr>
+    </div>
+
+    <div>
+        <h3>简介</h3>
+        <p>这是一个由 webgl 开发的 js 库 openworld-js 的测试演示程序。该库仍在开发，目的是成为一个 40kb 的极小体积游戏引擎，里面包含了三维渲染和物理引擎。</p>
+        <p>如您所见，这是一个类似于图书馆的建筑，里面放置了 30万 本「」，目前这些「书」还没有被填充，未来几日会被填充一下（不一定是书）。内置了 websocket 可以实现让我们多人在线互动，相互游玩在建筑之间。非常的有趣！</p>
+        <hr>
     </div>
 
     <div>
@@ -95,6 +110,14 @@
         </ul>
         <h4>移动设备</h4>
         <p>尚在测试...</p>
+        <hr>
+    </div>
+
+    <div>
+        <h3>更新记录</h3>
+        <ul>
+            <li>2025/10/22 - 添加了【更多信息】，优化了多人在线</li>
+        </ul>
         <hr>
     </div>
 
@@ -146,5 +169,22 @@
     document.getElementById('closeBtn02').addEventListener('click', function() {
         document.getElementById('myinfoModal').hidden = true;
     });
+
+    // 到原点
+    document.getElementById('goOPOS').addEventListener('click', function() {
+        k.mainVPlayer.body.position.x = 7.6;
+        k.mainVPlayer.body.position.y = 10;
+        k.mainVPlayer.body.position.z = 16.5;
+        k.keys.turnRight = 0;
+    });
+
+    // 到大厅
+    document.getElementById('goHall').addEventListener('click', function() {
+        k.mainVPlayer.body.position.x = 31;
+        k.mainVPlayer.body.position.y = 10;
+        k.mainVPlayer.body.position.z = -31;
+        k.keys.turnRight = 90;
+    });
+
 
 </script>
