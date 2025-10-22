@@ -1,8 +1,8 @@
 function setVK() {
-    const rId = Math.floor(Math.random() * 10 ** 7); // 随机7位数字，作为 ID 标识
+    k.rId = k?.rId || Math.floor(Math.random() * 10 ** 7); // 随机7位数字，作为 ID 标识
     const now = new Date();
     const localTime = now.toLocaleString();
-    console.log(`我的 ID: ${rId}  ` + localTime);
+    console.log(`我的 ID: ${k.rId}  ` + localTime);
     const workerUrl = "wss://wsslib.ccgxk.com";
     k.frendMap = new Map(); // 用于存储好友的实例 ID 和对应的实例索引
     const socket = new WebSocket(workerUrl);
@@ -40,7 +40,7 @@ function setVK() {
     let lastPosCount = null;
     const reMod = setInterval(() => {
         const pos = {};
-        pos.id = rId;
+        pos.id = k.rId;
         pos.x = mvp.x.toFixed(2);
         pos.y = mvp.y.toFixed(2);
         pos.z = mvp.z.toFixed(2);
@@ -69,7 +69,7 @@ function setVK() {
 
         const liMe = document.createElement('li');
         const mvp = k.mainVPlayer.body.position;
-        liMe.textContent = `我: ${id2name(rId)},    x: ${mvp.x.toFixed(2) ?? '-'}, y: ${mvp.y.toFixed(2) ?? '-'}, z: ${mvp.z.toFixed(2) ?? '-'}`;
+        liMe.textContent = `我: ${id2name(k.rId)},    x: ${mvp.x.toFixed(2) ?? '-'}, y: ${mvp.y.toFixed(2) ?? '-'}, z: ${mvp.z.toFixed(2) ?? '-'}`;
         liMe.style.color = 'rgba(213, 0, 0, 1)';
         ul.appendChild(liMe);
 
@@ -114,7 +114,7 @@ function setVK() {
         k.frendMap = new Map();
         k.W.delete('frends');
         sendMessage({
-            id: rId,
+            id: k.rId,
             x: 0,
             y: 0,
             z: 0,
@@ -147,7 +147,7 @@ function setVK() {
             const data = JSON.parse(event.data);
             const pos = JSON.parse(JSON.parse(data.content));
             pos.time = Date.now();
-            if(pos.id === rId) return; // 过滤自己
+            if(pos.id === k.rId) return; // 过滤自己
             k.frendMap.set(pos.id, pos); // 更新好友位置
 
             updateFrends();
