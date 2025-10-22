@@ -80,7 +80,7 @@ function setVK() {
             if (timeDiff > 10 * 1000) {  // 删去 10 秒未更新的游客
                 Object.assign(updateData, defaultPos);
                 k.frendMap.delete(key);
-                console.log(`frendMap 删除游客 ${key}（${id2name(key)}）`);
+                console.log(`frendMap 删除游客 ${key}（${id2name(key)}）- ${(new Date().toLocaleString('zh-CN', { hour12: false }))}`);
             } else {
                 Object.assign(updateData, {
                     x: parseFloat(value.x),
@@ -104,6 +104,7 @@ function setVK() {
 
         // }
     }
+    updateFrends();
 
 
 
