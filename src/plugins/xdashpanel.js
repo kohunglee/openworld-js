@@ -11,7 +11,7 @@ export default function(ccgxkObj) {
     const content = template.content.cloneNode(true);
     document.body.appendChild(content);
 
-    shiftInfo.textContent = '速度:' + 0 + ' | ' // 【测试，临时】
+    shiftInfo.textContent = '当前人数：' + 1 + ' | '; // 【测试，临时】
 
     ccgxkObj.fpsFrameCount = 0;  //+ FPS 计算的辅助值
     ccgxkObj.lastTime = performance.now();

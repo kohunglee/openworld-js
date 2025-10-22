@@ -60,6 +60,10 @@ function setVK() {
             k.W.updateInstance('frends', i,  defaultPos);
         }
 
+        const totalCount = k.frendMap.size + 1;
+        document.getElementById('onlineCount').innerText = totalCount;  // 总数
+        document.getElementById('shiftInfo').innerText = '当前人数: ' + totalCount + ' | ';
+
         const ul = document.getElementById('frendPosInfo');
         ul.innerHTML = ''; // 清空旧内容
 
@@ -95,7 +99,7 @@ function setVK() {
             const li = document.createElement('li');
             li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'}`;
             ul.appendChild(li);
-            document.getElementById('onlineCount').innerText = k.frendMap.size + 1;  // 总数
+
         }
 
         // }
