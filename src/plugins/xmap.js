@@ -3,14 +3,17 @@
  * ========
  * 实时显示当前主角在地图的位置
  */
+const mapOpt = {};  // 地图比例尺
 
 // 插件入口
-export default function(ccgxkObj) {
+export default function(ccgxkObj, mapRatioInput = 1, posCenter = {x:0, z:0}) {
     const template = document.createElement('template');  //+1 添加 html 节点
     template.innerHTML = htmlCode;
     const content = template.content.cloneNode(true);
     document.body.appendChild(content);
-
+    mapOpt.ratio = mapRatioInput;  // 比例尺
+    mapOpt.x = posCenter.x;  //+ 地图中心偏移
+    mapOpt.z = posCenter.z;
     const mapUpdateInterval = setInterval(() => {  // 每 50 毫秒更新一下
         drawRedDot(posMap, ccgxkObj);
     }, 50);
@@ -33,7 +36,8 @@ const htmlCode = `
 `;
 
 // 是否使用小范围地图 10 倍？？
-const isMapLittle = true;
+// const isMapLittle = true;
+
 
 // // 一个能跑起来的计算角度的函数，凑合用吧，原理混乱
 // function calculateNorthAngle(t,a,h){var t=-t*Math.PI/180,a=-a*Math.PI/180,h=h*Math.PI/180,M=Math.cos(t),
@@ -50,14 +54,10 @@ function drawRedDot(canvasElement, ccgxkObj) {
     const ctx = canvasElement.getContext("2d");
     const centerX = canvasElement.width / 2;    // 地图中心的 X 坐标
     const centerY = canvasElement.height / 2;   // 地图中心的 Y 坐标
-    let playerMapX = (mvp.X / 5000) * centerX;
-    let playerMapZ = (mvp.Z / 5000) * centerY;
+    let playerMapX = (mvp.X / 5000 * mapOpt.ratio) * centerX;
+    let playerMapZ = (mvp.Z / 5000 * mapOpt.ratio) * centerY;
     const gridSize = canvasElement.width / 10;  // 10 * 10 格子大小
     ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    if (isMapLittle) {  // 小比例尺
-        playerMapX = (mvp.X / 500) * centerX;
-        playerMapZ = (mvp.Z / 500) * centerY;
-    }
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
     ctx.fillStyle = "#F5F7FF";
@@ -68,8 +68,8 @@ function drawRedDot(canvasElement, ccgxkObj) {
             }
         }
     }
-    const finalPlayerX = centerX + playerMapX;
-    const finalPlayerY = centerY + playerMapZ;
+    const finalPlayerX = centerX + playerMapX + mapOpt.x;
+    const finalPlayerY = centerY + playerMapZ + mapOpt.z;
     ctx.beginPath();
     ctx.arc(centerX, centerY, 2, 0, 2 * Math.PI); // 中心点
     ctx.arc(finalPlayerX, finalPlayerY, 1, 0, 2 * Math.PI); // 玩家点
