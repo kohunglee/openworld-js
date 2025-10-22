@@ -8,43 +8,30 @@ function setVK() {
     const socket = new WebSocket(workerUrl);
     const defaultPos = { x: 0, y: 0, z: 0, ry: 0 };
 
+    document.getElementById('myinfoModal').hidden = false;
+
     socket.onopen = () => {  // 连接 wss
         console.log("连接 socket 成功！");
+    };
+
+    // ID 转换为 中文 名字
+    const id2name = n => {
+        const dict = "青玄影白寒星竹清语墨尘云归宸光元智星云霄航宇速影蓝新宙能空明林安星云海山风月江晴语润晓远";
+        let h = (n * 2654435761) >>> 0; // Knuth 哈希
+        let name = "";
+        for (let i = 0; i < 3; i++) {
+            h ^= h >>> 13;
+            h = Math.imul(h, 1274126177) >>> 0; // 保证 32 位无符号整数
+            name += dict[h % dict.length];
+        }
+        return name;
     };
 
     // 将位置信息发送到 wss
     function sendMessage(pos) {
         if (socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify(pos));
-        }
-    }
-
-    // 都有游客位置变化时，更新实例位置
-    function updateFrends() {
-        let index = 0;
-        for(let i = 0; i < 50; i++) {
-            k.W.updateInstance('frends', i,  defaultPos);
-        }
-
-        for (const [key, value] of k.frendMap) {
-            const timeDiff = Date.now() - Number(value.time);
-            const updateData = {};
-
-            if (timeDiff > 20 * 1000) {
-                Object.assign(updateData, defaultPos);
-                k.frendMap.delete(key);
-            } else {
-                Object.assign(updateData, {
-                    x: parseFloat(value.x),
-                    y: parseFloat(value.y),
-                    z: parseFloat(value.z),
-                    w: 0.5, d: 0.5, h: 0.5,
-                    ry: parseFloat(value.ry),
-                    rx: 15,
-                });
-            }
-            k.W.updateInstance('frends', index, updateData);
-            index++;
+            updateFrends();
         }
     }
 
@@ -65,6 +52,55 @@ function setVK() {
             lastPosCount = totalCount;
         }
     }, 100);
+
+    // 都有游客位置变化时，更新实例位置
+    function updateFrends() {
+        let index = 0;
+        for(let i = 0; i < 50; i++) {
+            k.W.updateInstance('frends', i,  defaultPos);
+        }
+
+        const ul = document.getElementById('frendPosInfo');
+        ul.innerHTML = ''; // 清空旧内容
+
+        const liMe = document.createElement('li');
+        const mvp = k.mainVPlayer.body.position;
+        liMe.textContent = `我: ${id2name(rId)},    x: ${mvp.x.toFixed(2) ?? '-'}, y: ${mvp.y.toFixed(2) ?? '-'}, z: ${mvp.z.toFixed(2) ?? '-'}`;
+        liMe.style.color = 'rgba(213, 0, 0, 1)';
+        ul.appendChild(liMe);
+
+        for (const [key, value] of k.frendMap) {
+            const timeDiff = Date.now() - Number(value.time);
+            const updateData = {};
+
+            if (timeDiff > 20 * 1000) {  // 删去 20 秒未更新的游客
+                Object.assign(updateData, defaultPos);
+                k.frendMap.delete(key);
+                console.log(`frendMap 删除游客 ${key}`);
+            } else {
+                Object.assign(updateData, {
+                    x: parseFloat(value.x),
+                    y: parseFloat(value.y),
+                    z: parseFloat(value.z),
+                    w: 0.5, d: 0.5, h: 0.5,
+                    ry: parseFloat(value.ry),
+                    rx: 15,
+                });
+            }
+
+            k.W.updateInstance('frends', index, updateData);
+            index++;
+
+            // 创建 li 并写入信息
+            const li = document.createElement('li');
+            li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'}`;
+            ul.appendChild(li);
+        }
+
+        // }
+    }
+
+
 
     socket.onclose = () => {  // 断开 wss
         console.log("socket 已断开连接。");
