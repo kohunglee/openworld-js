@@ -1,5 +1,8 @@
 function setVK() {
     const rId = Math.floor(Math.random() * 10 ** 7); // 随机7位数字，作为 ID 标识
+    const now = new Date();
+    const localTime = now.toLocaleString();
+    console.log(`我的 ID: ${rId}  ` + localTime);
     const workerUrl = "wss://1251631157-k3oer1a0l3.ap-hongkong.tencentscf.com";
     k.frendMap = new Map(); // 用于存储好友的实例 ID 和对应的实例索引
     const socket = new WebSocket(workerUrl);
@@ -13,6 +16,35 @@ function setVK() {
     function sendMessage(pos) {
         if (socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify(pos));
+        }
+    }
+
+    // 都有游客位置变化时，更新实例位置
+    function updateFrends() {
+        let index = 0;
+        for(let i = 0; i < 50; i++) {
+            k.W.updateInstance('frends', i,  defaultPos);
+        }
+
+        for (const [key, value] of k.frendMap) {
+            const timeDiff = Date.now() - Number(value.time);
+            const updateData = {};
+
+            if (timeDiff > 20 * 1000) {
+                Object.assign(updateData, defaultPos);
+                k.frendMap.delete(key);
+            } else {
+                Object.assign(updateData, {
+                    x: parseFloat(value.x),
+                    y: parseFloat(value.y),
+                    z: parseFloat(value.z),
+                    w: 0.5, d: 0.5, h: 0.5,
+                    ry: parseFloat(value.ry),
+                    rx: 15,
+                });
+            }
+            k.W.updateInstance('frends', index, updateData);
+            index++;
         }
     }
 
@@ -76,36 +108,9 @@ function setVK() {
             if(pos.id === rId) return; // 过滤自己
             k.frendMap.set(pos.id, pos); // 更新好友位置
 
-            let index = 0;
 
-            for(let i = 0; i < 50; i++) {
-                k.W.updateInstance('frends', i,  defaultPos);
-            }
-
-            for (const [key, value] of k.frendMap) {
-                const timeDiff = Date.now() - Number(value.time);
-                const updateData = {};
-
-                if (timeDiff > 3 * 1000) {
-                    console.log(`游客 ${key} 已掉线`);
-                    Object.assign(updateData, defaultPos);
-                    k.frendMap.delete(key);
-                } else {
-                    Object.assign(updateData, {
-                        x: parseFloat(value.x),
-                        y: parseFloat(value.y),
-                        z: parseFloat(value.z),
-                        w: 0.5, d: 0.5, h: 0.5,
-                        ry: parseFloat(value.ry),
-                        rx: 15,
-                    });
-                }
-                
-                k.W.updateInstance('frends', index, updateData);
-                index++;
-            }
-
-            console.log(`当前在线游客数量: ${k.frendMap.size}`);
+            updateFrends();
+            document.getElementById('onlineCount').innerText = k.frendMap.size + 1;  // 总数
 
         } catch (e) {
             console.log(event.data);
