@@ -3,7 +3,7 @@ function setVK() {
     const now = new Date();
     const localTime = now.toLocaleString();
     console.log(`我的 ID: ${rId}  ` + localTime);
-    const workerUrl = "wss://1251631157-k3oer1a0l3.ap-hongkong.tencentscf.com";
+    const workerUrl = "wss://wsslib.ccgxk.com";
     k.frendMap = new Map(); // 用于存储好友的实例 ID 和对应的实例索引
     const socket = new WebSocket(workerUrl);
     const defaultPos = { x: 0, y: 0, z: 0, ry: 0 };
@@ -73,7 +73,7 @@ function setVK() {
             const timeDiff = Date.now() - Number(value.time);
             const updateData = {};
 
-            if (timeDiff > 5 * 1000) {  // 删去 5 秒未更新的游客
+            if (timeDiff > 10 * 1000) {  // 删去 10 秒未更新的游客
                 Object.assign(updateData, defaultPos);
                 k.frendMap.delete(key);
                 console.log(`frendMap 删除游客 ${key}`);
@@ -95,6 +95,7 @@ function setVK() {
             const li = document.createElement('li');
             li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'}`;
             ul.appendChild(li);
+            document.getElementById('onlineCount').innerText = k.frendMap.size + 1;  // 总数
         }
 
         // }
@@ -144,9 +145,7 @@ function setVK() {
             if(pos.id === rId) return; // 过滤自己
             k.frendMap.set(pos.id, pos); // 更新好友位置
 
-
             updateFrends();
-            document.getElementById('onlineCount').innerText = k.frendMap.size + 1;  // 总数
 
         } catch (e) {
             console.log(event.data);
