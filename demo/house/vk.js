@@ -8,7 +8,7 @@ function setVK() {
     const socket = new WebSocket(workerUrl);
     const defaultPos = { x: 0, y: 0, z: 0, ry: 0 };
 
-    document.getElementById('myinfoModal').hidden = false;
+    // document.getElementById('myinfoModal').hidden = false;
 
     socket.onopen = () => {  // 连接 wss
         console.log("连接 socket 成功！");
@@ -73,7 +73,7 @@ function setVK() {
             const timeDiff = Date.now() - Number(value.time);
             const updateData = {};
 
-            if (timeDiff > 20 * 1000) {  // 删去 20 秒未更新的游客
+            if (timeDiff > 5 * 1000) {  // 删去 5 秒未更新的游客
                 Object.assign(updateData, defaultPos);
                 k.frendMap.delete(key);
                 console.log(`frendMap 删除游客 ${key}`);
