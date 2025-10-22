@@ -12,7 +12,6 @@
 <script src="../src/cannon/cannon29kb.js"></script>
 <!-- <script src="./house/cannon.min.js"></script> -->
 
-
 <script src="./house/cubedata.js"></script> <!-- 模型数据 -->
 <script src="./house/makegroundmvp.js"></script> <!-- 地面和人物初始化 -->
 <script src="./house/newmvp.js"></script> <!-- 新角色 -->
@@ -26,3 +25,66 @@
 
 <script type="module" src="./house/import.js"></script> <!-- 导入插件 -->
 <script type="module" src="./house/index.js" ></script>
+
+<!---- [ 下面是测试 ] --->
+
+<style>
+    body{margin: 0;}
+    #someCtrl {
+        position: fixed;
+        top: 25px;
+        opacity: 0.5;
+        right: 25px;
+    }
+    #someCtrl button {
+        width: 45px;
+        height: 30px;
+    }
+    .info-modal {
+        position: fixed;
+        background-color: #e4e4e4f5;
+        right: 30px;
+        top: 30px;
+        width: 500px;
+        max-width: calc(100vw - 80px);
+        height: 80vh;
+        z-index: 1;
+        overflow: auto;
+        padding: 1em;
+    }
+</style>
+<div id="someCtrl">
+    <button id="btn01" style="width: 105px;">更多信息</button>
+</div>
+<div class="info-modal" id="myinfoModal" hidden>
+    <div>
+    <button id="closeBtn">关闭</button>
+    <hr>
+
+    <div>
+        <h3>在线</h3>
+        当前在线人数：<span id="onlineCount">1</span>
+    </div>
+
+    <hr>
+    <button id="closeBtn02">关闭</button>
+    </div>
+</div>
+<script>
+
+    // 程序说明
+    btn01.addEventListener('mousedown', function(event) {
+        document.getElementById('myinfoModal').hidden = false;
+    });
+
+    // 关闭 【程序说明】模态框
+    document.getElementById('closeBtn').addEventListener('click', function() {
+        document.getElementById('myinfoModal').hidden = true;
+    });
+
+    // 关闭 【程序说明】模态框 02 
+    document.getElementById('closeBtn02').addEventListener('click', function() {
+        document.getElementById('myinfoModal').hidden = true;
+    });
+
+</script>
