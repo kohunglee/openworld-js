@@ -123,7 +123,7 @@ function setVK() {
 
         const liMe = document.createElement('li');
         const mvp = k.mainVPlayer.body.position;
-        liMe.textContent = `我: ${id2name(k.rId)},    x: ${mvp.x.toFixed(2) ?? '-'}, y: ${mvp.y.toFixed(2) ?? '-'}, z: ${mvp.z.toFixed(2) ?? '-'}`;
+        liMe.textContent = `我: ${id2name(k.rId)},    x: ${mvp.x.toFixed(2) ?? '-'}, y: ${mvp.y.toFixed(2) ?? '-'}, z: ${mvp.z.toFixed(2) ?? '-'} ${ ((isTouch) ? '（手机端）' : '' }`;
         liMe.style.color = 'rgba(213, 0, 0, 1)';
         ul.appendChild(liMe);
 
