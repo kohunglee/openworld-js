@@ -152,7 +152,7 @@ function setVK() {
 
             // 创建 li 并写入信息
             const li = document.createElement('li');
-            li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${(updateData.m ?? '' )}`;
+            li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${ ((updateData.m ?? '' ) === 'm') ? '（手机端）' : '' }`;
             ul.appendChild(li);
         }
 
