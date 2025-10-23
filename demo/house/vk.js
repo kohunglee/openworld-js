@@ -143,6 +143,7 @@ function setVK() {
                     w: 0.5, d: 0.5, h: 0.5,
                     ry: parseFloat(value.ry),
                     rx: 15,
+                    m:  value.m,
                 });
             }
 
@@ -151,7 +152,7 @@ function setVK() {
 
             // 创建 li 并写入信息
             const li = document.createElement('li');
-            li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${(updateData?.m ?? '' )}`;
+            li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${(updateData.m ?? '' )}`;
             ul.appendChild(li);
         }
 
