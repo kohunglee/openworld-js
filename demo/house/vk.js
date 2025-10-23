@@ -1,6 +1,7 @@
 function setVK() {
     k.rId = k?.rId || Math.floor(Math.random() * 10 ** 7); // 随机7位数字，作为 ID 标识
     const now = new Date();
+    const isTouch = matchMedia('(hover: none) and (pointer: coarse)').matches;  // 是否是移动设备
     const localTime = now.toLocaleString();
     console.log(`我的 ID: ${k.rId}  ` + localTime);
     const workerUrl = "wss://wsslib.ccgxk.com";
@@ -38,8 +39,10 @@ function setVK() {
     // 信息整合和判断主角位置变化后发送
     const mvp = k.mainVPlayer.body.position;
     let lastPosCount = null;
+    let lastPlaySize = null;
     const reMod = setInterval(() => {
         const pos = {};
+        pos.m = (isTouch) ? 1 : 0;
         pos.id = k.rId;
         pos.x = mvp.x.toFixed(2);
         pos.y = mvp.y.toFixed(2);
@@ -51,6 +54,57 @@ function setVK() {
             sendMessage(posStr);
             lastPosCount = totalCount;
         }
+
+        if(lastPlaySize === null){
+            lastPlaySize = k.frendMap.size;
+        }
+
+        k.liveSound = document.getElementById('isLiveSound').checked;
+
+        // 顺便判断一下人数，如果变多了，就响一下
+        if (k.frendMap.size > lastPlaySize && k?.liveSound) {
+
+            f = function(i){
+                var n=2e4;
+                if (i > n) return null;
+                var q = t(i,n);
+                i=i*0.04;
+                return Math.sin(-i*0.03*Math.sin(0.09*i+Math.sin(i/200))+Math.sin(i/100))*q;
+            }
+
+            // Sound player
+            t=(i,n)=>(n-i)/n;
+            A=new AudioContext()
+            m=A.createBuffer(1,96e3,48e3)
+            b=m.getChannelData(0)
+            for(i=96e3;i--;)b[i]=f(i)
+            s=A.createBufferSource()
+            s.buffer=m
+            s.connect(A.destination)
+            s.start();
+
+        }
+        if (k.frendMap.size < lastPlaySize && k?.liveSound){
+
+            // Sound
+            f = function(i){
+            var n=4e4;
+            if (i > n) return null;
+            return Math.sin(i/2000 - Math.sin(i/331)*Math.sin(i/61))*t(i,n);
+            }
+
+            // Sound player
+            t=(i,n)=>(n-i)/n;
+            A=new AudioContext()
+            m=A.createBuffer(1,96e3,48e3)
+            b=m.getChannelData(0)
+            for(i=96e3;i--;)b[i]=f(i)
+            s=A.createBufferSource()
+            s.buffer=m
+            s.connect(A.destination)
+            s.start()
+        }
+        lastPlaySize = k.frendMap.size;
     }, 100);
 
     // 都有游客位置变化时，更新实例位置
@@ -97,9 +151,8 @@ function setVK() {
 
             // 创建 li 并写入信息
             const li = document.createElement('li');
-            li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'}`;
+            li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${((updateData?.m == 1) ? '手机端' : '' )}`;
             ul.appendChild(li);
-
         }
 
         // }
