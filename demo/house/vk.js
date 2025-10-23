@@ -17,7 +17,7 @@ function setVK() {
 
     // ID 转换为 中文 名字
     const id2name = n => {
-        const dict = "特朗普青玄影白寒星竹清语墨尘云归宸光元智星云霄航宇速影蓝新宙能空明林安星云海山风月江晴语润晓远";
+        const dict = "青玄影白寒月江晴语润晓远比尔盖茨马斯克安倍晋三苍井空户晨风蔡徐坤特朗普溥仪张学良爱新觉罗康熙乾隆雍正蒋介石";
         let h = (n * 2654435761) >>> 0; // Knuth 哈希
         let name = "";
         for (let i = 0; i < 3; i++) {
@@ -42,7 +42,7 @@ function setVK() {
     let lastPlaySize = null;
     const reMod = setInterval(() => {
         const pos = {};
-        pos.m = (isTouch) ? 1 : 0;
+        pos.m = (isTouch) ? 'm' : '';
         pos.id = k.rId;
         pos.x = mvp.x.toFixed(2);
         pos.y = mvp.y.toFixed(2);
@@ -151,7 +151,7 @@ function setVK() {
 
             // 创建 li 并写入信息
             const li = document.createElement('li');
-            li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${((updateData?.m == 1) ? '手机端' : '' )}`;
+            li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${(updateData?.m ?? '' )}`;
             ul.appendChild(li);
         }
 
