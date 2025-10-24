@@ -6,12 +6,11 @@ function setVK() {
     
     console.log(`我的 ID: ${k.rId}  ` + localTime);
     const workerUrl = "wss://wsslib.ccgxk.com";
+    // const workerUrl = "ws://127.0.0.1:9000";
     k.frendMap = new Map(); // 用于存储好友的实例 ID 和对应的实例索引
     k.rIdSet = new Set();  // 用于储存已经有过的 id
     const socket = new WebSocket(workerUrl);
     const defaultPos = { x: 0, y: 0, z: 0, ry: 0 };
-
-    // document.getElementById('myinfoModal').hidden = false;
 
     socket.onopen = () => {  // 连接 wss
         console.log("连接 socket 成功！");
@@ -145,7 +144,8 @@ function setVK() {
                     w: 0.5, d: 0.5, h: 0.5,
                     ry: parseFloat(value.ry),
                     rx: 15,
-                    m:  value.m,
+                    mb:  value.m,
+                    ip:  value.ip,
                 });
             }
 
@@ -154,15 +154,14 @@ function setVK() {
 
             // 创建 li 并写入信息
             const li = document.createElement('li');
-            li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${ ((updateData.m ?? '' ) === 'm') ? '（手机端）' : '' }`;
+            li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${ ((updateData.mb ?? '' ) === 'm') ? '（手机端）' : '' }`;
+            li.title = (updateData.ip ?? '' );
             ul.appendChild(li);
         }
 
         // }
     }
     updateFrends();
-
-
 
     socket.onclose = () => {  // 断开 wss
         console.log("socket 已断开连接。");
@@ -197,16 +196,14 @@ function setVK() {
         instances: arrIns,
     });
 
-
     // 一些不好的 id
     const unAllowed = new Set([4354814,  3597052, 7701198, 3951993, 7708505, 5873583]);
-
 
     // 接收事件
     socket.onmessage = (event) => {
         try {
             const data = JSON.parse(event.data);
-            const pos = JSON.parse(JSON.parse(data.content));
+            const pos = JSON.parse(data.content);
             pos.time = Date.now();
             if(pos.id === k.rId) return; // 过滤自己
             
@@ -216,7 +213,8 @@ function setVK() {
             }
 
             k.rIdSet.add(pos.id);
-            k.frendMap.set(pos.id, pos); // 更新好友位置
+            const or_data = k.frendMap.get(pos.id) ?? {};
+            k.frendMap.set(pos.id, {...or_data, ...pos}); // 更新好友位置
 
             updateFrends();
 
