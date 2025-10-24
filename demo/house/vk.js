@@ -210,7 +210,7 @@ function setVK() {
             if(pos.id === k.rId) return; // 过滤自己
             
             if (unAllowed.has(Number(pos.id))) {
-                console.log('un ' + id2name(pos.id) + '  ' + pos.id);
+                console.log('un ' + id2name(pos.id) + '  ' + pos.id + '  ' + pos.ip);
                 return; // 过滤其他游客
             }
 
