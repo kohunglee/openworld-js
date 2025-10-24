@@ -199,6 +199,8 @@ function setVK() {
     // 一些不好的 id
     const unAllowed = new Set([4354814,  3597052, 7701198, 3951993, 7708505, 5873583]);
 
+    // 221.217.22.112 学cl
+
     // 接收事件
     socket.onmessage = (event) => {
         try {
@@ -208,7 +210,7 @@ function setVK() {
             if(pos.id === k.rId) return; // 过滤自己
             
             if (unAllowed.has(Number(pos.id))) {
-                console.log('un ' + id2name(pos.id));
+                console.log('un ' + id2name(pos.id) + '  ' + pos.id);
                 return; // 过滤其他游客
             }
 
