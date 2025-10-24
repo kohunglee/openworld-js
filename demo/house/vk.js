@@ -3,9 +3,11 @@ function setVK() {
     const now = new Date();
     const isTouch = matchMedia('(hover: none) and (pointer: coarse)').matches;  // 是否是移动设备
     const localTime = now.toLocaleString();
+    
     console.log(`我的 ID: ${k.rId}  ` + localTime);
     const workerUrl = "wss://wsslib.ccgxk.com";
     k.frendMap = new Map(); // 用于存储好友的实例 ID 和对应的实例索引
+    k.rIdSet = new Set();  // 用于储存已经有过的 id
     const socket = new WebSocket(workerUrl);
     const defaultPos = { x: 0, y: 0, z: 0, ry: 0 };
 
@@ -202,6 +204,14 @@ function setVK() {
             const pos = JSON.parse(JSON.parse(data.content));
             pos.time = Date.now();
             if(pos.id === k.rId) return; // 过滤自己
+
+            const unAllowed = new Set([4354814,  3597052, 7701198]);
+            if (unAllowed.has(Number(pos.id))) {
+                console.log('un ' + id2name(key));
+                return; // 过滤其他游客
+            }
+
+            k.rIdSet.add(pos.id);
             k.frendMap.set(pos.id, pos); // 更新好友位置
 
             updateFrends();
