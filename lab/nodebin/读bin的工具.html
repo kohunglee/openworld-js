@@ -1,0 +1,142 @@
+<meta charset="utf-8"><!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Load Compact BIN</title>
+</head>
+<body>
+  <h1>Load compact .bin (no CSS)</h1>
+
+  <p>
+    选择本地 .bin 文件：
+    <input id="fileInput" type="file" accept=".bin" />
+    <button id="parseFileBtn">Parse selected file</button>
+  </p>
+
+  <p>
+    或从 URL 加载（CORS: 服务器需允许）：
+    <input id="urlInput" type="text" placeholder="https://example.com/data.bin" size="60" />
+    <button id="fetchBtn">Fetch & Parse</button>
+  </p>
+
+  <p id="status">状态：空</p>
+
+  <script>
+    // 解析逻辑：变长格式
+    // [uint32 id][u8 len][domain][u8 len][zh][u8 len][en][u8 len][desc][u8 len][cat]...
+    const recordFields = ['domain', 'zh', 'en', 'desc', 'cat'];
+
+    function parseCompactBinBuffer(arrayBuffer) {
+      const u8 = new Uint8Array(arrayBuffer);
+      const view = new DataView(arrayBuffer);
+      const dec = new TextDecoder();
+      const records = [];
+      let offset = 0;
+      const total = u8.length;
+
+      while (offset + 4 <= total) {
+        // read id (uint32, little-endian)
+        const id = view.getUint32(offset, true);
+        offset += 4;
+
+        const rec = { id };
+
+        // read each string: len (1 byte) + bytes
+        let broken = false;
+        for (let fi = 0; fi < recordFields.length; fi++) {
+          if (offset >= total) { broken = true; break; } // incomplete
+          const len = u8[offset];
+          offset += 1;
+          if (offset + len > total) { broken = true; break; } // truncated
+          const str = dec.decode(u8.subarray(offset, offset + len));
+          offset += len;
+          rec[recordFields[fi]] = str;
+        }
+
+        if (broken) {
+          console.warn('Parsed ended prematurely at offset', offset, 'total', total);
+          break;
+        }
+
+        records.push(rec);
+      }
+
+      return records;
+    }
+
+    async function parseFile(file) {
+      updateStatus(`读取本地文件：${file.name} (${file.size} bytes)`);
+      try {
+        const ab = await file.arrayBuffer();
+        const t0 = performance.now();
+        const records = parseCompactBinBuffer(ab);
+        const t1 = performance.now();
+        updateStatus(`完成：解析 ${records.length} 条，耗时 ${(t1 - t0).toFixed(2)} ms`);
+        console.log('Loaded records (total):', records.length);
+        console.log(records);
+        // 为了方便，打印前 20 条摘要
+        console.log('First 20 records:', records.slice(0, 20));
+      } catch (err) {
+        console.error(err);
+        updateStatus('错误：' + err.message);
+      }
+    }
+
+    async function fetchAndParse(url) {
+      updateStatus(`fetch: ${url}`);
+      try {
+        const tFetch0 = performance.now();
+        const res = await fetch(url, { cache: 'force-cache' });
+        if (!res.ok) throw new Error('Fetch failed: ' + res.status + ' ' + res.statusText);
+        const ab = await res.arrayBuffer();
+        const tFetch1 = performance.now();
+        updateStatus(`Fetched ${ab.byteLength} bytes (fetch ${(tFetch1 - tFetch0).toFixed(1)} ms). Parsing...`);
+
+        const t0 = performance.now();
+        const records = parseCompactBinBuffer(ab);
+        const t1 = performance.now();
+        updateStatus(`完成：解析 ${records.length} 条，fetch ${(tFetch1 - tFetch0).toFixed(1)} ms，parse ${(t1 - t0).toFixed(2)} ms`);
+        console.log('Loaded records (total):', records.length);
+        console.log(records);
+        console.log('First 20 records:', records.slice(0, 20));
+      } catch (err) {
+        console.error(err);
+        updateStatus('错误：' + err.message);
+      }
+    }
+
+    function updateStatus(text) {
+      document.getElementById('status').textContent = '状态：' + text;
+    }
+
+    // UI wiring
+    document.getElementById('parseFileBtn').addEventListener('click', () => {
+      const fi = document.getElementById('fileInput');
+      if (!fi.files || fi.files.length === 0) {
+        alert('请先选择一个 .bin 文件');
+        return;
+      }
+      parseFile(fi.files[0]);
+    });
+
+    document.getElementById('fetchBtn').addEventListener('click', () => {
+      const url = document.getElementById('urlInput').value.trim();
+      if (!url) {
+        alert('请输入 .bin 文件的 URL');
+        return;
+      }
+      fetchAndParse(url);
+    });
+
+    // 如果用户直接拖入文件到窗口，也能处理（方便测试）
+    window.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; });
+    window.addEventListener('drop', (e) => {
+      e.preventDefault();
+      if (e.dataTransfer.files && e.dataTransfer.files.length) {
+        const f = e.dataTransfer.files[0];
+        parseFile(f);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -333,9 +333,9 @@ const randCN = () => {  // 输出 1~8 位随机字符
 }
 
 // 生成 SVG 里的文字代码
-function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal }) {
+function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal, sId}) {
     const dirc = k.currBookDirc;
-    let { x, y, w_z, w_y, data, svgWidth, svgClearVal } = param;
+    let { x, y, w_z, w_y, data, svgWidth, svgClearVal, sId} = param;
     let flip = 1, off = 10;
 
     if (dirc === 2) {  //+ 根据 dirc 方向处理对称
@@ -355,25 +355,44 @@ function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal 
         const x1 = fix3(data[i].z - w_z) * 1000;
         const y1 = fix3(data[i].y - w_y) * 1000;
         const result_x = (svgWidth + (x + x1 + off) * flip) * svgClearVal;
-        texts[i] = `<text x="${result_x}" y="${((y - y1 + 20)) * svgClearVal}">${randCN() + ' ' + i}</text>`;
+        texts[i] = `<text x="${result_x}" y="${((y - y1 + 20)) * svgClearVal}">${textInShelf(sId, i)}</text>`;
     }
     return texts.join('');
 };
 
-// // 调试使用，按下 R 键渲染 svg
-// let mKeyPressed = false;
-// document.addEventListener('keydown', e => {
-//     if ((e.key === 'r' || e.key === 'R') && !mKeyPressed) {
-//         mKeyPressed = true;
-//         doSomething();
-//     }
-// });
-// document.addEventListener('keyup', e => {
-//     if (e.key === 'r' || e.key === 'R') {
-//         mKeyPressed = false;
-//     }
-// });
-// function doSomething() {
-//     // console.log('执行 M 事件逻辑');
-//     k.myRestDoFunc();
-// }
+
+
+
+/* -------------------【书本上字 实验区】-------------------------- */
+globalThis.testArr = [];
+
+// 生成 某书架上的书的文字
+function textInShelf(shelfId, index) {
+    if(shelfId === k.bookS.floor1.dire4[4]){
+        if(globalThis?.testArr){
+            console.log('testArr');
+            return globalThis.testArr[index] + '>>-' + index;
+        }
+    } else {
+        return shelfId + '-' + index;
+    }
+    
+}
+
+// 调试使用，按下 R 键渲染 svg
+let mKeyPressed = false;
+document.addEventListener('keydown', e => {
+    if ((e.key === 'r' || e.key === 'R') && !mKeyPressed) {
+        mKeyPressed = true;
+        doSomething();
+    }
+});
+document.addEventListener('keyup', e => {
+    if (e.key === 'r' || e.key === 'R') {
+        mKeyPressed = false;
+    }
+});
+function doSomething() {
+    // console.log('执行 M 事件逻辑');
+    k.myRestDoFunc();
+}

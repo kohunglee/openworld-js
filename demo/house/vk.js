@@ -1,3 +1,9 @@
+/**
+ * 
+ * VK 是多人在线的意思，因为之前是托管在 cloudflare 的 VK work 上。
+ * 
+ */
+
 function setVK() {
     k.rId = k?.rId || Math.floor(Math.random() * 10 ** 7); // 随机7位数字，作为 ID 标识
     const now = new Date();
@@ -16,18 +22,7 @@ function setVK() {
         console.log("连接 socket 成功！");
     };
 
-    // ID 转换为 中文 名字
-    const id2name = n => {
-        const dict = "青玄影白寒月江晴语润晓远比尔盖茨马斯克安倍晋三苍井空户晨风蔡徐坤特朗普溥仪张学良爱新觉罗康熙乾隆雍正蒋介石";
-        let h = (n * 2654435761) >>> 0; // Knuth 哈希
-        let name = "";
-        for (let i = 0; i < 3; i++) {
-            h ^= h >>> 13;
-            h = Math.imul(h, 1274126177) >>> 0; // 保证 32 位无符号整数
-            name += dict[h % dict.length];
-        }
-        return name;
-    };
+
 
     // 将位置信息发送到 wss
     function sendMessage(pos) {
@@ -89,9 +84,9 @@ function setVK() {
 
             // Sound
             f = function(i){
-            var n=4e4;
-            if (i > n) return null;
-            return Math.sin(i/2000 - Math.sin(i/331)*Math.sin(i/61))*t(i,n);
+                var n=4e4;
+                if (i > n) return null;
+                return Math.sin(i/2000 - Math.sin(i/331)*Math.sin(i/61))*t(i,n);
             }
 
             // Sound player
@@ -196,10 +191,6 @@ function setVK() {
         instances: arrIns,
     });
 
-    // 一些不好的 id
-    const unAllowed = new Set([4354814,  3597052, 7701198, 3951993, 7708505, 5873583]);
-
-    // 221.217.22.112 学cl
 
     // 接收事件
     socket.onmessage = (event) => {
@@ -208,11 +199,6 @@ function setVK() {
             const pos = JSON.parse(data.content);
             pos.time = Date.now();
             if(pos.id === k.rId) return; // 过滤自己
-            
-            if (unAllowed.has(Number(pos.id))) {
-                console.log('un ' + id2name(pos.id) + '  ' + pos.id + '  ' + pos.ip);
-                return; // 过滤其他游客
-            }
 
             k.rIdSet.add(pos.id);
             const or_data = k.frendMap.get(pos.id) ?? {};
@@ -225,9 +211,4 @@ function setVK() {
             console.error("无法解析收到的 JSON:");
         }
     };
-
-    // 一个技巧，让它能一直链接，不停旋转
-    setInterval(()=>{
-        k.keys.turnRight = k.keys.turnRight + 0.01;
-    }, 2 * 1000);
 }
