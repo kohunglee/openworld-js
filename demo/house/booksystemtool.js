@@ -265,7 +265,7 @@ function svgCodeMake(width, height, textCode, svgClearVal = 1) {
         preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="三个红色方块 与 你好啊" style="width:500px">
-        <rect x="0" y="0" width="100%" height="100%" fill="rgba(0, 0, 0, 0)"/>
+        <rect x="0" y="0" width="100%" height="100%" fill="rgba(255, 255, 255, 0.01)"/>
         <rect x="60"  y="30" width="40" height="40" fill="#e63946" rx="4"/>
         <rect x="110" y="20" width="40" height="80" fill="#e63946" rx="4"/>
         <rect x="160" y="35" width="40" height="50" fill="#e63946" rx="4"/>
@@ -274,14 +274,14 @@ function svgCodeMake(width, height, textCode, svgClearVal = 1) {
             font-size="${15 * svgClearVal}"
             fill="#000"
             stroke="#000"
-            stroke-width="${0.7 * svgClearVal}"
+            stroke-width="${0.9 * svgClearVal}"
             paint-order="stroke"
             writing-mode="vertical-rl"
             text-orientation="upright"
             text-anchor="start"
+            letter-spacing="${1 * svgClearVal}"
             dominant-baseline="hanging">
-        <text x="60" y="170">水调歌头</text>
-            ${textCode}
+                ${textCode}
         </g>
     </svg>
     `;  // PS：stroke 颜色，后期也可以研究一下，有用
@@ -364,19 +364,21 @@ function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal,
 
 
 /* -------------------【书本上字 实验区】-------------------------- */
-globalThis.testArr = [];
+globalThis.testArr = Array.from({ length: 1100 }, (_, i) => i); // 填充 1100 个数组
+
 
 // 生成 某书架上的书的文字
 function textInShelf(shelfId, index) {
     if(shelfId === k.bookS.floor1.dire4[4]){
         if(globalThis?.testArr){
-            console.log('testArr');
-            return globalThis.testArr[index] + '>>-' + index;
+            // console.log('why');
+            console.log(globalThis.testArr[index]);
+            // return globalThis.testArr[index] + ' - ' + index;
+            return globalThis.testArr[index];
         }
     } else {
         return shelfId + '-' + index;
     }
-    // return shelfId + '-' + index;
 }
 
 // 调试使用，按下 R 键渲染 svg
