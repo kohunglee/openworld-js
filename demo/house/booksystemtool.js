@@ -376,7 +376,7 @@ function textInShelf(shelfId, index) {
     } else {
         return shelfId + '-' + index;
     }
-    
+    // return shelfId + '-' + index;
 }
 
 // 调试使用，按下 R 键渲染 svg
