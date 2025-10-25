@@ -469,17 +469,6 @@ function logicData(){  //
             }
         });
 
-
-
-
-
-
-
-
-
-
-
-
         // 假书逻辑
         if(true){
             const subBackcolor = '#adadad';  // 假书的颜色
@@ -966,8 +955,6 @@ function logicData(){  //
                     ...k.bookS.floor1.bookSub.refSymo,
                 ], {z:-30});
 
-
-
                 //  辅助计算值，计算相对位置
                 const bookSubx = cubeDatas[k.bookS.floor1.bookSub.b001].x;
 
@@ -1006,8 +993,6 @@ function logicData(){  //
                         ...k.bookS.floor1.bookSub.refSymoZSymo,
                     ], x_diff, 2, 'x',)
                 });
-
-                
             }
 
             // 删除所有参考
