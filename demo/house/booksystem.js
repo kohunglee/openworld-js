@@ -142,31 +142,60 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             switch(type){
                 case 1: { // 一楼书架，上下两层
                     const baseZ = (dirc===3||dirc===4)?-36.884:-23.116;
-                    const upTxt  = svgTextCodeBuild({x:60,y:170,w_z:baseZ,w_y:2.898,data:bookDataIns.slice(0,681),svgWidth:7400,svgClearVal,sId:shelfID,tp:1});
-                    const dnTxt  = svgTextCodeBuild({x:77,y:282,w_z:baseZ+0.018,w_y:1.853,data:bookDataIns.slice(681),svgWidth:7400,svgClearVal,sId:shelfID,tp:2});
-                    textureAlp = [
-                        {id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(7400*svgClearVal,940*svgClearVal,upTxt,svgClearVal)},
-                        {id:`downSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(7400*svgClearVal,935*svgClearVal,dnTxt,svgClearVal)}
-                    ];
+
+                    Promise.all([
+                        svgTextCodeBuild({x:60,y:170,w_z:baseZ,w_y:2.898,data:bookDataIns.slice(0,681),svgWidth:7400,svgClearVal,sId:shelfID,tp:1}),
+                        svgTextCodeBuild({x:77,y:282,w_z:baseZ+0.018,w_y:1.853,data:bookDataIns.slice(681),svgWidth:7400,svgClearVal,sId:shelfID,tp:2})
+                    ]).then(([upTxt, dnTxt]) => {
+                        textureAlp = [
+                            { id: `upSvgPng${shelfID}`, type: 'svg', svgCode: svgCodeMake(7400*svgClearVal,940*svgClearVal, upTxt, svgClearVal) },
+                            { id: `downSvgPng${shelfID}`, type: 'svg', svgCode: svgCodeMake(7400*svgClearVal,935*svgClearVal, dnTxt, svgClearVal) }
+                        ];
+                    });
+
+
+
                     break;
                 }
                 case 2: case 3: { // 二楼普通 / 长书架
                     const z = baseZmap[type][dirc];
                     const thistp = type === 2 ? 3 : 4;
-                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+1.049,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:thistp});
-                    textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(6625*svgClearVal,2501*svgClearVal,txt,svgClearVal)}];
+
+                    Promise.all([
+                        svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+1.049,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:thistp})
+                    ]).then(([txt]) => {
+                        textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(6625*svgClearVal,2501*svgClearVal,txt,svgClearVal)}];
+                    })
+                    // const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+1.049,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:thistp});
+                    // textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(6625*svgClearVal,2501*svgClearVal,txt,svgClearVal)}];
+                    
                     break;
                 }
                 case 4: { // 二楼廊柜
                     const z = baseZmap[4][dirc];
-                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.67,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:5});
-                    textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
+
+                    Promise.all([
+                        svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.67,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:5})
+                    ]).then(([txt]) => {
+                        textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
+                    })
+                    // const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.67,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:5});
+                    // textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
+                    
                     break;
                 }
                 case 5: { // 二楼廊柜
                     const z = baseZmap[5][dirc];
-                    const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.67,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:5});
-                    textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
+                    
+                    Promise.all([
+                        svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.67,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:5})
+                    ]).then(([txt]) => {
+                        [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}]
+                    })
+
+                    // const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.67,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:5});
+                    // textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
+                    
                     break;
                 }
             }
