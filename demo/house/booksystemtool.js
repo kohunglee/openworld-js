@@ -257,7 +257,7 @@ function fillBooks(baseBook, dirc, totalLength = 1.05, count = 30) {
 }
 
 // 生成 SVG 代码
-function svgCodeMake(width, height, textCode, svgClearVal = 1) {  
+function svgCodeMake(width, height, textCode, svgClearVal = 1, isDown = false) {  
             return svgTestCode = `
     <svg xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 ${width} ${height}"
@@ -333,11 +333,10 @@ const randCN = () => {  // 输出 1~8 位随机字符
 }
 
 // 生成 SVG 里的文字代码
-function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal, sId}) {
+function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal, sId, tp}) {
     const dirc = k.currBookDirc;
-    let { x, y, w_z, w_y, data, svgWidth, svgClearVal, sId} = param;
+    let { x, y, w_z, w_y, data, svgWidth, svgClearVal, sId, tp} = param;
     let flip = 1, off = 10;
-
     if (dirc === 2) {  //+ 根据 dirc 方向处理对称
         flip = -1;
         off = -5;
@@ -355,31 +354,10 @@ function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal,
         const x1 = fix3(data[i].z - w_z) * 1000;
         const y1 = fix3(data[i].y - w_y) * 1000;
         const result_x = (svgWidth + (x + x1 + off) * flip) * svgClearVal;
-        texts[i] = `<text x="${result_x}" y="${((y - y1 + 20)) * svgClearVal}">${textInShelf(sId, i)}</text>`;
+        texts[i] = `<text x="${result_x}" y="${((y - y1 + 20)) * svgClearVal}">${testInShelf.returnBook(sId, i, tp)}</text>`;
     }
     return texts.join('');
 };
-
-
-
-
-/* -------------------【书本上字 实验区】-------------------------- */
-globalThis.testArr = Array.from({ length: 1100 }, (_, i) => i); // 填充 1100 个数组
-
-
-// 生成 某书架上的书的文字
-function textInShelf(shelfId, index) {
-    if(shelfId === k.bookS.floor1.dire4[4]){
-        if(globalThis?.testArr){
-            // console.log('why');
-            console.log(globalThis.testArr[index]);
-            // return globalThis.testArr[index] + ' - ' + index;
-            return globalThis.testArr[index];
-        }
-    } else {
-        return shelfId + '-' + index;
-    }
-}
 
 // 调试使用，按下 R 键渲染 svg
 let mKeyPressed = false;
