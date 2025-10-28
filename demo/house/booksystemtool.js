@@ -265,7 +265,7 @@ function svgCodeMake(width, height, textCode, svgClearVal = 1, isDown = false) {
         preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="三个红色方块 与 你好啊" style="width:500px">
-        <rect x="0" y="0" width="100%" height="100%" fill="rgba(255, 255, 255, 0.01)"/>
+        <rect x="0" y="0" width="100%" height="100%" fill="rgba(255, 255, 255, 0)"/>
         <rect x="60"  y="30" width="40" height="40" fill="#e63946" rx="4"/>
         <rect x="110" y="20" width="40" height="80" fill="#e63946" rx="4"/>
         <rect x="160" y="35" width="40" height="50" fill="#e63946" rx="4"/>
@@ -333,7 +333,7 @@ const randCN = () => {  // 输出 1~8 位随机字符
 }
 
 // 生成 SVG 里的文字代码
-function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal, sId, tp}) {
+async function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal, sId, tp}) {
     const dirc = k.currBookDirc;
     let { x, y, w_z, w_y, data, svgWidth, svgClearVal, sId, tp} = param;
     let flip = 1, off = 10;
@@ -354,7 +354,9 @@ function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgClearVal,
         const x1 = fix3(data[i].z - w_z) * 1000;
         const y1 = fix3(data[i].y - w_y) * 1000;
         const result_x = (svgWidth + (x + x1 + off) * flip) * svgClearVal;
-        texts[i] = `<text x="${result_x}" y="${((y - y1 + 20)) * svgClearVal}">${testInShelf.returnBook(sId, i, tp)}</text>`;
+         // await 这里，确保即使是 Promise 也能得到真正文字
+        let text = await testInShelf.returnBook(sId, i, tp);
+        texts[i] = `<text x="${result_x}" y="${((y - y1 + 20)) * svgClearVal}">${text}</text>`;
     }
     return texts.join('');
 };

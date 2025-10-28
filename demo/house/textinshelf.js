@@ -1,6 +1,6 @@
 /**
  *  关于书架上书的文字，业务逻辑都在这个文件里了
- *  */
+ **/
 
 // 定义一个对象，用于将书架编号、书本编号，转化为其应该显示的字
 const testInShelf = {
@@ -99,9 +99,34 @@ const testInShelf = {
         return index;
     },
 
-    // 返回应有的文字
-    returnBook : (shelfId, index, tp) => {
-        const realIndex = testInShelf.firstFloorIndexTras(tp, index);  // 获取真实 Index （在书架上的真实位置）
-        return realIndex;
-    }
+    // 前 1000 网站书架
+    floor1dire4_4 : (realIndex) => {
+        if (k.siteFront1000) {  // 如果缓存已存在，直接同步返回
+            if (realIndex < 1005) {
+                const row = k.siteFront1000[realIndex - 1];
+                if (!row) return '';
+                return `${row[2]} ${realIndex}`;
+            } else {
+                return '';
+            }
+        }
+        return loadCSV('./house/data/data.csv').then(data => {  // 否则异步加载（返回 Promise）
+            k.siteFront1000 = data;
+            const row = k.siteFront1000[realIndex - 1];
+            return row ? `${row[2]} ${realIndex}` : '';
+        });
+    },
+
+    // 返回结果
+    returnBook: (shelfId, index, tp) => {  // 前 1000 网站书架
+        const realIndex = testInShelf.firstFloorIndexTras(tp, index);
+
+        if (shelfId === k.bookS.floor1.dire4[4]) {
+            return testInShelf.floor1dire4_4(realIndex);
+        }
+
+        // 默认返回 index
+        return realIndex + '' + tp;
+    },
+
 }
