@@ -3,7 +3,7 @@ function csvread(){
         k.siteFront1000 = await loadCSV('./house/data/data.csv');
         console.log('SVG 完成', k.siteFront1000.length, 'rows');
         for(let i = 0; i < k.siteFront1000.length; i++){
-            globalThis.testArr[i] = k.siteFront1000[i][2];
+            // globalThis.testArr[i] = k.siteFront1000[i][2];
         }
     })();
 }
