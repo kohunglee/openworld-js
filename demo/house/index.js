@@ -25,7 +25,7 @@ xdashpanel(k);      // 仪表盘
 commModel(k);       // 基础模型库
 centerDot(k);       // 开启中心点取物
 sound(k);           // 声音插件
-build(k);           // 构建方块器
+// build(k);           // 构建方块器
 testSampleAni(k);   // 简单的人物动画实现
 
 k.star = (index) => {  // 闪烁按照 ID 寻找方块
@@ -62,6 +62,13 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     console.timeEnd('load');
 });
 
+// 一些键盘事件
+const keyHandler = e => myevent.keyEvent(e, k);
+document.addEventListener('keydown', keyHandler);
+document.addEventListener('keyup', function(){
+    document.addEventListener('keydown', keyHandler);
+});
+
 
 // fps 辅助
 (function(){var script=document.createElement('script');
@@ -78,9 +85,3 @@ var _hmt = _hmt || [];
     var s = document.getElementsByTagName("script")[0]; 
     s.parentNode.insertBefore(hm, s);
 })();
-
-
-
-
-// 测试 csv 使用！！！
-csvread();
