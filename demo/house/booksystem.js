@@ -190,7 +190,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                     Promise.all([
                         svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.67,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:5})
                     ]).then(([txt]) => {
-                        [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}]
+                        textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}]
                     })
 
                     // const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.67,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:5});

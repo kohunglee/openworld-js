@@ -22,8 +22,6 @@ function setVK() {
         console.log("连接 socket 成功！");
     };
 
-
-
     // 将位置信息发送到 wss
     function sendMessage(pos) {
         if (socket.readyState === WebSocket.OPEN) {
@@ -127,7 +125,7 @@ function setVK() {
             const timeDiff = Date.now() - Number(value.time);
             const updateData = {};
 
-            if (timeDiff > 3 * 1000) {  // 删去 10 秒未更新的游客
+            if (timeDiff > 6 * 1000) {  // 删去 6 秒未更新的游客
                 Object.assign(updateData, defaultPos);
                 k.frendMap.delete(key);
                 console.log(`frendMap 删除游客 ${key}（${id2name(key)}）- ${(new Date().toLocaleString('zh-CN', { hour12: false }))} ---------------`);
@@ -211,9 +209,4 @@ function setVK() {
             console.error("无法解析收到的 JSON:");
         }
     };
-
-    // 一个技巧，让它能一直链接，不停旋转
-    setInterval(()=>{
-        k.keys.turnRight = k.keys.turnRight + 0.01;
-    }, 2 * 1000);
 }
