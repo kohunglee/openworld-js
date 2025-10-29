@@ -11,6 +11,7 @@ const bookHot = {
         5: 5
     },
 
+    // 展示信息
     showInfo : (index) => {
         const args = k.indexToArgs.get(index);
         const book = args.book; if(book === undefined){return 0}
@@ -34,7 +35,7 @@ const bookHot = {
             const data = testInShelf.floor1dire4_4(realIndex);
             const buildInfoHTML = arr => `
                 <table border="1" cellspacing="0" cellpadding="4">
-                <tr><th align="right">编号</th><td>${arr[0]}</td></tr>
+                <tr><th align="right">排名</th><td>${arr[0]}</td></tr>
                 <tr><th align="right">网站</th><td><a href="https://${arr[1]}" target="_blank">${arr[1]}</a></td></tr>
                 <tr><th align="right">名称</th><td>${arr[2]}</td></tr>
                 <tr><th align="right">英文</th><td>${arr[3]}</td></tr>
