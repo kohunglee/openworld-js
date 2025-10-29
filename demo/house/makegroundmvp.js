@@ -45,6 +45,7 @@ function makeGroundMvp(){
     const mvpBody = k.mainVPlayer;
     const mp = k.mainVPlayer.body.position;
     const mk = k.keys;
+    k.lastHotBookData = [];  // 用于记录上一次的热点图书信息，方便判断
     let Last_mvpBodyPos = (mp.x + mp.y + mp.z + mk.turnRight).toFixed(2);  // 用于判断主角是否停下脚步的辅助
     k.myRestDoFunc = dofunc();  // 静止时要执行的函数队列
     setInterval(  // 动态调整人物的跳跃、地心引力等，每秒走一遍
@@ -101,6 +102,20 @@ function makeGroundMvp(){
                     k.myRestDoFunc();
                 } else {  // 人物处于运动状态
                     Last_mvpBodyPos = (mp.x + mp.y + mp.z + mk.turnRight).toFixed(2);
+                }
+            }
+
+            // 光标划过书本，在屏幕左上角，显示书本的信息
+            if(true){
+                if (k.hotPoint) {
+                    const data = bookHot.getInfo(k.hotPoint);
+                    const last = k.lastHotBookData ?? [];
+                    const hasNewData = data.length > 0 && data !== last;
+                    const needClear  = data.length !== last.length;
+                    if (hasNewData) {
+                        bookHot.showData(data);  // 左上角展示
+                    } else if (needClear) { bookHot.showData([], true); }  // 关闭左上角信息
+                    k.lastHotBookData = data;
                 }
             }
         }

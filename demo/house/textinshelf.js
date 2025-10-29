@@ -114,7 +114,6 @@ const testInShelf = {
             k.siteFront1000 = data;
             const row = k.siteFront1000[realIndex - 1];
             return row;
-            // return row ? `${row} ${realIndex}` : '';
         });
     },
 
@@ -123,7 +122,6 @@ const testInShelf = {
         const realIndex = testInShelf.firstFloorIndexTras(tp, index);
 
         if (shelfId === k.bookS.floor1.dire4[4]) {
-            // return testInShelf.floor1dire4_4(realIndex)[2];
             const rowData = testInShelf.floor1dire4_4(realIndex);
             return rowData;
         }
