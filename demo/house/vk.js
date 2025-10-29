@@ -106,7 +106,7 @@ function setVK() {
         '#FF4B4B', '#FF9900', '#FFD700', '#00E676', '#00B0FF',
         '#2979FF', '#7C4DFF', '#E040FB', '#FF4081', '#FF6E40',
         '#C6FF00', '#64DD17', '#18FFFF', '#00B8D4', '#AEEA00',
-        '#FF1744', '#FFEA00', '#69F0AE', '#536DFE', '#F50057'
+        '#777777', '#FFEA00', '#69F0AE', '#536DFE', '#ffffffff'
     ];
     function numToColor(key) {  // 数字转化鲜艳的颜色
         return brightColors[Math.abs(Number(key)) % brightColors.length];
@@ -129,7 +129,6 @@ function setVK() {
         const liMe = document.createElement('li');
         const mvp = k.mainVPlayer.body.position;
         liMe.textContent = `我: ${id2name(k.rId)}, x: ${mvp.x.toFixed(2) ?? '-'}, y: ${mvp.y.toFixed(2) ?? '-'}, z: ${mvp.z.toFixed(2) ?? '-'} ${ (isTouch) ? '（手机端）' : '' }`;
-        
         liMe.style.color = 'rgba(213, 0, 0, 1)';
         const colorBox = document.createElement('span');  // 创建色块（先这样吧，后续再优化性能）
         colorBox.style.display = 'inline-block';
@@ -171,9 +170,7 @@ function setVK() {
             const li = document.createElement('li');
             li.textContent = `id: ${id2name(key)}, x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${ ((updateData.mb ?? '' ) === 'm') ? '（手机端）' : '' }`;
             li.title = (updateData.ip ?? '' );
-
-            // 创建色块（先这样吧，后续再优化性能）
-            const colorBox = document.createElement('span');
+            const colorBox = document.createElement('span');  // 创建色块（先这样吧，后续再优化性能）
             colorBox.style.display = 'inline-block';
             colorBox.style.width = '12px';
             colorBox.style.height = '12px';
