@@ -107,7 +107,7 @@ export default function(ccgxkObj) {
             ccgxkObj.centerDot.setCamView('third');
         },
 
-        // 获取（和下载）当前的所有方块数据
+        // 调整视角
         setCamView : (viewType = null) => {
             const G = ccgxkObj.centerDot;
             if(viewType === 'first'){
@@ -138,10 +138,8 @@ export default function(ccgxkObj) {
         camViewData : {
             0 : {x: 0, y: 0.4, z: -0.5},  // 第一视角
             1 : {x: 0, y: 2, z: 4},  // 第三视角（较远）
-            
             2 : {x: 0, y: 1.8, z: 2},  // 第三视角（较近）
             3 : {x: 0, y: 1.5, z: 1},  // 第三视角（很近）
-            // 4 : {x: 0, y: 3, z: 8},  // 第三视角（较远）
         },
 
  

@@ -11,7 +11,6 @@ function csvread(){
 
 // 阅读 csv 函数
 async function loadCSV(url) {
-  console.log('h');
   const res = await fetch(url);
   const text = await res.text();
   const rows = text.trim().split(/\r?\n/);

@@ -69,6 +69,11 @@ document.addEventListener('keyup', function(){
     document.addEventListener('keydown', keyHandler);
 });
 
+// 圆点单击事件
+k.hooks.on('hot_action', function(ccgxkObj, e){  // 热点事件
+    console.log('ok ' + k.hotPoint);
+});
+
 
 // fps 辅助
 (function(){var script=document.createElement('script');
