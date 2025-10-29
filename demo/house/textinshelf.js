@@ -126,7 +126,7 @@ const testInShelf = {
         }
 
         // 默认返回 index
-        return realIndex + '' + tp;
+        return shelfId + ' ' + realIndex + ' ' + tp;
     },
 
 }

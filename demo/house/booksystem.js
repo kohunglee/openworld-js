@@ -15,7 +15,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
     const shelfInfo = cubeDatas[shelfID];
     const bassY = shelfInfo.y;  // Y 基准值
 
-    if(bookDataIns === undefined){  // 该书架没有 ins 数据，生成（先不考虑 svg）
+    if(bookDataIns === undefined){  // 该书架没有 ins 数据，生成
 
         // 生成书的实例模型
         if(true){
@@ -33,7 +33,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
         // 将 book 数据，写入 openworld 档案
         if(true){
             for (let index = 0; index < bookDataIns.length; index++) {  // 为「实例」加上简单的物理引擎
-                k.addTABox({
+                const currIndex = k.addTABox({
                     DPZ : 5,
                     isPhysical: false,
                     background: '#f6a1a1ff',
@@ -48,6 +48,11 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                     rZ: bookDataIns[index].rz,
                     isInvisible: true,  // 只被探测，而不可见
                 });
+                const org_args = k.indexToArgs.get(currIndex);
+                org_args.book = {
+                    _shelf : shelfID,
+                    _index: index,
+                };
             }
         }
     }
@@ -129,7 +134,6 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             
             let textureAlp;
             const svgClearVal = 0.85;  // 清晰度
-            // const svgClearVal = 1;  // 清晰度
 
             const baseZmap = {  // 基准 Z 表（神秘 Z 值）
                 2: {1:-23.121,2:-23.895,3:-36.085,4:-36.86},
@@ -142,7 +146,6 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             switch(type){
                 case 1: { // 一楼书架，上下两层
                     const baseZ = (dirc===3||dirc===4)?-36.884:-23.116;
-
                     Promise.all([
                         svgTextCodeBuild({x:60,y:170,w_z:baseZ,w_y:2.898,data:bookDataIns.slice(0,681),svgWidth:7400,svgClearVal,sId:shelfID,tp:1}),
                         svgTextCodeBuild({x:77,y:282,w_z:baseZ+0.018,w_y:1.853,data:bookDataIns.slice(681),svgWidth:7400,svgClearVal,sId:shelfID,tp:2})
@@ -152,9 +155,6 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                             { id: `downSvgPng${shelfID}`, type: 'svg', svgCode: svgCodeMake(7400*svgClearVal,935*svgClearVal, dnTxt, svgClearVal) }
                         ];
                     });
-
-
-
                     break;
                 }
                 case 2: case 3: { // 二楼普通 / 长书架
@@ -166,22 +166,15 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                     ]).then(([txt]) => {
                         textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(6625*svgClearVal,2501*svgClearVal,txt,svgClearVal)}];
                     })
-                    // const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+1.049,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:thistp});
-                    // textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(6625*svgClearVal,2501*svgClearVal,txt,svgClearVal)}];
-                    
                     break;
                 }
                 case 4: { // 二楼廊柜
                     const z = baseZmap[4][dirc];
-
                     Promise.all([
                         svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.67,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:5})
                     ]).then(([txt]) => {
                         textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
                     })
-                    // const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.67,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:5});
-                    // textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
-                    
                     break;
                 }
                 case 5: { // 二楼廊柜
@@ -192,10 +185,6 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                     ]).then(([txt]) => {
                         textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}]
                     })
-
-                    // const txt = svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+0.67,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:5});
-                    // textureAlp = [{id:`upSvgPng${shelfID}`,type:'svg',svgCode:svgCodeMake(3749*svgClearVal,2100*svgClearVal,txt,svgClearVal)}];
-                    
                     break;
                 }
             }

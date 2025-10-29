@@ -61,6 +61,7 @@ export default {
         indicesInCell.push(index);
         this.spatialGrid.set(gridKey, indicesInCell);
         this.indexToArgs.set(index, myargs);  // index -> args
+        return index;
     },
 
     // Box 的默认参数（除去 positionsStatus 里的参数）

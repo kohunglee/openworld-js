@@ -151,8 +151,6 @@ function setVK() {
             li.title = (updateData.ip ?? '' );
             ul.appendChild(li);
         }
-
-        // }
     }
     updateFrends();
 
