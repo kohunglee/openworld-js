@@ -6,7 +6,6 @@
  */
 function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
     hiddenBookSub(shelfID);  // 隐藏假书
-    // return 0;
     k.bookContainer = {};    // 初始化 书 容器，临时储存 ID 使用
     k.bookDataInsTemp = [];      // 书的实例数据，会由 registerBookshelf 生成
     k.currBookDirc = dirc;   // 保存当前方向

@@ -264,11 +264,9 @@ function svgCodeMake(width, height, textCode, svgClearVal = 1, isDown = false) {
         width="${width}" height="${height}"
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label="三个红色方块 与 你好啊" style="width:500px">
+        style="width:500px">
         <rect x="0" y="0" width="100%" height="100%" fill="rgba(255, 255, 255, 0)"/>
         <rect x="60"  y="30" width="40" height="40" fill="#e63946" rx="4"/>
-        <rect x="110" y="20" width="40" height="80" fill="#e63946" rx="4"/>
-        <rect x="160" y="35" width="40" height="50" fill="#e63946" rx="4"/>
 
         <g font-family=" 'Noto Sans SC', 'PingFang SC', 'Microsoft Yahei', 'Heiti SC', 'Source Han Sans SC', sans-serif "
             font-size="${15 * svgClearVal}"

@@ -11,12 +11,21 @@ const bookHot = {
         5: 5
     },
 
-    // 新窗口跳转到指定 url 地址
+    // 新窗口跳转到指定 url 地址（目前先试试，使用脱离鼠标模式）
     jumpUrl : (url) => {
-        if(url.length > 3){
-            window.open('//' + url + '?refer=ow.ccgxk.com', '_blank');
+        // if(url.length > 3){
+        //     window.open('//' + url + '?refer=ow.ccgxk.com', '_blank');
+        // }
+        if ('pointerLockElement' in document || 
+            'mozPointerLockElement' in document || 
+            'webkitPointerLockElement' in document) {
+                const exitLock = document.exitPointerLock || 
+                                 document.mozExitPointerLock || 
+                                 document.webkitExitPointerLock;
+                if (exitLock) {
+                    exitLock.call(document);
+                }
         }
-        
     },
 
     // 在屏幕左上角显示信息
@@ -25,7 +34,8 @@ const bookHot = {
             return document.getElementById('bookInfoLT').innerHTML = '';
         }
         const buildInfoHTML = arr => `
-            <table border="1" cellspacing="0" cellpadding="4">
+            <button class="collapse-btn" id="collapseBookInfo">${(k.collapseBookInfo) ? '展开' : '折叠'}</button>
+            <table border="1" cellspacing="0" id="bookInfo" cellpadding="4" ${(k.collapseBookInfo) ? 'hidden' : ''}>
                 <tr><th align="right">排名</th><td>${arr[0]}</td></tr>
                 <tr><th align="right">网站</th><td><a href="https://${arr[1]}?refer=ow.ccgxk.com" target="_blank">${arr[1]}</a></td></tr>
                 <tr><th align="right">名称</th><td>${arr[2]}</td></tr>
@@ -34,7 +44,17 @@ const bookHot = {
                 <tr><th align="right">类型</th><td>${arr[5]}</td></tr>
             </table>
             `;
-        document.getElementById('bookInfoLT').innerHTML = buildInfoHTML(data);  
+        document.getElementById('bookInfoLT').innerHTML = buildInfoHTML(data);
+        document.getElementById('collapseBookInfo').addEventListener('click', () => {
+            const ishidden = document.getElementById('bookInfo').hidden;
+            if(ishidden){
+                document.getElementById('collapseBookInfo').innerHTML = '折叠';
+            } else {
+                document.getElementById('collapseBookInfo').innerHTML = '展开';
+            }
+            document.getElementById('bookInfo').hidden = !ishidden;
+            k.collapseBookInfo = !ishidden;
+        })
     },
 
     // 获取书本的信息
