@@ -18,14 +18,14 @@
 <script src="./house/startbuild.js"></script> <!-- 开始建造的初始化准备 -->
 <script src="./house/logicbuild.js"></script> <!-- 建造逻辑工具函数 -->
 <script src="./house/logicdata.js"></script> <!-- 建造逻辑 -->
+<script src="./house/bookhot.js"></script> <!-- 书本热点相关 -->
 <script src="./house/textinshelf.js"></script> <!-- 书架书本文字 -->
 <script src="./house/booksystem.js"></script> <!-- 书系统 -->
 <script src="./house/booksystemtool.js"></script> <!-- 书系统的工具函数 -->
 <script src="./house/dataprocess.js"></script> <!-- 数据处理 -->
-<script src="./house/vktool.js"></script>
+<script src="./house/vktool.js"></script> <!-- vk处理的工具 -->
 <script src="./house/vk.js"></script> <!-- vk处理 -->
 <script src="./house/event.js"></script> <!-- 事件 -->
-
 
 <script type="module" src="./house/import.js"></script> <!-- 导入插件 -->
 <script type="module" src="./house/index.js" ></script>
@@ -101,7 +101,46 @@
     @media (max-width:820px) and (hover: none) and (pointer: coarse) {
         .pad{display:grid;}
     }
+
+    /* 书本信息（左上角） */
+    #bookInfoLT {
+        position: fixed;
+        top: 80px;
+        left: 10px;
+        font-family: monospace;
+        color: #000;
+    }
+
+    #bookInfoLT table {
+        border: 1px solid rgba(255,255,255,0.6);
+        border-collapse: collapse;
+        background: rgb(255 255 255 / 52%);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 0 12px rgba(255,255,255,0.2);
+        border-radius: 8px;
+    }
+
+    #bookInfoLT th, #bookInfoLT td {
+        border: 1px solid rgba(255,255,255,0.5);
+        padding: 6px 12px;
+        text-shadow: 0 0 6px #fff;
+    }
+
+    #bookInfoLT a {
+        color: #0044ff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    #bookInfoLT a:hover {
+        color: #000;
+        text-shadow: 0 0 8px #fff;
+    }
+
+
+
+
 </style>
+<div id="bookInfoLT"></div>
 <div id="someCtrl">
     <button id="btn01" style="width: 105px;">更多信息</button>
 </div>
@@ -173,6 +212,7 @@
     <div>
         <h3>更新记录</h3>
         <ul>
+            <li>2025-10-29 - 增加了颜色标注，开始着手书本内容填充</li>
             <li>2025-10-23 - 人数变化提示音、显示手机端标识</li>
             <li>2025-10-22 - 添加了【更多信息】，优化了多人在线，增加了移动端的初步控件</li>
         </ul>

@@ -49,9 +49,10 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                     isInvisible: true,  // 只被探测，而不可见
                 });
                 const org_args = k.indexToArgs.get(currIndex);
-                org_args.book = {
+                org_args.book = {  // 用于，光标寻书时，定位书目的线索
                     _shelf : shelfID,
                     _index: index,
+                    _type: type,
                 };
             }
         }
@@ -159,7 +160,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
                 }
                 case 2: case 3: { // 二楼普通 / 长书架
                     const z = baseZmap[type][dirc];
-                    const thistp = type === 2 ? 3 : 4;
+                    const thistp = (type === 2) ? 3 : 4;
 
                     Promise.all([
                         svgTextCodeBuild({x:70,y:185,w_z:z,w_y:bassY+1.049,data:bookDataIns,svgWidth:7400,svgClearVal,sId:shelfID,tp:thistp})

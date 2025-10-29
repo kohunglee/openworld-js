@@ -356,6 +356,9 @@ async function svgTextCodeBuild(param = { x, y, w_z, w_y, data, svgWidth, svgCle
         const result_x = (svgWidth + (x + x1 + off) * flip) * svgClearVal;
          // await 这里，确保即使是 Promise 也能得到真正文字
         let text = await testInShelf.returnBook(sId, i, tp);
+        if(typeof text === 'object'){ // 如果 text 是数组，那么则输出 [2] 的内容，也就是网站名
+            text = text[2];
+        }
         texts[i] = `<text x="${result_x}" y="${((y - y1 + 20)) * svgClearVal}">${text}</text>`;
     }
     return texts.join('');

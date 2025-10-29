@@ -105,15 +105,16 @@ const testInShelf = {
             if (realIndex < 1005) {
                 const row = k.siteFront1000[realIndex - 1];
                 if (!row) return '';
-                return `${row[2]} ${realIndex}`;
+                return row;
             } else {
-                return '';
+                return [];
             }
         }
         return loadCSV('./house/data/data.csv').then(data => {  // 否则异步加载（返回 Promise）
             k.siteFront1000 = data;
             const row = k.siteFront1000[realIndex - 1];
-            return row ? `${row[2]} ${realIndex}` : '';
+            return row;
+            // return row ? `${row} ${realIndex}` : '';
         });
     },
 
@@ -122,11 +123,12 @@ const testInShelf = {
         const realIndex = testInShelf.firstFloorIndexTras(tp, index);
 
         if (shelfId === k.bookS.floor1.dire4[4]) {
-            return testInShelf.floor1dire4_4(realIndex);
+            // return testInShelf.floor1dire4_4(realIndex)[2];
+            const rowData = testInShelf.floor1dire4_4(realIndex);
+            return rowData;
         }
 
         // 默认返回 index
-        return shelfId + ' ' + realIndex + ' ' + tp;
+        return shelfId + ' ' + realIndex + ' ' + tp + '(' + index + ')';
     },
-
 }
