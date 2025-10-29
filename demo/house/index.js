@@ -45,7 +45,12 @@ k.star = (index) => {  // 闪烁按照 ID 寻找方块
     }
 }
 
-k.minY = 1.35;
+k.gridsizeY[0] = 1.35;
+k.gridsizeY[1] = 1.35;
+k.gridsizeY[2] = 1.35;
+k.gridsizeY[3] = 1.35;
+k.gridsizeY[4] = 1.35;
+k.gridsizeY[5] = 1.35;
 
 // 入口
 // 加载预设纹理，开始程序
@@ -56,29 +61,32 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     startBuild();
     logicFunc();
     logicData();
-    dataProcess();
-    bookSysRegis();
+    dataProcess();  // 在此函数之前，将 10000 个数据搞完整
+    bookSysRegis();  // 书本相关
+    singboard.setTest();  // 指示板
     setVK();
     console.timeEnd('load');
 });
 
-// 一些键盘事件
-const keyHandler = e => myevent.keyEvent(e, k);
-document.addEventListener('keydown', keyHandler);
-document.addEventListener('keyup', function(){
+// 发布模式，不使用毛坯构建器
+if(false){
+    // 一些键盘事件
+    const keyHandler = e => myevent.keyEvent(e, k);
     document.addEventListener('keydown', keyHandler);
-});
+    document.addEventListener('keyup', function(){
+        document.addEventListener('keydown', keyHandler);
+    });
 
-// 圆点单击事件
-k.hooks.on('hot_action', function(ccgxkObj, e){  // 热点事件
-    // console.log('ok ' + k.hotPoint);
-    // bookHot.showInfo(k.hotPoint);
-    const data = bookHot.getInfo(k.hotPoint);
-    if(data){
-        bookHot.jumpUrl(data[1]);
-    }
-});
-
+    // 圆点单击事件
+    k.hooks.on('hot_action', function(ccgxkObj, e){  // 热点事件
+        const data = bookHot.getInfo(k.hotPoint);
+        if(data){
+            bookHot.jumpUrl(data[1]);
+        }
+    });
+} else {
+    build(k);// 毛坯构建器
+}
 
 // fps 辅助
 (function(){var script=document.createElement('script');
