@@ -101,6 +101,17 @@ function setVK() {
         lastPlaySize = k.frendMap.size;
     }, 100);
 
+    // 定义一次即可
+    const brightColors = [
+        '#FF4B4B', '#FF9900', '#FFD700', '#00E676', '#00B0FF',
+        '#2979FF', '#7C4DFF', '#E040FB', '#FF4081', '#FF6E40',
+        '#C6FF00', '#64DD17', '#18FFFF', '#00B8D4', '#AEEA00',
+        '#FF1744', '#FFEA00', '#69F0AE', '#536DFE', '#F50057'
+    ];
+    function numToColor(key) {  // 数字转化鲜艳的颜色
+        return brightColors[Math.abs(Number(key)) % brightColors.length];
+    }
+
     // 都有游客位置变化时，更新实例位置
     function updateFrends() {
         let index = 0;
@@ -117,8 +128,18 @@ function setVK() {
 
         const liMe = document.createElement('li');
         const mvp = k.mainVPlayer.body.position;
-        liMe.textContent = `我: ${id2name(k.rId)},    x: ${mvp.x.toFixed(2) ?? '-'}, y: ${mvp.y.toFixed(2) ?? '-'}, z: ${mvp.z.toFixed(2) ?? '-'} ${ (isTouch) ? '（手机端）' : '' }`;
+        liMe.textContent = `我: ${id2name(k.rId)}, x: ${mvp.x.toFixed(2) ?? '-'}, y: ${mvp.y.toFixed(2) ?? '-'}, z: ${mvp.z.toFixed(2) ?? '-'} ${ (isTouch) ? '（手机端）' : '' }`;
+        
         liMe.style.color = 'rgba(213, 0, 0, 1)';
+        const colorBox = document.createElement('span');  // 创建色块（先这样吧，后续再优化性能）
+        colorBox.style.display = 'inline-block';
+        colorBox.style.width = '12px';
+        colorBox.style.height = '12px';
+        colorBox.style.marginLeft = '6px';
+        colorBox.style.border = '1px solid #fff';
+        colorBox.style.background = numToColor(k.rId);
+        liMe.appendChild(colorBox);
+
         ul.appendChild(liMe);
 
         for (const [key, value] of k.frendMap) {
@@ -139,6 +160,7 @@ function setVK() {
                     rx: 15,
                     mb:  value.m,
                     ip:  value.ip,
+                    b: numToColor(key),
                 });
             }
 
@@ -147,8 +169,19 @@ function setVK() {
 
             // 创建 li 并写入信息
             const li = document.createElement('li');
-            li.textContent = `id: ${id2name(key)},    x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${ ((updateData.mb ?? '' ) === 'm') ? '（手机端）' : '' }`;
+            li.textContent = `id: ${id2name(key)}, x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${ ((updateData.mb ?? '' ) === 'm') ? '（手机端）' : '' }`;
             li.title = (updateData.ip ?? '' );
+
+            // 创建色块（先这样吧，后续再优化性能）
+            const colorBox = document.createElement('span');
+            colorBox.style.display = 'inline-block';
+            colorBox.style.width = '12px';
+            colorBox.style.height = '12px';
+            colorBox.style.marginLeft = '6px';
+            colorBox.style.border = '1px solid #fff';
+            colorBox.style.background = updateData.b;
+            li.appendChild(colorBox);
+
             ul.appendChild(li);
         }
     }

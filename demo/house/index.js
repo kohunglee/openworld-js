@@ -71,7 +71,8 @@ document.addEventListener('keyup', function(){
 
 // 圆点单击事件
 k.hooks.on('hot_action', function(ccgxkObj, e){  // 热点事件
-    console.log('ok ' + k.hotPoint);
+    // console.log('ok ' + k.hotPoint);
+    bookHot.showInfo(k.hotPoint);
 });
 
 
