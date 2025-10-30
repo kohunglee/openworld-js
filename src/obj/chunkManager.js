@@ -49,6 +49,7 @@ export default {
             if (indicesInGrid) {
                 for (const index of indicesInGrid) {
                     const minY = this.gridsizeY[this.physicsProps[index * 8 + 4]].toFixed(2);
+                    // const minY = 1.35;
                     if(Math.abs(this.positionsStatus[index * 8 + 1] - mVP.Y) < minY){  // 高度距离（Y）要接近
                         newActiveIndices.add(index);
                     }
