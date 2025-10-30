@@ -168,7 +168,7 @@ export default {
                 args.activeFunc(index);
             }
             if(textureError){  // 纹理加载失败，尝试换上自定义纹理（id 还是原 id）
-                const expRatio = 40;  // 缩放比例
+                const expRatio = this.errExpRatio;  // 缩放比例
                 const cWidth = (physicalProp[1] - utter) * expRatio;
                 const cHeight = (physicalProp[2] - utter) * expRatio;
                 this.loadTexture([ {
@@ -188,6 +188,8 @@ export default {
             }
         }
     },
+
+    errExpRatio : 40,  // 自定义图像（textureError）时，分辨率缩放比例，以 100 为基准
 
     // 隐藏 TA 物体
     hiddenTABox : function(index){
