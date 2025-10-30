@@ -38,6 +38,11 @@ document.getElementById('displayPadInPC').addEventListener('click', function() {
     document.getElementById('mCtrl').classList.toggle('onlymobile');
 })
 
+// 切换视角
+document.getElementById('tabView').addEventListener('click', function() {
+    k.centerDot.setCamView();
+})
+
 // 选择框 VK 是否关闭
 if(true) {
     console.time('setVK');
@@ -58,6 +63,7 @@ if(true) {
         if(checkbox.checked){  // 如果是断开
             vkSocket.close();  // 断开连接
             document.getElementById('onlineInfo').hidden = true;
+            document.getElementById('shiftInfo').innerText = '当前人数: ' + 0 + ' | ';
         } else {
             setVK();  // 重新连接
             document.getElementById('onlineInfo').hidden = false;
