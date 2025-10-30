@@ -3,10 +3,24 @@
  * VK 是多人在线的意思，因为之前是托管在 cloudflare 的 VK work 上。
  * 
  */
-
+let lastTime = 0;
 function setVK() {
+    const closeVKCheck = document.getElementById('closeVK');
+
+    // 节流措施
+    if(true){
+        if(closeVKCheck.checked) { return 0; }  // 不开启在线功能
+        if(typeof vkSocket !== 'undefined'){
+            if(vkSocket.readyState === 0){ return 0; }  // 可能可以减少一些频繁调用
+        }
+        const now = Date.now();
+        if (now - lastTime < 1000) return;  // 节流
+        lastTime = now;
+    }
+
     k.rId = k?.rId || Math.floor(Math.random() * 10 ** 7); // 随机7位数字，作为 ID 标识
-    const now = new Date();
+    const connectInfo = document.getElementById('isConneting');
+    connectInfo.innerText = '（连接中...）';
     const isTouch = matchMedia('(hover: none) and (pointer: coarse)').matches;  // 是否是移动设备
     const localTime = now.toLocaleString();
     
@@ -15,17 +29,19 @@ function setVK() {
     // const workerUrl = "ws://127.0.0.1:9000";
     k.frendMap = new Map(); // 用于存储好友的实例 ID 和对应的实例索引
     k.rIdSet = new Set();  // 用于储存已经有过的 id
-    const socket = new WebSocket(workerUrl);
+    globalThis.vkSocket = new WebSocket(workerUrl);
     const defaultPos = { x: 0, y: 0, z: 0, ry: 0 };
 
-    socket.onopen = () => {  // 连接 wss
-        console.log("连接 socket 成功！");
+    vkSocket.onopen = () => {  // 连接 wss
+        console.log("连接 vkSocket 成功！");
+        
+        connectInfo.innerText = '（已连接）';
     };
 
     // 将位置信息发送到 wss
     function sendMessage(pos) {
-        if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify(pos));
+        if (vkSocket.readyState === WebSocket.OPEN) {
+            vkSocket.send(JSON.stringify(pos));
             updateFrends();
         }
     }
@@ -184,8 +200,8 @@ function setVK() {
     }
     updateFrends();
 
-    socket.onclose = () => {  // 断开 wss
-        console.log("socket 已断开连接。");
+    vkSocket.onclose = () => {  // 断开 wss
+        console.log("vkSocket 已断开连接。");
         reMod && clearInterval(reMod);
         k.frendMap = new Map();
         k.W.delete('frends');
@@ -196,10 +212,11 @@ function setVK() {
             z: 0,
             ry: 0,
         });
-        setTimeout(() => {
-            setVK();  // 断线重连
-        }, 1000);
-        
+        if(!closeVKCheck.checked) {
+            setTimeout(() => {
+                setVK();  // 断线重连
+            }, 1000);
+        }
     };
 
     // 初始化 游客 模型实例
@@ -219,7 +236,7 @@ function setVK() {
 
 
     // 接收事件
-    socket.onmessage = (event) => {
+    vkSocket.onmessage = (event) => {
         try {
             const data = JSON.parse(event.data);
             const pos = JSON.parse(data.content);

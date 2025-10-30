@@ -38,6 +38,36 @@ document.getElementById('displayPadInPC').addEventListener('click', function() {
     document.getElementById('mCtrl').classList.toggle('onlymobile');
 })
 
+// 选择框 VK 是否关闭
+if(true) {
+    console.time('setVK');
+    const checkbox = document.getElementById('closeVK');
+
+    // 页面加载时：自动读取 cookie 并恢复状态
+    window.addEventListener('DOMContentLoaded', () => {
+        const saved = getCookie('closeVK');
+        if (saved === 'true') {
+            checkbox.checked = true;
+            document.getElementById('onlineInfo').hidden = true;
+        }
+    });
+
+    // 当复选框变化时：保存到 cookie
+    checkbox.addEventListener('change', () => {
+        console.log('当前的状态 ' + checkbox.checked);
+        if(checkbox.checked){  // 如果是断开
+            vkSocket.close();  // 断开连接
+            document.getElementById('onlineInfo').hidden = true;
+        } else {
+            setVK();  // 重新连接
+            document.getElementById('onlineInfo').hidden = false;
+        }
+        
+        setCookie('closeVK', checkbox.checked);
+    });
+    console.timeEnd('setVK');
+}
+
 // 移动端
 const turnNum = 0.7;  // 旋转时的单位角度
 const stepNum = 4;  // 移动时的单位距离
