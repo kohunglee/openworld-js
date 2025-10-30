@@ -45,12 +45,8 @@ k.star = (index) => {  // 闪烁按照 ID 寻找方块
     }
 }
 
-k.gridsizeY[0] = 1.35;
-k.gridsizeY[1] = 1.35;
-k.gridsizeY[2] = 1.35;
-k.gridsizeY[3] = 1.35;
-k.gridsizeY[4] = 1.35;
-k.gridsizeY[5] = 1.35;
+
+k.gridsizeY[2] = 30;  // DPZ 为 2 时，Y 格子为 5，主要为指示牌准备
 
 // 入口
 // 加载预设纹理，开始程序

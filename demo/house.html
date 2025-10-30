@@ -4,15 +4,18 @@
 <meta http-equiv="expires" content="0">
 <meta http-equiv="pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="./house/style.css">
 <style> body { margin: 0; } </style>
 <title>castle</title>
 <img src="./cbcity/texture.jpeg" alt="" id="dls" hidden>
 <canvas id="openworldCanv" style="width:99vw;height:99vh"></canvas>
+
 <script src="../src/cannon/cannon29kb.js"></script>
 <!-- <script src="./house/cannon.min.js"></script> -->
 
 <script src="./house/cubedata.js"></script> <!-- 模型数据 -->
-<script src="./house/csvread.js"></script> <!-- csv 读取 -->
+<script src="./house/csvread.js"></script> <!-- csv 读取器 -->
+
 <script src="./house/makegroundmvp.js"></script> <!-- 地面和人物初始化 -->
 <script src="./house/newmvp.js"></script> <!-- 新角色 -->
 
@@ -35,118 +38,13 @@
 <script src="./house/event.js"></script> <!-- 事件 -->
 
 
+
 <script type="module" src="./house/import.js"></script> <!-- 导入插件 -->
 <script type="module" src="./house/index.js" ></script>
 
 <!---- [ 下面是测试 ] --->
 
-<style>
-    body{margin: 0;}
-    #someCtrl {
-        position: fixed;
-        top: 25px;
-        opacity: 0.5;
-        right: 50px;
-    }
-    #someCtrl button {
-        width: 160px;
-        height: 50px;
-        font-size: 20px;
-    }
-    .info-modal {
-        position: fixed;
-        background-color: #ffffff6b;
-        backdrop-filter: blur(7px);
-        right: 30px;
-        top: 30px;
-        width: 500px;
-        max-width: calc(100vw - 80px);
-        height: 80vh;
-        z-index: 1;
-        overflow: auto;
-        padding: 1em;
-    }
 
-    /* 感谢部分，<a> 无下划线 */
-    #stargazers a {
-        text-decoration: none;
-    }
-
-    /* 移动端的控制 */
-    .pad{
-        background: transparent;
-        width: 150px;
-        height: 150px;
-        position: fixed;
-        z-index: 1;
-        bottom: 80px;
-        right: 80px;
-        user-select: none;
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(3, 1fr);
-        gap: 6px;
-        padding: 6px;
-        box-sizing: border-box;
-        touch-action: none;
-    }
-    .cell{
-        border: none;
-        background: #ffffff82;
-        font-size: 22px;
-        font-weight: 600;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        -webkit-tap-highlight-color: transparent;
-        touch-action: manipulation;
-    }
-    .cell:active{
-        color: #0ff; /* 按下时高亮 */
-        transform: scale(1.1);
-    }
-    .pad{display:none}
-    @media (max-width:820px) and (hover: none) and (pointer: coarse) {
-        .pad{display:grid;}
-    }
-
-    /* 书本信息（左上角） */
-    #bookInfoLT {
-        position: fixed;
-        top: 80px;
-        left: 10px;
-        font-family: monospace;
-        color: #000;
-    }
-    #bookInfoLT table {
-        border-collapse: collapse;
-        backdrop-filter: blur(8px);
-        background: #ffffffb5;
-    }
-    #bookInfoLT th, #bookInfoLT td {
-        border: 1px solid rgb(166 166 166 / 50%);
-        padding: 6px 12px;
-        text-shadow: 0 0 13px #fff;
-    }
-    #bookInfoLT a {
-        color: #0044ff;
-        text-decoration: none;
-        font-weight: bold;
-    }
-    #bookInfoLT a:hover {
-        color: #000;
-        text-shadow: 0 0 8px #fff;
-    }
-    .collapse-btn {  /* 折叠按钮 */
-        position: absolute;
-        z-index: 1;
-        left: 57px;
-        top: -28px;
-        min-width: 44px;
-        background: #ffffff00;
-        color: #ffffff;
-    }
-</style>
 <div id="bookInfoLT"></div>
 <div id="someCtrl">
     <button id="btn01" style="width: 105px;">更多信息</button>
@@ -260,129 +158,4 @@
     <button id="closeBtn02">关闭</button>
     </div>
 </div>
-<script>
-
-    // 程序说明
-    btn01.addEventListener('mousedown', function(event) {
-        document.getElementById('myinfoModal').hidden = false;
-    });
-
-    // 关闭 【程序说明】模态框
-    document.getElementById('closeBtn').addEventListener('click', function() {
-        document.getElementById('myinfoModal').hidden = true;
-    });
-
-    // 关闭 【程序说明】模态框 02 
-    document.getElementById('closeBtn02').addEventListener('click', function() {
-        document.getElementById('myinfoModal').hidden = true;
-    });
-
-    // 到原点
-    document.getElementById('goOPOS').addEventListener('click', function() {
-        k.mainVPlayer.body.position.x = 7.6;
-        k.mainVPlayer.body.position.y = 10;
-        k.mainVPlayer.body.position.z = 16.5;
-        k.keys.turnRight = 0;
-    });
-
-    // 到大厅
-    document.getElementById('goHall').addEventListener('click', function() {
-        k.mainVPlayer.body.position.x = 31;
-        k.mainVPlayer.body.position.y = 10;
-        k.mainVPlayer.body.position.z = -31;
-        k.keys.turnRight = 90;
-    });
-
-    // 移动端
-    const turnNum = 0.7;  // 旋转时的单位角度
-    const stepNum = 4;  // 移动时的单位距离
-    // 前
-    const goF = document.getElementById('goF');
-    goF.onmousedown = goF.ontouchstart = () => {
-        k.keys.viewForward = 1;
-    };
-    goF.onmouseup = goF.ontouchend = () => {
-        k.keys.viewForward = 0;
-    };
-    // 后
-    const goB = document.getElementById('goB');
-    goB.onmousedown = goB.ontouchstart = () => {
-        k.keys.viewBackward = 1;
-    };
-    goB.onmouseup = goB.ontouchend = () => {
-        k.keys.viewBackward = 0;
-    };
-    // 左转
-    const turnL = document.getElementById('turnL');
-    let timeturnL = null;
-    turnL.onmousedown = turnL.ontouchstart = () => {
-        if (timeturnL) return;
-        timeturnL = setInterval(() => {
-            k.keys.turnRight+=turnNum;
-        }, 10); // 每 100ms 执行一次
-    };
-    turnL.onmouseup = turnL.ontouchend = () => {
-        clearInterval(timeturnL);
-        timeturnL = null;
-    };
-    // 右转
-    const turnR = document.getElementById('turnR');
-    let timeturnR = null;
-    turnR.onmousedown = turnR.ontouchstart = () => {
-        if (timeturnR) return;
-        timeturnR = setInterval(() => {
-            k.keys.turnRight-=turnNum;
-        }, 10); // 每 100ms 执行一次
-    }
-    turnR.onmouseup = turnR.ontouchend = () => {
-        clearInterval(timeturnR);
-        timeturnR = null;
-    };
-    // 左移
-    const goL = document.getElementById('goL');
-    goL.onmousedown = goL.ontouchstart = () => {
-        k.keys.viewLeft = 1;
-    };
-    goL.onmouseup = goL.ontouchend = () => {
-        k.keys.viewLeft = 0;
-    }
-    // 右移
-    const goR = document.getElementById('goR');
-    goR.onmousedown = goR.ontouchstart = () => {
-        k.keys.viewRight = 1;
-    };
-    goR.onmouseup = goR.ontouchend = () => {
-        k.keys.viewRight = 0;
-    }
-    // 蹦
-    const goJump = document.getElementById('goJump');
-    goJump.onmousedown = goJump.ontouchstart = () => {
-        k.mainVPlayer.body.velocity.y = k.jumpYVel;
-    };
-    // 抬头
-    const lookUp = document.getElementById('lookUp');
-    let timelookUp = null;
-    lookUp.onmousedown = lookUp.ontouchstart = () => {
-        if (timelookUp) return;
-        timelookUp = setInterval(() => {
-            k.keys.turnUp+=turnNum;
-        }, 10); // 每 100ms 执行一次
-    };
-    lookUp.onmouseup = lookUp.ontouchend = () => {
-        clearInterval(timelookUp);
-        timelookUp = null;
-    };
-    // 低头
-    const lookDn = document.getElementById('lookDn');
-    let timelookDn = null;
-    lookDn.onmousedown = lookDn.ontouchstart = () => {
-        if (timelookDn) return;
-        timelookDn = setInterval(() => {
-            k.keys.turnUp-=turnNum;
-        }, 10); // 每 100ms 执行一次
-    };
-    lookDn.onmouseup = lookDn.ontouchend = () => {
-        clearInterval(timelookDn);
-        timelookDn = null;
-    };
-</script>
+<script src="./house/indexevent.js"></script> <!-- 主页面的事件（按钮事件或移动端） -->

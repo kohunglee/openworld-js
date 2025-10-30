@@ -16,7 +16,7 @@ const singboard = {
         // });
 
         k.addTABox({
-            DPZ : 3,
+            DPZ : 2,
             X: 16.712,
             Y: 2.3,
             Z: -35.212,
