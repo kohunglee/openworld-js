@@ -1,0 +1,106 @@
+body{margin: 0;}
+#someCtrl {
+    position: fixed;
+    top: 25px;
+    opacity: 0.5;
+    right: 50px;
+}
+#someCtrl button {
+    width: 160px;
+    height: 50px;
+    font-size: 20px;
+}
+.info-modal {
+    position: fixed;
+    background-color: #ffffff6b;
+    backdrop-filter: blur(7px);
+    right: 30px;
+    top: 30px;
+    width: 500px;
+    max-width: calc(100vw - 80px);
+    height: 80vh;
+    z-index: 1;
+    overflow: auto;
+    padding: 1em;
+    font-size: 15px;
+}
+
+/* 感谢部分，<a> 无下划线 */
+#stargazers a {
+    text-decoration: none;
+}
+
+/* 移动端的控制 */
+.pad{
+    background: transparent;
+    width: 150px;
+    height: 150px;
+    position: fixed;
+    z-index: 1;
+    bottom: 80px;
+    right: 80px;
+    user-select: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 6px;
+    padding: 6px;
+    box-sizing: border-box;
+    touch-action: none;
+}
+.cell{
+    border: none;
+    background: #ffffff82;
+    font-size: 22px;
+    font-weight: 600;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+.cell:active{
+    color: #0ff; /* 按下时高亮 */
+    transform: scale(1.1);
+}
+.pad{display:none}
+@media (max-width:820px) and (hover: none) and (pointer: coarse) {
+    .pad{display:grid;}
+}
+
+/* 书本信息（左上角） */
+#bookInfoLT {
+    position: fixed;
+    top: 80px;
+    left: 10px;
+    font-family: monospace;
+    color: #000;
+}
+#bookInfoLT table {
+    border-collapse: collapse;
+    backdrop-filter: blur(8px);
+    background: #ffffffb5;
+}
+#bookInfoLT th, #bookInfoLT td {
+    border: 1px solid rgb(166 166 166 / 50%);
+    padding: 6px 12px;
+    text-shadow: 0 0 13px #fff;
+}
+#bookInfoLT a {
+    color: #0044ff;
+    text-decoration: none;
+    font-weight: bold;
+}
+#bookInfoLT a:hover {
+    color: #000;
+    text-shadow: 0 0 8px #fff;
+}
+.collapse-btn {  /* 折叠按钮 */
+    position: absolute;
+    z-index: 1;
+    left: 57px;
+    top: -28px;
+    min-width: 44px;
+    background: #ffffff00;
+    color: #ffffff;
+}
