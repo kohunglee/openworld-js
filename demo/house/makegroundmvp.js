@@ -9,19 +9,11 @@ function makeGroundMvp(){
     globalThis.jpflag = k.textureMap.get('jpflag');
     globalThis.checkerboard = k.textureMap.get('checkerboard');
 
-    k.addBox({  // 创建地面
-        DPZ : 1,
-        colliGroup: 1,
-        tiling : 200,
-        name: 'groundPlane', X: 0, Y: -0.5, Z: 0,
-        mass: 0, width: 200, depth: 200, height: 2,
-        texture: greenStoneborder, background: '#287A17', mixValue: 0.5,
-    });
-
     var lastPos = k?.lastPos || {x:21 + Math.random() * 10, y:5.00, z:15 + Math.random() * 10, rX:0, rY:0, rZ:0};
     k.keys.turnRight = lastPos.rY;
     const mainVPSize = 0.5;  // 主角的大小，方便建造
-    k.mainVPlayer = k.addBox({  // 创建一个立方体，并设置为主角
+
+    const mvpIndex = k.addMVP({  // 创建一个立方体，并设置为主角
         name: 'mainPlayer',
         DPZ : 1,
         colliGroup: 1,
@@ -33,6 +25,8 @@ function makeGroundMvp(){
         background : '#333',
         texture: greenStone,
     });
+    k.mainVPlayer = mvpIndex;
+
     if(k?.centerDot){
         k.centerDot.setCamView(2);  // 设置默认视角 类型2
     }

@@ -10,7 +10,7 @@ export default {
             const p_offset = index * 8;
             if(this.positionsStatus[p_offset + 7] > 0){  // 选择 状态码/mass 大于 0 的物体
                 const indexItem = this.indexToArgs.get(index);
-                const canBody = indexItem.cannonBody;
+                const canBody = indexItem.body;
                 if(!canBody) continue;
                 const disxX = canBody.position.x - this.positionsStatus[p_offset];
                 const disyY = canBody.position.y - this.positionsStatus[p_offset + 1];
