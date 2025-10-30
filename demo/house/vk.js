@@ -6,6 +6,7 @@
 let lastTime = 0;
 function setVK() {
     const closeVKCheck = document.getElementById('closeVK');
+    const now = Date.now();
 
     // 节流措施
     if(true){
@@ -13,7 +14,6 @@ function setVK() {
         if(typeof vkSocket !== 'undefined'){
             if(vkSocket.readyState === 0){ return 0; }  // 可能可以减少一些频繁调用
         }
-        const now = Date.now();
         if (now - lastTime < 1000) return;  // 节流
         lastTime = now;
     }
