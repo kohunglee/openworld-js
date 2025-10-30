@@ -48,10 +48,7 @@ export default {
             const indicesInGrid = this.spatialGrid.get(key);  // 取物体使用（spatialGrid，物体花名册）
             if (indicesInGrid) {
                 for (const index of indicesInGrid) {
-                    // const minY = this.minY || this.gridsize[this.physicsProps[index * 8 + 4]];
                     const minY = this.gridsizeY[this.physicsProps[index * 8 + 4]].toFixed(2);
-                    // const minY = 1.35;
-                    // console.log(minY);
                     if(Math.abs(this.positionsStatus[index * 8 + 1] - mVP.Y) < minY){  // 高度距离（Y）要接近
                         newActiveIndices.add(index);
                     }

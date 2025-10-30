@@ -128,8 +128,8 @@ export default function(ccgxkObj) {
             ccgxkObj.physicsProps[p_offset + 2] = newInstanceData.h;
             ccgxkObj.physicsProps[p_offset + 3] = newInstanceData.d;
             const org_args = ccgxkObj.indexToArgs.get(index);  //+4 先去除物理体
-            if(org_args.isPhysical !== false && org_args.cannonBody !== undefined){
-                ccgxkObj.world.removeBody(org_args.cannonBody);
+            if(org_args.isPhysical !== false && org_args.body !== undefined){
+                ccgxkObj.world.removeBody(org_args.body);
             }
             ccgxkObj.currentlyActiveIndices.delete(index);  // 重新激活一下这个模型
             if(customIndex !== -1){  // 如果是新加模型，需要重新计算一下区块
