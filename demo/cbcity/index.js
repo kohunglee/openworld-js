@@ -155,7 +155,8 @@ var lastPos = k?.lastPos;
 if(!lastPos){
     lastPos = {x:33, y:5.00, z:498};
 }
-k.mainVPlayer = k.addBox({  // 创建一个立方体，并设置为主角
+lastPos = {x:33, y:5.00, z:498};
+k.mainVPlayer = k.addMVP({  // 创建一个立方体，并设置为主角
         name: 'mainPlayer', DPZ : 1,
         colliGroup: 1,
         isShadow: 'ok',
@@ -196,7 +197,7 @@ k.addTABox({  // 创建一个 旋转测试 细长物理体
     texture: 'gourou',
 });
 var groundPlanesize = 10000;
-k.addBox({  // 创建地面
+k.addTABox({  // 创建地面
     DPZ : 1,
     colliGroup: 1,
     tiling : 100,
@@ -210,19 +211,3 @@ document.addEventListener('keydown', (e)=>{
         k.mainVPlayer.body.position.y = 150;
     }
 });
-
-// // 测试透明纹理
-// k.loadTexture(k.svgTextureLib).then(loadedImage => {
-
-//     globalThis.jpflag = k.textureMap.get('jpflag');
-//     k.W.cube({
-//         n: 'testPng',
-//         x: 14.39, y: 6.62, z: -35.61,
-//         t:jpflag,
-//         // b:'#00000046',
-//     });
-
-// });
-
-
-

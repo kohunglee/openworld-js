@@ -52,17 +52,38 @@ k.gridsizeY[4] = 1.35;  // 书本分层渲染
 // 入口
 // 加载预设纹理，开始程序（所有的模型，都要在这个地方来生成，否则会出 bug）
 k.loadTexture(k.svgTextureLib).then(loadedImage => {
-    console.time('load');
-    makeGroundMvp();
-    newMvp();
-    startBuild();
-    logicFunc();
-    logicData();
-    dataProcess();  // 在此函数之前，将 10000 个数据搞完整
-    bookSysRegis();  // 书本相关
-    singboard.setTest();  // 指示板
-    setVK();
-    console.timeEnd('load');
+    console.time('load-------------------');
+
+    // makeGroundMvp();
+    // newMvp();
+    // startBuild();
+    // logicFunc();
+    // logicData();
+    // dataProcess();  // 在此函数之前，将 10000 个数据搞完整
+    // bookSysRegis();  // 书本相关
+    // singboard.setTest();  // 指示板
+    // setVK();
+
+    const funcs = [  // 详细看清楚各个函数的耗时
+        makeGroundMvp,
+        newMvp,
+        startBuild,
+        logicFunc,
+        logicData,
+        dataProcess,
+        bookSysRegis,
+        singboard.setTest,
+        setVK
+    ];
+
+    for (const fn of funcs) {
+        const name = fn.name || 'anonymous';
+        console.time(name);
+        fn(); // 如果函数不是 async，也没问题
+        console.timeEnd(name);
+    }
+
+    console.timeEnd('load-------------------');
 });
 
 // 发布模式，不使用毛坯构建器

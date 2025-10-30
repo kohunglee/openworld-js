@@ -43,8 +43,6 @@ export default {
                     const svgBlob = new Blob([drawItem.svgCode], { type: 'image/svg+xml' });
                     svgImage.src = URL.createObjectURL(svgBlob);
                 } else {
-
-
                     const img = new Image();
                     img.onload = () => {
                         this.textureMap.set(drawItem.id, img);
@@ -52,8 +50,7 @@ export default {
                         resolve(img);
                     }
                     img.id = drawItem.id + '-' + this.loadTextureIndex;
-                    img.src = this.dToBase64(drawItem);   //  <------  目前怀疑是这里
-
+                    img.src = this.dToBase64(drawItem);
                 }
             });
             texturePromises.push(promise);
@@ -61,7 +58,7 @@ export default {
         return Promise.all(texturePromises);
     },
 
-    canvasObj : document.createElement('canvas'),
+    canvasObj : document.createElement('canvas'),  // 后续要改成 OffscreenCanvas
 
     // 给定 canvas 绘制程序，可以绘制纹理并返回 base64
     dToBase64 : function(drawItem) {  // 【之后优化】复用同一个 canvas 元素（清空并重绘），可以避免频繁创建和销毁 canvas 元素。
