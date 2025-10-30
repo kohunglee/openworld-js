@@ -14,7 +14,7 @@ const singboard = {
             isPhysical: false,
         });
 
-        k.addTABox({  // 创建地面（先放到这里，看看会不会出异常）
+        const groundIndex = k.addTABox({  // 创建地面（先放到这里，看看会不会出异常）
             DPZ : 0,
             colliGroup: 1,
             tiling : 1000,
@@ -22,6 +22,8 @@ const singboard = {
             mass: 0, width: 10000, depth: 10000, height: 2,
             texture: greenStoneborder, background: '#287A17', mixValue: 0.5,
         });
+        k.centerDotBlacklist instanceof Set || (k.centerDotBlacklist = new Set());
+        k.centerDotBlacklist.add(groundIndex);  // 将地面添加到黑名单里
     }
 
 }

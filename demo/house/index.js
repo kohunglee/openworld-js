@@ -50,7 +50,7 @@ k.gridsizeY[3] = 1.35;  // 大部分物体
 k.gridsizeY[4] = 1.35;  // 书本分层渲染
 
 // 入口
-// 加载预设纹理，开始程序
+// 加载预设纹理，开始程序（所有的模型，都要在这个地方来生成，否则会出 bug）
 k.loadTexture(k.svgTextureLib).then(loadedImage => {
     console.time('load');
     makeGroundMvp();
