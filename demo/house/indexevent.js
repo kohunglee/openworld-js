@@ -33,6 +33,11 @@ document.getElementById('goHall').addEventListener('click', function() {
     k.keys.turnRight = 90;
 });
 
+//displayPadInPC
+document.getElementById('displayPadInPC').addEventListener('click', function() {
+    document.getElementById('mCtrl').classList.toggle('onlymobile');
+})
+
 // 移动端
 const turnNum = 0.7;  // 旋转时的单位角度
 const stepNum = 4;  // 移动时的单位距离
