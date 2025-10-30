@@ -17,3 +17,16 @@ const id2name = n => {
     }
     return name;
 };
+
+// 设置 cookie
+function setCookie(name, value, days = 365) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${date.toUTCString()}; path=/`;
+}
+
+// get cookie
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? decodeURIComponent(match[2]) : null;
+}

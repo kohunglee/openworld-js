@@ -84,9 +84,13 @@
 
     <div>
         <h3>在线人数</h3>
-        <input type="checkbox" id="isLiveSound"> 开启人数变化提示音<br><br>
-        当前在线人数：<span id="onlineCount">1</span>
-        <ul id="frendPosInfo"></ul>
+        <input type="checkbox" id="closeVK"> 关闭在线功能（保存在 cookie 并记住选项）<br>
+        <div id="onlineInfo">
+            <input type="checkbox" id="isLiveSound"> 开启人数变化提示音<br><br>
+            当前在线人数：<span id="onlineCount">1</span>&nbsp;&nbsp;<span id="isConneting"></span>
+            <ul id="frendPosInfo"></ul>
+        </div>
+        
         <hr>
     </div>
 
@@ -120,6 +124,7 @@
     <div>
         <h3>更新记录</h3>
         <ul>
+            <li>2025-10-30 - 可以关闭在线功能</li>
             <li>2025-10-29 - 增加了颜色标注，开始着手书本内容填充，完善了前1000网站书架</li>
             <li>2025-10-23 - 人数变化提示音、显示手机端标识</li>
             <li>2025-10-22 - 添加了【更多信息】，优化了多人在线，增加了移动端的初步控件</li>
