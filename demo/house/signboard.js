@@ -19,7 +19,7 @@ const singboard = {
             colliGroup: 1,
             tiling : 1000,
             X: 0, Y: -0.5, Z: 0,
-            mass: 0, width: 10000, depth: 10000, height: 2,
+            mass: 0, width: 200, depth: 200, height: 2,
             texture: greenStoneborder, background: '#287A17', mixValue: 0.5,
         });
         k.centerDotBlacklist instanceof Set || (k.centerDotBlacklist = new Set());
