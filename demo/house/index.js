@@ -69,7 +69,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
 });
 
 // 发布模式，不使用毛坯构建器
-if(false){
+if(true){
     // 一些键盘事件
     const keyHandler = e => myevent.keyEvent(e, k);
     document.addEventListener('keydown', keyHandler);
