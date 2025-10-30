@@ -27,13 +27,16 @@ export default function(ccgxkObj) {
                 canvas.width = 20;
                 canvas.height = 20;
             }
+            if(!ccgxkObj?.centerDotBlacklist) {  // 黑名单，不会被显示为热点
+                ccgxkObj.centerDotBlacklist = new Set([]);
+            }
             const ctx = canvas.getContext('2d');
             thisObj.W.getColorPickObj();  // 拾取颜色一次
             const colorArray = thisObj.W.tempColor || [255, 0, 0, 255];  //+2 获取当前颜色值并转化为数组
             const color = `rgba(${255 - colorArray[0]}, ${255 - colorArray[1]}, ${255 - colorArray[2]}, ${colorArray[3]/255})`;
             const objIndex = colorArray[0] * 256 ** 2 + colorArray[1] * 256 + colorArray[2] - 1;  // 根据颜色获取到了对应的 index 值
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if(objIndex >= 0 && objIndex < 2_000_000){
+            if(objIndex >= 0 && objIndex < 2_000_000 && !ccgxkObj.centerDotBlacklist.has(objIndex)){
                 thisObj.hotPoint = objIndex;
                 ctx.beginPath();
                 ctx.strokeStyle = color;
