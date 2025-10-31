@@ -24,14 +24,14 @@
 <script src="./house/logicbuild.js"></script> <!-- 建造逻辑工具函数 -->
 <script src="./house/logicdata.js"></script> <!-- 建造逻辑 -->
 
-<script src="./house/signboard.js"></script> <!-- 指示板（暂时还有地面） -->
+<script src="./house/signboard.js"></script> <!-- 指示板 -->
 
 <script src="./house/bookhot.js"></script> <!-- 书本热点相关 -->
 <script src="./house/textinshelf.js"></script> <!-- 书架书本文字 -->
 <script src="./house/booksystem.js"></script> <!-- 书系统 -->
 <script src="./house/booksystemtool.js"></script> <!-- 书系统的工具函数 -->
 
-<script src="./house/dataprocess.js"></script> <!-- 数据处理 -->
+<script src="./house/dataprocess.js"></script> <!-- 数据处理（最后添加地面） -->
 
 <script src="./house/vktool.js"></script> <!-- vk处理的工具 -->
 <script src="./house/vk.js"></script> <!-- vk处理 -->
@@ -82,9 +82,8 @@
 
     <div>
         <h3>在线人数</h3>
-        <input type="checkbox" id="closeVK"> 关闭在线功能（保存在 cookie 并记住选项）<br>
+        <input type="checkbox" id="closeVK"> 关闭在线功能（下次进来也会自动关闭）<br><br>
         <div id="onlineInfo">
-            <input type="checkbox" id="isLiveSound"> 开启人数变化提示音<br><br>
             当前在线人数：<span id="onlineCount">1</span>&nbsp;&nbsp;<span id="isConneting"></span>
             <ul id="frendPosInfo"></ul>
         </div>

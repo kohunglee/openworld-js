@@ -33,7 +33,12 @@ const singboard = {
 
         k.singboardMap.set('firstTable', {
             title : '流量 TOP1000 的网站（实验中...）',
-            content : '书架在被填充如何填满这数个书架是件第一个书架我使用了全球流量可以进行欣赏书架在被填充如何填满这数个书架是件第一个书架我使用了全球流量可以进行欣赏书架在被填充如何填满这数个书架是件第一个书架我使用了全球流量可以进行欣赏',
+            content : `
+            
+    如何把书架给填充？第一个书架，我决定使用网站来做测试。
+
+网站是个好东西。
+            `,
             date : '2025年10月31日',
         })
 
@@ -57,6 +62,7 @@ const singboard = {
             k.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this){
                 console.log('开始造纹理', width, height);
                 console.log(drawItem);
+
                 const id = drawItem.id;
                 const contentObj = k.singboardMap.get(id);
                 console.log(contentObj);
@@ -65,20 +71,44 @@ const singboard = {
                 const hp = height /100;
                 let fontSize;
 
-                ctx.fillStyle = '#F5E8C7';  //+ 背景
+                ctx.fillStyle = '#d8e1d8ff';  //+ 背景
                 ctx.fillRect(0, 0, width, height);
 
-                ctx.textAlign = 'left';  //+ 文字要左上角为基点
-                ctx.textBaseline = 'top';
-                ctx.fillStyle = '#4B3832';  // 颜色
+                // 写文字
+                if(true){
+                    ctx.textAlign = 'left';  //+ 文字要左上角为基点
+                    ctx.textBaseline = 'top';
+                    ctx.fillStyle = '#4B3832';  // 颜色
 
-                fontSize = wp * 5;  //+ 标题
-                ctx.font = `bold ${fontSize}px sans-serif`;  // 无衬线
-                singboard.wrapText(ctx, contentObj.title, 5*wp, 5*hp, width, fontSize);
+                    fontSize = wp * 5;  //+ 标题
+                    ctx.font = `bold ${fontSize}px sans-serif`;
+                    singboard.wrapText(ctx, contentObj.title, 5*wp, 5*hp, width, fontSize);
 
-                fontSize = wp * 3;  //+ 标题
-                ctx.font = `bold ${fontSize}px sans-serif`;  // 无衬线
-                singboard.wrapText(ctx, contentObj.content, 5*wp, 15*hp, width, fontSize);
+                    fontSize = wp * 3;  //+ 内容
+                    ctx.font = `bold ${fontSize}px sans-serif`;
+                    singboard.wrapText(ctx, contentObj.content, 5*wp, 15*hp, width, fontSize);
+                }
+
+                // 画箭头
+                if(true){
+                    ctx.save();
+                    ctx.translate(width - 15*wp, 3.5*wp);  // 绘制箭头位置
+                    const arrowSize = 0.1*wp;  // 箭头大小
+                    ctx.fillStyle = '#865555';  // 箭头颜色
+                    ctx.beginPath();  //+ 开始绘制
+                    ctx.moveTo(0 * arrowSize, 14 * arrowSize);
+                    ctx.lineTo(64 * arrowSize, 14 * arrowSize);
+                    ctx.lineTo(64 * arrowSize, 6 * arrowSize);
+                    ctx.lineTo(96 * arrowSize, 28 * arrowSize);
+                    ctx.lineTo(64 * arrowSize, 50 * arrowSize);
+                    ctx.lineTo(64 * arrowSize, 42 * arrowSize);
+                    ctx.lineTo(0 * arrowSize, 42 * arrowSize);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                }
+                
+
             });
         }
     }
