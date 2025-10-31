@@ -73,6 +73,8 @@ export default {
         canvas.style.webkitFontSmoothing = 'antialiased';  // 两款浏览器的平滑字体兼容（可能有效）
         canvas.style.mozOsxFontSmoothing = 'grayscale';
         const ctx = canvas.getContext('2d')
+        ctx.font = "32px Arial, Helvetica, sans-serif";  // 默认字体配置
+        ctx.textBaseline = "top";
         if(drawItem.type === 'png'){  // 为透明化作铺垫
             drawItem.func(ctx, canvas.width, canvas.height, drawItem, this);
             return canvas.toDataURL('image/png');
