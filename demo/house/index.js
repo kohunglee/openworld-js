@@ -106,12 +106,12 @@ if(true){
     build(k);// 毛坯构建器
 }
 
-// fps 辅助
+// fps
 (function(){var script=document.createElement('script');
 script.onload=function(){var stats=new Stats();
 document.body.appendChild(stats.dom);
 requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};
-script.src='https://mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
+script.src='./house/fps/fps.js';document.head.appendChild(script);})()
 
 // baidu tongji
 var _hmt = _hmt || [];

@@ -11,6 +11,11 @@ function startBuild(){
     k.isLogicAdd = urlParams.get('logicadd');  // 获取 url 的 id 参数
     k.isDEV = urlParams.get('dev');  // 获取 url 的 vk 参数
 
+    // 开发者模式
+    if(k.isDEV === '1'){
+       document.body.insertAdjacentHTML('beforeend', '<div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);font:bold 48px sans-serif;color:rgba(0,0,0,0.7);pointer-events:none;z-index:9999;">DEV</div>'); 
+    }
+
     // if(k.cellpageid_geturl) {
     //     cellpageid = k.cellpageid_geturl;
     // } else {

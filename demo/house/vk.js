@@ -1,6 +1,6 @@
 /**
  * 
- * VK 是多人在线的意思，因为之前是托管在 cloudflare 的 VK work 上。
+ * VK 是多人在线的意思，因为之前是托管在 cloudflare 的 VK work 上，故此得名。
  * 
  */
 let lastTime = 0;
@@ -67,52 +67,6 @@ function setVK() {
 
         if(lastPlaySize === null){
             lastPlaySize = k.frendMap.size;
-        }
-
-        k.liveSound = document.getElementById('isLiveSound').checked;
-
-        // 顺便判断一下人数，如果变多了，就响一下
-        if (k.frendMap.size > lastPlaySize && k?.liveSound) {
-
-            f = function(i){
-                var n=2e4;
-                if (i > n) return null;
-                var q = t(i,n);
-                i=i*0.04;
-                return Math.sin(-i*0.03*Math.sin(0.09*i+Math.sin(i/200))+Math.sin(i/100))*q;
-            }
-
-            // Sound player
-            t=(i,n)=>(n-i)/n;
-            A=new AudioContext()
-            m=A.createBuffer(1,96e3,48e3)
-            b=m.getChannelData(0)
-            for(i=96e3;i--;)b[i]=f(i)
-            s=A.createBufferSource()
-            s.buffer=m
-            s.connect(A.destination)
-            s.start();
-
-        }
-        if (k.frendMap.size < lastPlaySize && k?.liveSound){
-
-            // Sound
-            f = function(i){
-                var n=4e4;
-                if (i > n) return null;
-                return Math.sin(i/2000 - Math.sin(i/331)*Math.sin(i/61))*t(i,n);
-            }
-
-            // Sound player
-            t=(i,n)=>(n-i)/n;
-            A=new AudioContext()
-            m=A.createBuffer(1,96e3,48e3)
-            b=m.getChannelData(0)
-            for(i=96e3;i--;)b[i]=f(i)
-            s=A.createBufferSource()
-            s.buffer=m
-            s.connect(A.destination)
-            s.start()
         }
         lastPlaySize = k.frendMap.size;
     }, 100);
