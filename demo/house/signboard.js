@@ -5,7 +5,6 @@ const singboard = {
             text = text.split('/*')[0];  // 去掉注释
             const words = text.split(''); // 按单个字符来拆分，保证中英文都能换行
             let line = ''; // 当前正在排版的行内容
-            maxWidth = maxWidth - x;
             for(let n = 0; n < words.length; n++) {
                 if (words[n] === '\n') {  //+ 处理 \n 来换行的逻辑
                     _ctx.fillText(line, x, y);
@@ -35,11 +34,14 @@ const singboard = {
             title : '流量 TOP1000 的网站（实验中...）',
             content : `
             
-    如何把书架给填充？第一个书架，我决定使用网站来做测试。
+    这是本馆第一个被投入使用的书架，内容是一份数据来源于 Tranco List (https://tranco-list.eu/) 的前 1000 个网站，可被理解为全球流量最高的前 1000 个网站。
 
-网站是个好东西。
+    其中，剔除了一些不宜展示的网站，然后根据排名，在书架上，将其以从左自右、从上到下的顺序依次排列。欢迎大家发现新网站、新世界！看看顶级大佬网站都长什么样！
+
+    我们在参阅时，应使用【跳跃E】和【冻结F】两个键位的功能，搭配左右移动。鼠标左键进入点选模式时，光标选中某个条目，屏幕左上角会出现详细条目，再次单击左键，会回到鼠标模式，单击链接进入网站。
+
+    手机端设备，目前尚未做完整支持，参阅请打开电脑。（完）
             `,
-            date : '2025年10月31日',
         })
 
         if(true) {
@@ -82,11 +84,11 @@ const singboard = {
 
                     fontSize = wp * 5;  //+ 标题
                     ctx.font = `bold ${fontSize}px sans-serif`;
-                    singboard.wrapText(ctx, contentObj.title, 5*wp, 5*hp, width, fontSize);
+                    singboard.wrapText(ctx, contentObj.title, 5*wp, 5*hp, width - 10*wp, fontSize * 1.5);
 
                     fontSize = wp * 3;  //+ 内容
                     ctx.font = `bold ${fontSize}px sans-serif`;
-                    singboard.wrapText(ctx, contentObj.content, 5*wp, 15*hp, width, fontSize);
+                    singboard.wrapText(ctx, contentObj.content, 5*wp, 4*hp, width - 10*wp, fontSize * 1.5);
                 }
 
                 // 画箭头
