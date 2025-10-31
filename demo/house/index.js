@@ -54,16 +54,6 @@ k.gridsizeY[4] = 1.35;  // 书本分层渲染
 k.loadTexture(k.svgTextureLib).then(loadedImage => {
     console.time('load-------------------');
 
-    // makeGroundMvp();
-    // newMvp();
-    // startBuild();
-    // logicFunc();
-    // logicData();
-    // dataProcess();  // 在此函数之前，将 10000 个数据搞完整
-    // bookSysRegis();  // 书本相关
-    // singboard.setTest();  // 指示板
-    // setVK();
-
     const funcs = [  // 详细看清楚各个函数的耗时
         makeGroundMvp,
         newMvp,
