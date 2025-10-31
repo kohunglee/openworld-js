@@ -9,7 +9,7 @@ function startBuild(){
     var urlParams = new URLSearchParams(globalThis.location.search);  // 获取 URL
     k.cellpageid_geturl = urlParams.get('id');  // 获取 url 的 id 参数
     k.isLogicAdd = urlParams.get('logicadd');  // 获取 url 的 id 参数
-    k.isKV = urlParams.get('vk');  // 获取 url 的 vk 参数
+    k.isDEV = urlParams.get('dev');  // 获取 url 的 vk 参数
 
     // if(k.cellpageid_geturl) {
     //     cellpageid = k.cellpageid_geturl;
