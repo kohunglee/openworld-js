@@ -78,9 +78,9 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
 
     for (const fn of funcs) {
         const name = fn.name || 'anonymous';
-        console.time(name);
+        // console.time(name);
         fn(); // 如果函数不是 async，也没问题
-        console.timeEnd(name);
+        // console.timeEnd(name);
     }
 
     console.timeEnd('load-------------------');

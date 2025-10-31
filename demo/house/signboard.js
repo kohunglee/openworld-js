@@ -1,6 +1,41 @@
 const singboard = {
 
+    // 文字自动换行 ctx canvas
+    wrapText : (_ctx, text, x, y, maxWidth, lineHeight) => {
+            text = text.split('/*')[0];  // 去掉注释
+            const words = text.split(''); // 按单个字符来拆分，保证中英文都能换行
+            let line = ''; // 当前正在排版的行内容
+            maxWidth = maxWidth - x;
+            for(let n = 0; n < words.length; n++) {
+                if (words[n] === '\n') {  //+ 处理 \n 来换行的逻辑
+                    _ctx.fillText(line, x, y);
+                    y += lineHeight; line = '';
+                    continue;
+                }
+                const testLine = line + words[n];  //+ 长度够了，换行的逻辑
+                const metrics = _ctx.measureText(testLine);  // 计算长度
+                const testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {  // 超长了
+                    _ctx.fillText(line, x, y);
+                    line = words[n];  // 另起一行
+                    y += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            _ctx.fillText(line, x, y);  // 最后剩下的一行
+    },
+
+    // 测试
     setTest : () => {
+
+        k.singboardMap = new Map();
+
+        k.singboardMap.set('firstTable', {
+            title : '流量 TOP1000 的网站（实验中...）',
+            content : '书架在被填充如何填满这数个书架是件第一个书架我使用了全球流量可以进行欣赏书架在被填充如何填满这数个书架是件第一个书架我使用了全球流量可以进行欣赏书架在被填充如何填满这数个书架是件第一个书架我使用了全球流量可以进行欣赏',
+            date : '2025年10月31日',
+        })
 
         if(true) {
             k.addTABox({
@@ -14,58 +49,36 @@ const singboard = {
                 shape: 'plane',
                 mixValue: 0,
                 isPhysical: false,
-                texture: 'www', 
+                texture: 'firstTable', 
             });
 
-            k.errExpRatio = 100;
+            k.errExpRatio = 1000;
 
             k.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this){
                 console.log('开始造纹理', width, height);
                 console.log(drawItem);
+                const id = drawItem.id;
+                const contentObj = k.singboardMap.get(id);
+                console.log(contentObj);
 
-                // // 绘制红色背景
-                // ctx.fillStyle = 'rgba(216, 202, 175, 1)';
-                // ctx.fillRect(0, 0, width, height);
+                const wp = width /100;
+                const hp = height /100;
+                let fontSize;
 
-                // // 绘制黑色文字
-                // ctx.fillStyle = 'rgba(24, 24, 24, 1)';
-                // ctx.font = '20px sans-serif';
-                // ctx.textBaseline = 'top';
-                // ctx.textAlign = 'left';
-                // ctx.fillText('你好，右边这个书架', 10, 40);
-                // ctx.fillText('有字了啊啊啊！', 10, 70);
+                ctx.fillStyle = '#F5E8C7';  //+ 背景
+                ctx.fillRect(0, 0, width, height);
 
+                ctx.textAlign = 'left';  //+ 文字要左上角为基点
+                ctx.textBaseline = 'top';
+                ctx.fillStyle = '#4B3832';  // 颜色
 
+                fontSize = wp * 5;  //+ 标题
+                ctx.font = `bold ${fontSize}px sans-serif`;  // 无衬线
+                singboard.wrapText(ctx, contentObj.title, 5*wp, 5*hp, width, fontSize);
 
-    // 优雅的米白底色
-    ctx.fillStyle = '#F5F1E8';
-    ctx.fillRect(0, 0, width, height);
-    
-    // 木质边框装饰
-    ctx.fillStyle = '#8B7355';
-    ctx.fillRect(0, 0, width, 3);
-    ctx.fillRect(0, height-3, width, 3);
-    
-    // 主标题 - 优雅衬线字体
-    ctx.fillStyle = '#2C1810';
-    ctx.font = 'bold 18px "Noto Serif SC", serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('你好', width/2, height/3);
-    
-    // 副标题 - 简洁无衬线
-    ctx.fillStyle = '#5D4037';
-    ctx.font = '14px "Noto Sans SC", sans-serif';
-    ctx.fillText('右边这个书架', width/2, height/2);
-    ctx.fillText('有内容了', width/2, height*2/3);
-    
-    // 点缀小箭头 →
-    ctx.font = '16px serif';
-    ctx.fillText('→', width-15, height/2);
-
-
-
-
+                fontSize = wp * 3;  //+ 标题
+                ctx.font = `bold ${fontSize}px sans-serif`;  // 无衬线
+                singboard.wrapText(ctx, contentObj.content, 5*wp, 15*hp, width, fontSize);
             });
         }
     }

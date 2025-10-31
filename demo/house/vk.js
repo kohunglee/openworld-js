@@ -12,7 +12,7 @@ function setVK() {
     if(true){
         if(closeVKCheck.checked) { return 0; }  // 不开启在线功能
         if(typeof vkSocket !== 'undefined'){
-            if(vkSocket.readyState === 0){ return 0; }  // 可能可以减少一些频繁调用
+            if(vkSocket.readyState === 0){ return 0; }  // 可能可以减少一些频繁调用（如频繁勾选那个选择框）
         }
         if (now - lastTime < 1000) return;  // 节流
         lastTime = now;
@@ -34,12 +34,12 @@ function setVK() {
 
     vkSocket.onopen = () => {  // 连接 wss
         console.log("连接 vkSocket 成功！");
-        
         connectInfo.innerText = '（已连接）';
     };
 
     // 将位置信息发送到 wss
     function sendMessage(pos) {
+        if(k.donotUseSocket) return;
         if (vkSocket.readyState === WebSocket.OPEN) {
             vkSocket.send(JSON.stringify(pos));
             updateFrends();
@@ -237,6 +237,7 @@ function setVK() {
 
     // 接收事件
     vkSocket.onmessage = (event) => {
+        if(k.donotUseSocket) return;
         try {
             const data = JSON.parse(event.data);
             const pos = JSON.parse(data.content);
@@ -255,5 +256,18 @@ function setVK() {
         }
     };
 
-
+    // 用户不在此页面，则暂停更新
+    const intervalId = setInterval(() => {
+        if(k.isDEV !== '1') {
+            const isActive = !document.hidden && document.hasFocus();
+            if (isActive) {  // 活动
+                k.donotUseSocket = false;
+                document.getElementById('isConneting').style.color = "unset";
+            } else {  // 不在页面
+                k.donotUseSocket = true;
+                document.getElementById('isConneting').style.color = "grey";
+            }
+        }
+        
+    }, 1000);
 }
