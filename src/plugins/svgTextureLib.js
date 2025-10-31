@@ -61,16 +61,16 @@ export default function(ccgxkObj){
       { id:'greenStoneborder', type: 'svg-rasterize', svgCode: greenStoneborder },
 
       // 石头纹理
-      { id:'greenStone', type: 'svg-rasterize', svgCode: greenStone },
+      // { id:'greenStone', type: 'svg-rasterize', svgCode: greenStone },
 
       // 磨砂
-      { id:'frosted', type: 'svg-rasterize', svgCode: frosted },
+      // { id:'frosted', type: 'svg-rasterize', svgCode: frosted },
 
       // 日本国旗
-      {func:drawjpflag, id:'jpflag', type: 'png'},
+      // {func:drawjpflag, id:'jpflag', type: 'png'},
 
       // 5*5 棋格图
-      {func:drawCheckerboard, id:'checkerboard', type: 'jpg'},
+      // {func:drawCheckerboard, id:'checkerboard', type: 'jpg'},
   ];
 };
 
