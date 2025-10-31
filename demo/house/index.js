@@ -62,7 +62,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         logicData,
         dataProcess,
         bookSysRegis,
-        singboard.setTest,
+        singboard.setBoard,
         setVK
     ];
 
