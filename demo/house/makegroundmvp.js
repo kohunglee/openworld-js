@@ -28,7 +28,7 @@ function makeGroundMvp(){
     k.mainVPlayer = mvpIndex;
 
     if(k?.centerDot){
-        k.centerDot.setCamView(2);  // 设置默认视角 类型2
+        // k.centerDot.setCamView(2);  // 设置默认视角 类型2
     }
 
     k.SPRINT_MIN_SPEED = 5;
