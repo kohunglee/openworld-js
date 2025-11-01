@@ -16,23 +16,6 @@ function startBuild(){
        document.body.insertAdjacentHTML('beforeend', '<div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);font:bold 48px sans-serif;color:rgba(0,0,0,0.7);pointer-events:none;z-index:9999;">DEV</div>'); 
     }
 
-    // if(k.cellpageid_geturl) {
-    //     cellpageid = k.cellpageid_geturl;
-    // } else {
-    //     cellpageid = Math.random().toString(36).slice(2,7);  // 随机5字符作为ID
-    // }
-    // const url = new URL(globalThis.location.href);
-    // url.searchParams.set('id',cellpageid);
-    // history.pushState({}, '', url.toString());  // 将这个新的随机字符放置到地址栏
-
-    // // 浏览器储存
-    // if (!localStorage.getItem('ow_' + cellpageid)) {  // 初始化存储
-    //     localStorage.setItem('ow_' + cellpageid, JSON.stringify([]));
-    //     globalThis.cubeDatas = testcubedata;  // 使用我的本地测试数据
-    // } else {
-    //     globalThis.cubeDatas = JSON.parse(localStorage.getItem('ow_' + cellpageid));
-    // }
-
     globalThis.cubeDatas = testcubedata;  // 使用我的本地测试数据
     // console.log(localStorage.getItem('ow_' + cellpageid));
     
