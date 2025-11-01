@@ -342,62 +342,82 @@ const singboard = {
 
     // 施工牌
     constructionSign : (ctx, width, height, drawItem, _this) => {
-      
-    const wp = width / 100;
-    const hp = height / 100;
-
-    // 背景 - 明亮的黄色警示色
-    ctx.fillStyle = '#FFF9C4';
-    ctx.fillRect(0, 0, width, height);
-
-    // 斑马条纹装饰
-    ctx.fillStyle = 'rgba(255, 87, 34, 0.15)';
-    for (let i = 0; i < 8; i++) {
-        const y = i * 12 * hp;
-        if (i % 2 === 0) {
-            ctx.fillRect(0, y, width, 6 * hp);
+        const wp = width / 100;
+        const hp = height / 100;
+        ctx.fillStyle = '#FFF9C4';  // 背景 - 明亮的黄色警示色
+        ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle = 'rgba(255, 87, 34, 0.15)';  // 斑马条纹装饰
+        for (let i = 0; i < 8; i++) {
+            const y = i * 12 * hp;
+            if (i % 2 === 0) {
+                ctx.fillRect(0, y, width, 6 * hp);
+            }
         }
-    }
+        ctx.strokeStyle = '#FF9800';  // 橙色边框
+        ctx.lineWidth = 3 * wp;
+        ctx.strokeRect(5 * wp, 5 * hp, width - 10 * wp, height - 10 * hp);
+        ctx.shadowBlur = 0;  // 可爱的施工图标 - 安全帽
+        ctx.fillStyle = '#FFC107';
+        ctx.beginPath();
+        ctx.arc(50 * wp, 85 * hp, 12 * wp, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#FF9800';
+        ctx.beginPath();
+        ctx.arc(50 * wp, 85 * hp, 10 * wp, 0, Math.PI);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(80 * wp, 25 * hp, 4 * wp, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.font = `bold ${32 * hp}px "Microsoft YaHei", sans-serif`;  // 第一行文字 - 仍在施工
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#FF5722';
+        ctx.shadowBlur = 8 * hp;
+        ctx.fillText('仍 在 施 工', 50 * wp, 40 * hp);
+        ctx.font = `bold ${28 * hp}px "Microsoft YaHei", sans-serif`;  // 第二行文字 - 敬请期待
+        ctx.fillStyle = '#E64A19';
+        ctx.shadowBlur = 6 * hp;
+        ctx.fillText('敬 请 期 待', 50 * wp, 70 * hp);
+    },
 
-    // 橙色边框
-    ctx.strokeStyle = '#FF9800';
-    ctx.lineWidth = 3 * wp;
-    ctx.strokeRect(5 * wp, 5 * hp, width - 10 * wp, height - 10 * hp);
+    // 大门右 1 指示牌
+    right1Table : (ctx, width, height, drawItem, _this) => {
+        const wp = width /100;
+        const hp = height /100;
+        let fontSize;
 
+        ctx.fillStyle = '#d8e1d8ff';  //+ 背景
+        ctx.fillRect(0, 0, width, height);
 
-    // 可爱的施工图标 - 安全帽
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = '#FFC107';
-    ctx.beginPath();
-    ctx.arc(50 * wp, 85 * hp, 12 * wp, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.fillStyle = '#FF9800';
-    ctx.beginPath();
-    ctx.arc(50 * wp, 85 * hp, 10 * wp, 0, Math.PI);
-    ctx.fill();
+        const contentObj = {
+            title : '欢迎来到「网站收藏馆」━(*｀∀´*)ノ',
+            content : `
 
+    大家好，我是「网站收藏馆」的馆长独元殇，这是一个迷你的元宇宙系统，可多人在线互动，下面为大家介绍一下本馆：
 
-    
-    ctx.beginPath();
-    ctx.arc(80 * wp, 25 * hp, 4 * wp, 0, Math.PI * 2);
-    ctx.fill();
+    这个馆，有六层，百余个书架，可放置三十多万个元素。如何填充这些元素成了难题，于是馆长想到了使用 网站站点。因为放书没有版权，而网站的价值，尤其比较大的网站，不亚于书。
 
+    将来，这里面会分门别类，将各种著名的网站容收其中。
 
-    // 第一行文字 - 仍在施工
-    ctx.font = `bold ${32 * hp}px "Microsoft YaHei", sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#FF5722';
-    ctx.shadowBlur = 8 * hp;
-    ctx.fillText('仍 在 施 工', 50 * wp, 40 * hp);
+    请注意，使用电脑版才能更好享用，且请务必打开说明，将操作方式一一熟练！再次感谢大家能喜欢我们的三维网页！
 
-    // 第二行文字 - 敬请期待
-    ctx.font = `bold ${28 * hp}px "Microsoft YaHei", sans-serif`;
-    ctx.fillStyle = '#E64A19';
-    ctx.shadowBlur = 6 * hp;
-    ctx.fillText('敬 请 期 待', 50 * wp, 70 * hp);
-        
+            `,
+        }
+
+        // 写文字
+        if(true){
+            ctx.textAlign = 'left';  //+ 文字要左上角为基点
+            ctx.textBaseline = 'top';
+            ctx.fillStyle = '#4B3832';  // 颜色
+
+            fontSize = wp * 5;  //+ 标题
+            ctx.font = `bold ${fontSize}px sans-serif`;
+            singboard.wrapText(ctx, contentObj.title, 5*wp, 5*hp, width - 10*wp, fontSize * 1.5);
+
+            fontSize = wp * 3;  //+ 内容
+            ctx.font = `bold ${fontSize}px sans-serif`;
+            singboard.wrapText(ctx, contentObj.content, 5*wp, 5*hp, width - 10*wp, fontSize * 1.5);
+        }
     },
 
 }
