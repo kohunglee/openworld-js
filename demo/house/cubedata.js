@@ -940,29 +940,21 @@ window.testcubedata =
     "w": 0.1,
     "h": 0.14,
     "d": 7.38,
-  }
+  },
+  {  // 110（施工牌）
+    "x": 29.254,
+    "y": 1,
+    "z": -7.47,
+    "w": 0.2,
+    "h": 1,
+    "d": 0.2
+  },
+  {  // 111（施工牌）
+    "x": 29.254,
+    "y": 2,
+    "z": -7.47,
+    "w": 2,
+    "h": 1,
+    "d": 0.2
+  },
 ];
-
-// function generateRandomData() {
-//   const data = [];
-
-//   for (let i = 0; i < 10000; i++) {
-//     const randomObject = {
-//       x: Math.random() * (300 - 2) + 2,
-//       y: Math.random() * (300 - 2) + 2,
-//       z: Math.random() * (300 - 2) + 2,
-//       ry: Math.random() * (30 - 2) + 2,
-//       rz: Math.random() * (30 - 2) + 2,
-//       rx: Math.random() * (30 - 2) + 2,
-//       w: Math.random() * (30 - 2) + 2,
-//       h: Math.random() * (30 - 2) + 2,
-//       d: Math.random() * (30 - 2) + 2
-//     };
-//     data.push(randomObject);
-//   }
-
-//   return data;
-// }
-
-// const generatedData = generateRandomData();
-// window.testcubedata = generatedData;

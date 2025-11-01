@@ -6,8 +6,6 @@
 
 export default function(ccgxkObj){
 
-  const greenStone = genStone(-20, -20, 1060, 1060);
-
   const greenStoneborder = genStone(0, 0, 1024, 1024);
 
   const frosted = `

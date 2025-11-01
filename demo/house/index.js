@@ -45,7 +45,8 @@ k.star = (index) => {  // 闪烁按照 ID 寻找方块
     }
 }
 
-k.gridsizeY[2] = 30;  // 指示牌（这三行是 Y 方向的 dpz 设定）
+k.gridsize[4] = 6;
+k.gridsizeY[2] = 20;  // 指示牌（这三行是 Y 方向的 dpz 设定）
 k.gridsizeY[3] = 1.35;  // 大部分物体
 k.gridsizeY[4] = 1.35;  // 书本分层渲染
 
@@ -68,9 +69,9 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
 
     for (const fn of funcs) {
         const name = fn.name || 'anonymous';
-        // console.time(name);
+        console.time(name);
         fn(); // 如果函数不是 async，也没问题
-        // console.timeEnd(name);
+        console.timeEnd(name);
     }
 
     console.timeEnd('load-------------------');
