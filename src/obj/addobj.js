@@ -81,8 +81,9 @@ export default {
         tiling: [1, 1],
         shape: 'cube',
         isFictBody: false,    // 物理假体，视觉比真实物理体小一圈，用于颜色探测
-        isInvisible: false,  // 在 webgl 留档但不渲染（实验，用于减少渲染压力）
-        activeFunc: null,  // 激活时执行的函数
+        isInvisible: false,   // 在 webgl 留档但不渲染（实验，用于减少渲染压力）
+        activeFunc: null,     // 激活时执行的函数
+        textureRatio: 1,      // 生成的自定义纹理（errExpRatio）的缩放比例
     },
 
     // 激活 TA 物体
@@ -168,7 +169,7 @@ export default {
                 args.activeFunc(index);
             }
             if(textureError){  // 纹理加载失败，尝试换上自定义纹理（id 还是原 id）
-                const expRatio = this.errExpRatio;  // 缩放比例
+                const expRatio = this.errExpRatio * args.textureRatio;  // 缩放比例
                 const cWidth = (physicalProp[1] - utter) * expRatio;
                 const cHeight = (physicalProp[2] - utter) * expRatio;
                 this.loadTexture([ {
