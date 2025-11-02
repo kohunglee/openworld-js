@@ -117,8 +117,9 @@ function setVK() {
 
             if (timeDiff > 6 * 1000) {  // 删去 6 秒未更新的游客
                 Object.assign(updateData, defaultPos);
+                const ip = (k.frendMap.get(key).ip) ? k.frendMap.get(key).ip : '';
                 k.frendMap.delete(key);
-                console.log(`frendMap 删除游客 ${key}（${id2name(key)}）- ${(new Date().toLocaleString('zh-CN', { hour12: false }))} ---------------`);
+                console.log(`frendMap 删除游客 ${key}（${id2name(key) + '' + ip}）- ${(new Date().toLocaleString('zh-CN', { hour12: false }))} ---------------`);
             } else {
                 Object.assign(updateData, {
                     x: parseFloat(value.x),
