@@ -377,7 +377,7 @@ const singboard = {
         ctx.font = `bold ${28 * hp}px "Microsoft YaHei", sans-serif`;  // 第二行文字 - 敬请期待
         ctx.fillStyle = '#E64A19';
         ctx.shadowBlur = 6 * hp;
-        ctx.fillText('敬 请 期 待', 50 * wp, 70 * hp);
+        ctx.fillText('欢 迎 参 观', 50 * wp, 70 * hp);
     },
 
     // 大门右 1 指示牌
