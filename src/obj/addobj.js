@@ -215,12 +215,7 @@ export default {
                 mass = 0, width = 1, depth = 1, height = 1, size = 1,
                 rX = 0, rY = 0, rZ = 0,
             } = {}){
-        var size = 0.5;
-        var colliGroup = 1;
-        var mass = 50;
-        if(size !== 1){  // 处理体积大小
-            width =  depth =  height = size;
-        }
+        width =  depth =  height = size;
         const boxSize = new CANNON.Vec3(width/2, height/2, depth/2);
         var boxShape = new CANNON.Box(boxSize);
         var body = new CANNON.Body({
@@ -236,9 +231,7 @@ export default {
         };
         body.collisionFilterMask = collisionFilterMaskMap[colliGroup];  // 碰撞组
         this.world.addBody(body);
-        if(quat){
-            body.quaternion.set(quat.x, quat.y, quat.z, quat.w);
-        }
+        if(quat){ body.quaternion.set(quat.x, quat.y, quat.z, quat.w); }
         quat = body.quaternion;
         return { name, body, X, Y, Z, rX, rY, rZ,};
     },

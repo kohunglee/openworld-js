@@ -49,6 +49,7 @@ body{margin: 0;}
     touch-action: none;
 }
 .cell{
+    user-select: none;
     border: none;
     background: #ffffff82;
     font-size: 22px;
