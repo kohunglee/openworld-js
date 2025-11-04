@@ -30,6 +30,10 @@ const htmlCode = `
         opacity: 0.8;
         border: 1px solid #ccc; /* 增加边框以便看清 */
         background-color: #f0f0f0; /* 增加背景色 */
+        user-select: none;           /* 标准语法 */
+        -webkit-user-select: none;   /* Safari/Chrome */
+        -moz-user-select: none;      /* Firefox */
+        -ms-user-select: none;       /* 旧版 IE/Edge */
     }
 </style>
 <canvas id="posMap" width="100" height="100"></canvas>
