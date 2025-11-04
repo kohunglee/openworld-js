@@ -46,18 +46,18 @@
 <div id="someCtrl">
     <button id="btn01" style="width: 105px;">更多信息</button>
 </div>
-<div id="mCtrl" class="pad onlymobile">
-  <button class="cell" id="turnL">←</button>
-  <button class="cell" id="goF">前</button>
-  <button class="cell" id="turnR">→</button>
+<div id="mCtrl" class="pad onlymobile moselect">
+  <button class="cell moselect" id="turnL">←</button>
+  <button class="cell moselect" id="goF">前</button>
+  <button class="cell moselect" id="turnR">→</button>
 
-  <button class="cell" id="goL">左</button>
-  <button class="cell" id="goJump">蹦</button>
-  <button class="cell" id="goR">右</button>
+  <button class="cell moselect" id="goL">左</button>
+  <button class="cell moselect" id="goJump">蹦</button>
+  <button class="cell moselect" id="goR">右</button>
 
-  <button class="cell" id="lookUp">上</button>
-  <button class="cell" id="goB">后</button>
-  <button class="cell" id="lookDn">下</button>
+  <button class="cell moselect" id="lookUp">上</button>
+  <button class="cell moselect" id="goB">后</button>
+  <button class="cell moselect" id="lookDn">下</button>
 </div>
 <div class="info-modal" id="myinfoModal" hidden>
     <div>
@@ -82,7 +82,7 @@
 
     <div>
         <h3>在线人数</h3>
-        <input type="checkbox" id="closeVK"> <span class="moselect">关闭多人在线功能（下次进来也会自动关闭）</span><br><br>
+        <input type="checkbox" id="closeVK"> <span class="moselect">关闭在线功能（下次进来也会自动关闭）</span><br><br>
         <div id="onlineInfo">
             当前在线人数：<span id="onlineCount">1</span>&nbsp;&nbsp;<span id="isConneting"></span>
             <ul id="frendPosInfo"></ul>
