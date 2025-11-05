@@ -4,17 +4,17 @@
 
 // 程序说明
 btn01.addEventListener('mousedown', function(event) {
-    document.getElementById('myinfoModal').hidden = false;
+    document.getElementById('myinfoModal').classList.remove('zindex-1');
 });
 
 // 关闭 【程序说明】模态框
 document.getElementById('closeBtn').addEventListener('click', function() {
-    document.getElementById('myinfoModal').hidden = true;
+    document.getElementById('myinfoModal').classList.add('zindex-1');
 });
 
 // 关闭 【程序说明】模态框 02 
 document.getElementById('closeBtn02').addEventListener('click', function() {
-    document.getElementById('myinfoModal').hidden = true;
+    document.getElementById('myinfoModal').classList.add('zindex-1');
 });
 
 // 到原点
