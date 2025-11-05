@@ -23,9 +23,15 @@ body{margin: 0;}
     overflow: auto;
     padding: 1em;
     font-size: 15px;
+    opacity: 1;
+    pointer-events: auto;
 }
 .zindex-1 {  /* 使用这个来控制model，或许可以展示 ads ？  */
-    z-index: -1;
+    position: fixed;
+    z-index: -1; /* 不挡住页面 */
+    opacity: 0;  /* 肉眼不可见，但仍渲染 */
+    pointer-events: none; /* 防止误点 */
+    transition: opacity 0.3s ease, z-index 0.3s ease;
 }
 
 /* 感谢部分，<a> 无下划线 */
