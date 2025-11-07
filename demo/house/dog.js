@@ -10,6 +10,6 @@ const dog = {
 
         console.log('dof ok');// const dog = new Dog();
 
-        k.W.wolf_txt({n:'dog', x: 30, y: 1.5, z: -30, size: 10,s:1, t:dls, ry:-90, b:"#eeff00ff", mix:0.5})
+        k.W.wolf_txt({n:'dog', x: 30, y: 1.3, z: -30, size: 1,s:1, t:dls, ry:-90, b:"#eeff00ff", mix:0.5})
     },
 }
