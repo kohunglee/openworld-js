@@ -64,7 +64,8 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         dataProcess,
         bookSysRegis,
         singboard.setBoard,
-        setVK
+        setVK,
+        dog.addDogM,  // 临时测试，加了一条狗
     ];
 
     for (const fn of funcs) {
