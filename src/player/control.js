@@ -138,9 +138,11 @@ export default {
     DEG_TO_RAD: Math.PI / 180,
 
     // 计算物体（主要是相机和主角）的移动参数
-    calMovePara : function(X, Y, Z, RX, RY, RZ){
+    calMovePara : function(X, Y, Z, RX, RY, RZ, fps){
         const keys = this.keys;
         const mPVbody = this.mainVPlayer.body;
+        const speedMult = (fps/75).toFixed(2);  // 移动速度尽可能不受帧率影响
+        const walkSpeed = this.WALK_SPEED / speedMult;
         if (keys.viewForward || keys.viewBackward) {  // 前后平移
             const direction = (-keys.viewForward + keys.viewBackward);
             if (this.isShiftPress) {  // 物理速度（快跑）
@@ -170,7 +172,7 @@ export default {
             } else {  // 数学速度（慢跑）
                 this.currentSpeed = 0;
                 this.jumpHoldFrames = 0;
-                const moveDistance = direction * this.WALK_SPEED;
+                const moveDistance = direction * walkSpeed;
                 Z += moveDistance * Math.cos(RY * this.DEG_TO_RAD);
                 X += moveDistance * Math.sin(RY * this.DEG_TO_RAD);
             }
@@ -178,8 +180,8 @@ export default {
             this.hooks.emit('forwardBackward', this);  // 钩子：前后移动
         }
         if (keys.viewLeft || keys.viewRight) {  // 左右平移
-            Z += (-keys.viewLeft + keys.viewRight) * Math.cos((RY + 90) * Math.PI / 180) / 10 * 8 * this.WALK_SPEED;
-            X += (-keys.viewLeft + keys.viewRight) * Math.sin((RY + 90) * Math.PI / 180) / 10 * 8 * this.WALK_SPEED;
+            Z += (-keys.viewLeft + keys.viewRight) * Math.cos((RY + 90) * Math.PI / 180) / 10 * 8 * walkSpeed;
+            X += (-keys.viewLeft + keys.viewRight) * Math.sin((RY + 90) * Math.PI / 180) / 10 * 8 * walkSpeed;
             this.displayPOS();
         }
         if(this.lastIsShiftPress !== this.isShiftPress && this.lastIsShiftPress){  // 松开 Q 的瞬间
@@ -215,7 +217,7 @@ export default {
     DEG_TO_RAD : Math.PI / 180,
 
     // 摄像机和主角的移动和旋转（包括初始化 mVP）
-    mainVPlayerMove : function(mVP){
+    mainVPlayerMove : function(mVP, fps = 75){
         if(mVP === null){return};
         const cam = this.mainCamera;
         if(this.isMVPInit === false){
@@ -226,7 +228,7 @@ export default {
         const vplayerBodyQua = mVP.body.quaternion;
         const vplayerAct = this.calMovePara(  // 获取按键和鼠标事件处理后的移动参数
             vplayerBodyPos.x, vplayerBodyPos.y, vplayerBodyPos.z,
-            cam.qua.rx, cam.qua.ry, cam.qua.rz
+            cam.qua.rx, cam.qua.ry, cam.qua.rz, fps
         );
         mVP.body.position.x = vplayerAct.x;
         mVP.body.position.y = vplayerAct.y;

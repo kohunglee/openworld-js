@@ -50,19 +50,18 @@ function makeGroundMvp(){
             if(true){
                 const x = mvp.X;
                 const z = mvp.Z;
+                const y = mvp.Y;
                 if(x < 52.3 && x > 17.1 && z < -15.7 && z > -44.5) {
-                    if(x < 50.5  && x > 19.1 &&
-                    z < -24.9 && z > -35.5){  // 在大厅以及其他区域
+                    if(x < 50.5  && x > 19.1 && z < -24.9 && z > -35.5){  // 在大厅以及其他区域
                         k.WALK_SPEED = 1/20;  //+ 走路使用快速度
                         k.jumpYVel = orig_jumpYVel;  //+ 跳跃为原力度
                         k.JUMP_HOLD_LIMIT = orig_jumpHoldLimit;
                         k.world.gravity.set(0, -9.82, 0);
-                    } else {  // 在图书区
+                    } else if(y < 17) {  // 在图书区
                         k.WALK_SPEED = 1/40;  //+ 走路使用慢速度
                         k.jumpYVel = 0.8;  //+ 减弱跳跃力度
                         k.JUMP_HOLD_LIMIT = 0.5;
                         k.world.gravity.set(0, -9.82/4, 0);
-
                     }
                 } else {
                     k.WALK_SPEED = 1/20;  //+ 走路使用快速度
