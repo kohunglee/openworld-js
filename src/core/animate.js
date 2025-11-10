@@ -67,27 +67,33 @@ export default {
         this.world.step(1 / 60); // 时间步长 1/60，用于更新物理世界
     },
 
-    targetFps : 75, // 目标帧率
-    animate: function() {
+    // 物理世界稳定 75 帧计算
+    targetFps : 75, // 物理目标帧率
+    animatePhy: function() {
         const _this = this;
         let lastTime = performance.now();
-
+        const frameDuration = 1000 / _this.targetFps; // 算出每帧的间隔
         function loop() {
             const now = performance.now();
             const delta = now - lastTime;
-            const frameDuration = 1000 / _this.targetFps; // 算出每帧的间隔
-
             if (delta >= frameDuration) {  // 循环的业务逻辑
                 lastTime = now - (delta % frameDuration);
-                _this.cannonAni();              
-                _this.updataBodylist();         
-                _this.mainVPlayerMove(_this.mainVPlayer); 
-                _this.hooks.emit('animatePreFrame', _this);
+                _this.cannonAni();
             }
-
             setTimeout(loop, 0);
         }
-
         loop();
-    }
+    },
+
+    // 其他业务，还是自适应调节帧率
+    animateRen: function() {
+        var _this = this;
+        const viewAnimate = function() {
+            _this.updataBodylist(); // 更新物体列表
+            _this.mainVPlayerMove(_this.mainVPlayer); // 摄像机和主角的移动和旋转 
+            _this.hooks.emit('animatePreFrame', _this); // 钩子：'每一帧的计算' 
+            requestAnimationFrame(viewAnimate); 
+        } 
+        viewAnimate();
+    },
 }

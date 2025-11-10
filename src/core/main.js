@@ -34,7 +34,8 @@ export default {
         this.world.addContactMaterial(this.cannonDefaultCantactMaterial);  // 默认材质关联
         this.initBodyTypeArray(1_000_000);  // 初始化一个物体信息库
         this.eventListener();  // 事件监听
-        this.animate(); // 动画
+        this.animatePhy(); // 动画 (物理)
+        this.animateRen(); // 动画 (渲染)
     },
 
     // 初始化 W 引擎
