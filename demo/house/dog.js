@@ -15,7 +15,6 @@ const dog = {
         });
 
         k.W.wolf({n:'dog', x: 30, y: 1.3, z: -30, size: 1,s:1, t:dls, ry:-90, b:"#eeff00ff", mix:0.5})
-    
 
         k.W.chicken({n:'chicken', x: 40, y: 1.3, z: -30, size: 1,s:1, t:dls, ry:-90, b:"#eeff00ff", mix:0.5})
     },
