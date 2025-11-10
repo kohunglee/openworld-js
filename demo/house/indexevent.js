@@ -166,14 +166,3 @@ lookDn.onmouseup = lookDn.ontouchend = () => {
     clearInterval(timelookDn);
     timelookDn = null;
 };
-
-// fps 设置
-document.getElementById('fpsSet').addEventListener('click', function() {
-    const fpsvalueDom = document.getElementById('fpsSetV');
-    let fpsvalue = fpsvalueDom.value
-    fpsvalue = parseInt(fpsvalue);
-    if(fpsvalue > 1000) fpsvalue = 1000;
-    if(fpsvalue < 1) fpsvalue = 1;
-    k.targetFps = fpsvalue;
-    fpsvalueDom.value = k.targetFps;
-})
