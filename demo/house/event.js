@@ -2,7 +2,7 @@ const myevent = {
     keyEvent : (e, ccgxkObj) => {
         const key = e.key.toLowerCase();
 
-        if(key === 'e') {  // 在冻结物体情况下，按 e 键，可以解除冻结
+        if(key === 'e' || key === ' ') {  // 在冻结物体情况下，按 e 键或空格键，可以解除冻结
             const mvpBody = ccgxkObj.mainVPlayer.body;
             if(mvpBody.mass === 0){
                 mvpBody.mass = 50;  // 重量还原
