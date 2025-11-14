@@ -11,7 +11,7 @@ function logicData(){  //
     }
     k.bookS = {};  // 初始化 书 管理系统，储存 书架定位书
 
-    if(k.isLogicAdd === '1'){
+    if(k.isLogicAdd !== 'no'){
         if(document.getElementById('myHUDObjEditor')){
             document.getElementById('myHUDObjEditor').style.backgroundColor = 'blue';  // 提醒自己，不要按动保存
         }
@@ -468,17 +468,6 @@ function logicData(){  //
                 cubeDatas[index] = {del : 1};
             }
         });
-
-
-
-
-
-
-
-
-
-
-
 
         // 假书逻辑
         if(true){
@@ -966,8 +955,6 @@ function logicData(){  //
                     ...k.bookS.floor1.bookSub.refSymo,
                 ], {z:-30});
 
-
-
                 //  辅助计算值，计算相对位置
                 const bookSubx = cubeDatas[k.bookS.floor1.bookSub.b001].x;
 
@@ -984,7 +971,7 @@ function logicData(){  //
                 k.bookS.floor1.dire2.forEach((v, i) => {
                     const curr_x = cubeDatas[v].x;
                     const x_diff = bookSubx - curr_x - 4.89;
-                    k.bookS.floor1.bookSub['s'+ v] = offset([
+                    k.bookS.bookSub['s'+ v] = offset([
                         ...k.bookS.floor1.bookSub.refSymo,
                     ], x_diff, 2)
                 });
@@ -1006,8 +993,6 @@ function logicData(){  //
                         ...k.bookS.floor1.bookSub.refSymoZSymo,
                     ], x_diff, 2, 'x',)
                 });
-
-                
             }
 
             // 删除所有参考
@@ -1026,44 +1011,5 @@ function logicData(){  //
                 })
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
     }
 }

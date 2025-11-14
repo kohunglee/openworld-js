@@ -12,13 +12,12 @@ const baseConfig = {
   },
 };
 
+// ow.js 压缩版本
 const productionConfig = {
   ...baseConfig, 
-  
   mode: 'production', // 开启生产模式，进行所有优化
-  
   output: {
-    filename: 'openworld.min.js', 
+    filename: 'ow.min.js', 
     path: path.resolve(__dirname, 'dist'),
     library: 'openworld',
     libraryTarget: 'umd',
@@ -43,11 +42,10 @@ const productionConfig = {
       }),
     ],
   },
-
   plugins: [
     // 版权横幅插件
     new webpack.BannerPlugin({
-      banner: '/*! openworld.js v1.0.0 | (c) github/kohunglee | MIT License */',
+      banner: '/*! ow.min.js v1.0.0 | (c) github/kohunglee/openworld-js | MIT License */',
       raw: true,
       entryOnly: true,
     }),
@@ -62,10 +60,9 @@ const productionConfig = {
 };
 
 
-
+// openworld.js 可读版本
 const developmentConfig = {
   ...baseConfig,
-
   mode: 'development', // 开启开发模式，优化可读性
   output: {
     filename: 'openworld.js', 
@@ -74,20 +71,17 @@ const developmentConfig = {
     libraryTarget: 'umd',
     globalObject: 'this',
   },
-  
   optimization: {
     minimize: false,  // 不压缩
   },
-  
   plugins: [
     new webpack.BannerPlugin({
-      banner: '/*! open.js v1.0.0 | (c) kohunglee | MIT License */',
+      banner: '/*! openworld.js v1.0.0 | (c) kohunglee | MIT License */',
       raw: true,
       entryOnly: true,
     }),
   ],
 };
-
 
 module.exports = [productionConfig, developmentConfig];
 
