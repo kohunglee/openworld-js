@@ -13,9 +13,6 @@ const bookHot = {
 
     // 新窗口跳转到指定 url 地址（目前先试试，使用脱离鼠标模式）
     jumpUrl : (url) => {
-        // if(url.length > 3){
-        //     window.open('//' + url + '?refer=ow.ccgxk.com', '_blank');
-        // }
         if ('pointerLockElement' in document || 
             'mozPointerLockElement' in document || 
             'webkitPointerLockElement' in document) {

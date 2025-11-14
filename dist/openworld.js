@@ -1,4 +1,4 @@
-/*! open.js v1.0.0 | (c) kohunglee | MIT License */
+/*! openworld.js v1.0.0 | (c) kohunglee | MIT License */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -102,12 +102,11 @@ __webpack_require__.r(__webpack_exports__);
     gridKeyCurrentTime : 0,  // 辅助更新 gridKey 的工具时间值
     updataBodylist : function(){
         this.dynaNodes_lab();  // 一帧计算区块一次
-
         for (const index of this.currentlyActiveIndices) {  // 暂时选择遍历吧，反正也显示不了几个，也兼容后续的 mass 改变
             const p_offset = index * 8;
             if(this.positionsStatus[p_offset + 7] > 0){  // 选择 状态码/mass 大于 0 的物体
                 const indexItem = this.indexToArgs.get(index);
-                const canBody = indexItem.cannonBody;
+                const canBody = indexItem.body;
                 if(!canBody) continue;
                 const disxX = canBody.position.x - this.positionsStatus[p_offset];
                 const disyY = canBody.position.y - this.positionsStatus[p_offset + 1];
@@ -164,18 +163,68 @@ __webpack_require__.r(__webpack_exports__);
         this.world.step(1 / 60); // 时间步长 1/60，用于更新物理世界
     },
 
-    // 动画循环
-    animate : function(){
-        var _this = this;
-        const viewAnimate = function() {
-            _this.cannonAni(); // 物理世界计算
-            _this.updataBodylist(); // 更新物体列表
-            _this.mainVPlayerMove(_this.mainVPlayer); // 摄像机和主角的移动和旋转
-            _this.hooks.emit('animatePreFrame', _this);  // 钩子：'每一帧的计算'
-            requestAnimationFrame(viewAnimate);
+    // 物理世界稳定 75 帧计算
+    targetFps : 75, // 物理目标帧率
+    animatePhy: function() {
+        const _this = this;
+        let lastTime = performance.now();
+        const frameDuration = 1000 / _this.targetFps; // 算出每帧的间隔
+        function loop() {
+            const now = performance.now();
+            const delta = now - lastTime;
+            if (delta >= frameDuration) {  // 循环的业务逻辑
+                lastTime = now - (delta % frameDuration);
+                _this.cannonAni();
+            }
+            setTimeout(loop, 0);
         }
+        loop();
+    },
+
+    // 其他业务，还是自适应调节帧率
+    fps: 0,  // 实时 FPS，辅助角色移动计算
+    animateRen: function() {
+        var _this = this;
+        let last = performance.now(), fps = 75;
+        const viewAnimate = function() {
+            const now = performance.now();  //+ 计算 fps
+            fps = 1000 / (now - last); last = now;
+
+            // 每帧要计算的业务逻辑
+            if(true){
+                _this.updataBodylist(); // 更新物体列表
+                _this.mainVPlayerMove(_this.mainVPlayer, fps); // 摄像机和主角的移动和旋转 
+                _this.hooks.emit('animatePreFrame', _this); // 钩子：'每一帧的计算' 
+            }
+
+            requestAnimationFrame(viewAnimate); 
+        } 
         viewAnimate();
     },
+
+    // 物理世界稳定 75 帧计算
+    // targetFps2 : 300, // 物理目标帧率
+    // fpsframeMs : 0,
+    // animateRen: function() {
+    //     const _this = this;
+    //     let lastTime = performance.now();
+    //     let last = performance.now(), fps = 75; // ← 新增行
+    //     const frameDuration = 1000 / 300; // 算出每帧的间隔
+    //     function loop() {
+    //         const now = performance.now();  //+ 计算 fps
+    //         const delta = now - lastTime;
+    //         fps = 1000 / (now - last); last = now;
+    //         if (delta >= frameDuration) {  // 循环的业务逻辑
+    //             lastTime = now - (delta % frameDuration);
+    //             _this.updataBodylist(); // 更新物体列表
+    //             _this.mainVPlayerMove(_this.mainVPlayer, fps); // 摄像机和主角的移动和旋转 
+    //             _this.hooks.emit('animatePreFrame', _this); // 钩子：'每一帧的计算' 
+    //         }
+    //         setTimeout(loop, 0);
+    //     }
+    //     loop();
+    // },
+
 });
 
 /***/ }),
@@ -194,18 +243,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
 
     // 配置
-    speedH: 3,              // 最高速度的反数
-    speedL: 8,              // 最低速度的反数
+    speedH: 20,              // 最高速度的反数
+    speedL: 10,              // 最低速度的反数
     speedAdd: 0.1,          // 速度的增加率
     jumpYVel: 5,            // 跳跃时向上的加速度
-    fov:35,                 // 相机视野
+    fov:60,                 // 相机视野
     colorClear: "#7A4141",  // 画布背景色
-    displayViewTime: 0.9,      // 显示清晰度
+    displayViewTime: 1,      // 显示清晰度
 
     // openworld 的 cannon.js 物理世界
     world : null,
 
-    // 物体列表
+    // 物体列表（接近作废）
     bodylist : new Array(),  // 有质量，有物理计算，可视化
     bodylistNotPys : new Array(),  // 纯模型，不进行物理计算
     bodylistMass0 : new Array(),  // 无质量的可视模型
@@ -219,12 +268,15 @@ __webpack_require__.r(__webpack_exports__);
         this.initW(this.canvas);
         this.world = new CANNON.World();
         this.world.gravity.set(0, -9.82, 0); // 地球重力9.82m/s²
+        // this.world.gravity.set(0, -9.82/4, 0);  // 临时
         this.world.broadphase = new CANNON.SAPBroadphase(this.world); // 宽相检测算法
+        // this.world.broadphase = new CANNON.NaiveBroadphase(); // 全局检测算法
         this.world.solver.iterations = 10; // 物理迭代
         this.world.addContactMaterial(this.cannonDefaultCantactMaterial);  // 默认材质关联
         this.initBodyTypeArray(1_000_000);  // 初始化一个物体信息库
         this.eventListener();  // 事件监听
-        this.animate(); // 动画
+        this.animatePhy(); // 动画 (物理)
+        this.animateRen(); // 动画 (渲染)
     },
 
     // 初始化 W 引擎
@@ -291,9 +343,10 @@ __webpack_require__.r(__webpack_exports__);
                 X = 5, Y = 5, Z = 5,
                 quat = {x: 0, y: 0, z: 0, w: 1},
                 mass = 0, width = 1, depth = 1, height = 1, size = 1,
-                rX= 0, rY= 0, rZ= 0,
+                rX = 0, rY = 0, rZ = 0,
             } = {}){
         const myargs = Array.from(arguments)[0];  // 提取参数
+        myargs.deleteFunc = null;  // 删除（临时）时会执行的函数
         if(size !== 1){  // 处理体积大小
             width =  depth =  height = size;
         }
@@ -322,6 +375,7 @@ __webpack_require__.r(__webpack_exports__);
         indicesInCell.push(index);
         this.spatialGrid.set(gridKey, indicesInCell);
         this.indexToArgs.set(index, myargs);  // index -> args
+        return index;
     },
 
     // Box 的默认参数（除去 positionsStatus 里的参数）
@@ -341,7 +395,9 @@ __webpack_require__.r(__webpack_exports__);
         tiling: [1, 1],
         shape: 'cube',
         isFictBody: false,    // 物理假体，视觉比真实物理体小一圈，用于颜色探测
-        isInvisible: false,  // 在 webgl 留档但不渲染（实验，用于减少渲染压力）
+        isInvisible: false,   // 在 webgl 留档但不渲染（实验，用于减少渲染压力）
+        activeFunc: null,     // 激活时执行的函数
+        textureRatio: 1,      // 生成的自定义纹理（errExpRatio）的缩放比例
     },
 
     // 激活 TA 物体
@@ -393,16 +449,10 @@ __webpack_require__.r(__webpack_exports__);
                 posProp[5], // quat.z,
                 posProp[6], // quat.w
             );
-            org_args.cannonBody = body;  // 注意，是 org_args
+            org_args.body = body;  // 注意，是 org_args
         }
         if(args.isVisualMode !== false){  // 添加渲染物体
             var tiling = args.tiling;
-            if(posProp[3] !== 0){  // 可近似认为四分数被修改过，遂更新参数
-                var eulerQuat = this.quaternionToEuler({ x: posProp[3], y: posProp[4],  z: posProp[5],  w: posProp[6] });
-                args.rX = eulerQuat.x;
-                args.rY = eulerQuat.y;
-                args.rZ = eulerQuat.z
-            }
             if(typeof tiling === 'number'){ tiling = [tiling, tiling] }  // 处理平铺数
             const utter = (args.isFictBody) ? 0.1 : 0 // 物理假体，仅在视觉上物体小一圈儿
             var texture, textureError = false;
@@ -429,8 +479,11 @@ __webpack_require__.r(__webpack_exports__);
                 shadow: args.isShadow,
                 hidden: args.isInvisible,
             });
+            if(args.activeFunc !== null){  // 激活时执行的函数
+                args.activeFunc(index);
+            }
             if(textureError){  // 纹理加载失败，尝试换上自定义纹理（id 还是原 id）
-                const expRatio = 40;  // 缩放比例
+                const expRatio = this.errExpRatio * args.textureRatio;  // 缩放比例
                 const cWidth = (physicalProp[1] - utter) * expRatio;
                 const cHeight = (physicalProp[2] - utter) * expRatio;
                 this.loadTexture([ {
@@ -451,126 +504,50 @@ __webpack_require__.r(__webpack_exports__);
         }
     },
 
+    errExpRatio : 40,  // 自定义图像（textureError）时，分辨率缩放比例，以 100 为基准
+
     // 隐藏 TA 物体
     hiddenTABox : function(index){
         const org_args = this.indexToArgs.get(index);  // 提取参数
-        if(org_args.isPhysical !== false && org_args.cannonBody !== undefined){
-            this.world.removeBody(org_args.cannonBody);
+        if(org_args.isPhysical !== false && org_args.body !== undefined){
+            this.world.removeBody(org_args.body);
         }
         if(org_args.isVisualMode !== false){
             this.W.delete('T' + index);
         }
+        if(org_args.deleteFunc !== null){  // 删除时执行的函数
+            org_args.deleteFunc(index);
+        }
     },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // 添加 box 物体
-    addBox : function({
-                DPZ = 2,  // 显示优先级
-                isPhysical = true,  // 是否被物理计算
-                isVisualMode = true,  // 是否渲染
-                kk = 0,
+    // 添加主角（历史遗留问题，设立此函数，方便添加主角）
+    addMVP : function({
                 colliGroup = 2,  // 碰撞组，全能为 1， 静止石头为 2
                 name = 'k'+ this.bodyObjName++,  // 如果没指认，则使用随机数生成 ID
                 X = 5, Y = 5, Z = 5,
                 quat = null,
-                isShadow = 0,
-                tiling = [1, 1],  // 纹理平铺
-                shape = 'cube',  // 默认形状
                 mass = 0, width = 1, depth = 1, height = 1, size = 1,
-                texture = null, smooth = 0,
-                background = '#888', mixValue = 0.71, rX = 0, rY = 0, rZ = 0,
+                rX = 0, rY = 0, rZ = 0,
             } = {}){
-        var myargs = Array.from(arguments);  // 备份参数
-        var posID = this.calPosID(X, Y, Z, DPZ);
-        if(size !== 1){  // 处理体积大小
-            width =  depth =  height = size;
-        }
-        var body = null;
-        if(isPhysical){  // 是否创建物理计算体
-            var boxShape;
-            switch (shape) {
-                case 'sphere':
-                    boxShape =  new CANNON.Sphere(width/2); // 圆的直径以 width 参数值为准
-                    break;
-                default:
-                    const boxSize = new CANNON.Vec3(width/2, height/2, depth/2);
-                    boxShape = new CANNON.Box(boxSize);
-                    break;
-            }
-
-            body = new CANNON.Body({
-                mass : mass,
-                shape: boxShape,
-                position: new CANNON.Vec3(X, Y, Z),
-                material: this.cannonDefaultCantactMaterial,
-            });
-
-            body.collisionFilterGroup = colliGroup;  // 这 6 行，为物理体分配碰撞组。只有玩家和地面与石头碰撞，石头间不会（小物件除外）
-            const collisionFilterMaskMap = {
-                1: this.stoneGroupNum | this.allGroupNum,
-                2: this.allGroupNum,
-            };
-            body.collisionFilterMask = collisionFilterMaskMap[colliGroup];  // 碰撞组
-        
-            this.world.addBody(body);
-            if(quat){
-                body.quaternion.set(quat.x, quat.y, quat.z, quat.w);
-            }
-            quat = body.quaternion;
-        }
-        if(isVisualMode){  // 是否 W 渲染可视化
-            if(typeof tiling === 'number'){ tiling = [tiling, tiling] }  // 处理平铺数
-            this.W[shape]({
-                n: name,
-                w: width, d: depth, h: height,
-                x: X, y:Y, z:Z,
-                t: texture, s: smooth, tile: tiling,
-                rx: rX, ry: rY, rz: rZ, b: background, mix: mixValue,
-                shadow: isShadow,  // 测试一下
-
-            });
-        }
-        var result = { name, body, X, Y, Z, rX, rY, rZ, isVisualMode, myargs, posID, DPZ, quat};
-        switch (true) {  // 看哪个数组接受它
-            case isPhysical === false:
-                this.bodylistNotPys.push(result);  // 纯模型
-                break;
-            case mass === 0:
-                this.bodylistMass0.push(result);  // 无质量
-                break;
-            default:
-                this.bodylist.push(result);  // 默认数组
-        }
-        return result;
+        width =  depth =  height = size;
+        const boxSize = new CANNON.Vec3(width/2, height/2, depth/2);
+        var boxShape = new CANNON.Box(boxSize);
+        var body = new CANNON.Body({
+            mass : mass,
+            shape: boxShape,
+            position: new CANNON.Vec3(X, Y, Z),
+            material: this.cannonDefaultCantactMaterial,
+        });
+        body.collisionFilterGroup = colliGroup;  // 这 6 行，为物理体分配碰撞组。只有玩家和地面与石头碰撞，石头间不会（小物件除外）
+        const collisionFilterMaskMap = {
+            1: this.stoneGroupNum | this.allGroupNum,
+            2: this.allGroupNum,
+        };
+        body.collisionFilterMask = collisionFilterMaskMap[colliGroup];  // 碰撞组
+        this.world.addBody(body);
+        if(quat){ body.quaternion.set(quat.x, quat.y, quat.z, quat.w); }
+        quat = body.quaternion;
+        return { name, body, X, Y, Z, rX, rY, rZ,};
     },
 });
 
@@ -605,10 +582,18 @@ __webpack_require__.r(__webpack_exports__);
         return zindex + dirctionA + numberA + dirctionB + numberB;
     },
 
+    /**
+     * DPZ 的单个区块面积大小，可认为该单位半径圆外接方内有效
+     * 物理效果生效的前提是，物体最长长度应小于该 DPZ 的值的两倍，如 DPZ=4，就要小于 2*5=10。
+     * （与 DPZ 值挨个对应，从 0 开始）
+     */
+    gridsize : new Uint16Array([10000, 1000, 100, 20, 5, 1]),
+    gridsizeY : new Float32Array([10000, 1000, 100, 20, 5, 1]),
+
     // 新的 dynaNodes（适用于长宽 40 以内的物体），lab 版本
-    gridsize : new Uint16Array([10000, 1000, 100, 20, 5]),  // 单个区块面积大小（与 DPZ 挨个对应）
     currentlyActiveIndices : new Set(),  // 当前激活状态的物体。也可保存本次的激活物体列表，供下一次使用
     activationQueue : new Array(),  // 激活任务队列
+    minY : null,  // 动态调整 Y 激活高度，比如楼层的高度可使用这个值（如层高 2.7，则可设置为 1.35）
     dynaNodes_lab : function(){
         if(this.mainVPlayer === null || this.stopDynaNodes) {return ''};
         const mVP = this.mainVPlayer;
@@ -628,7 +613,9 @@ __webpack_require__.r(__webpack_exports__);
             const indicesInGrid = this.spatialGrid.get(key);  // 取物体使用（spatialGrid，物体花名册）
             if (indicesInGrid) {
                 for (const index of indicesInGrid) {
-                    if(Math.abs(this.positionsStatus[index * 8 + 1] - mVP.Y) < this.gridsize[this.physicsProps[index * 8 + 4]]){  // 高度距离（Y）要接近
+                    const minY = this.gridsizeY[this.physicsProps[index * 8 + 4]].toFixed(2);
+                    // const minY = 1.35;
+                    if(Math.abs(this.positionsStatus[index * 8 + 1] - mVP.Y) < minY){  // 高度距离（Y）要接近
                         newActiveIndices.add(index);
                     }
                 }
@@ -728,14 +715,14 @@ __webpack_require__.r(__webpack_exports__);
         return Promise.all(texturePromises);
     },
 
-    canvasObj : document.createElement('canvas'),
+    canvasObj : document.createElement('canvas'),  // 后续要改成 OffscreenCanvas
 
     // 给定 canvas 绘制程序，可以绘制纹理并返回 base64
     dToBase64 : function(drawItem) {  // 【之后优化】复用同一个 canvas 元素（清空并重绘），可以避免频繁创建和销毁 canvas 元素。
         if(drawItem.type === 'svg') {
             const svgString = drawItem.svgCode;
-            const safeSvgString = svgString.replace(/#/g, '%23');  // 对'#'进行编码，确保URL正确
-            return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(safeSvgString);
+            const pngBase64 = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString);
+            return pngBase64;
         }
         const canvas = this.canvasObj;
         canvas.width = drawItem.width || 400;
@@ -743,6 +730,8 @@ __webpack_require__.r(__webpack_exports__);
         canvas.style.webkitFontSmoothing = 'antialiased';  // 两款浏览器的平滑字体兼容（可能有效）
         canvas.style.mozOsxFontSmoothing = 'grayscale';
         const ctx = canvas.getContext('2d')
+        ctx.font = "32px Arial, Helvetica, sans-serif";  // 默认字体配置
+        ctx.textBaseline = "top";
         if(drawItem.type === 'png'){  // 为透明化作铺垫
             drawItem.func(ctx, canvas.width, canvas.height, drawItem, this);
             return canvas.toDataURL('image/png');
@@ -760,6 +749,57 @@ __webpack_require__.r(__webpack_exports__);
         _this.hooks.emitSync('errorTexture_diy', ctx, width, height, drawItem, _this);  // 钩子：'自定义错误纹理' (后续再修改值，记得清除 textureMap)
     },
 });
+
+
+
+/*
+
+
+------------ texture.js:63:29
+img set src：2 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 7 texture.js:61:29
+帧间隔 5 texture.js:61:29
+img set src：1 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：1 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 152 2 texture.js:61:29
+img set src：2 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：0 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 14 2 texture.js:61:29
+img set src：2 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：1 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 5 2 texture.js:61:29
+img set src：3 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：0 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 147 2 texture.js:61:29
+img set src：2 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：0 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 10 2 texture.js:61:29
+img set src：2 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：1 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 15 texture.js:61:29
+帧间隔 14 texture.js:61:29
+img set src：1 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+img set src：1 毫秒 - 倒计时结束 texture.js:56:29
+------------ texture.js:63:29
+帧间隔 158 texture.js:61:29
+
+
+
+ */
 
 /***/ }),
 
@@ -792,7 +832,7 @@ __webpack_require__.r(__webpack_exports__);
         viewRight: 0,
         shiftKeyvalue: 0,
         jumping: 0,
-        frozen: 0,  // 冻结
+        frozen: 0,  // 冻结（无用）
     },
 
     // 键盘按键 与 操作状态值 的对应
@@ -810,8 +850,8 @@ __webpack_require__.r(__webpack_exports__);
         'b': 'frozen',
         'arrowup': 'viewForward',
         'arrowdown': 'viewBackward',
-        'arrowleft': 'turnLeft',
-        'arrowright': 'turnRight',
+        'arrowleft': 'viewLeft',
+        'arrowright': 'viewRight',
     },
 
     // 是否按下了 shift 键
@@ -827,7 +867,12 @@ __webpack_require__.r(__webpack_exports__);
         var _this = this;
         var isMouseMove = false;
         document.addEventListener('keydown', function(e) {  // 按下键盘
-            _this._handleKey(e, 1);
+            if (e.key === 's' && (e.ctrlKey || e.metaKey)) {  // 特例，Ctrl+S 键盘事件
+                e.preventDefault(); // 防止默认行为（如保存页面）
+                _this.hooks.emit('ctrlSEvent', this, this.keys);  // 钩子：保存事件
+            } else {
+                _this._handleKey(e, 1);
+            }
         });
         document.addEventListener('keyup', function(e) {  // 松开键盘
             _this._handleKey(e, 0);
@@ -836,6 +881,7 @@ __webpack_require__.r(__webpack_exports__);
             if (isMouseMove) {
                 _this.keys.turnRight -= e.movementX * 0.1;
                 _this.keys.turnUp -= e.movementY * 0.1;
+                _this.hooks.emit('mouseMove', this, this.keys);  // 钩子：鼠标移动
             }
         });
         this.canvas.addEventListener('click', (e) => {  // 单击画布，开启虚拟鼠标
@@ -845,7 +891,6 @@ __webpack_require__.r(__webpack_exports__);
             if(document.pointerLockElement){
                 _this.hooks.emitSync('pointer_lock_click', _this, e);  // 钩子：虚拟鼠标下的单击事件
             }
-            
         });
         this.lockChangeAlert = function() {  // 单击 ESC 键后
             if (document.pointerLockElement === _this.canvas || document.mozPointerLockElement === _this.canvas || document.webkitPointerLockElement === _this.canvas) {
@@ -873,48 +918,92 @@ __webpack_require__.r(__webpack_exports__);
         if ((e.keyCode === 32 || e.key.toLowerCase() === 'e') && this.mainVPlayer !== null) {  // e 或 空格键，飞翔
             if (this.keys.jumping === 0) {
                 this.mainVPlayer.body.velocity.y = this.jumpYVel;
+                this.hooks.emit('jump', this);  // 钩子：跳跃
             }
             this.keys.jumping = value;
         }
         if (e.keyCode === 16 || e.key.toLowerCase() === 'q') {  // shift键 或 q 开启加速
             this.isShiftPress = value;
-        }
-    },
 
-    // 向前（后）移动的加速度辅助计算值
-    forwardAcc : 0,
+        }
+        this.hooks.emit('handlekey', this, this.keys);  // 钩子：键盘事件
+    },
 
     // 显示主角的实时位置
     displayPOS : function(){
-        var posInfo = document.getElementById('posInfo');
+        const posInfo = document.getElementById('posInfo');
+        const pos = this.mainVPlayer?.body?.position;
         if(!posInfo) {return 0}
         if(this.mainVPlayer !== null){
             posInfo.textContent = (
-                '位置: X:' + this.mainVPlayer.body.position.x.toFixed(2) +
-                ', Y:' + this.mainVPlayer.body.position.y.toFixed(2) +
-                ', Z:' + this.mainVPlayer.body.position.z.toFixed(2) + ', | '
+                '位置: X:' + pos.x.toFixed(2) +
+                ', Y:' + pos.y.toFixed(2) +
+                ', Z:' + pos.z.toFixed(2) + ', | '
             );
         }
     },
 
+    // 供 calMovePara() 调用的常量
+    WALK_SPEED: 1 / 8,       // 每帧增加的速度
+    SPRINT_MIN_SPEED: 5.0,   // 最低冲刺速度
+    SPRINT_MAX_SPEED: 35.0,  // 最高冲刺速度
+    ACCELERATION: 0.25,      // 每帧增加的速度
+    JUMP_STRENGTH: 6.0,      // 跳跃力度
+    JUMP_HOLD_LIMIT: 30,     // 允许持续跳跃（施加向上速度）的帧数
+    DEG_TO_RAD: Math.PI / 180,
+
     // 计算物体（主要是相机和主角）的移动参数
-    calMovePara : function(X, Y, Z, RX, RY, RZ){
+    calMovePara : function(X, Y, Z, RX, RY, RZ, fps){
         const keys = this.keys;
+        const mPVbody = this.mainVPlayer.body;
+        const speedMult = (fps/75).toFixed(2);  // 移动速度尽可能不受帧率影响
+        const walkSpeed = this.WALK_SPEED / speedMult;
         if (keys.viewForward || keys.viewBackward) {  // 前后平移
-            var speed = (this.isShiftPress)
-                        ? Math.max(this.speedH,this.speedL-(this.forwardAcc+=this.speedAdd))
-                        : this.speedL+0*(this.forwardAcc=0.01);  // 加速度
-            this.hooks.emit('forwardBackward', this, speed);  // 钩子：前后移动
-            Z += (-keys.viewForward + keys.viewBackward) * Math.cos(RY * Math.PI / 180) / speed;
-            X += (-keys.viewForward + keys.viewBackward) * Math.sin(RY * Math.PI / 180) / speed;
+            const direction = (-keys.viewForward + keys.viewBackward);
+            if (this.isShiftPress) {  // 物理速度（快跑）
+                if (this.currentSpeed < this.SPRINT_MIN_SPEED) {  //+6 处理加速度
+                    this.currentSpeed = this.SPRINT_MIN_SPEED;
+                }
+                if (this.currentSpeed < this.SPRINT_MAX_SPEED) {
+                    this.currentSpeed += this.ACCELERATION;
+                }
+                const localForward = new CANNON.Vec3(0, 0, direction);
+                const worldForward = mPVbody.quaternion.vmult(localForward);
+                const horizontalVelocity = worldForward.scale(this.currentSpeed);
+                let verticalVelocity = 0;
+                if (keys.jumping) {  // 处理跳跃逻辑
+                    if (this.jumpHoldFrames < this.JUMP_HOLD_LIMIT) {
+                        verticalVelocity = this.JUMP_STRENGTH;
+                    }
+                    this.jumpHoldFrames++;
+                } else {
+                    this.jumpHoldFrames = 0;
+                }
+                mPVbody.velocity.set(  // 据说可以清晰地分离水平和垂直的控制
+                    horizontalVelocity.x,
+                    verticalVelocity,
+                    horizontalVelocity.z
+                );
+            } else {  // 数学速度（慢跑）
+                this.currentSpeed = 0;
+                this.jumpHoldFrames = 0;
+                const moveDistance = direction * walkSpeed;
+                Z += moveDistance * Math.cos(RY * this.DEG_TO_RAD);
+                X += moveDistance * Math.sin(RY * this.DEG_TO_RAD);
+            }
             this.displayPOS();
+            this.hooks.emit('forwardBackward', this);  // 钩子：前后移动
         }
         if (keys.viewLeft || keys.viewRight) {  // 左右平移
-            Z += (-keys.viewLeft + keys.viewRight) * Math.cos((RY + 90) * Math.PI / 180) / 10;
-            X += (-keys.viewLeft + keys.viewRight) * Math.sin((RY + 90) * Math.PI / 180) / 10;
+            Z += (-keys.viewLeft + keys.viewRight) * Math.cos((RY + 90) * Math.PI / 180) / 10 * 8 * walkSpeed;
+            X += (-keys.viewLeft + keys.viewRight) * Math.sin((RY + 90) * Math.PI / 180) / 10 * 8 * walkSpeed;
             this.displayPOS();
         }
-        RY = this.keys.turnRight;
+        if(this.lastIsShiftPress !== this.isShiftPress && this.lastIsShiftPress){  // 松开 Q 的瞬间
+            mPVbody.velocity.set(0, 0, 0);  // 速度归 0 一下
+        }
+        this.lastIsShiftPress = this.isShiftPress;
+        RY = this.keys.turnRight;  // 主角旋转角度其实是这个控制的，注意！
         RX = this.keys.turnUp;
         return {  x: X,  y: Y,  z: Z,  rx: RX,  ry: RY,  rz: RZ  }
     },
@@ -942,8 +1031,8 @@ __webpack_require__.r(__webpack_exports__);
     Y_AXIS : new CANNON.Vec3(0, 1, 0),  //+ 辅助值
     DEG_TO_RAD : Math.PI / 180,
 
-    // 摄像机和主角的移动和旋转
-    mainVPlayerMove : function(mVP){
+    // 摄像机和主角的移动和旋转（包括初始化 mVP）
+    mainVPlayerMove : function(mVP, fps = 75){
         if(mVP === null){return};
         const cam = this.mainCamera;
         if(this.isMVPInit === false){
@@ -954,12 +1043,13 @@ __webpack_require__.r(__webpack_exports__);
         const vplayerBodyQua = mVP.body.quaternion;
         const vplayerAct = this.calMovePara(  // 获取按键和鼠标事件处理后的移动参数
             vplayerBodyPos.x, vplayerBodyPos.y, vplayerBodyPos.z,
-            cam.qua.rx, cam.qua.ry, cam.qua.rz
+            cam.qua.rx, cam.qua.ry, cam.qua.rz, fps
         );
         mVP.body.position.x = vplayerAct.x;
         mVP.body.position.y = vplayerAct.y;
         mVP.body.position.z = vplayerAct.z;
         cam.qua = vplayerAct;
+
         vplayerBodyQua.setFromAxisAngle(this.Y_AXIS, this.DEG_TO_RAD * vplayerAct.ry);  // 主角只旋转 Y 轴
         this.W.camera({g:mVP.name, x:cam.pos.x, y:cam.pos.y, z:cam.pos.z, rx: cam.qua.rx, rz: cam.qua.rz})  // 摄像机只旋转 X 和 Z 轴
         const pos = mVP.body.position;
@@ -977,6 +1067,63 @@ __webpack_require__.r(__webpack_exports__);
         return 0;
     },
 });
+
+/***/ }),
+
+/***/ "./src/plugins/webgl/wjsDynamicIns.js":
+/*!********************************************!*\
+  !*** ./src/plugins/webgl/wjsDynamicIns.js ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/**
+ * 动态操作 webgl 的实例化对象
+ * ========
+ * 只实现了修改参数、假删除
+ */
+
+// 插件入口
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(ccgxkObj) {
+    const W = ccgxkObj.W;
+    W.dynimicIns = true;  // 标识 动态实例化 已开启
+
+    // 函数：更新实例化对象
+    // 参数：objName：W 物体对象的名称； index：索引； props：新内容；
+    W.updateInstance = function(objName, index, props) {
+        const state = W.next[objName];
+        if (!state?.isInstanced || !state.instances?.[index]) return;
+        const instance = state.instances[index];
+        Object.assign(instance, props);  // 合并修改
+
+        const m = new DOMMatrix();  // 重新计算该条数据的矩阵
+        m.translateSelf(
+                (instance.x || 0) + (state.x || 0),
+                (instance.y || 0) + (state.y || 0),
+                (instance.z || 0) + (state.z || 0))
+        .rotateSelf(instance.rx || 0, instance.ry || 0, instance.rz || 0)
+        .scaleSelf(instance.w || 1, instance.h || 1, instance.d || 1);
+
+        const matrixBuffer = W.instanceMatrixBuffers[objName];
+        W.gl.bindBuffer(W.gl.ARRAY_BUFFER, matrixBuffer);
+        W.gl.bufferSubData(W.gl.ARRAY_BUFFER, index * 16 * 4, m.toFloat32Array());
+
+        if (props.b) {  // 更新颜色
+            const colorBuffer = W.instanceColorBuffers[objName];
+            W.gl.bindBuffer(W.gl.ARRAY_BUFFER, colorBuffer);
+            W.gl.bufferSubData(W.gl.ARRAY_BUFFER, index * 4 * 4, new Float32Array(W.col(props.b)));
+        }
+    }
+
+      // 函数：动态删除某实例化对象（假删除）
+      // 参数：objName：W 物体对象的名称； index：索引；
+    W.deleteInstance = function(objName, index) {
+        W.updateInstance(objName, index, { w: 0.001, h: 0.001, d: 0.001 });
+    }
+}
 
 /***/ }),
 
@@ -1044,9 +1191,34 @@ __webpack_require__.r(__webpack_exports__);
     cannonDefaultCantactMaterial : new CANNON.ContactMaterial( // 默认材质关联材质
         new CANNON.Material(),
         new CANNON.Material(), {
-            friction: 0.1, // 摩擦力
-            restitution: 0.0, // 弹性系数
+            friction: 100, // 摩擦力
+            restitution: 0.1, // 弹性系数
     }),
+
+    // 音乐合成器
+    audio : function(func){
+        if(this?.offAudio) return;  // 是否开启音效
+        const A = window.A = window.A || new AudioContext();  // 防止资源占用太多，导致报错
+        const fn = i => func(i) || 0;
+        var t, m, b, s, i;
+        A.state=='suspended' && (document.onclick=()=>A.resume());
+        t=(i,n)=>(n-i)/n;
+        m=A.createBuffer(1,96e3,48e3)
+        b=m.getChannelData(0)
+        for(i=96e3;i--;)b[i]=fn(i)
+        s=A.createBufferSource()
+        s.buffer=m
+        s.connect(A.destination)
+        s.start()
+    },
+    
+    // 一个能跑起来的计算角度的函数，凑合用吧，原理混乱且不重要 (rx, ry, rz)
+    calYAngle : function(t,a,h){
+        var t=-t*Math.PI/180,a=-a*Math.PI/180,h=h*Math.PI/180,M=Math.cos(t),
+        t=Math.sin(t),o=Math.cos(a),a=Math.sin(a),h=(Math.cos(h),Math.sin(h),a*M),a=-t,t=o*M,o=[0,0,1],M=t,
+        a=Math.sqrt(Math.pow(h,2)+Math.pow(a,2)+Math.pow(t,2));let n=Math.acos(Math.min(1,Math.max(-1,M/a)));
+        return n=(n=h*o[2]-t*o[0]<0?-n:n)>-Math.PI/2&&n<Math.PI/2?2*Math.PI-n:n
+    },
     
 });
 
@@ -1235,15 +1407,17 @@ const W = {
         } else {
           state.isInstanced = false;
         }
-        if(state.fov){  // 根据 fov 计算【投影矩阵】
-          var viewLimit = W.viewLimit;
-          W.projection =
-            new DOMMatrix([
-              (1 / Math.tan(state.fov * Math.PI / 180)) / (W.canvas.width / W.canvas.height), 0, 0, 0, 
-              0, (1 / Math.tan(state.fov * Math.PI / 180)), 0, 0, 
-              0, 0, -(viewLimit + 0.1) / (viewLimit - 0.1), -1,
-              0, 0, -(2 * viewLimit * 0.1) / (viewLimit - 0.1), 0
-            ]);
+        if (state.fov) {  // 根据 fov 计算【投影矩阵】
+          const aspect = W.canvas.width / W.canvas.height;
+          const near = 0.1;
+          const far = W.viewLimit;
+          const f = 1 / Math.tan((state.fov * 0.5) * Math.PI / 180);
+          W.projection = new DOMMatrix([
+            f / aspect, 0, 0, 0,
+            0, f, 0, 0,
+            0, 0, -(far + near) / (far - near), -1,
+            0, 0, -(2 * far * near) / (far - near), 0
+          ]);
         }
         state = {  // 保存和初始化对象的类型
           type,
@@ -1258,6 +1432,9 @@ const W = {
           ...state,
           f:0
         };
+
+
+
         if(W.models[state.type]?.vertices && !W.models?.[state.type].verticesBuffer){  // 构建顶点
           W.gl.bindBuffer(34962 , W.models[state.type].verticesBuffer = W.gl.createBuffer());
           W.gl.bufferData(34962 , new Float32Array(W.models[state.type].vertices), 35044 );
@@ -1267,6 +1444,9 @@ const W = {
             W.gl.bufferData(34962 , new Float32Array(W.models[state.type].normals.flat()), 35044 ); 
           }
         }
+
+
+
         if(W.models[state.type]?.uv && !W.models[state.type].uvBuffer){  // 构建 UV
           W.gl.bindBuffer(34962 , W.models[state.type].uvBuffer = W.gl.createBuffer());
           W.gl.bufferData(34962 , new Float32Array( W.models[state.type].uv), 35044 );
@@ -1342,7 +1522,7 @@ const W = {
             W.lastReportTime = now;
         }
   },
-  
+
   // 渲染对象
   render: (object, dt, just_compute = ['camera','light','group'].includes(object.type), buffer) => {
         if(object.t) {  // 设置纹理
@@ -1362,20 +1542,45 @@ const W = {
             if(W.next[object.g]){  // 组 处理
               W.next[object.n].m.preMultiplySelf(W.next[object.g].M || W.next[object.g].m);
             }
-            if(!just_compute){  // 可见物体
-              W.gl.uniformMatrix4fv(  // 下一帧矩阵->着色器（m）
-                W.uniformLocations.m,
-                false,
-                (W.next[object.n].M || W.next[object.n].m).toFloat32Array()
-              );
-              W.gl.uniformMatrix4fv(  // 下一帧逆矩阵->着色器（im）
-                W.uniformLocations.im,
-                false,
-                (new DOMMatrix(W.next[object.n].M || W.next[object.n].m)).invertSelf().toFloat32Array()
-              );
+            function safeUniformMatrix(gl, location, mat) {  // 安全传矩阵，确保不会报错，数据合法
+              try {
+                const arr = mat?.toFloat32Array?.() || [];
+                if (!arr.length || arr.some(v => !Number.isFinite(v))) throw new Error();
+                gl.uniformMatrix4fv(location, false, arr);
+              } catch {
+                gl.uniformMatrix4fv(location, false, new DOMMatrix().toFloat32Array());
+              }
+            }
+            if (!just_compute) {
+              let safeMat;
+              try {
+                const raw = W.next?.[object.n]?.M || W.next?.[object.n]?.m;
+                const arr = new DOMMatrix(raw).toFloat32Array();
+                safeMat = arr.some(v => !Number.isFinite(v)) ? new DOMMatrix() : new DOMMatrix(raw);
+              } catch {
+                safeMat = new DOMMatrix();
+              }
+
+              safeUniformMatrix(W.gl, W.uniformLocations.m, safeMat);
+
+              let inv;
+              try {
+                inv = safeMat.is2D ? safeMat.inverse() : safeMat.invertSelf();
+              } catch {
+                inv = new DOMMatrix();
+              }
+
+              safeUniformMatrix(W.gl, W.uniformLocations.im, inv);
             }
         }
         if(!just_compute){  // 渲染可见物体
+
+          W.gl.disableVertexAttribArray(W.attribLocations.uv);  // 安全重置所有 attribute 状态（防止空绑定）by chatgpt
+          W.gl.disableVertexAttribArray(W.attribLocations.normal);
+          W.gl.disableVertexAttribArray(W.attribLocations.col);
+          const instLoc = W.attribLocations.instanceModelMatrix;
+          for (let i = 0; i < 4; i++) W.gl.disableVertexAttribArray(instLoc + i);
+
           if(!W.models[object.type]?.verticesBuffer) {  // 热更新模型时会报错，一个勉强的解法。以后再优化
             return 0;
           }
@@ -1423,6 +1628,7 @@ const W = {
             0
           );
           const colorAttribLoc = W.attribLocations.col;
+
           if (object.isInstanced) {  // （实例化和普通）颜色->着色器（col）
             W.gl.enableVertexAttribArray(colorAttribLoc);
             W.gl.bindBuffer(W.gl.ARRAY_BUFFER, W.instanceColorBuffers[object.n]);
@@ -1431,6 +1637,7 @@ const W = {
           } else {
             W.gl.vertexAttrib4fv(colorAttribLoc, W.col(object.b || '888'));
           }
+
           if(object.uncullface) {  // 面剔除的判断，不知道这样写是否会影响性能
             W.gl.disable(2884);
             W.cullface = false;
@@ -1543,7 +1750,6 @@ W.smooth = (state, dict = {}, vertices = [], iterate, iterateSwitch, i, j, A, B,
   }
 }
 
-
 // 3D模型
 // ========
 
@@ -1569,8 +1775,7 @@ W.add("plane", {
 });
 W.add("billboard", W.models.plane);
 
-// 立方体
-W.add("cube", {
+W.cubeData = {
   vertices: [
     .5, .5, .5,  -.5, .5, .5,  -.5,-.5, .5, // front
     .5, .5, .5,  -.5,-.5, .5,   .5,-.5, .5,
@@ -1578,28 +1783,18 @@ W.add("cube", {
     .5, .5,-.5,   .5,-.5, .5,   .5,-.5,-.5,
     .5, .5,-.5,  -.5, .5,-.5,  -.5, .5, .5, // up
     .5, .5,-.5,  -.5, .5, .5,   .5, .5, .5,
-   -.5, .5, .5,  -.5, .5,-.5,  -.5,-.5,-.5, // left
-   -.5, .5, .5,  -.5,-.5,-.5,  -.5,-.5, .5,
-   -.5, .5,-.5,   .5, .5,-.5,   .5,-.5,-.5, // back
-   -.5, .5,-.5,   .5,-.5,-.5,  -.5,-.5,-.5,
+    -.5, .5, .5,  -.5, .5,-.5,  -.5,-.5,-.5, // left
+    -.5, .5, .5,  -.5,-.5,-.5,  -.5,-.5, .5,
+    -.5, .5,-.5,   .5, .5,-.5,   .5,-.5,-.5, // back
+    -.5, .5,-.5,   .5,-.5,-.5,  -.5,-.5,-.5,
     .5,-.5, .5,  -.5,-.5, .5,  -.5,-.5,-.5, // down
     .5,-.5, .5,  -.5,-.5,-.5,   .5,-.5,-.5
   ],
-  uv: [
-    1, 1,   0, 1,   0, 0, // front
-    1, 1,   0, 0,   1, 0,            
-    1, 1,   0, 1,   0, 0, // right
-    1, 1,   0, 0,   1, 0, 
-    1, 1,   0, 1,   0, 0, // up
-    1, 1,   0, 0,   1, 0,
-    1, 1,   0, 1,   0, 0, // left
-    1, 1,   0, 0,   1, 0,
-    1, 1,   0, 1,   0, 0, // back
-    1, 1,   0, 0,   1, 0,
-    1, 1,   0, 1,   0, 0, // down
-    1, 1,   0, 0,   1, 0
-  ]
-});
+  uv: Array(12).fill([1,1,0,1,0,0,1,1,0,0,1,0]).flat(),
+};
+
+// 立方体
+W.add("cube", W.cubeData);
 W.cube = settings => W.setState(settings, 'cube');
 
 // 金字塔
@@ -1718,23 +1913,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _obj_chunkManager_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./obj/chunkManager.js */ "./src/obj/chunkManager.js");
 /* harmony import */ var _obj_addobj_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./obj/addobj.js */ "./src/obj/addobj.js");
 /* harmony import */ var _core_animate_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./core/animate.js */ "./src/core/animate.js");
-
-
-
-
-
-
-
-
-
-
-
+/* harmony import */ var _plugins_webgl_wjsDynamicIns_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./plugins/webgl/wjsDynamicIns.js */ "./src/plugins/webgl/wjsDynamicIns.js");
 
 
 
 // 插件
 // import wjsShadow from './plugins/webgl/wjsShadow.js';
-// import dynamicIns from './plugins/webgl/wjsDynamicIns.js';
+
 
 
 // 主对象
@@ -1752,7 +1937,7 @@ const openworld = {
 
 // 启用插件
 // wjsShadow(openworld);  // 开启阴影（暂时有性能问题，待改进）
-dynamicIns(openworld);  // 开启实例化的动态操作
+;(0,_plugins_webgl_wjsDynamicIns_js__WEBPACK_IMPORTED_MODULE_9__["default"])(openworld);  // 开启实例化的动态操作
 
 // 兼容浏览器平台
 window.openworld = openworld;
