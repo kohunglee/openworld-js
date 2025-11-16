@@ -17,5 +17,31 @@ const dog = {
         k.W.wolf({n:'dog', x: 30, y: 1.3, z: -30, size: 1,s:1, t:dls, ry:-90, b:"#eeff00ff", mix:0.5})
 
         k.W.chicken({n:'chicken', x: 40, y: 1.3, z: -30, size: 1,s:1, t:dls, ry:-90, b:"#eeff00ff", mix:0.5})
+
+        k.addPhy({  // dog
+            colliGroup: 2,
+            X: 29.478, Y: 1.5, Z: -29.856,
+            width: 0.801, height: 0.901, depth: 0.201,
+            mass: 0,
+            quat:{
+                w: 0.9238795042037964,
+                x: 0, 
+                y: 0, 
+                z: 0.3826834261417389, 
+            }
+        });
+
+        k.addPhy({  // chicken
+            colliGroup: 2,
+            X: 39.549, Y: 1.8, Z: -29.648,
+            width: 0.762, height: 0.501, depth: 0.5,
+            mass: 0,
+            quat:{
+                w: 0.9238795042037964,
+                x: 0.3826834261417389,
+                y: 0,
+                z: 0,
+            }
+        });
     },
 }
