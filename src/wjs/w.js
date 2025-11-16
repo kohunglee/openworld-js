@@ -196,8 +196,6 @@ const W = {
           f:0
         };
 
-
-
         if(W.models[state.type]?.vertices && !W.models?.[state.type].verticesBuffer){  // 构建顶点
           W.gl.bindBuffer(34962 , W.models[state.type].verticesBuffer = W.gl.createBuffer());
           W.gl.bufferData(34962 , new Float32Array(W.models[state.type].vertices), 35044 );
@@ -207,8 +205,6 @@ const W = {
             W.gl.bufferData(34962 , new Float32Array(W.models[state.type].normals.flat()), 35044 ); 
           }
         }
-
-
 
         if(W.models[state.type]?.uv && !W.models[state.type].uvBuffer){  // 构建 UV
           W.gl.bindBuffer(34962 , W.models[state.type].uvBuffer = W.gl.createBuffer());
@@ -440,7 +436,7 @@ const W = {
   },
   
   // 辅助函数
-  // -------
+  // ========
   
   // 在两个值之间插值
   lerp: (item, property) => 
@@ -515,15 +511,6 @@ W.smooth = (state, dict = {}, vertices = [], iterate, iterateSwitch, i, j, A, B,
 
 // 3D模型
 // ========
-
-// 每个模型都有：
-// - 一个顶点数组 [x, y, z, x, y, z...]
-// - 一个uv数组 [u, v, u, v...]（可选。允许纹理贴图...如果不存在：则只使用RGBA颜色）
-// - 一个索引数组（可选，启用drawElements渲染...如果不存在：则使用drawArrays）
-// - 一个法线数组 [nx, ny, nz, nx, ny, nz...]（可选...如果不存在：框架在需要时计算硬/平滑法线）
-// 当需要时，顶点、uv、索引缓冲区会自动构建
-// 所有模型都是可选的，你可以移除不需要的模型以节省空间
-// 可以从相同模型添加自定义模型，OBJ导入器可在 https://xem.github.io/WebGLFramework/obj2js/ 获取
 
 // 平面/广告牌
 W.add("plane", {
