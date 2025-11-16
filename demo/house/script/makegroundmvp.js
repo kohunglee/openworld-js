@@ -61,7 +61,6 @@ function makeGroundMvp(){
     const orig_jumpYVel = k.jumpYVel;
     const orig_jumpHoldLimit = k.JUMP_HOLD_LIMIT;
     const mvp = k.mainVPlayer;
-    const mvpBody = k.mainVPlayer;
     const mp = k.mainVPlayer.body.position;
     const mk = k.keys;
     k.lastHotBookData = [];  // 用于记录上一次的热点图书信息，方便判断
