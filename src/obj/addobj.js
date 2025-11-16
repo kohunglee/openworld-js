@@ -207,15 +207,15 @@ export default {
     },
 
     // 添加主角（历史遗留问题，设立此函数，方便添加主角）
-    addMVP : function({
+    addPhy : function({
                 colliGroup = 2,  // 碰撞组，全能为 1， 静止石头为 2
                 name = 'k'+ this.bodyObjName++,  // 如果没指认，则使用随机数生成 ID
                 X = 5, Y = 5, Z = 5,
                 quat = null,
-                mass = 0, width = 1, depth = 1, height = 1, size = 1,
+                mass = 0, width = 1, depth = 1, height = 1, size = 0,
                 rX = 0, rY = 0, rZ = 0,
             } = {}){
-        width =  depth =  height = size;
+        if(size){ width = depth = height = size; }
         const boxSize = new CANNON.Vec3(width/2, height/2, depth/2);
         var boxShape = new CANNON.Box(boxSize);
         var body = new CANNON.Body({

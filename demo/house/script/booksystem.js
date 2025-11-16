@@ -246,7 +246,7 @@ function bookSysRegis(){
     const bindFuncs = (v, dir, type=1) => {
         const o = get(v);
         o.activeFunc = () => bookSystem(v, dir, type);
-        o.deleteFunc = () => removeBookShelf(v);
+        o.deleteFunc = () => removeBookShelf(v - 1);
     };
 
     const regisFloor = (floor, type=1) => {

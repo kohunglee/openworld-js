@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>My New Hugo Site</title><link>https://ow.ccgxk.com/doc/zh/docs/api-%E6%89%8B%E5%86%8C/ow-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</link><description>Recent content on My New Hugo Site</description><generator>Hugo</generator><language>zh</language><atom:link href="https://ow.ccgxk.com/doc/zh/docs/api-%E6%89%8B%E5%86%8C/ow-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/index.xml" rel="self" type="application/rss+xml"/><item><title/><link>https://ow.ccgxk.com/doc/zh/docs/api-%E6%89%8B%E5%86%8C/ow-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/asciinema/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://ow.ccgxk.com/doc/zh/docs/api-%E6%89%8B%E5%86%8C/ow-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/asciinema/</guid><description>&lt;h1 id="asciinema">Asciinema&lt;a class="anchor" href="#asciinema">#&lt;/a>&lt;/h1>
+&lt;blockquote class='book-hint warning'>
+&lt;p>Experimental, could change in the future or be removed&lt;/p>&lt;/blockquote>&lt;p>Asciinema shortcode integrates asciinema player into the markdown page.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-tpl" data-lang="tpl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#a6e22e">asciinema&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">cast&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;asciinema-627097.cast&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">or&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">cast&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;https://asciinema.org/a/vJNKUQFjuh7qKI2j3OoaKs8Jk.cast&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">loop&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">autoplay&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">speed&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">2&lt;/span> &lt;span style="color:#f92672">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;link rel="stylesheet" href="https://ow.ccgxk.com/doc/asciinema/asciinema-player.css" />&lt;script defer src="https://ow.ccgxk.com/doc/asciinema/asciinema-player.min.js">&lt;/script>&lt;script defer src="https://ow.ccgxk.com/doc/asciinema/asciinema-auto.js">&lt;/script>&lt;div class="asciinema book-asciinema"id="asciinema-0"x-data-cast="asciinema-627097.cast"x-data-opts="{&amp;#34;autoplay&amp;#34;:true,&amp;#34;loop&amp;#34;:true,&amp;#34;speed&amp;#34;:2}">&lt;/div>
+
+&lt;h2 id="parameters">Parameters&lt;a class="anchor" href="#parameters">#&lt;/a>&lt;/h2>
+&lt;p>All parameters added to the shortcode will be transformed to options for Asciinema player, expect &lt;code>cast&lt;/code> parameter that is used to locate cast file. Cast file follows same rules as portable image, it could be site resource, page resource or remote file URL.&lt;/p></description></item><item><title/><link>https://ow.ccgxk.com/doc/zh/docs/api-%E6%89%8B%E5%86%8C/ow-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/badges/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://ow.ccgxk.com/doc/zh/docs/api-%E6%89%8B%E5%86%8C/ow-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/badges/</guid><description>&lt;h1 id="badges">Badges&lt;a class="anchor" href="#badges">#&lt;/a>&lt;/h1>
+&lt;blockquote class='book-hint warning'>
+&lt;p>Experimental, could change in the future or be removed&lt;/p>&lt;/blockquote>&lt;p>Badges can be used to annotate your pages with additional information or mark specific places in markdown content.&lt;/p>
+&lt;p>&lt;span class="book-badge default">&lt;span class="book-badge-title">Title&lt;/span>&lt;span class="book-badge-value">Value&lt;/span>&lt;/span>
+&lt;span class="book-badge info">&lt;span class="book-badge-title">Hugo&lt;/span>&lt;span class="book-badge-value">0.147.6&lt;/span>&lt;/span>
+&lt;span class="book-badge success">&lt;span class="book-badge-title">Build&lt;/span>&lt;span class="book-badge-value">Passing&lt;/span>&lt;/span>
+&lt;span class="book-badge warning">&lt;span class="book-badge-title">Coverage&lt;/span>&lt;span class="book-badge-value">25%&lt;/span>&lt;/span>
+&lt;span class="book-badge danger">&lt;span class="book-badge-title">Issues&lt;/span>&lt;span class="book-badge-value">120&lt;/span>&lt;/span>&lt;/p>
+&lt;h2 id="examples">Examples&lt;a class="anchor" href="#examples">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Shortcode&lt;/th>
+ &lt;th>Output&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge style=&amp;quot;info&amp;quot; title=&amp;quot;hugo&amp;quot; value=&amp;quot;0.147.6&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge info">&lt;span class="book-badge-title">Hugo&lt;/span>&lt;span class="book-badge-value">0.147.6&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge style=&amp;quot;success&amp;quot; title=&amp;quot;Build&amp;quot; value=&amp;quot;Passing&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge success">&lt;span class="book-badge-title">Build&lt;/span>&lt;span class="book-badge-value">Passing&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge style=&amp;quot;warning&amp;quot; title=&amp;quot;Coverage&amp;quot; value=&amp;quot;25%&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge warning">&lt;span class="book-badge-title">Coverage&lt;/span>&lt;span class="book-badge-value">25%&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge style=&amp;quot;danger&amp;quot; title=&amp;quot;Issues&amp;quot; value=&amp;quot;120&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge danger">&lt;span class="book-badge-title">Issues&lt;/span>&lt;span class="book-badge-value">120&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge style=&amp;quot;info&amp;quot; title=&amp;quot;Title&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge info">&lt;span class="book-badge-title">Title&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge style=&amp;quot;info&amp;quot; value=&amp;quot;Value&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge info">&lt;span class="book-badge-value">Value&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge title=&amp;quot;Default&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge default">&lt;span class="book-badge-value">Default&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="use-in-links">Use in links&lt;a class="anchor" href="#use-in-links">#&lt;/a>&lt;/h2>
+&lt;p>A badge can be wrapped in markdown link producing following result: &lt;a href="https://github.com/gohugoio/hugo/releases/tag/v0.147.6">&lt;span class="book-badge default">&lt;span class="book-badge-title">Hugo&lt;/span>&lt;span class="book-badge-value">0.147.6&lt;/span>&lt;/span>&lt;/a>&lt;/p></description></item><item><title/><link>https://ow.ccgxk.com/doc/zh/docs/api-%E6%89%8B%E5%86%8C/ow-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/cards/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://ow.ccgxk.com/doc/zh/docs/api-%E6%89%8B%E5%86%8C/ow-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/cards/</guid><description>&lt;h1 id="cards">Cards&lt;a class="anchor" href="#cards">#&lt;/a>&lt;/h1>
+&lt;blockquote class='book-hint warning'>
+&lt;p>Experimental, could change in the future or be removed&lt;/p>&lt;/blockquote>&lt;h2 id="example">Example&lt;a class="anchor" href="#example">#&lt;/a>&lt;/h2>
+&lt;div class="book-columns">
+&lt;ul>
+&lt;li>
+&lt;div class="book-card">&lt;img src="placeholder.svg" alt="" />&lt;div class="markdown-inner">
+&lt;h3 id="line-1">Line 1&lt;a class="anchor" href="#line-1">#&lt;/a>&lt;/h3>
+&lt;p>Line 2&lt;/p>
+&lt;/div>&lt;/div>
+&lt;/li>
+&lt;li>
+&lt;div class="book-card">&lt;img src="placeholder.svg" alt="" />&lt;div class="markdown-inner">
+&lt;p>This is tab MacOS content.&lt;/p>
+&lt;/div>&lt;/div>
+&lt;/li>
+&lt;/ul>
+&lt;/div>
+&lt;div class="book-columns">
+&lt;ul>
+&lt;li>
+&lt;div class="book-card">&lt;a href="https://ow.ccgxk.com/doc/docs/shortcodes/experimental/cards">&lt;div class="markdown-inner">
+&lt;p>&lt;strong>Markdown&lt;/strong>&lt;br>
+Suspendisse sed congue orci, eu congue metus. Nullam feugiat urna massa.&lt;/p>
+&lt;/div>&lt;/a>&lt;/div>
+&lt;/li>
+&lt;li>
+&lt;div class="book-card">&lt;div class="markdown-inner">
+&lt;p>Suspendisse sed congue orci, eu congue metus. Nullam feugiat urna massa, et fringilla metus consectetur molestie.&lt;/p>
+&lt;/div>&lt;/div>
+&lt;/li>
+&lt;li>
+&lt;div class="book-card">&lt;div class="markdown-inner">
+&lt;h3 id="heading">Heading&lt;a class="anchor" href="#heading">#&lt;/a>&lt;/h3>
+&lt;p>This is tab MacOS content.&lt;/p>
+&lt;/div>&lt;/div>
+&lt;/li>
+&lt;/ul>
+&lt;/div></description></item><item><title/><link>https://ow.ccgxk.com/doc/zh/docs/api-%E6%89%8B%E5%86%8C/ow-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/images/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://ow.ccgxk.com/doc/zh/docs/api-%E6%89%8B%E5%86%8C/ow-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/images/</guid><description>&lt;h1 id="images">Images&lt;a class="anchor" href="#images">#&lt;/a>&lt;/h1>
+&lt;blockquote class='book-hint warning'>
+&lt;p>Experimental, could change in the future or be removed&lt;/p>&lt;/blockquote>&lt;p>Image shortcode produces an image that can be clicked to expand.&lt;/p>
+&lt;h2 id="example">Example&lt;a class="anchor" href="#example">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go-html-template" data-lang="go-html-template">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&amp;lt;&lt;/span> &lt;span style="color:#a6e22e">image&lt;/span> &lt;span style="color:#a6e22e">src&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;placeholder.svg&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">alt&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;A placeholder&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">title&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;A placeholder&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">loading&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;lazy&amp;#34;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;label class="book-image" for="book-image-toggle-0">
+ &lt;input class="hidden toggle" type="checkbox" id="book-image-toggle-0" />
+ &lt;img src="placeholder.svg" alt="A placeholder"loading="lazy"title="A placeholder" />
+&lt;/label>
+&lt;h2 id="parameters">Parameters&lt;a class="anchor" href="#parameters">#&lt;/a>&lt;/h2>
+&lt;dl>
+&lt;dt>&lt;code>src&lt;/code> &lt;span class="book-badge warning">&lt;span class="book-badge-title">Required&lt;/span>&lt;/span>&lt;/dt>
+&lt;dd>The link to the image&lt;/dd>
+&lt;dt>&lt;code>class&lt;/code> &lt;span class="book-badge info">&lt;span class="book-badge-title">Optional&lt;/span>&lt;/span>&lt;/dt>
+&lt;dd>An optional CSS class name that will be applied to the &lt;code>img&lt;/code> element&lt;/dd>
+&lt;dt>&lt;code>alt&lt;/code> &lt;span class="book-badge info">&lt;span class="book-badge-title">Optional&lt;/span>&lt;/span>&lt;/dt>
+&lt;dd>An optional alternate text for the image&lt;/dd>
+&lt;dt>&lt;code>title&lt;/code> &lt;span class="book-badge info">&lt;span class="book-badge-title">Optional&lt;/span>&lt;/span>&lt;/dt>
+&lt;dd>An optional title for the image&lt;/dd>
+&lt;dt>&lt;code>loading&lt;/code> &lt;span class="book-badge info">&lt;span class="book-badge-title">Optional&lt;/span>&lt;/span>&lt;/dt>
+&lt;dd>Sets &lt;code>loading&lt;/code> control for the image: &lt;code>lazy&lt;/code>, &lt;code>eager&lt;/code> or &lt;code>auto&lt;/code>&lt;/dd>
+&lt;/dl></description></item></channel></rss>
