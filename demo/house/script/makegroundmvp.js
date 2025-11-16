@@ -75,7 +75,7 @@ function makeGroundMvp(){
                 const x = mvp.X;
                 const z = mvp.Z;
                 const y = mvp.Y;
-                if(x < 52.3 && x > 17.1 && z < -15.7 && z > -44.5) {
+                if(x < 52.3 && x > 17.1 && z < -15 && z > -45.1) {
                     if(x < 50.5  && x > 19.1 && z < -24.9 && z > -35.5){  // 在大厅以及其他区域
                         k.WALK_SPEED = 1/20;  //+ 走路使用快速度
                         k.jumpYVel = orig_jumpYVel;  //+ 跳跃为原力度

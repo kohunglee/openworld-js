@@ -166,3 +166,17 @@ lookDn.onmouseup = lookDn.ontouchend = () => {
     clearInterval(timelookDn);
     timelookDn = null;
 };
+
+// 视角设置
+const wFovValue = document.getElementById('wFovValue');
+const wFovSet = document.getElementById('wFovSet');
+const fovSetFunc = () => {
+    k.W.next.camera.fov = wFovValue.value;
+    k.W.resetView();
+}
+wFovSet.onclick = () => {
+    fovSetFunc();
+}
+wFovValue.onchange = () => {
+    fovSetFunc();
+}

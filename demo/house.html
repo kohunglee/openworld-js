@@ -122,21 +122,22 @@
             <li>图书馆东侧的楼梯，需要按 shift 或 Q 辅助前进，才能轻松上去！</li>
             <li>F 键，frozen ，冻结到空中。</li>
             <li>V 键，可以切换视角，远景、近景、第一人称视角。</li>
-            <li>单击后，圆点可以选择物体，左上角是物体的数字 ID，目前尚在测试，便于建模，请【退出】此模式。</li>
+            <li>单击后，圆点可以选择物体，左上角是物体的数字 ID，目前尚在测试，便于建模，也可用于选择或交互。</li>
         </ul>
         <h4>移动设备</h4>
         <p>初步支持，尚在测试，欢迎探索...</p>
         <hr>
     </div>
 
-    <!-- <div>
+    <div>
         <h3>简单设置</h3>
-        <h4>电脑</h4>
         <ul>
-            <li>每秒刷新 <input type="number"  step="1" name="fpsSetV" id="fpsSetV" value="75" max="1000" min="1"> 帧画面 <button id="fpsSet">启用</button></li>
+            <li>FOV 视角大小（默认60）<input type="number" step="1" name="wFovValue" id="wFovValue" value="60" max="1000" min="1">
+                <button id="wFovSet">启用</button>
+            </li>
         </ul>
         <hr>
-    </div> -->
+    </div>
 
     <div style="font-family: monospace;">
         <h3>更新记录</h3>
@@ -171,11 +172,7 @@
             data-ad-client="ca-pub-7518429849653447"
             data-ad-slot="8665279496"></ins>
         <script>
-            setTimeout(() => {  // 延迟加载，避免影响页面加载速度
-                if (window.isSecureContext) {  // 防止本地测试时加载广告
-                    (adsbygoogle = window.adsbygoogle || []).push({});
-                }
-            }, 1500);
+            (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
         <hr>
     </div>
