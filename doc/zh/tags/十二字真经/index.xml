@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>十二字真经 on My New Hugo Site</title><link>http://192.168.10.2:8012/doc/zh/tags/%E5%8D%81%E4%BA%8C%E5%AD%97%E7%9C%9F%E7%BB%8F/</link><description>Recent content in 十二字真经 on My New Hugo Site</description><generator>Hugo</generator><language>zh</language><lastBuildDate>Sun, 16 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://192.168.10.2:8012/doc/zh/tags/%E5%8D%81%E4%BA%8C%E5%AD%97%E7%9C%9F%E7%BB%8F/index.xml" rel="self" type="application/rss+xml"/><item><title>当 openworld.js 示例里的图书馆建好后呢？</title><link>http://192.168.10.2:8012/doc/zh/posts/after-openworld-lib/</link><pubDate>Sun, 16 Nov 2025 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/posts/after-openworld-lib/</guid><description>&lt;p>今天中午，我看着我那建造好已经将近一个月的破烂示例图书馆，心里充满了迷茫。&lt;/p>
+&lt;p>我没有想到，我的做事效率竟然那么的低！一个月啊！整整一个月过去了，基本上没有发生什么变化！&lt;/p>
+&lt;a href="https://img1.ccgxk.com/ccgxk-oss/2025/11/202511161426137N1yFq.jpg">
+&lt;img loading="lazy" class="thisis-temp-class" src="https://img1.ccgxk.com/ccgxk-oss/2025/11/202511161426137N1yFq.jpg-testccgxk" alt="img">
+&lt;/a>
+&lt;p>不能再这样了！&lt;/p>
+&lt;h2 id="图书馆确实震撼">图书馆确实震撼&lt;a class="anchor" href="#%e5%9b%be%e4%b9%a6%e9%a6%86%e7%a1%ae%e5%ae%9e%e9%9c%87%e6%92%bc">#&lt;/a>&lt;/h2>
+&lt;p>是的，20 天（2025-10-1 ~2025-10-20）的建造，每天都勤勤恳恳，确实造了一个大东西。&lt;/p>
+&lt;p>但还是得说一下，我犯错了。但也不能这样说，因为我造的东西太大了。&lt;/p>
+&lt;blockquote class='book-hint '>
+&lt;p>可以数学证明，一个项目拖得越久，它的预期完成日期就越遥远。&lt;/p>&lt;/blockquote>&lt;p>就是这个样子。我留下了这样一个债务。&lt;/p>
+&lt;p>30 万呐！根本填不满。&lt;/p>
+&lt;h2 id="事实证明">事实证明&lt;a class="anchor" href="#%e4%ba%8b%e5%ae%9e%e8%af%81%e6%98%8e">#&lt;/a>&lt;/h2>
+&lt;p>事实证明，只有踏踏实实面对 vscode 才能有所产出，这 20 多天，我基本上是在各种乱七八糟的的地方鬼混，那绝对是不对的！&lt;/p>
+&lt;p>我本来想的太好了，要向外扩散，如蒲公英一样。但是我发现那是我这个 ADHD 的大忌！&lt;/p>
+&lt;p>我必须明白，向外扩散，本身没有错，错就错在我容易分心。最好的是将这个扩散的过程，变为自动化的。&lt;/p>
+&lt;p>我目前的基本盘就是这个共享世界。上个月，我是造出了图书馆，我才有脸向外悄悄宣传了一下，但是我没有基本盘，我无法继续再搞，所以，至少在未来 3 个月内，我每天都要花大量时间在 vscode上面。&lt;/p>
+&lt;p>我得知道，哪些需要分散、哪些需要集中。&lt;/p>
+&lt;ul>
+&lt;li>需要动脑子、耗费大量注意力的，不能走分散路线，只能选定一个路线集中（就像独立站关键词一样，我注意力很差，我会被晕在里面，所以我只能赶紧选一个，然后跳出这个花花世界，我知道诱人，但实力不允许。）&lt;/li>
+&lt;li>能无脑、如喝水一样顺畅的，就可以走小而分散路线。（而不是像造大图书馆一样，集中力量办「大事」，办的一件给未来留下无穷债务的路线。）&lt;/li>
+&lt;/ul>
+&lt;p>而，这个道理和「十二字真经」：在相同资源下，小始终比大好。并不相悖，无论是分散还是集中，都是走小的路线。&lt;/p>
+&lt;p>就跟流水线秒杀手艺人一样，后者不是没有优势，而是仅存的那点优势就像笑话一样。&lt;/p>
+&lt;h2 id="接下来的事">接下来的事&lt;a class="anchor" href="#%e6%8e%a5%e4%b8%8b%e6%9d%a5%e7%9a%84%e4%ba%8b">#&lt;/a>&lt;/h2>
+&lt;p>我现在要着手接下来的 15 天去搞啥？&lt;/p>
+&lt;p>就是不再想太多的事，15 天，把 open world zone 给初始化了。基本的功能得有。给自己留下一个能无脑重复的简单架子。&lt;/p>
+&lt;p>简单维护我的这个官网，其余什么也不再管。这样的话:&lt;/p>
+&lt;ol>
+&lt;li>造自动化分散架子的过程，是顺利的。&lt;/li>
+&lt;li>造好自动化分散的架子后，分散的过程也是顺利的。&lt;/li>
+&lt;/ol>
+&lt;p>就这样吧。&lt;/p></description></item></channel></rss>
