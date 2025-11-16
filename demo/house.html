@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="./house/css/style.css">
 <style> body { margin: 0; } </style>
-<title>castle</title>
+<title>Open World Zone</title>
 <img src="./cbcity/texture.jpeg" alt="" id="dls" hidden>
 <canvas id="openworldCanv" style="width:99vw;height:99vh"></canvas>
 
@@ -161,7 +161,7 @@
     </div>
 
     <div>
-        <h3>赞助商</h3>
+        <h3>精彩项目</h3>
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7518429849653447"
             crossorigin="anonymous"></script>
         <ins class="adsbygoogle"
@@ -171,7 +171,11 @@
             data-ad-client="ca-pub-7518429849653447"
             data-ad-slot="8665279496"></ins>
         <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
+            setTimeout(() => {  // 延迟加载，避免影响页面加载速度
+                if (window.isSecureContext) {  // 防止本地测试时加载广告
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                }
+            }, 1500);
         </script>
         <hr>
     </div>

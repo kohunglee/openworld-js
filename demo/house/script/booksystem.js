@@ -273,7 +273,6 @@ function bookSysRegis(){
 
 // 隐藏假书（当主角走近时），也可恢复原样
 function hiddenBookSub(index, isRecover = false){
-    console.log('隐藏书架内容：', index);
     const getBookSub = k.bookS.bookSub['s'+index];
     if(getBookSub){
         if(isRecover === false){  // 软删除
