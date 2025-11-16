@@ -246,7 +246,7 @@ function bookSysRegis(){
     const bindFuncs = (v, dir, type=1) => {
         const o = get(v);
         o.activeFunc = () => bookSystem(v, dir, type);
-        o.deleteFunc = () => removeBookShelf(v);
+        o.deleteFunc = () => removeBookShelf(v - 1);
     };
 
     const regisFloor = (floor, type=1) => {
@@ -273,6 +273,7 @@ function bookSysRegis(){
 
 // 隐藏假书（当主角走近时），也可恢复原样
 function hiddenBookSub(index, isRecover = false){
+    console.log('隐藏书架内容：', index);
     const getBookSub = k.bookS.bookSub['s'+index];
     if(getBookSub){
         if(isRecover === false){  // 软删除
