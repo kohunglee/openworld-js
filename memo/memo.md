@@ -151,3 +151,9 @@ w_ins_lab.js:328 Uncaught InvalidStateError: Failed to execute 'toString' on 'DO
     at draw (w_ins_lab.js:256:19)
 
 将本文里面的网站，通过你的知识库或互联网，告诉我它是什么网站，干什么的。不知道就写【do not know】,不确定，就在最后面标注【？】。。。如果有品牌，或者说有具体的网站主名，就写出来。。。每个网站的介绍不超过20字。介绍均追加到网站后面！
+
+
+## hugo
+
+hugo -d /Applications/EasySrv/www/localhost/github_pages/20-8-28/openworld-js/doc 导出
+hugo server -b http://localhost:1313 --disableFastRender      tiaosh
