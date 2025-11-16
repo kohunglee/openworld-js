@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blog on My New Hugo Site</title><link>http://192.168.10.2:8012/doc/zh/posts/</link><description>Recent content in Blog on My New Hugo Site</description><generator>Hugo</generator><language>zh</language><lastBuildDate>Sun, 16 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://192.168.10.2:8012/doc/zh/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Migrate to Hugo from Jekyll</title><link>http://192.168.10.2:8012/doc/zh/posts/migrate-from-jekyll/</link><pubDate>Mon, 10 Mar 2014 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/posts/migrate-from-jekyll/</guid><description>&lt;h2 id="move-static-content-to-static">Move static content to &lt;code>static&lt;/code>&lt;a class="anchor" href="#move-static-content-to-static">#&lt;/a>&lt;/h2>
+&lt;p>Jekyll has a rule that any directory not starting with &lt;code>_&lt;/code> will be copied as-is to the &lt;code>_site&lt;/code> output. Hugo keeps all static content under &lt;code>static&lt;/code>. You should therefore move it all there.
+With Jekyll, something that looked like&lt;/p>
+&lt;pre>&lt;code>▾ &amp;lt;root&amp;gt;/
+ ▾ images/
+ logo.png
+&lt;/code>&lt;/pre>
+&lt;p>should become&lt;/p>
+&lt;pre>&lt;code>▾ &amp;lt;root&amp;gt;/
+ ▾ static/
+ ▾ images/
+ logo.png
+&lt;/code>&lt;/pre>
+&lt;p>Additionally, you&amp;rsquo;ll want any files that should reside at the root (such as &lt;code>CNAME&lt;/code>) to be moved to &lt;code>static&lt;/code>.&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/posts/after-openworld-lib/</link><pubDate>Sun, 16 Nov 2025 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/posts/after-openworld-lib/</guid><description>&lt;p>今天中午，我看着我那建造好已经将近一个月的破烂示例图书馆，心里充满了迷茫。&lt;/p>
+&lt;p>我没有想到，我的做事效率竟然那么的低！一个月啊！整整一个月过去了，基本上没有发生什么变化！&lt;/p>
+&lt;a href="https://img1.ccgxk.com/ccgxk-oss/2025/11/202511161426137N1yFq.jpg">
+&lt;img loading="lazy" class="thisis-temp-class" src="https://img1.ccgxk.com/ccgxk-oss/2025/11/202511161426137N1yFq.jpg-testccgxk" alt="img">
+&lt;/a></description></item><item><title>(Hu)go Template Primer</title><link>http://192.168.10.2:8012/doc/zh/posts/goisforlovers/</link><pubDate>Wed, 02 Apr 2014 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/posts/goisforlovers/</guid><description>&lt;p>Hugo uses the excellent &lt;a href="https://golang.org/">Go&lt;/a> &lt;a href="https://golang.org/pkg/html/template/">html/template&lt;/a> library for
+its template engine. It is an extremely lightweight engine that provides a very
+small amount of logic. In our experience that it is just the right amount of
+logic to be able to create a good static website. If you have used other
+template systems from different languages or frameworks you will find a lot of
+similarities in Go templates.&lt;/p>
+&lt;p>This document is a brief primer on using Go templates. The &lt;a href="https://golang.org/pkg/html/template/">Go docs&lt;/a>
+provide more details.&lt;/p></description></item><item><title>Getting Started with Hugo</title><link>http://192.168.10.2:8012/doc/zh/posts/hugoisforlovers/</link><pubDate>Wed, 02 Apr 2014 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/posts/hugoisforlovers/</guid><description>&lt;h2 id="step-1-install-hugo">Step 1. Install Hugo&lt;a class="anchor" href="#step-1-install-hugo">#&lt;/a>&lt;/h2>
+&lt;p>Go to &lt;a href="https://github.com/spf13/hugo/releases">Hugo releases&lt;/a> and download the
+appropriate version for your OS and architecture.&lt;/p>
+&lt;p>Save it somewhere specific as we will be using it in the next step.&lt;/p>
+&lt;p>More complete instructions are available at &lt;a href="https://gohugo.io/getting-started/installing/">Install Hugo&lt;/a>&lt;/p>
+&lt;h2 id="step-2-build-the-docs">Step 2. Build the Docs&lt;a class="anchor" href="#step-2-build-the-docs">#&lt;/a>&lt;/h2>
+&lt;p>Hugo has its own example site which happens to also be the documentation site
+you are reading right now.&lt;/p>
+&lt;p>Follow the following steps:&lt;/p>
+&lt;ol>
+&lt;li>Clone the &lt;a href="http://github.com/spf13/hugo">Hugo repository&lt;/a>&lt;/li>
+&lt;li>Go into the repo&lt;/li>
+&lt;li>Run hugo in server mode and build the docs&lt;/li>
+&lt;li>Open your browser to http://localhost:1313&lt;/li>
+&lt;/ol>
+&lt;p>Corresponding pseudo commands:&lt;/p></description></item></channel></rss>

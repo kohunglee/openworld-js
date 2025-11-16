@@ -1,10 +1,8 @@
-
-
 "use strict";
 
 import hooks from './common/hooks.js';
 import tool from './utils/tool.js';
-import wjs from './wjs/w_ins_lab.js';
+import wjs from './wjs/w.js';
 import main from './core/main.js';
 import texture from './obj/texture.js';
 import control from './player/control.js';

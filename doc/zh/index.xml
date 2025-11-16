@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>My New Hugo Site</title><link>http://192.168.10.2:8012/doc/zh/</link><description>Recent content on My New Hugo Site</description><generator>Hugo</generator><language>zh</language><lastBuildDate>Sun, 16 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://192.168.10.2:8012/doc/zh/index.xml" rel="self" type="application/rss+xml"/><item><title>With ToC</title><link>http://192.168.10.2:8012/doc/zh/docs/intro/table-of-contents/with-toc/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/intro/table-of-contents/with-toc/</guid><description>&lt;h1 id="caput-vino-delphine-in-tamen-vias">Caput vino delphine in tamen vias&lt;a class="anchor" href="#caput-vino-delphine-in-tamen-vias">#&lt;/a>&lt;/h1>
+&lt;h2 id="cognita-laeva-illo-fracta">Cognita laeva illo fracta&lt;a class="anchor" href="#cognita-laeva-illo-fracta">#&lt;/a>&lt;/h2>
+&lt;p>Lorem markdownum pavent auras, surgit nunc cingentibus libet &lt;strong>Laomedonque que&lt;/strong>
+est. Pastor &lt;a href="http://est.org/ire.aspx">An&lt;/a> arbor filia foedat, ne &lt;a href="http://www.indiciumturbam.org/moramquid.php">fugit
+aliter&lt;/a>, per. Helicona illas et
+callida neptem est &lt;em>Oresitrophos&lt;/em> caput, dentibus est venit. Tenet reddite
+&lt;a href="http://www.antro-et.net/">famuli&lt;/a> praesentem fortibus, quaeque vis foret si
+frondes &lt;em>gelidos&lt;/em> gravidae circumtulit &lt;a href="http://incurvasustulit.io/illi-virtute.html">inpulit armenta
+nativum&lt;/a>.&lt;/p>
+&lt;ol>
+&lt;li>Te at cruciabere vides rubentis manebo&lt;/li>
+&lt;li>Maturuit in praetemptat ruborem ignara postquam habitasse&lt;/li>
+&lt;li>Subitarum supplevit quoque fontesque venabula spretis modo&lt;/li>
+&lt;li>Montis tot est mali quasque gravis&lt;/li>
+&lt;li>Quinquennem domus arsit ipse&lt;/li>
+&lt;li>Pellem turis pugnabant locavit&lt;/li>
+&lt;/ol>
+&lt;h2 id="natus-quaerere">Natus quaerere&lt;a class="anchor" href="#natus-quaerere">#&lt;/a>&lt;/h2>
+&lt;p>Pectora et sine mulcere, coniuge dum tincta incurvae. Quis iam; est dextra
+Peneosque, metuis a verba, primo. Illa sed colloque suis: magno: gramen, aera
+excutiunt concipit.&lt;/p></description></item><item><title>Without ToC</title><link>http://192.168.10.2:8012/doc/zh/docs/intro/table-of-contents/without-toc/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/intro/table-of-contents/without-toc/</guid><description>&lt;h1 id="at-me-ipso-nepotibus-nunc-celebratior-genus">At me ipso nepotibus nunc celebratior genus&lt;a class="anchor" href="#at-me-ipso-nepotibus-nunc-celebratior-genus">#&lt;/a>&lt;/h1>
+&lt;h2 id="tanto-oblite">Tanto oblite&lt;a class="anchor" href="#tanto-oblite">#&lt;/a>&lt;/h2>
+&lt;p>Lorem markdownum pectora novis patenti igne sua opus aurae feras materiaque
+illic demersit imago et aristas questaque posset. Vomit quoque suo inhaesuro
+clara. Esse cumque, per referri triste. Ut exponit solisque communis in tendens
+vincetis agisque iamque huic bene ante vetat omina Thebae rates. Aeacus servat
+admonitu concidit, ad resimas vultus et rugas vultu &lt;strong>dignamque&lt;/strong> Siphnon.&lt;/p>
+&lt;p>Quam iugulum regia simulacra, plus meruit humo pecorumque haesit, ab discedunt
+dixit: ritu pharetramque. Exul Laurenti orantem modo, per densum missisque labor
+manibus non colla unum, obiectat. Tu pervia collo, fessus quae Cretenque Myconon
+crate! Tegumenque quae invisi sudore per vocari quaque plus ventis fluidos. Nodo
+perque, fugisse pectora sorores.&lt;/p></description></item><item><title>Migrate to Hugo from Jekyll</title><link>http://192.168.10.2:8012/doc/zh/posts/migrate-from-jekyll/</link><pubDate>Mon, 10 Mar 2014 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/posts/migrate-from-jekyll/</guid><description>&lt;h2 id="move-static-content-to-static">Move static content to &lt;code>static&lt;/code>&lt;a class="anchor" href="#move-static-content-to-static">#&lt;/a>&lt;/h2>
+&lt;p>Jekyll has a rule that any directory not starting with &lt;code>_&lt;/code> will be copied as-is to the &lt;code>_site&lt;/code> output. Hugo keeps all static content under &lt;code>static&lt;/code>. You should therefore move it all there.
+With Jekyll, something that looked like&lt;/p>
+&lt;pre>&lt;code>▾ &amp;lt;root&amp;gt;/
+ ▾ images/
+ logo.png
+&lt;/code>&lt;/pre>
+&lt;p>should become&lt;/p>
+&lt;pre>&lt;code>▾ &amp;lt;root&amp;gt;/
+ ▾ static/
+ ▾ images/
+ logo.png
+&lt;/code>&lt;/pre>
+&lt;p>Additionally, you&amp;rsquo;ll want any files that should reside at the root (such as &lt;code>CNAME&lt;/code>) to be moved to &lt;code>static&lt;/code>.&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/posts/after-openworld-lib/</link><pubDate>Sun, 16 Nov 2025 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/posts/after-openworld-lib/</guid><description>&lt;p>今天中午，我看着我那建造好已经将近一个月的破烂示例图书馆，心里充满了迷茫。&lt;/p>
+&lt;p>我没有想到，我的做事效率竟然那么的低！一个月啊！整整一个月过去了，基本上没有发生什么变化！&lt;/p>
+&lt;a href="https://img1.ccgxk.com/ccgxk-oss/2025/11/202511161426137N1yFq.jpg">
+&lt;img loading="lazy" class="thisis-temp-class" src="https://img1.ccgxk.com/ccgxk-oss/2025/11/202511161426137N1yFq.jpg-testccgxk" alt="img">
+&lt;/a></description></item><item><title>(Hu)go Template Primer</title><link>http://192.168.10.2:8012/doc/zh/posts/goisforlovers/</link><pubDate>Wed, 02 Apr 2014 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/posts/goisforlovers/</guid><description>&lt;p>Hugo uses the excellent &lt;a href="https://golang.org/">Go&lt;/a> &lt;a href="https://golang.org/pkg/html/template/">html/template&lt;/a> library for
+its template engine. It is an extremely lightweight engine that provides a very
+small amount of logic. In our experience that it is just the right amount of
+logic to be able to create a good static website. If you have used other
+template systems from different languages or frameworks you will find a lot of
+similarities in Go templates.&lt;/p>
+&lt;p>This document is a brief primer on using Go templates. The &lt;a href="https://golang.org/pkg/html/template/">Go docs&lt;/a>
+provide more details.&lt;/p></description></item><item><title>Getting Started with Hugo</title><link>http://192.168.10.2:8012/doc/zh/posts/hugoisforlovers/</link><pubDate>Wed, 02 Apr 2014 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/posts/hugoisforlovers/</guid><description>&lt;h2 id="step-1-install-hugo">Step 1. Install Hugo&lt;a class="anchor" href="#step-1-install-hugo">#&lt;/a>&lt;/h2>
+&lt;p>Go to &lt;a href="https://github.com/spf13/hugo/releases">Hugo releases&lt;/a> and download the
+appropriate version for your OS and architecture.&lt;/p>
+&lt;p>Save it somewhere specific as we will be using it in the next step.&lt;/p>
+&lt;p>More complete instructions are available at &lt;a href="https://gohugo.io/getting-started/installing/">Install Hugo&lt;/a>&lt;/p>
+&lt;h2 id="step-2-build-the-docs">Step 2. Build the Docs&lt;a class="anchor" href="#step-2-build-the-docs">#&lt;/a>&lt;/h2>
+&lt;p>Hugo has its own example site which happens to also be the documentation site
+you are reading right now.&lt;/p>
+&lt;p>Follow the following steps:&lt;/p>
+&lt;ol>
+&lt;li>Clone the &lt;a href="http://github.com/spf13/hugo">Hugo repository&lt;/a>&lt;/li>
+&lt;li>Go into the repo&lt;/li>
+&lt;li>Run hugo in server mode and build the docs&lt;/li>
+&lt;li>Open your browser to http://localhost:1313&lt;/li>
+&lt;/ol>
+&lt;p>Corresponding pseudo commands:&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/intro/collapsed/3rd-level/4th-level/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/intro/collapsed/3rd-level/4th-level/</guid><description>&lt;h1 id="4th-level-of-menu">4th Level of Menu&lt;a class="anchor" href="#4th-level-of-menu">#&lt;/a>&lt;/h1>
+&lt;h2 id="caesorum-illa-tu-sentit-micat-vestes-papyriferi">Caesorum illa tu sentit micat vestes papyriferi&lt;a class="anchor" href="#caesorum-illa-tu-sentit-micat-vestes-papyriferi">#&lt;/a>&lt;/h2>
+&lt;p>Inde aderam facti; Theseus vis de tauri illa peream. Oculos &lt;strong>uberaque&lt;/strong> non
+regisque vobis cursuque, opus venit quam vulnera. Et maiora necemque, lege modo;
+gestanda nitidi, vero? Dum ne pectoraque testantur.&lt;/p>
+&lt;p>Venasque repulsa Samos qui, exspectatum eram animosque hinc, &lt;a href="http://www.creveratnon.net/apricaaetheriis">aut
+manes&lt;/a>, Assyrii. Cupiens auctoribus
+pariter rubet, profana magni super nocens. Vos ius sibilat inpar turba visae
+iusto! Sedes ante dum superest &lt;strong>extrema&lt;/strong>.&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/intro/hidden/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/intro/hidden/</guid><description>&lt;h1 id="this-page-is-hidden-in-menu">This page is hidden in menu&lt;a class="anchor" href="#this-page-is-hidden-in-menu">#&lt;/a>&lt;/h1>
+&lt;h1 id="quondam-non-pater-est-dignior-ille-eurotas">Quondam non pater est dignior ille Eurotas&lt;a class="anchor" href="#quondam-non-pater-est-dignior-ille-eurotas">#&lt;/a>&lt;/h1>
+&lt;h2 id="latent-te-facies">Latent te facies&lt;a class="anchor" href="#latent-te-facies">#&lt;/a>&lt;/h2>
+&lt;p>Lorem markdownum arma ignoscas vocavit quoque ille texit mandata mentis ultimus,
+frementes, qui in vel. Hippotades Peleus &lt;a href="http://gratia.net/tot-qua.php">pennas
+conscia&lt;/a> cuiquam Caeneus quas.&lt;/p>
+&lt;ul>
+&lt;li>Pater demittere evincitque reddunt&lt;/li>
+&lt;li>Maxime adhuc pressit huc Danaas quid freta&lt;/li>
+&lt;li>Soror ego&lt;/li>
+&lt;li>Luctus linguam saxa ultroque prior Tatiumque inquit&lt;/li>
+&lt;li>Saepe liquitur subita superata dederat Anius sudor&lt;/li>
+&lt;/ul>
+&lt;h2 id="cum-honorum-latona">Cum honorum Latona&lt;a class="anchor" href="#cum-honorum-latona">#&lt;/a>&lt;/h2>
+&lt;p>O fallor &lt;a href="http://www.spectataharundine.org/aquas-relinquit.html">in sustinui
+iussorum&lt;/a> equidem.
+Nymphae operi oris alii fronde parens dumque, in auro ait mox ingenti proxima
+iamdudum maius?&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/buttons/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/buttons/</guid><description>&lt;h1 id="buttons">Buttons&lt;a class="anchor" href="#buttons">#&lt;/a>&lt;/h1>
+&lt;p>Buttons are styled links that can lead to local page or external link.&lt;/p>
+&lt;h2 id="example">Example&lt;a class="anchor" href="#example">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-tpl" data-lang="tpl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#a6e22e">button&lt;/span> &lt;span style="color:#a6e22e">relref&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/&amp;#34;&lt;/span> &lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;...&amp;#34;&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>Get Home&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">button&lt;/span> &lt;span style="color:#f92672">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#a6e22e">button&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;https://github.com/alex-shpak/hugo-book&amp;#34;&lt;/span> &lt;span style="color:#f92672">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>Contribute&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">button&lt;/span> &lt;span style="color:#f92672">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;a class="book-btn"href="http://192.168.10.2:8012/doc/zh/">Get Home&lt;/a>
+&lt;a class="book-btn"href="https://github.com/alex-shpak/hugo-book"rel="noopener"target="_blank">Contribute&lt;/a>&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/columns/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/columns/</guid><description>&lt;h1 id="columns">Columns&lt;a class="anchor" href="#columns">#&lt;/a>&lt;/h1>
+&lt;p>Columns help organize shorter pieces of content horizontally for readability. &lt;code>columns&lt;/code> shortcode styles markdown list as up to 3 columns.&lt;/p>
+&lt;h2 id="example">Example&lt;a class="anchor" href="#example">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-tpl" data-lang="tpl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#a6e22e">columns&lt;/span> &lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#a6e22e">ratio&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1:1&amp;#34;&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;...&amp;#34;&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- ### Left Content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Lorem markdownum insigne...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- ### Mid Content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Lorem markdownum insigne...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- ### Right Content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Lorem markdownum insigne...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">columns&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="book-columns">
+&lt;ul>
+&lt;li>
+&lt;h3 id="left-content">Left Content&lt;a class="anchor" href="#left-content">#&lt;/a>&lt;/h3>
+&lt;p>Lorem markdownum insigne. Olympo signis Delphis! Retexi Nereius nova develat
+stringit, frustra Saturnius uteroque inter! Oculis non ritibus Telethusa
+protulit, sed sed aere valvis inhaesuro Pallas animam: qui &lt;em>quid&lt;/em>, ignes.
+Miseratus fonte Ditis conubia.&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/details/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/details/</guid><description>&lt;h1 id="details">Details&lt;a class="anchor" href="#details">#&lt;/a>&lt;/h1>
+&lt;p>Details shortcode is a helper for &lt;code>details&lt;/code> html5 element. It is going to replace &lt;code>expand&lt;/code> shortcode.&lt;/p>
+&lt;h2 id="example">Example&lt;a class="anchor" href="#example">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-tpl" data-lang="tpl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#a6e22e">details&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Title&amp;#34;&lt;/span> &lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#a6e22e">open&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>## Markdown content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Lorem markdownum insigne...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">details&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-tpl" data-lang="tpl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#a6e22e">details&lt;/span> &lt;span style="color:#a6e22e">title&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Title&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">open&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>## Markdown content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Lorem markdownum insigne...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">details&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;details open="true">&lt;summary>Title&lt;/summary>&lt;div class="markdown-inner">
+&lt;h2 id="markdown-content">Markdown content&lt;a class="anchor" href="#markdown-content">#&lt;/a>&lt;/h2>
+&lt;p>Lorem markdownum insigne&amp;hellip;&lt;/p>
+&lt;/div>&lt;/details></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/experimental/asciinema/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/experimental/asciinema/</guid><description>&lt;h1 id="asciinema">Asciinema&lt;a class="anchor" href="#asciinema">#&lt;/a>&lt;/h1>
+&lt;blockquote class='book-hint warning'>
+&lt;p>Experimental, could change in the future or be removed&lt;/p>&lt;/blockquote>&lt;p>Asciinema shortcode integrates asciinema player into the markdown page.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-tpl" data-lang="tpl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#a6e22e">asciinema&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">cast&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;asciinema-627097.cast&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">or&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">cast&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;https://asciinema.org/a/vJNKUQFjuh7qKI2j3OoaKs8Jk.cast&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">loop&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">autoplay&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">speed&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">2&lt;/span> &lt;span style="color:#f92672">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;link rel="stylesheet" href="http://192.168.10.2:8012/doc/asciinema/asciinema-player.css" />&lt;script defer src="http://192.168.10.2:8012/doc/asciinema/asciinema-player.min.js">&lt;/script>&lt;script defer src="http://192.168.10.2:8012/doc/asciinema/asciinema-auto.js">&lt;/script>&lt;div class="asciinema book-asciinema"id="asciinema-0"x-data-cast="asciinema-627097.cast"x-data-opts="{&amp;#34;autoplay&amp;#34;:true,&amp;#34;loop&amp;#34;:true,&amp;#34;speed&amp;#34;:2}">&lt;/div>
+
+&lt;h2 id="parameters">Parameters&lt;a class="anchor" href="#parameters">#&lt;/a>&lt;/h2>
+&lt;p>All parameters added to the shortcode will be transformed to options for Asciinema player, expect &lt;code>cast&lt;/code> parameter that is used to locate cast file. Cast file follows same rules as portable image, it could be site resource, page resource or remote file URL.&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/experimental/badges/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/experimental/badges/</guid><description>&lt;h1 id="badges">Badges&lt;a class="anchor" href="#badges">#&lt;/a>&lt;/h1>
+&lt;blockquote class='book-hint warning'>
+&lt;p>Experimental, could change in the future or be removed&lt;/p>&lt;/blockquote>&lt;p>Badges can be used to annotate your pages with additional information or mark specific places in markdown content.&lt;/p>
+&lt;p>&lt;span class="book-badge default">&lt;span class="book-badge-title">Title&lt;/span>&lt;span class="book-badge-value">Value&lt;/span>&lt;/span>
+&lt;span class="book-badge info">&lt;span class="book-badge-title">Hugo&lt;/span>&lt;span class="book-badge-value">0.147.6&lt;/span>&lt;/span>
+&lt;span class="book-badge success">&lt;span class="book-badge-title">Build&lt;/span>&lt;span class="book-badge-value">Passing&lt;/span>&lt;/span>
+&lt;span class="book-badge warning">&lt;span class="book-badge-title">Coverage&lt;/span>&lt;span class="book-badge-value">25%&lt;/span>&lt;/span>
+&lt;span class="book-badge danger">&lt;span class="book-badge-title">Issues&lt;/span>&lt;span class="book-badge-value">120&lt;/span>&lt;/span>&lt;/p>
+&lt;h2 id="examples">Examples&lt;a class="anchor" href="#examples">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Shortcode&lt;/th>
+ &lt;th>Output&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge style=&amp;quot;info&amp;quot; title=&amp;quot;hugo&amp;quot; value=&amp;quot;0.147.6&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge info">&lt;span class="book-badge-title">Hugo&lt;/span>&lt;span class="book-badge-value">0.147.6&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge style=&amp;quot;success&amp;quot; title=&amp;quot;Build&amp;quot; value=&amp;quot;Passing&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge success">&lt;span class="book-badge-title">Build&lt;/span>&lt;span class="book-badge-value">Passing&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge style=&amp;quot;warning&amp;quot; title=&amp;quot;Coverage&amp;quot; value=&amp;quot;25%&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge warning">&lt;span class="book-badge-title">Coverage&lt;/span>&lt;span class="book-badge-value">25%&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge style=&amp;quot;danger&amp;quot; title=&amp;quot;Issues&amp;quot; value=&amp;quot;120&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge danger">&lt;span class="book-badge-title">Issues&lt;/span>&lt;span class="book-badge-value">120&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge style=&amp;quot;info&amp;quot; title=&amp;quot;Title&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge info">&lt;span class="book-badge-title">Title&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge style=&amp;quot;info&amp;quot; value=&amp;quot;Value&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge info">&lt;span class="book-badge-value">Value&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>{{&amp;lt; badge title=&amp;quot;Default&amp;quot; &amp;gt;}}&lt;/code>&lt;/td>
+ &lt;td>&lt;span class="book-badge default">&lt;span class="book-badge-value">Default&lt;/span>&lt;/span>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="use-in-links">Use in links&lt;a class="anchor" href="#use-in-links">#&lt;/a>&lt;/h2>
+&lt;p>A badge can be wrapped in markdown link producing following result: &lt;a href="https://github.com/gohugoio/hugo/releases/tag/v0.147.6">&lt;span class="book-badge default">&lt;span class="book-badge-title">Hugo&lt;/span>&lt;span class="book-badge-value">0.147.6&lt;/span>&lt;/span>&lt;/a>&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/experimental/cards/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/experimental/cards/</guid><description>&lt;h1 id="cards">Cards&lt;a class="anchor" href="#cards">#&lt;/a>&lt;/h1>
+&lt;blockquote class='book-hint warning'>
+&lt;p>Experimental, could change in the future or be removed&lt;/p>&lt;/blockquote>&lt;h2 id="example">Example&lt;a class="anchor" href="#example">#&lt;/a>&lt;/h2>
+&lt;div class="book-columns">
+&lt;ul>
+&lt;li>
+&lt;div class="book-card">&lt;img src="placeholder.svg" alt="" />&lt;div class="markdown-inner">
+&lt;h3 id="line-1">Line 1&lt;a class="anchor" href="#line-1">#&lt;/a>&lt;/h3>
+&lt;p>Line 2&lt;/p>
+&lt;/div>&lt;/div>
+&lt;/li>
+&lt;li>
+&lt;div class="book-card">&lt;img src="placeholder.svg" alt="" />&lt;div class="markdown-inner">
+&lt;p>This is tab MacOS content.&lt;/p>
+&lt;/div>&lt;/div>
+&lt;/li>
+&lt;/ul>
+&lt;/div>
+&lt;div class="book-columns">
+&lt;ul>
+&lt;li>
+&lt;div class="book-card">&lt;a href="http://192.168.10.2:8012/doc/zh/docs/shortcodes/experimental/cards/">&lt;div class="markdown-inner">
+&lt;p>&lt;strong>Markdown&lt;/strong>&lt;br>
+Suspendisse sed congue orci, eu congue metus. Nullam feugiat urna massa.&lt;/p>
+&lt;/div>&lt;/a>&lt;/div>
+&lt;/li>
+&lt;li>
+&lt;div class="book-card">&lt;div class="markdown-inner">
+&lt;p>Suspendisse sed congue orci, eu congue metus. Nullam feugiat urna massa, et fringilla metus consectetur molestie.&lt;/p>
+&lt;/div>&lt;/div>
+&lt;/li>
+&lt;li>
+&lt;div class="book-card">&lt;div class="markdown-inner">
+&lt;h3 id="heading">Heading&lt;a class="anchor" href="#heading">#&lt;/a>&lt;/h3>
+&lt;p>This is tab MacOS content.&lt;/p>
+&lt;/div>&lt;/div>
+&lt;/li>
+&lt;/ul>
+&lt;/div></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/experimental/images/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/experimental/images/</guid><description>&lt;h1 id="images">Images&lt;a class="anchor" href="#images">#&lt;/a>&lt;/h1>
+&lt;blockquote class='book-hint warning'>
+&lt;p>Experimental, could change in the future or be removed&lt;/p>&lt;/blockquote>&lt;p>Image shortcode produces an image that can be clicked to expand.&lt;/p>
+&lt;h2 id="example">Example&lt;a class="anchor" href="#example">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go-html-template" data-lang="go-html-template">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&amp;lt;&lt;/span> &lt;span style="color:#a6e22e">image&lt;/span> &lt;span style="color:#a6e22e">src&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;placeholder.svg&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">alt&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;A placeholder&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">title&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;A placeholder&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">loading&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;lazy&amp;#34;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;label class="book-image" for="book-image-toggle-0">
+ &lt;input class="hidden toggle" type="checkbox" id="book-image-toggle-0" />
+ &lt;img src="placeholder.svg" alt="A placeholder"loading="lazy"title="A placeholder" />
+&lt;/label>
+&lt;h2 id="parameters">Parameters&lt;a class="anchor" href="#parameters">#&lt;/a>&lt;/h2>
+&lt;dl>
+&lt;dt>&lt;code>src&lt;/code> &lt;span class="book-badge warning">&lt;span class="book-badge-title">Required&lt;/span>&lt;/span>&lt;/dt>
+&lt;dd>The link to the image&lt;/dd>
+&lt;dt>&lt;code>class&lt;/code> &lt;span class="book-badge info">&lt;span class="book-badge-title">Optional&lt;/span>&lt;/span>&lt;/dt>
+&lt;dd>An optional CSS class name that will be applied to the &lt;code>img&lt;/code> element&lt;/dd>
+&lt;dt>&lt;code>alt&lt;/code> &lt;span class="book-badge info">&lt;span class="book-badge-title">Optional&lt;/span>&lt;/span>&lt;/dt>
+&lt;dd>An optional alternate text for the image&lt;/dd>
+&lt;dt>&lt;code>title&lt;/code> &lt;span class="book-badge info">&lt;span class="book-badge-title">Optional&lt;/span>&lt;/span>&lt;/dt>
+&lt;dd>An optional title for the image&lt;/dd>
+&lt;dt>&lt;code>loading&lt;/code> &lt;span class="book-badge info">&lt;span class="book-badge-title">Optional&lt;/span>&lt;/span>&lt;/dt>
+&lt;dd>Sets &lt;code>loading&lt;/code> control for the image: &lt;code>lazy&lt;/code>, &lt;code>eager&lt;/code> or &lt;code>auto&lt;/code>&lt;/dd>
+&lt;/dl></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/hints/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/hints/</guid><description>&lt;h1 id="hints">Hints&lt;a class="anchor" href="#hints">#&lt;/a>&lt;/h1>
+&lt;p>Hint shortcode can be used as a hint/alert/notification block.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-tpl" data-lang="tpl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#a6e22e">hint&lt;/span> &lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#a6e22e">info&lt;/span>&lt;span style="color:#f92672">|&lt;/span>&lt;span style="color:#a6e22e">success&lt;/span>&lt;span style="color:#f92672">|&lt;/span>&lt;span style="color:#a6e22e">warning&lt;/span>&lt;span style="color:#f92672">|&lt;/span>&lt;span style="color:#a6e22e">danger&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>**Markdown content** 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Lorem markdownum insigne. Olympo signis Delphis! Retexi Nereius nova develat
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>stringit, frustra Saturnius uteroque inter! Oculis non ritibus Telethusa
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">hint&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; [!NOTE|TIP|IMPORTANT|WARNING|CAUTION]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; **Markdown content** 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; Lorem markdownum insigne. Olympo signis Delphis! Retexi Nereius nova develat
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; stringit, frustra Saturnius uteroque inter! Oculis non ritibus Telethusa&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="example">Example&lt;a class="anchor" href="#example">#&lt;/a>&lt;/h2>
+&lt;blockquote class="book-hint default">
+&lt;p>&lt;strong>Markdown content&lt;/strong>&lt;br>
+Lorem markdownum insigne. Olympo signis Delphis! Retexi Nereius nova develat
+stringit, frustra Saturnius uteroque inter! Oculis non ritibus Telethusa&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/mermaid/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/mermaid/</guid><description>&lt;h1 id="mermaid-chart">Mermaid Chart&lt;a class="anchor" href="#mermaid-chart">#&lt;/a>&lt;/h1>
+&lt;p>&lt;a href="https://mermaid-js.github.io/">MermaidJS&lt;/a> is library for generating svg charts and diagrams from text.&lt;/p>
+&lt;blockquote class="book-hint info">
+&lt;p>&lt;strong>Override Mermaid initialization config&lt;/strong>&lt;br>
+To override the &lt;a href="https://mermaid-js.github.io/mermaid/#/Setup">initialization config&lt;/a> for Mermaid,
+create a &lt;code>mermaid.json&lt;/code> file in your &lt;code>assets&lt;/code> folder!&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="example">Example&lt;a class="anchor" href="#example">#&lt;/a>&lt;/h2>
+&lt;div class="book-columns">
+&lt;ul>
+&lt;li>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-tpl" data-lang="tpl">&lt;span style="display:flex;">&lt;span>```mermaid
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>stateDiagram-v2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> State1: The state with a note
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> note right of State1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Important information! You can write
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> notes.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> end note
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> State1 --&amp;gt; State2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> note left of State2 : This is the note to the left.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>```&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;pre class="mermaid">stateDiagram-v2
+ State1: The state with a note
+ note right of State1
+ Important information! You can write
+ notes.
+ end note
+ State1 --&amp;gt; State2
+ note left of State2 : This is the note to the left.&lt;/pre>&lt;/li>
+&lt;/ul>
+&lt;/div>
+&lt;div class="book-columns">
+&lt;ul>
+&lt;li>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-tpl" data-lang="tpl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#a6e22e">mermaid&lt;/span> &lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;...&amp;#34;&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>stateDiagram-v2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> State1: The state with a note
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> note right of State1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Important information! You can write
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> notes.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> end note
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> State1 --&amp;gt; State2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> note left of State2 : This is the note to the left.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">mermaid&lt;/span> &lt;span style="color:#f92672">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;pre class="mermaid">
+stateDiagram-v2
+ State1: The state with a note
+ note right of State1
+ Important information! You can write
+ notes.
+ end note
+ State1 --&amp;gt; State2
+ note left of State2 : This is the note to the left.
+&lt;/pre>
+&lt;/li>
+&lt;/ul>
+&lt;/div>
+&lt;h2 id="diagrams">Diagrams&lt;a class="anchor" href="#diagrams">#&lt;/a>&lt;/h2>
+&lt;p>Explore more diagrams and syntax on Mermaid &lt;a href="https://mermaid.js.org/syntax/flowchart.html">documentation page&lt;/a>.&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/section/first-page/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/section/first-page/</guid><description>&lt;h1 id="first-page">First page&lt;a class="anchor" href="#first-page">#&lt;/a>&lt;/h1>
+&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/section/second-page/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/section/second-page/</guid><description>&lt;h1 id="second-page">Second Page&lt;a class="anchor" href="#second-page">#&lt;/a>&lt;/h1>
+&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/steps/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/steps/</guid><description>&lt;h1 id="steps">Steps&lt;a class="anchor" href="#steps">#&lt;/a>&lt;/h1>
+&lt;p>Steps shortcode styles numbered list as series of points for better content organization.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-tpl" data-lang="tpl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#a6e22e">steps&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>1. ## Suspendisse sed congue orci.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>2. ## Maecenas scelerisque sem.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>3. ## Etiam risus purus.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>4. ## Curabitur sed lacinia velit.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">steps&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="example">Example&lt;a class="anchor" href="#example">#&lt;/a>&lt;/h2>
+&lt;div class="book-steps">
+&lt;ol>
+&lt;li>
+&lt;h2 id="suspendisse-sed-congue-orci">Suspendisse sed congue orci.&lt;a class="anchor" href="#suspendisse-sed-congue-orci">#&lt;/a>&lt;/h2>
+&lt;p>Suspendisse sed congue orci, eu congue metus. Nullam feugiat urna massa, et fringilla metus consectetur molestie. Curabitur pellentesque sodales ipsum, sed efficitur libero euismod ac. Donec sit amet erat nunc. Suspendisse porta nisl velit, quis auctor massa commodo nec. Donec sollicitudin tellus sit amet massa condimentum luctus. Etiam molestie at ante et convallis.&lt;/p></description></item><item><title/><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/tabs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/tabs/</guid><description>&lt;h1 id="tabs">Tabs&lt;a class="anchor" href="#tabs">#&lt;/a>&lt;/h1>
+&lt;p>Tabs let you organize content by context, for example installation instructions for each supported platform.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-tpl" data-lang="tpl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#a6e22e">tabs&lt;/span> &lt;span style="color:#f92672">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#a6e22e">tab&lt;/span> &lt;span style="color:#e6db74">&amp;#34;MacOS&amp;#34;&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span> # MacOS Content &lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">tab&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#a6e22e">tab&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Linux&amp;#34;&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span> # Linux Content &lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">tab&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#a6e22e">tab&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Windows&amp;#34;&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span> # Windows Content &lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">%&lt;/span> &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">tab&lt;/span> &lt;span style="color:#f92672">%&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">tabs&lt;/span> &lt;span style="color:#f92672">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="example">Example&lt;a class="anchor" href="#example">#&lt;/a>&lt;/h2>
+&lt;div class="book-tabs">
+
+&lt;input type="radio" class="toggle" name="tabs-0" id="tabs-0-0" checked="checked" />&lt;label for="tabs-0-0">MacOS&lt;/label>&lt;div class="book-tabs-content markdown-inner">
+&lt;h1 id="macos">MacOS&lt;a class="anchor" href="#macos">#&lt;/a>&lt;/h1>
+&lt;p>This is tab &lt;strong>MacOS&lt;/strong> content.&lt;/p>
+&lt;p>Lorem markdownum insigne. Olympo signis Delphis! Retexi Nereius nova develat
+stringit, frustra Saturnius uteroque inter! Oculis non ritibus Telethusa
+protulit, sed sed aere valvis inhaesuro Pallas animam: qui &lt;em>quid&lt;/em>, ignes.
+Miseratus fonte Ditis conubia.&lt;/p></description></item><item><title>KaTeX</title><link>http://192.168.10.2:8012/doc/zh/docs/shortcodes/katex/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/docs/shortcodes/katex/</guid><description>&lt;h1 id="katex">KaTeX&lt;a class="anchor" href="#katex">#&lt;/a>&lt;/h1>
+&lt;p>KaTeX shortcode let you render math typesetting in markdown document. See &lt;a href="https://katex.org/">KaTeX&lt;/a>&lt;/p>
+&lt;blockquote class="book-hint info">
+&lt;p>&lt;strong>Override KaTeX initialization config&lt;/strong>&lt;br>
+To override the &lt;a href="https://katex.org/docs/options.html">initialization config&lt;/a> for KaTeX,
+create a &lt;code>katex.json&lt;/code> file in your &lt;code>assets&lt;/code> folder!&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="example">Example&lt;a class="anchor" href="#example">#&lt;/a>&lt;/h1>
+
+&lt;h2 id="activation">Activation&lt;a class="anchor" href="#activation">#&lt;/a>&lt;/h2>
+&lt;p>KaTeX is activated on the page by first use of the shortcode or render block. you can force activation with empty &lt;code>{{&amp;lt; katex /&amp;gt;}}&lt;/code> and use delimiters defined in configuration in &lt;code>assets/katex.json&lt;/code>.&lt;/p>
+&lt;h2 id="rendering-as-block">Rendering as block&lt;a class="anchor" href="#rendering-as-block">#&lt;/a>&lt;/h2>
+&lt;div class="book-columns flex flex-wrap">&lt;div class="flex-even markdown-inner" style="flex-grow: 1;">
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-latex" data-lang="latex">&lt;span style="display:flex;">&lt;span>{{&amp;lt; katex display=true &amp;gt;}}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>f(x) = &lt;span style="color:#66d9ef">\int&lt;/span>_{-&lt;span style="color:#66d9ef">\infty&lt;/span>}^&lt;span style="color:#66d9ef">\infty\hat&lt;/span> f(&lt;span style="color:#66d9ef">\xi&lt;/span>)&lt;span style="color:#66d9ef">\,&lt;/span>e^{2 &lt;span style="color:#66d9ef">\pi&lt;/span> i &lt;span style="color:#66d9ef">\xi&lt;/span> x}&lt;span style="color:#66d9ef">\,&lt;/span>d&lt;span style="color:#66d9ef">\xi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{{&amp;lt; /katex &amp;gt;}}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-latex" data-lang="latex">&lt;span style="display:flex;">&lt;span>```katex
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>f(x) = &lt;span style="color:#66d9ef">\int&lt;/span>_{-&lt;span style="color:#66d9ef">\infty&lt;/span>}^&lt;span style="color:#66d9ef">\infty\hat&lt;/span> f(&lt;span style="color:#66d9ef">\xi&lt;/span>)&lt;span style="color:#66d9ef">\,&lt;/span>e^{2 &lt;span style="color:#66d9ef">\pi&lt;/span> i &lt;span style="color:#66d9ef">\xi&lt;/span> x}&lt;span style="color:#66d9ef">\,&lt;/span>d&lt;span style="color:#66d9ef">\xi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>```&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-latex" data-lang="latex">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">$$&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>f&lt;span style="color:#f92672">(&lt;/span>x&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> \int_{&lt;span style="color:#f92672">-&lt;/span>\infty}^\infty\hat f&lt;span style="color:#f92672">(&lt;/span>\xi&lt;span style="color:#f92672">)&lt;/span>\,e^{&lt;span style="color:#ae81ff">2&lt;/span> \pi i \xi x}\,d\xi
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">$$&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="flex-even markdown-inner" style="flex-grow: 1;">
+&lt;div class="book-katex">\[ 
+f(x) = \int_{-\infty}^\infty\hat f(\xi)\,e^{2 \pi i \xi x}\,d\xi
+ \]&lt;/div>
+&lt;hr>
+&lt;span>\[ f(x) = \int_{-\infty}^\infty\hat f(\xi)\,e^{2 \pi i \xi x}\,d\xi \]&lt;/span>&lt;hr>
+&lt;p>$$
+f(x) = \int_{-\infty}^\infty\hat f(\xi),e^{2 \pi i \xi x},d\xi
+$$&lt;/p></description></item><item><title>Showcases</title><link>http://192.168.10.2:8012/doc/zh/showcases/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>http://192.168.10.2:8012/doc/zh/showcases/</guid><description>&lt;div class="book-hero text-center">
+&lt;h1 id="at-the-moment-this-page-is-empty">At the moment this page is empty&lt;a class="anchor" href="#at-the-moment-this-page-is-empty">#&lt;/a>&lt;/h1>
+&lt;div></description></item></channel></rss>
