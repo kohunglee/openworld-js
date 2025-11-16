@@ -11,7 +11,7 @@ function makeGroundMvp(){
 
     var lastPos = k?.lastPos || {x:21 + Math.random() * 10, y:5.00, z:15 + Math.random() * 10, rX:0, rY:0, rZ:0};
     k.keys.turnRight = lastPos.rY;
-    const mainVPSize = 0.5;  // 主角的大小，方便建造
+    const mainVPSize = k?.mainVPSize || 0.5;
 
     // 添加地面
     if(true){

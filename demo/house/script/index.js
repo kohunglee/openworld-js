@@ -31,35 +31,8 @@ if(true){
     k.gridsizeY[4] = 1.35;  // 书本分层渲染
 }
 
-// 入口
-k.loadTexture(k.svgTextureLib).then(loadedImage => {
-    console.time('load-------------------');
-
-    const funcs = [  // 详细看清楚各个函数的耗时
-        makeGroundMvp,
-        newMvp,
-        startBuild,
-        logicFunc,
-        logicData,
-        dataProcess,
-        bookSysRegis,
-        singboard.setBoard,
-        setVK,
-        dog.addDogM,
-    ];
-
-    for (const fn of funcs) {
-        const name = fn.name || 'anonymous';
-        console.time(name);
-        fn();
-        console.timeEnd(name);
-    }
-
-    console.timeEnd('load-------------------');
-});
-
 // 发布模式，不使用毛坯构建器
-if(true){
+if(false){
     // 一些键盘事件
     const keyHandler = e => myevent.keyEvent(e, k);
     document.addEventListener('keydown', keyHandler);
@@ -75,6 +48,7 @@ if(true){
         }
     });
 } else {
+    document.body.insertAdjacentHTML('beforeend', '<div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);font:bold 48px sans-serif;color:rgba(0,0,0,0.7);pointer-events:none;z-index:9999;">建造⚠️⚠️⚠️模式</div>'); 
     build(k);// 毛坯构建器
 }
 
@@ -110,3 +84,33 @@ k.star = (index) => {  // 闪烁按照 ID 寻找方块
         k.starID = index;
     }
 }
+
+// ------------------------------------
+
+// 入口
+k.loadTexture(k.svgTextureLib).then(loadedImage => {
+    console.time('load-------------------');
+
+    const funcs = [  // 详细看清楚各个函数的耗时
+        makeGroundMvp,
+        newMvp,
+        startBuild,
+        logicFunc,
+        logicData,
+        dataProcess,
+        bookSysRegis,
+        singboard.setBoard,
+        setVK,
+        dog.addDogM,
+    ];
+
+    for (const fn of funcs) {
+        const name = fn.name || 'anonymous';
+        console.time(name);
+        fn();
+        console.timeEnd(name);
+    }
+
+    console.timeEnd('load-------------------');
+});
+
