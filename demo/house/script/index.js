@@ -23,30 +23,15 @@ sound(k);           // 声音插件
 // build(k);           // 构建方块器
 testSampleAni(k);   // 简单的人物动画实现
 
-k.star = (index) => {  // 闪烁按照 ID 寻找方块
-    if(k.starInt){
-        clearInterval(k.starInt);
-        if(k.W.next['T'+ k.starID]?.hidden){
-            k.W.next['T'+ k.starID].hidden = true;
-        }
-    }
-    if(index){
-        k.starInt = setInterval( (i = index) => {
-            if(k.W?.next['T'+ i]){
-                k.W.next['T'+ i].hidden = !k.W.next['T'+ i].hidden;
-            }
-        }, 100 );
-        k.starID = index;
-    }
+// 配置 DPZ 的参数
+if(true){
+    k.gridsize[4] = 6;
+    k.gridsizeY[2] = 20;  // 指示牌（这三行是 Y 方向的 dpz 设定）
+    k.gridsizeY[3] = 1.35;  // 大部分物体
+    k.gridsizeY[4] = 1.35;  // 书本分层渲染
 }
 
-k.gridsize[4] = 6;
-k.gridsizeY[2] = 20;  // 指示牌（这三行是 Y 方向的 dpz 设定）
-k.gridsizeY[3] = 1.35;  // 大部分物体
-k.gridsizeY[4] = 1.35;  // 书本分层渲染
-
 // 入口
-// 加载预设纹理，开始程序（所有的模型，都要在这个地方来生成，否则会出 bug）
 k.loadTexture(k.svgTextureLib).then(loadedImage => {
     console.time('load-------------------');
 
@@ -60,13 +45,13 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         bookSysRegis,
         singboard.setBoard,
         setVK,
-        dog.addDogM,  // 临时测试，加了一条狗
+        dog.addDogM,
     ];
 
     for (const fn of funcs) {
         const name = fn.name || 'anonymous';
         console.time(name);
-        fn(); // 如果函数不是 async，也没问题
+        fn();
         console.timeEnd(name);
     }
 
@@ -108,3 +93,20 @@ var _hmt = _hmt || [];
     var s = document.getElementsByTagName("script")[0]; 
     s.parentNode.insertBefore(hm, s);
 })();
+
+k.star = (index) => {  // 闪烁按照 ID 寻找方块
+    if(k.starInt){
+        clearInterval(k.starInt);
+        if(k.W.next['T'+ k.starID]?.hidden){
+            k.W.next['T'+ k.starID].hidden = true;
+        }
+    }
+    if(index){
+        k.starInt = setInterval( (i = index) => {
+            if(k.W?.next['T'+ i]){
+                k.W.next['T'+ i].hidden = !k.W.next['T'+ i].hidden;
+            }
+        }, 100 );
+        k.starID = index;
+    }
+}

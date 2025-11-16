@@ -13,26 +13,51 @@ function makeGroundMvp(){
     k.keys.turnRight = lastPos.rY;
     const mainVPSize = 0.5;  // 主角的大小，方便建造
 
-    const mvpIndex = k.addMVP({  // 创建一个立方体，并设置为主角
-        name: 'mainPlayer',
-        DPZ : 1,
-        colliGroup: 1,
-        isShadow: 'ok',
-        X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z,
-        mixValue:0.7,
-        size: mainVPSize,
-        mass: 50,
-        background : '#333',
-        texture: greenStone,
-    });
-    k.mainVPlayer = mvpIndex;
-
-    if(k?.centerDot){
-        k.centerDot.setCamView(2);  // 设置默认视角 类型2
+    // 添加地面
+    if(true){
+        const X = 0, Y = -0.5, Z = 0;
+        const width = 200, depth = 200, height = 2;
+        k.addPhy({  // 地面物理体
+            name: 'ground',
+            colliGroup: 2,
+            isShadow: 'ok',
+            X: X, Y: Y, Z: Z,
+            width: width, depth: depth, height: height,
+            mass: 0,
+        });
+        k.W.cube({  // 地面渲染
+            n: 'ground',
+            w: width, d: depth, h: height,
+            x: X, y: Y, z: Z,
+            t: greenStoneborder, b: '#287A17', mix: 0.5, tile: [100, 100],
+        });
     }
 
-    k.SPRINT_MIN_SPEED = 5;
-    k.SPRINT_MAX_SPEED = 15.5;
+    // 添加主角
+    if(true){
+        const mvpIndex = k.addPhy({  // 创建一个立方体，并设置为主角
+            name: 'mainPlayer',
+            DPZ : 0,
+            colliGroup: 1,
+            X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z,
+            mixValue:0.7,
+            size: mainVPSize,
+            mass: 50,
+            background : '#333',
+            texture: greenStone,
+        });
+        k.mainVPlayer = mvpIndex;
+        if(k?.centerDot){
+            k.centerDot.setCamView(2);  // 设置默认视角 类型2
+        }
+    }
+
+    // 配置默认的运动速度
+    if(true){
+        k.SPRINT_MIN_SPEED = 5;
+        k.SPRINT_MAX_SPEED = 15.5;
+    }
+
     const orig_jumpYVel = k.jumpYVel;
     const orig_jumpHoldLimit = k.JUMP_HOLD_LIMIT;
     const mvp = k.mainVPlayer;
@@ -132,6 +157,3 @@ function dofunc() {
   run.add = f => q[q.length] = f;
   return run;
 }
-
-
-/*** --------【书加字 测试区】--------- */
