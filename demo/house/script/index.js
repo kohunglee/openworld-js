@@ -32,7 +32,7 @@ if(true){
 }
 
 // 发布模式，不使用毛坯构建器
-if(false){
+if(true){
     // 一些键盘事件
     const keyHandler = e => myevent.keyEvent(e, k);
     document.addEventListener('keydown', keyHandler);
@@ -48,7 +48,7 @@ if(false){
         }
     });
 } else {
-    document.body.insertAdjacentHTML('beforeend', '<div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);font:bold 48px sans-serif;color:rgba(0,0,0,0.7);pointer-events:none;z-index:9999;">建造⚠️⚠️⚠️模式</div>'); 
+    document.body.insertAdjacentHTML('beforeend', '<div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);font:bold 48px sans-serif;color:rgba(0,0,0,0.7);pointer-events:none;z-index:9999;">建造⚠️⚠️⚠️模式<br>请<br>退<br>出<br>⚠️</div>'); 
     build(k);// 毛坯构建器
 }
 
