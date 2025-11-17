@@ -3,14 +3,17 @@
  * -----------
  * 开始按照既定的规则，把 cubeDatas 给绘制出来
  */
-function dataProcess() {
+function dataProcess(blockName = 'manyCubes', offset={}) {
+
+    // offset.x = 100;
 
     D = null;  // 释放内存（删去临时数据产生的内存）
 
     for (let index = 0; index < cubeDatas.length; index++) {  // 数据，填充我的容器
-        addInsLD(cubeDatas[index]);
+        addInsLD(cubeDatas[index], false, offset);
     }
     console.log('共', k.visCubeLen, '个可见方块');
+
 
     for (let index = 0; index < totalCube - k.visCubeLen; index++) {  // 空模型，填充容器里多余的空间
         addInsLD({
@@ -50,17 +53,17 @@ function dataProcess() {
     }
 
     k.W.cube({  // 渲染实例化
-        n: 'manyCubes',
+        n: blockName,
         t: dls,  // 大理石
         instances: cubeInstances, // 实例属性的数组
         mix: 0.7,
     });
 
-    cubeInstances = null;  // 释放内存
+    // cubeInstances = null;  // 释放内存
 }
 
 // 添加方块的函数
-function addInsLD (data, isHidden = false) {  
+function addInsLD (data, isHidden = false, offset = {}) {  
     if(data.del) {  // 【删除】标记，按照【空模型】处理
         data = {
             x: 999999999, y: 999999999, z: 999999999,
@@ -68,7 +71,7 @@ function addInsLD (data, isHidden = false) {
         };
     }
     const result = {  // 添加一个立方体
-        x: data.x, y: data?.y||1, z: data.z,
+        x: data.x + (offset?.x ?? 0), y: data?.y||1, z: data.z,
         w: data?.w || 1, d: data?.d || 1, h: data?.h || 1,
         rx: data?.rx||0, ry:data?.ry||0, rz:data?.rz||0,
     };
