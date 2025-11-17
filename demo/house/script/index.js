@@ -98,7 +98,9 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         logicFunc,
         logicData,
         dataProcess,
-        bookSysRegis,
+
+        // bookSysRegis,
+
         singboard.setBoard,
         setVK,
         dog.addDogM,
