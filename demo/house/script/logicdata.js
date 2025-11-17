@@ -346,11 +346,12 @@ function logicData(){  //
         // 研究第三层及以上
         if(true){
             D.floor3 = {};  // 初始化第三层容器
+            const floorNumber = 15;  // 层数
 
             // 地板，（由屋顶 Y 轴提上来）
             D.floor3.floor = offset([
                 49,  // 屋顶（一楼）
-            ], -2.7, 6, 'y');
+            ], -2.7, floorNumber + 1, 'y');
 
             // 对称地板
             D.floor3.floorSymo = symo(
@@ -388,7 +389,7 @@ function logicData(){  //
 
             // 阵列
             D.floor3.firstOff = offset(
-                D.floor3.xthing,-2.7, 5, 'y'
+                D.floor3.xthing,-2.7, floorNumber, 'y'
             );
 
             // 书系统
