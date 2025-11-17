@@ -57,7 +57,7 @@ if(true){
 script.onload=function(){var stats=new Stats();
 document.body.appendChild(stats.dom);
 requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};
-script.src='./house/fps/fps.js';document.head.appendChild(script);})()
+script.src='./opz/fps/fps.js';document.head.appendChild(script);})()
 
 // baidu tongji
 var _hmt = _hmt || [];
