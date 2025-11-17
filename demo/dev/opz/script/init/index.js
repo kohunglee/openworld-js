@@ -94,16 +94,21 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     const funcs = [  // 详细看清楚各个函数的耗时
         makeGroundMvp,
         newMvp,
-        startBuild,
-        logicFunc,
-        logicData,
-        dataProcess,
 
-        bookSysRegis,
+        /* 图书馆相关 */
+        // startBuild,
+        // logicFunc,
+        // logicData,
+        // dataProcess,  
 
-        singboard.setBoard,
+        
+        // bookSysRegis,   // 书
+        // singboard.setBoard,  // 指示牌
+
+
+
         setVK,
-        dog.addDogM,
+        // dog.addDogM,  // 当地标，不用
     ];
 
     for (const fn of funcs) {
