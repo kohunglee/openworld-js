@@ -336,9 +336,9 @@ function logicData(){  //
                 ...D.floor2.wall6,
                 ...D.floor2.mfence5,
 
-                // ...D.floor2.shelf.T11,
-                // ...D.floor2.shelf.T,
-                // ...D.floor2.shelf.Tsymo,
+                ...D.floor2.shelf.T11,
+                ...D.floor2.shelf.T,
+                ...D.floor2.shelf.Tsymo,
 
                 101, ...D.floor2.stairFenceOff,  // 台阶栅栏
                 [78, 80],  // 三叠型外墙
@@ -349,7 +349,7 @@ function logicData(){  //
         // 研究第三层及以上
         if(true){
             D.floor3 = {};  // 初始化第三层容器
-            const floorNumber = 100;  // 层数
+            const floorNumber = 5;  // 层数
 
             // 地板，（由屋顶 Y 轴提上来）
             D.floor3.floor = offset([
@@ -379,16 +379,16 @@ function logicData(){  //
                 ...D.floor2.wallW,  // 西中墙
                 ...D.floor2.symoSouth,  // 南侧对称
 
-                // ...D.floor2.shelf.T11,
-                // ...D.floor2.shelf.T,  // 统柜
-                // ...D.floor2.shelf.Tsymo,  // 统柜（对称版）
-                // ...D.floor2.shelf.symo,  // 对称后的长柜、廊柜
-                // ...D.floor2.shelf.C,  //+5 未对称的柜子
-                // ...D.floor2.shelf.L,
-                // ...D.floor2.shelf.CD,
-                // ...D.floor2.shelf.Loff,
-                // ...D.floor2.shelf.CDsymo,
-                // ...D.floor2.shelf.symo2West,  // 对称到最西侧的柜子
+                ...D.floor2.shelf.T11,
+                ...D.floor2.shelf.T,  // 统柜
+                ...D.floor2.shelf.Tsymo,  // 统柜（对称版）
+                ...D.floor2.shelf.symo,  // 对称后的长柜、廊柜
+                ...D.floor2.shelf.C,  //+5 未对称的柜子
+                ...D.floor2.shelf.L,
+                ...D.floor2.shelf.CD,
+                ...D.floor2.shelf.Loff,
+                ...D.floor2.shelf.CDsymo,
+                ...D.floor2.shelf.symo2West,  // 对称到最西侧的柜子
             ];
 
             // 阵列
@@ -397,7 +397,7 @@ function logicData(){  //
             );
 
             // 书系统
-            if(false){
+            if(true){
                 k.bookS.floor3 = {};  // 初始化第三层书
 
                 // -----  普通书柜（统柜）
@@ -475,7 +475,7 @@ function logicData(){  //
         });
 
         // 假书逻辑
-        if(false){
+        if(true){
             const subBackcolor = '#adadad';  // 假书的颜色
 
             // 假书 统柜
@@ -603,7 +603,7 @@ function logicData(){  //
             }
 
             // 假书 长柜
-            if(false){
+            if(true){
                 // 初始化
                 k.bookS.bookSub.cg = {};  // 长柜的假书替身
                 k.bookS.bookSub.cg.first = 50;
@@ -729,7 +729,7 @@ function logicData(){  //
             }
 
             // 假书 廊柜
-            if(false){
+            if(true){
                 // 初始化
                 k.bookS.bookSub.lg = {};  // 长柜的假书替身
                 k.bookS.bookSub.lg.first = 0;
