@@ -23,6 +23,10 @@ sound(k);           // 声音插件
 // build(k);           // 构建方块器
 testSampleAni(k);   // 简单的人物动画实现
 
+/* -----[ OWZ 插件 ]----- */
+import deleteModBlock from '@src/plugins/owz/deleteModBlock.js';
+deleteModBlock(k);
+/* --------------------- */
 // 配置 DPZ 的参数
 if(true){
     k.gridsize[4] = 6;
@@ -32,7 +36,7 @@ if(true){
 }
 
 // 发布模式，不使用毛坯构建器
-if(true){
+if(false){
     // 一些键盘事件
     const keyHandler = e => myevent.keyEvent(e, k);
     document.addEventListener('keydown', keyHandler);

@@ -43,7 +43,7 @@ function dataProcess(myData, blockName = 'manyCubes', offset={}) {
             rX: myCubeInstances[index].rx,
             rY: myCubeInstances[index].ry,
             rZ: myCubeInstances[index].rz,
-            isInvisible: true,  // 只被探测，而不可见
+            // isInvisible: true,  // 只被探测，而不可见
             // hidden: true,
             // isInvisible: (myData[index]?.iv) ? true : false,
         });
