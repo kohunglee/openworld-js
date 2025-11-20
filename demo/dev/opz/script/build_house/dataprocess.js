@@ -30,7 +30,7 @@ function dataProcess(myData, blockName = 'manyCubes', offset={}) {
             DPZ : 4,
             isPhysical: (myData[index]?.st) ? false : true,
             mass: 0,
-            background: '#f6a1a1ff',
+            background: '#4dff00ff',
             mixValue: 0.5,
             // colliGroup: 2,
             isShadow: false,
@@ -47,10 +47,6 @@ function dataProcess(myData, blockName = 'manyCubes', offset={}) {
             // hidden: true,
             // isInvisible: (myData[index]?.iv) ? true : false,
         });
-        if(myCubeInstances[index]?.b){  // 别忘了，还要把颜色加入到档案 insColor 里
-            const args = k.indexToArgs.get(index);
-            args.insColor = myCubeInstances[index].b;
-        }
         if(myCubeInstances[index]?.unIns === 1){  // 不在实例化里显示（unIns），则剔除
             myCubeInstances[index] = { x:999999999 }
         }
