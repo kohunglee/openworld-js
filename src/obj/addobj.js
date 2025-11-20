@@ -93,6 +93,7 @@ export default {
         const posProp = this.positionsStatus.subarray(p_offset, p_offset + 8);    // 提取位置属性
         const physicalProp = this.physicsProps.subarray(p_offset, p_offset + 4);  // 提取物理属性
         const org_args = this.indexToArgs.get(index);  // 提取参数
+        if(!org_args) return;
         this.argsObj = {...this.defaultBoxArgs, ...org_args};  // 为节省内存，固不破坏源对象，使用新对象
         const args = this.argsObj;
         if(args.isPhysical){  // 添加物理体
@@ -195,6 +196,7 @@ export default {
     // 隐藏 TA 物体
     hiddenTABox : function(index){
         const org_args = this.indexToArgs.get(index);  // 提取参数
+        if(!org_args) return;
         if(org_args.isPhysical !== false && org_args.body !== undefined){
             this.world.removeBody(org_args.body);
         }

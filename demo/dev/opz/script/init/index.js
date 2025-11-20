@@ -23,6 +23,10 @@ sound(k);           // 声音插件
 // build(k);           // 构建方块器
 testSampleAni(k);   // 简单的人物动画实现
 
+/* -----[ OWZ 插件 ]----- */
+import deleteModBlock from '@src/plugins/owz/deleteModBlock.js';
+deleteModBlock(k);
+/* --------------------- */
 // 配置 DPZ 的参数
 if(true){
     k.gridsize[4] = 6;
@@ -32,7 +36,7 @@ if(true){
 }
 
 // 发布模式，不使用毛坯构建器
-if(true){
+if(false){
     // 一些键盘事件
     const keyHandler = e => myevent.keyEvent(e, k);
     document.addEventListener('keydown', keyHandler);
@@ -57,7 +61,7 @@ if(true){
 script.onload=function(){var stats=new Stats();
 document.body.appendChild(stats.dom);
 requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};
-script.src='./house/fps/fps.js';document.head.appendChild(script);})()
+script.src='./opz/fps/fps.js';document.head.appendChild(script);})()
 
 // baidu tongji
 var _hmt = _hmt || [];
@@ -94,16 +98,21 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
     const funcs = [  // 详细看清楚各个函数的耗时
         makeGroundMvp,
         newMvp,
-        startBuild,
-        logicFunc,
-        logicData,
-        dataProcess,
 
-        bookSysRegis,
+        /* 图书馆相关 */
+        // startBuild,
+        // logicFunc,
+        // logicData,
+        // dataProcess,  
 
-        singboard.setBoard,
+        
+        // bookSysRegis,   // 书
+        // singboard.setBoard,  // 指示牌
+
+
+
         setVK,
-        dog.addDogM,
+        // dog.addDogM,  // 当地标，不用
     ];
 
     for (const fn of funcs) {

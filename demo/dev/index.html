@@ -4,50 +4,48 @@
 <meta http-equiv="expires" content="0">
 <meta http-equiv="pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="./house/css/style.css">
+<link rel="stylesheet" href="./opz/css/style.css">
 <style> body { margin: 0; } </style>
 <title>Open World Zone</title>
-<img src="./cbcity/texture.jpeg" alt="" id="dls" hidden>
+<img src="./opz/assets/texture.jpeg" alt="" id="dls" hidden>
 <canvas id="openworldCanv" style="width:99vw;height:99vh"></canvas>
 
-<script src="../src/cannon/cannon29kb.js"></script>
-<!-- <script src="./house/script/cannon.min.js"></script> -->
+<script src="./opz/assets/cannon29kb.js"></script> <!-- 物理引擎 -->
 
-<script src="./house/script/cubedata.js"></script> <!-- 模型数据 -->
-<script src="./house/script/csvread.js"></script> <!-- csv 读取器 -->
+<script src="./opz/script/init/makegroundmvp.js"></script> <!-- 地面和人物初始化 -->
+<script src="./opz/script/data/newmvp.js"></script> <!-- 新角色 -->
 
-<script src="./house/script/makegroundmvp.js"></script> <!-- 地面和人物初始化 -->
-<script src="./house/script/newmvp.js"></script> <!-- 新角色 -->
 
-<script src="./house/script/startbuild.js"></script> <!-- 开始建造的初始化准备 -->
+<script src="./opz/script/separated/cubedata.js"></script> <!-- 模型数据 -->
+<script src="./opz/script/kit/csvread.js"></script> <!-- csv 读取器 -->
 
-<script src="./house/script/logicbuild.js"></script> <!-- 建造逻辑工具函数 -->
-<script src="./house/script/logicdata.js"></script> <!-- 建造逻辑 -->
+<script src="./opz/script/separated/startbuild.js"></script> <!-- 开始建造的初始化准备 -->
+<script src="./opz/script/separated/logicbuild.js"></script> <!-- 建造逻辑工具函数 -->
+<script src="./opz/script/separated/logicdata.js"></script> <!-- 建造逻辑 -->
 
-<script src="./house/script/signboard.js"></script> <!-- 指示板 -->
+<script src="./opz/script/board/signboard.js"></script> <!-- 指示板 -->
+<script src="./opz/script/event/bookhot.js"></script> <!-- 书本热点相关 -->
+<script src="./opz/script/booktext/textinshelf.js"></script> <!-- 书架书本文字 -->
+<script src="./opz/script/book_func/booksystem.js"></script> <!-- 书系统 -->
+<script src="./opz/script/book_func/booksystemtool.js"></script> <!-- 书系统的工具函数 -->
 
-<script src="./house/script/bookhot.js"></script> <!-- 书本热点相关 -->
-<script src="./house/script/textinshelf.js"></script> <!-- 书架书本文字 -->
-<script src="./house/script/booksystem.js"></script> <!-- 书系统 -->
-<script src="./house/script/booksystemtool.js"></script> <!-- 书系统的工具函数 -->
+<!-- 数据处理，今天的重点 -->
+<script src="./opz/script/build_house/dataprocess.js"></script> 
 
-<script src="./house/script/dataprocess.js"></script> <!-- 数据处理 -->
 
-<script src="./house/script/vktool.js"></script> <!-- vk处理的工具 -->
-<script src="./house/script/vk.js"></script> <!-- vk处理 -->
-<script src="./house/script/event.js"></script> <!-- 事件 -->
-
-<script src="./house/script/dog.js"></script>
+<script src="./opz/script/vk/vktool.js"></script> <!-- vk处理的工具 -->
+<script src="./opz/script/vk/vk.js"></script> <!-- vk处理 -->
+<script src="./opz/script/event/event.js"></script> <!-- 事件 -->
+<script src="./opz/script/other/dog.js"></script>
 
 <script type="importmap">
 {
   "imports": {
-    "@src/": "../src/",
-    "@plugins/": "../src/plugins/"
+    "@src/": "../../src/"
   }
 }
 </script>
-<script type="module" src="./house/script/index.js" ></script>
+<script type="module" src="./opz/script/init/index.js" ></script>
 
 <!---- [ 下面是测试 ] --->
 
@@ -163,21 +161,11 @@
 
     <div>
         <h3>精彩项目</h3>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7518429849653447"
-            crossorigin="anonymous"></script>
-        <ins class="adsbygoogle"
-            style="display:block; text-align:center;"
-            data-ad-layout="in-article"
-            data-ad-format="fluid"
-            data-ad-client="ca-pub-7518429849653447"
-            data-ad-slot="8665279496"></ins>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
+  
         <hr>
     </div>
     
     <button id="closeBtn02">关闭</button>
     </div>
 </div>
-<script src="./house/script/indexevent.js"></script> <!-- 主页面的事件（按钮事件或移动端） -->
+<script src="./opz/script/event/indexevent.js"></script> <!-- 主页面的事件（按钮事件或移动端） -->
