@@ -3,10 +3,10 @@
  * ----------
  * 定义建造时的 偏移阵列、镜像 逻辑函数
  */
-function logicFunc(){  // 
+function logicFunc(myData){  // 
     globalThis.symopera = (items, axes={}) => {  // 对称操作
         if(k.notSymOff) return 0;
-        var orig_data = cubeDatas[items];
+        var orig_data = myData[items];
         var agent = {...orig_data};
         for (const axis of ["x", "y", "z"]) {
             if (axes[axis] !== undefined) {
@@ -17,12 +17,12 @@ function logicFunc(){  //
                 }
             }
         }
-        return cubeDatas.push(agent);
+        return myData.push(agent);
     }
 
     globalThis.offsetopera = (items, distance, times = 0, axes = 'x', distance2, axes2, distance3, axes3) => {  // 偏移操作
         if(k.notSymOff) return 0;
-        var orig_data = cubeDatas[items];
+        var orig_data = myData[items];
         var agent = {...orig_data};
         for (const axis of ["x", "y", "z"]) {
             if (axes === axis) {
@@ -43,7 +43,7 @@ function logicFunc(){  //
                 }
             }
         }
-        return cubeDatas.push(agent);
+        return myData.push(agent);
     }
     
     globalThis.symo = (items, axes = {}) => {  // 对称数组内的物体
