@@ -3,7 +3,7 @@
  * --------------
  * 就按照这个文件里的步骤指示，建造我的图书柜
  */
-function logicData(){  // 
+function logicData(myData){
 
     globalThis.D = {  // 初始化临时变量，放置自己的临时计算数据
         floor1: {},
@@ -26,10 +26,12 @@ function logicData(){  //
             60, 61,
         ];
         indices.forEach(index => {
-            if (cubeDatas[index]) {  // 添加安全检查，防止undefined错误
-                cubeDatas[index].st = 1;
+            if (myData[index]) {  // 添加安全检查，防止undefined错误
+                myData[index].st = 1;
             }
         });
+
+        console.log(myData);
 
         // 建造第一层
         if(true) {
@@ -469,8 +471,8 @@ function logicData(){  //
         }
 
         [58, 63,].forEach(index => {  // 删除门洞
-            if (cubeDatas[index]) {
-                cubeDatas[index] = {del : 1};
+            if (myData[index]) {
+                myData[index] = {del : 1};
             }
         });
 
@@ -483,8 +485,8 @@ function logicData(){  //
                 // 初始化
                 k.bookS.bookSub = {};  // 假书替身
                 k.bookS.bookSub.first = 102;
-                cubeDatas[k.bookS.bookSub.first].st = 1;  // 无物理
-                cubeDatas[k.bookS.bookSub.first].b = subBackcolor;
+                myData[k.bookS.bookSub.first].st = 1;  // 无物理
+                myData[k.bookS.bookSub.first].b = subBackcolor;
 
                 // 二楼 第一统柜的假书 参考假书，后续的书都以此为基准
                 k.bookS.bookSub.tgRef = offset([
@@ -493,13 +495,13 @@ function logicData(){  //
                 k.bookS.bookSub.tgRef.push(k.bookS.bookSub.first);
 
                 // 辅助计算值，计算相对位置
-                const bookSubx = cubeDatas[k.bookS.bookSub.first].x;
-                const bookSuby = cubeDatas[k.bookS.bookSub.first].y;
-                const bookSubz = cubeDatas[k.bookS.bookSub.first].z;
+                const bookSubx = myData[k.bookS.bookSub.first].x;
+                const bookSuby = myData[k.bookS.bookSub.first].y;
+                const bookSubz = myData[k.bookS.bookSub.first].z;
 
                 // 假书，二楼统柜方向 1
                 k.bookS.floor2.dire1.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
                     k.bookS.bookSub['s'+ v] = offset([
                         ...k.bookS.bookSub.tgRef,
@@ -508,7 +510,7 @@ function logicData(){  //
 
                 // 假书，二楼统柜方向 2
                 k.bookS.floor2.dire2.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
                     k.bookS.bookSub['s'+ v] = offset([
                         ...k.bookS.bookSub.tgRef,
@@ -517,10 +519,10 @@ function logicData(){  //
 
                 // 假书，二楼，统柜，方向 3
                 k.bookS.floor2.dire3.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z + 0.61;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -530,10 +532,10 @@ function logicData(){  //
 
                 // 假书，二楼，统柜，方向 4
                 k.bookS.floor2.dire4.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z + 0.61;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -543,10 +545,10 @@ function logicData(){  //
 
                 // 假书，三楼 +++ ，统柜，方向 1
                 k.bookS.floor3.dire1.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
 
@@ -557,10 +559,10 @@ function logicData(){  //
 
                 // 假书，三楼 +++ ，统柜，方向 2
                 k.bookS.floor3.dire2.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
 
@@ -571,13 +573,13 @@ function logicData(){  //
 
                 // 假书，三楼 +++ ，统柜，方向 3
                 k.bookS.floor3.dire3.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z + 0.61;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -587,13 +589,13 @@ function logicData(){  //
 
                 // 假书，三楼 +++ ，统柜，方向 4
                 k.bookS.floor3.dire4.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z + 0.61;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -607,8 +609,8 @@ function logicData(){  //
                 // 初始化
                 k.bookS.bookSub.cg = {};  // 长柜的假书替身
                 k.bookS.bookSub.cg.first = 50;
-                cubeDatas[k.bookS.bookSub.cg.first].st = 1;  // 无物理
-                cubeDatas[k.bookS.bookSub.cg.first].b = subBackcolor;
+                myData[k.bookS.bookSub.cg.first].st = 1;  // 无物理
+                myData[k.bookS.bookSub.cg.first].b = subBackcolor;
 
                 // 二楼 第一统柜的假书 参考假书，后续的书都以此为基准
                 k.bookS.bookSub.cg.tgRef = offset([
@@ -617,15 +619,15 @@ function logicData(){  //
                 k.bookS.bookSub.cg.tgRef.push(k.bookS.bookSub.cg.first);
 
                 // // 辅助计算值，计算相对位置
-                const bookSubx = cubeDatas[k.bookS.bookSub.cg.first].x;
-                const bookSuby = cubeDatas[k.bookS.bookSub.cg.first].y;
-                const bookSubz = cubeDatas[k.bookS.bookSub.cg.first].z;
+                const bookSubx = myData[k.bookS.bookSub.cg.first].x;
+                const bookSuby = myData[k.bookS.bookSub.cg.first].y;
+                const bookSubz = myData[k.bookS.bookSub.cg.first].z;
 
                 // console.log(k.bookS.floor2.cd);
 
                 // 假书，二楼统柜方向 1
                 k.bookS.floor2.cdbook.dire1.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
                     k.bookS.bookSub['s'+ v] = offset([
                         ...k.bookS.bookSub.cg.tgRef,
@@ -634,7 +636,7 @@ function logicData(){  //
 
                 // 假书，二楼统柜方向 2
                 k.bookS.floor2.cdbook.dire2.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
                     k.bookS.bookSub['s'+ v] = offset([
                         ...k.bookS.bookSub.cg.tgRef,
@@ -643,10 +645,10 @@ function logicData(){  //
 
                 // 假书，二楼，统柜，方向 3
                 k.bookS.floor2.cdbook.dire3.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z - 0.05;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -656,10 +658,10 @@ function logicData(){  //
 
                 // 假书，二楼，统柜，方向 4
                 k.bookS.floor2.cdbook.dire4.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z - 0.05;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -669,10 +671,10 @@ function logicData(){  //
 
                 // 假书，三楼 +++ ，统柜，方向 1
                 k.bookS.floor3.cdbook.dire1.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
 
@@ -683,10 +685,10 @@ function logicData(){  //
 
                 // 假书，三楼 +++ ，统柜，方向 2
                 k.bookS.floor3.cdbook.dire2.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
 
@@ -697,13 +699,13 @@ function logicData(){  //
 
                 // 假书，三楼 +++ ，统柜，方向 3
                 k.bookS.floor3.cdbook.dire3.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z - 0.05;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -713,13 +715,13 @@ function logicData(){  //
 
                 // 假书，三楼 +++ ，统柜，方向 4
                 k.bookS.floor3.cdbook.dire4.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z - 0.05;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -733,8 +735,8 @@ function logicData(){  //
                 // 初始化
                 k.bookS.bookSub.lg = {};  // 长柜的假书替身
                 k.bookS.bookSub.lg.first = 0;
-                cubeDatas[k.bookS.bookSub.lg.first].st = 1;  // 无物理
-                cubeDatas[k.bookS.bookSub.lg.first].b = subBackcolor;
+                myData[k.bookS.bookSub.lg.first].st = 1;  // 无物理
+                myData[k.bookS.bookSub.lg.first].b = subBackcolor;
 
                 // 二楼 第一统柜的假书 参考假书，后续的书都以此为基准
                 k.bookS.bookSub.lg.tgRef = offset([
@@ -743,15 +745,15 @@ function logicData(){  //
                 k.bookS.bookSub.lg.tgRef.push(k.bookS.bookSub.lg.first);
 
                 // // 辅助计算值，计算相对位置
-                const bookSubx = cubeDatas[k.bookS.bookSub.lg.first].x;
-                const bookSuby = cubeDatas[k.bookS.bookSub.lg.first].y;
-                const bookSubz = cubeDatas[k.bookS.bookSub.lg.first].z;
+                const bookSubx = myData[k.bookS.bookSub.lg.first].x;
+                const bookSuby = myData[k.bookS.bookSub.lg.first].y;
+                const bookSubz = myData[k.bookS.bookSub.lg.first].z;
 
                 // console.log(k.bookS.floor2.cd);
 
                 // 假书，二楼统柜方向 1
                 k.bookS.floor2.LGbook.dire1.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
                     k.bookS.bookSub['s'+ v] = offset([
                         ...k.bookS.bookSub.lg.tgRef,
@@ -760,7 +762,7 @@ function logicData(){  //
 
                 // 假书，二楼统柜方向 2
                 k.bookS.floor2.LGbook.dire2.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
                     k.bookS.bookSub['s'+ v] = offset([
                         ...k.bookS.bookSub.lg.tgRef,
@@ -769,10 +771,10 @@ function logicData(){  //
 
                 // 假书，二楼，统柜，方向 3
                 k.bookS.floor2.LGbook.dire3.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z + 0.61;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -782,10 +784,10 @@ function logicData(){  //
 
                 // 假书，二楼，统柜，方向 4
                 k.bookS.floor2.LGbook.dire4.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z + 0.61;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -795,10 +797,10 @@ function logicData(){  //
 
                 // // 假书，三楼 +++ ，统柜，方向 1
                 k.bookS.floor3.LGbook.dire1.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
 
@@ -809,10 +811,10 @@ function logicData(){  //
 
                 // 假书，三楼 +++ ，统柜，方向 2
                 k.bookS.floor3.LGbook.dire2.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
 
@@ -823,13 +825,13 @@ function logicData(){  //
 
                 // 假书，三楼 +++ ，统柜，方向 3
                 k.bookS.floor3.LGbook.dire3.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z + 0.61;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -839,13 +841,13 @@ function logicData(){  //
 
                 // 假书，三楼 +++ ，统柜，方向 4
                 k.bookS.floor3.LGbook.dire4.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z + 0.61;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -855,13 +857,13 @@ function logicData(){  //
 
                 // 假书，二楼统柜方向 1
                 k.bookS.floor2.LGCbook.dire1.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z - 0.6;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -871,13 +873,13 @@ function logicData(){  //
 
                 // 假书，二楼统柜方向 1
                 k.bookS.floor2.LGCbook.dire2.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z - 0.6;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -887,13 +889,13 @@ function logicData(){  //
 
                 // 假书，二楼统柜方向 1
                 k.bookS.floor3.LGCbook.dire1.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z - 0.6;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -903,13 +905,13 @@ function logicData(){  //
 
                 // 假书，二楼统柜方向 1
                 k.bookS.floor3.LGCbook.dire2.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
 
-                    const curr_y = cubeDatas[v].y;
+                    const curr_y = myData[v].y;
                     const y_diff = bookSuby - curr_y + 1.08;
 
-                    const curr_z = cubeDatas[v].z;
+                    const curr_z = myData[v].z;
                     const z_diff = bookSubz - curr_z - 0.6;
 
                     k.bookS.bookSub['s'+ v] = offset([
@@ -925,12 +927,12 @@ function logicData(){  //
                 k.bookS.floor1.bookSub.b001 = 107;
                 k.bookS.floor1.bookSub.b002 = 108;
                 k.bookS.floor1.bookSub.b003 = 109;
-                cubeDatas[k.bookS.floor1.bookSub.b001].st = 1;  // 无物理
-                cubeDatas[k.bookS.floor1.bookSub.b002].st = 1;  // 无物理
-                cubeDatas[k.bookS.floor1.bookSub.b003].st = 1;  // 无物理
-                cubeDatas[k.bookS.floor1.bookSub.b001].b = subBackcolor;
-                cubeDatas[k.bookS.floor1.bookSub.b002].b = subBackcolor;
-                cubeDatas[k.bookS.floor1.bookSub.b003].b = subBackcolor;
+                myData[k.bookS.floor1.bookSub.b001].st = 1;  // 无物理
+                myData[k.bookS.floor1.bookSub.b002].st = 1;  // 无物理
+                myData[k.bookS.floor1.bookSub.b003].st = 1;  // 无物理
+                myData[k.bookS.floor1.bookSub.b001].b = subBackcolor;
+                myData[k.bookS.floor1.bookSub.b002].b = subBackcolor;
+                myData[k.bookS.floor1.bookSub.b003].b = subBackcolor;
 
                 // 制作 1 楼的参考假书
                 k.bookS.floor1.bookSub.ob001 = offset([
@@ -961,11 +963,11 @@ function logicData(){  //
                 ], {z:-30});
 
                 //  辅助计算值，计算相对位置
-                const bookSubx = cubeDatas[k.bookS.floor1.bookSub.b001].x;
+                const bookSubx = myData[k.bookS.floor1.bookSub.b001].x;
 
                 // 方向 1
                 k.bookS.floor1.dire1.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
                     k.bookS.bookSub['s'+ v] = offset([
                         ...k.bookS.floor1.bookSub.ref,
@@ -974,7 +976,7 @@ function logicData(){  //
 
                 // 方向 2
                 k.bookS.floor1.dire2.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x - 4.89;
                     k.bookS.bookSub['s'+ v] = offset([
                         ...k.bookS.floor1.bookSub.refSymo,
@@ -983,7 +985,7 @@ function logicData(){  //
 
                 // 假书，二楼统柜方向 3
                 k.bookS.floor1.dire3.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x;
                     k.bookS.bookSub['s'+ v] = offset([
                         ...k.bookS.floor1.bookSub.refSymoZ,
@@ -992,7 +994,7 @@ function logicData(){  //
 
                 // 假书，二楼统柜方向 3
                 k.bookS.floor1.dire4.forEach((v, i) => {
-                    const curr_x = cubeDatas[v].x;
+                    const curr_x = myData[v].x;
                     const x_diff = bookSubx - curr_x - 4.89;
                     k.bookS.bookSub['s'+ v] = offset([
                         ...k.bookS.floor1.bookSub.refSymoZSymo,
@@ -1012,7 +1014,7 @@ function logicData(){  //
                     ...k.bookS.bookSub.lg.tgRef, // 廊柜
 
                 ].forEach((v, i) => {
-                    cubeDatas[v] = {del:1};
+                    myData[v] = {del:1};
                 })
             }
         }

@@ -224,6 +224,7 @@ export default {
             cam.groupName = mVP.name;
             this.isMVPInit = true;
         }
+        
         const vplayerBodyPos = mVP.body.position;  //+ 计算下一帧的主角数据，并传递给物理引擎
         const vplayerBodyQua = mVP.body.quaternion;
         const vplayerAct = this.calMovePara(  // 获取按键和鼠标事件处理后的移动参数
