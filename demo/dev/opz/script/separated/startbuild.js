@@ -15,12 +15,4 @@ function startBuild(){
     if(k.isDEV === '1'){
        document.body.insertAdjacentHTML('beforeend', '<div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);font:bold 48px sans-serif;color:rgba(0,0,0,0.7);pointer-events:none;z-index:9999;">DEV</div>'); 
     }
-
-    globalThis.cubeDatas = testcubedata;  // 使用我的本地测试数据
-    // console.log(localStorage.getItem('ow_' + cellpageid));
-    
-    globalThis.totalCube = 1_0000;  // 计划的总方块数
-    globalThis.cubeInstances = [];  // 立方体对象【实例】的容器
-    globalThis.isHiddenVis = [];  // 【隐藏显示】表
-    globalThis.cubeIndex = 0;  // 计数器
 }

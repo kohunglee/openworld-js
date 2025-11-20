@@ -11,18 +11,19 @@ const bookHot = {
         5: 5
     },
 
-    // 新窗口跳转到指定 url 地址（目前先试试，使用脱离鼠标模式）
+    // 新窗口跳转到指定 url 地址（目前先试试，如果热点无事件，则脱离第一视角）
     jumpUrl : (url) => {
-        if ('pointerLockElement' in document || 
-            'mozPointerLockElement' in document || 
-            'webkitPointerLockElement' in document) {
-                const exitLock = document.exitPointerLock || 
-                                 document.mozExitPointerLock || 
-                                 document.webkitExitPointerLock;
-                if (exitLock) {
-                    exitLock.call(document);
-                }
-        }
+        // if ('pointerLockElement' in document || 
+        //     'mozPointerLockElement' in document || 
+        //     'webkitPointerLockElement' in document) {
+        //         const exitLock = document.exitPointerLock || 
+        //                          document.mozExitPointerLock || 
+        //                          document.webkitExitPointerLock;
+        //         if (exitLock) {
+        //             exitLock.call(document);
+        //         }
+        // }
+        k.centerDot.closePoint(k);
     },
 
     // 在屏幕左上角显示信息
