@@ -79,6 +79,7 @@ export default {
             if (delta >= frameDuration) {  // 循环的业务逻辑
                 lastTime = now - (delta % frameDuration);
                 _this.cannonAni();
+                _this.hooks.emit('animatePreFrame75', _this); // 钩子：'每一帧的计算75稳定帧率版' 
             }
             setTimeout(loop, 0);
         }
@@ -105,28 +106,4 @@ export default {
         } 
         viewAnimate();
     },
-
-    // 物理世界稳定 75 帧计算
-    // targetFps2 : 300, // 物理目标帧率
-    // fpsframeMs : 0,
-    // animateRen: function() {
-    //     const _this = this;
-    //     let lastTime = performance.now();
-    //     let last = performance.now(), fps = 75; // ← 新增行
-    //     const frameDuration = 1000 / 300; // 算出每帧的间隔
-    //     function loop() {
-    //         const now = performance.now();  //+ 计算 fps
-    //         const delta = now - lastTime;
-    //         fps = 1000 / (now - last); last = now;
-    //         if (delta >= frameDuration) {  // 循环的业务逻辑
-    //             lastTime = now - (delta % frameDuration);
-    //             _this.updataBodylist(); // 更新物体列表
-    //             _this.mainVPlayerMove(_this.mainVPlayer, fps); // 摄像机和主角的移动和旋转 
-    //             _this.hooks.emit('animatePreFrame', _this); // 钩子：'每一帧的计算' 
-    //         }
-    //         setTimeout(loop, 0);
-    //     }
-    //     loop();
-    // },
-
 }
