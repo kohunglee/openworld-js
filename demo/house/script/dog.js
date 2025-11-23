@@ -45,7 +45,6 @@ const dog = {
         });
 
         for (let i = 0; i < 20; i++) {
-            // 添加一个小方块
             k.addTABox({
                 DPZ : 1,
                 isPhysical: true,
@@ -54,10 +53,11 @@ const dog = {
                 texture: dls,
                 mixValue: 0.5,
                 colliGroup: 1,
-                X: 28 + Math.random() * 10,
-                Y: 6,
-                Z: -3 + Math.random() * 4,
+                X: 28 + k.genPR(i, 1)[0] * 20,
+                Y: 6 + k.genPR(i+2, 1)[0] * 10,
+                Z: -3 + k.genPR(i+1, 1)[0] * 4,
                 size: 0.8,
+                rX: 35,
             });
         }
 
