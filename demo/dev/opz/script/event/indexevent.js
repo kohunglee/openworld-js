@@ -50,11 +50,11 @@ btn01.addEventListener("mousedown", showModal);
 $("closeBtn").addEventListener("click", hideModal);
 $("closeBtn02").addEventListener("click", hideModal);
 
+// 虚拟鼠标
 const unlockPointer = () => {
   const exit = document.exitPointerLock || document.mozExitPointerLock || document.webkitExitPointerLock;
   exit && exit.call(document);
 };
-
 const lockPointer = () => {
   const element = document.getElementById("openworldCanv");
   const request = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
@@ -66,11 +66,15 @@ window.addEventListener("keydown", e => {
     e.preventDefault(); // 阻止 Tab 切换焦点的默认行为
     const isHidden = modal.classList.contains("zindex-1");
     if (isHidden) {
-      showModal();
-      unlockPointer();
+        showModal();
+        k.keys['viewForward'] = 0;
+        k.keys['viewBackward'] = 0;
+        k.keys['viewLeft'] = 0;
+        k.keys['viewRight'] = 0;
+        unlockPointer();
     } else {
-      hideModal();
-      lockPointer();
+        hideModal();
+        lockPointer();
     }
   }
 });
