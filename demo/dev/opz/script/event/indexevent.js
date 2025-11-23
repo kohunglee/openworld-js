@@ -50,6 +50,31 @@ btn01.addEventListener("mousedown", showModal);
 $("closeBtn").addEventListener("click", hideModal);
 $("closeBtn02").addEventListener("click", hideModal);
 
+const unlockPointer = () => {
+  const exit = document.exitPointerLock || document.mozExitPointerLock || document.webkitExitPointerLock;
+  exit && exit.call(document);
+};
+
+const lockPointer = () => {
+  const element = document.getElementById("openworldCanv");
+  const request = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+  request && request.call(element);
+};
+
+window.addEventListener("keydown", e => {
+  if (e.key === "Tab") {
+    e.preventDefault(); // 阻止 Tab 切换焦点的默认行为
+    const isHidden = modal.classList.contains("zindex-1");
+    if (isHidden) {
+      showModal();
+      unlockPointer();
+    } else {
+      hideModal();
+      lockPointer();
+    }
+  }
+});
+
 
 // ========================
 // 快捷移动按钮
