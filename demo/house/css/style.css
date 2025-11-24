@@ -70,7 +70,6 @@ body{margin: 0;}
     touch-action: manipulation;
 }
 .moselect {
-    cursor: pointer;
     user-select: none;           /* 标准语法 */
     -webkit-user-select: none;   /* Safari/Chrome */
     -moz-user-select: none;      /* Firefox */
