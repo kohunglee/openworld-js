@@ -84,6 +84,8 @@ export default {
         isInvisible: false,   // 在 webgl 留档但不渲染（实验，用于减少渲染压力）
         activeFunc: null,     // 激活时执行的函数
         textureRatio: 1,      // 生成的自定义纹理（errExpRatio）的缩放比例
+        unCullFace: 0,        // 是否不剔除背面
+        nS: false,            // 是否不受光照影响
     },
 
     // 激活 TA 物体
@@ -165,6 +167,8 @@ export default {
                 rx: args.rX, ry: args.rY, rz: args.rZ, b: args.background, mix: args.mixValue,
                 shadow: args.isShadow,
                 hidden: args.isInvisible,
+                uncullface: args.unCullFace,
+                ns: args.nS,
             });
             if(args.activeFunc !== null){  // 激活时执行的函数
                 args.activeFunc(index);
@@ -224,7 +228,7 @@ export default {
             mass : mass,
             shape: boxShape,
             position: new CANNON.Vec3(X, Y, Z),
-            material: this.cannonDefaultCantactMaterial,
+            material: this.cannonDefaultContactMaterial,
         });
         body.collisionFilterGroup = colliGroup;  // 这 6 行，为物理体分配碰撞组。只有玩家和地面与石头碰撞，石头间不会（小物件除外）
         const collisionFilterMaskMap = {

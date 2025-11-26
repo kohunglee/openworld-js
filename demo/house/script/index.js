@@ -104,6 +104,7 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
         singboard.setBoard,
         setVK,
         dog.addDogM,
+        xbox.play,
     ];
 
     for (const fn of funcs) {

@@ -43,5 +43,22 @@ const dog = {
                 z: 0,
             }
         });
+
+        for (let i = 0; i < 20; i++) {
+            k.addTABox({
+                DPZ : 1,
+                isPhysical: true,
+                mass: 10,
+                backgroundColor: '#ff0000ff',
+                texture: dls,
+                mixValue: 0.5,
+                colliGroup: 1,
+                X: 28 + k.genPR(i, 1)[0] * 20,
+                Y: 6 + k.genPR(i+2, 1)[0] * 10,
+                Z: -3 + k.genPR(i+1, 1)[0] * 4,
+                size: 0.8,
+                rX: 35,
+            });
+        }
     },
 }

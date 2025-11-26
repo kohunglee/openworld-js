@@ -31,8 +31,6 @@ function logicData(myData){
             }
         });
 
-        console.log(myData);
-
         // 建造第一层
         if(true) {
             // 里屋，对称大小书柜、以及【书架定位书 103】
@@ -1019,4 +1017,6 @@ function logicData(myData){
             }
         }
     }
+
+    return myData;
 }
