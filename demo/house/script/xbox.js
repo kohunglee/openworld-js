@@ -25,6 +25,10 @@ const xbox = {
             const isInverteCamY = document.getElementById('inverteCamY').checked ? -1 : 1;
             const isReverseMVPMoveX = document.getElementById('reverseMVPMoveX').checked ? -1 : 1;
             const isReverseMVPMoveY = document.getElementById('reverseMVPMoveY').checked ? -1 : 1;
+            let isDoubleCameraSpeed = document.getElementById('doubleCameraSpeed').checked ? 2 : 1;
+            if(highPreciDeg === 0.1 && isDoubleCameraSpeed === 2){
+                isDoubleCameraSpeed = 1;
+            }
 
             const gps = navigator.getGamepads ? navigator.getGamepads() : [];
 
@@ -40,8 +44,8 @@ const xbox = {
                     const rightY = -formatAxis(applyDeadzone(gp.axes[3], DEADZONE)) * isInverteCamY;
                     k.keys['viewBackward'] = xbox.roundHalfUp(leftY, isUseHighPreci);
                     k.keys['viewRight'] = xbox.roundHalfUp(leftX, isUseHighPreci);
-                    k.keys.turnRight += rightX * highPreciDeg;
-                    k.keys.turnUp    += rightY * highPreciDeg;
+                    k.keys.turnRight += rightX * highPreciDeg * isDoubleCameraSpeed;
+                    k.keys.turnUp    += rightY * highPreciDeg * isDoubleCameraSpeed;
                 }
 
                 const buttonMap = {
