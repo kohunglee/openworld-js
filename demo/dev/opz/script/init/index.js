@@ -25,7 +25,7 @@ testSampleAni(k);   // 简单的人物动画实现
 
 /* -----[ OWZ 插件 ]----- */
 import deleteModBlock from '@src/plugins/owz/deleteModBlock.js';
-deleteModBlock(k);
+deleteModBlock(k);  // 激活删除插件
 /* --------------------- */
 // 配置 DPZ 的参数
 if(true){

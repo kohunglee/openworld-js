@@ -5,6 +5,8 @@
  * @param {*} type 使用哪个规则生成 第一楼统一样式1、第二楼统一样式2
  */
 function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
+    const noBookRender = document.getElementById('noBookRender').checked;  // 关闭书本渲染
+    if(noBookRender) return;
     hiddenBookSub(shelfID);  // 隐藏假书
     k.bookContainer = {};    // 初始化 书 容器，临时储存 ID 使用
     k.bookDataInsTemp = [];      // 书的实例数据，会由 registerBookshelf 生成
@@ -190,6 +192,7 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
             }
 
             const renderSvg = () => {  // 挂载到【任务队列模式】的内容，人物静止时执行
+                
                 const xDistence = Math.abs(mvpPos.x - shelfInfo.x);
                 const yDistence = Math.abs(mvpPos.y - shelfInfo.y);
                 if(xDistence > 3 || yDistence > 1.5){  // 距离过远，不渲染，同时删除
@@ -231,18 +234,13 @@ function bookSystem(shelfID = 103, dirc = 1, type = 1) {  // 书 系统
 
 /*-------------*/
 
-// 当主角走远后，临时卸载书架内容
-function removeBookShelf(shelfID){
-    k.W.delete('booksInsDisplay' + shelfID);
-    k.W.delete('bookupsvg' + shelfID);
-    k.W.delete('bookdownsvg' + shelfID);
-    hiddenBookSub(shelfID, true);
-}
+
 
 // 为每本书都注册一下渲染和显示事件，也就是在激活时执行 bookSystem， 删除时 removeBookShelf
 function bookSysRegis(){
     k.bookShelfInsData = new Map();
     const get = k.indexToArgs.get.bind(k.indexToArgs);
+
     const bindFuncs = (v, dir, type=1) => {
         const o = get(v);
         o.activeFunc = () => bookSystem(v, dir, type);
@@ -285,4 +283,12 @@ function hiddenBookSub(index, isRecover = false){
             });
         }
     }
+}
+
+// 当主角走远后，临时卸载书架内容
+function removeBookShelf(shelfID){
+    k.W.delete('booksInsDisplay' + shelfID);
+    k.W.delete('bookupsvg' + shelfID);
+    k.W.delete('bookdownsvg' + shelfID);
+    hiddenBookSub(shelfID, true);
 }

@@ -3,7 +3,14 @@
  * -----------
  * 开始按照既定的规则，把 myData 给绘制出来
  */
+
+
+
+
+
 function dataProcess(myData, blockName = 'manyCubes', offset={}) {
+
+    console.log(myData.length, '个方块数据，开始处理');
 
     // offset.x = 100;
     const myCubeInstances = [];
@@ -19,18 +26,18 @@ function dataProcess(myData, blockName = 'manyCubes', offset={}) {
     console.log('共', k.visCubeLen, '个可见方块');
 
 
-    for (let index = 0; index < totalCube - k.visCubeLen; index++) {  // 空模型，填充容器里多余的空间
-        addInsLD({
-            x: 999999999, y: 999999999, z: 999999999,
-            w: 0.001, d: 0.001, h: 0.001,
-        }, true);
-    }
+    // for (let index = 0; index < totalCube - k.visCubeLen; index++) {  // 空模型，填充容器里多余的空间
+    //     addInsLD({
+    //         x: 999999999, y: 999999999, z: 999999999,
+    //         w: 0.001, d: 0.001, h: 0.001,
+    //     }, true);
+    // }
     for (let index = 0; index < myCubeInstances.length; index++) {  // 为「实例」加上简单的物理引擎
         k.addTABox({
             DPZ : 4,
             isPhysical: (myData[index]?.st) ? false : true,
             mass: 0,
-            background: '#f6a1a1ff',
+            background: '#4dff00ff',
             mixValue: 0.5,
             // colliGroup: 2,
             isShadow: false,
@@ -43,14 +50,10 @@ function dataProcess(myData, blockName = 'manyCubes', offset={}) {
             rX: myCubeInstances[index].rx,
             rY: myCubeInstances[index].ry,
             rZ: myCubeInstances[index].rz,
-            // isInvisible: true,  // 只被探测，而不可见
+            isInvisible: true,  // 只被探测，而不可见
             // hidden: true,
             // isInvisible: (myData[index]?.iv) ? true : false,
         });
-        if(myCubeInstances[index]?.b){  // 别忘了，还要把颜色加入到档案 insColor 里
-            const args = k.indexToArgs.get(index);
-            args.insColor = myCubeInstances[index].b;
-        }
         if(myCubeInstances[index]?.unIns === 1){  // 不在实例化里显示（unIns），则剔除
             myCubeInstances[index] = { x:999999999 }
         }
@@ -91,8 +94,8 @@ function dataProcess(myData, blockName = 'manyCubes', offset={}) {
         isHiddenVis[cubeIndex] = isHidden;
         return cubeIndex++;
     }
-
 }
+
 
 
 
