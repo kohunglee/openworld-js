@@ -57,7 +57,6 @@ const dog = {
                 Y: 6 + k.genPR(i+2, 1)[0] * 10,
                 Z: -3 + k.genPR(i+1, 1)[0] * 4,
                 size: 0.8,
-                rX: 35,
             });
         }
 

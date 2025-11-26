@@ -301,36 +301,40 @@ const W = {
             if(W.next[object.g]){  // 组 处理
               W.next[object.n].m.preMultiplySelf(W.next[object.g].M || W.next[object.g].m);
             }
+
+            //---- 易报错代码
             function safeUniformMatrix(gl, location, mat) {  // 安全传矩阵，确保不会报错，数据合法
-              try {
+              // try {
                 const arr = mat?.toFloat32Array?.() || [];
                 if (!arr.length || arr.some(v => !Number.isFinite(v))) throw new Error();
                 gl.uniformMatrix4fv(location, false, arr);
-              } catch {
-                gl.uniformMatrix4fv(location, false, new DOMMatrix().toFloat32Array());
-              }
+              // } catch {
+              //   gl.uniformMatrix4fv(location, false, new DOMMatrix().toFloat32Array());
+              // }
             }
             if (!just_compute) {
               let safeMat;
-              try {
+              // try {
                 const raw = W.next?.[object.n]?.M || W.next?.[object.n]?.m;
                 const arr = new DOMMatrix(raw).toFloat32Array();
                 safeMat = arr.some(v => !Number.isFinite(v)) ? new DOMMatrix() : new DOMMatrix(raw);
-              } catch {
-                safeMat = new DOMMatrix();
-              }
+              // } catch {
+              //   safeMat = new DOMMatrix();
+              // }
 
               safeUniformMatrix(W.gl, W.uniformLocations.m, safeMat);
 
               let inv;
-              try {
+              // try {
                 inv = safeMat.is2D ? safeMat.inverse() : safeMat.invertSelf();
-              } catch {
-                inv = new DOMMatrix();
-              }
+              // } catch {
+              //   inv = new DOMMatrix();
+              // }
 
               safeUniformMatrix(W.gl, W.uniformLocations.im, inv);
             }
+            //----
+
         }
         if(!just_compute){  // 渲染可见物体
 
