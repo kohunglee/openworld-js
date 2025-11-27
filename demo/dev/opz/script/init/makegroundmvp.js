@@ -29,7 +29,7 @@ function makeGroundMvp(){
             n: 'ground',
             w: width, d: depth, h: height,
             x: X, y: Y, z: Z,
-            t: greenStoneborder, b: '#50ff2dff', mix: 0.6, tile: [width, width],
+            t: greenStoneborder, b: '#96A48B', mix: 0.6, tile: [width, width],
         });
     }
 
