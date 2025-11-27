@@ -138,40 +138,17 @@ function newMvp(){
     const ctx = c.getContext('2d');
     c.width = 1024;
     c.height = 512;
-
-    // 1. 背景主渐变（纯蓝 → 淡蓝）
-    let g = ctx.createLinearGradient(0, 0, 0, c.height);
-
+    let g = ctx.createLinearGradient(0, 0, 0, c.height);  // 1. 背景主渐变（纯蓝 → 淡蓝）
     g.addColorStop(0.00, '#4fa9ff');   // 顶部：纯蓝，极点不易失真
     g.addColorStop(0.17, '#6ec3ff');   // 中段
     g.addColorStop(0.35, '#a9e0ff');   // 接近地平线
-    g.addColorStop(0.50, '#ffffff');   // 底部：白（云带）
-
+    g.addColorStop(0.50, '#eff6fbff');   // 底部：白（云带）
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, c.width, c.height);
-
-    // 2. 用轻微噪声制造“云雾感”（但顶部不绘制）
-    // const id = ctx.getImageData(0, 0, c.width, c.height);
-    // const d = id.data;
-    // for (let y = c.height * 0.2; y < c.height; y++) {
-    //     for (let x = 0; x < c.width; x++) {
-    //         const i = (y * c.width + x) * 4;
-    //         const n = (Math.random() - 0.5) * 40; // 云的细节（非常轻）
-    //         d[i] += n;
-    //         d[i+1] += n;
-    //         d[i+2] += n;
-    //     }
-    // }
-    // ctx.putImageData(id, 0, 0);
-
-
-    // 输出 img，用于 WebGL
-    const skyTexture = new Image();
+    const skyTexture = new Image();  // 输出 img，用于 WebGL
     skyTexture.src = c.toDataURL();
-    document.body.appendChild(c);  // 用于预览，可删
 
     skyTexture.onload = () => {
-        // console.log('skyTexture ready, size:', img.width, 'x', img.height);
 
         // 天空盒测试
         k.W.sphere({  // 主角的右腿

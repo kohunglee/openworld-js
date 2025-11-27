@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Color Palette with Hex</title>
+    <style>
+        body {
+            /* 页面居中，白色背景 */
+            display: flex;
+            justify-content: center;
+            background-color: #fff;
+            padding: 40px;
+            /* 字体设置 */
+            font-family: "Comic Sans MS", "Chalkboard SE", sans-serif;
+        }
+        .grid {
+            /* 6列网格 */
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+        .circle {
+            /* 保持正圆 */
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            /* 弹性布局使文字居中 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* 文字颜色 */
+            color: #2b2b2b;
+            font-size: 16px;
+            line-height: 1.25;
+        }
+        /* 专门给 HEX 代码设置一个样式，方便区分 */
+        .hex {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 4px;
+            opacity: 0.8;
+            font-family: monospace; /* 用等宽字体方便程序识别 */
+        }
+    </style>
+</head>
+<body>
+
+<div class="grid">
+    <!-- Row 1 -->
+    <div class="circle" style="background: #FDF9EE"><span>253</span><span>249</span><span>238</span><span class="hex">#FDF9EE</span></div>
+    <div class="circle" style="background: #F0EBE5"><span>240</span><span>235</span><span>229</span><span class="hex">#F0EBE5</span></div>
+    <div class="circle" style="background: #FAEBE5"><span>250</span><span>235</span><span>229</span><span class="hex">#FAEBE5</span></div>
+    <div class="circle" style="background: #CAC3BB"><span>202</span><span>195</span><span>187</span><span class="hex">#CAC3BB</span></div>
+    <div class="circle" style="background: #D8CAAF"><span>216</span><span>202</span><span>175</span><span class="hex">#D8CAAF</span></div>
+    <div class="circle" style="background: #C5B8A5"><span>197</span><span>184</span><span>165</span><span class="hex">#C5B8A5</span></div>
+
+    <!-- Row 2 -->
+    <div class="circle" style="background: #DADAD8"><span>218</span><span>218</span><span>216</span><span class="hex">#DADAD8</span></div>
+    <div class="circle" style="background: #F8EBD8"><span>248</span><span>235</span><span>216</span><span class="hex">#F8EBD8</span></div>
+    <div class="circle" style="background: #FAEAD3"><span>250</span><span>234</span><span>211</span><span class="hex">#FAEAD3</span></div>
+    <div class="circle" style="background: #C7B8A1"><span>199</span><span>184</span><span>161</span><span class="hex">#C7B8A1</span></div>
+    <div class="circle" style="background: #B7B0A6"><span>183</span><span>176</span><span>166</span><span class="hex">#B7B0A6</span></div>
+    <div class="circle" style="background: #A29988"><span>162</span><span>153</span><span>136</span><span class="hex">#A29988</span></div>
+
+    <!-- Row 3 -->
+    <div class="circle" style="background: #939391"><span>147</span><span>147</span><span>145</span><span class="hex">#939391</span></div>
+    <div class="circle" style="background: #BFBFBF"><span>191</span><span>191</span><span>191</span><span class="hex">#BFBFBF</span></div>
+    <div class="circle" style="background: #E0E5DF"><span>224</span><span>229</span><span>223</span><span class="hex">#E0E5DF</span></div>
+    <div class="circle" style="background: #B5C4B1"><span>181</span><span>196</span><span>177</span><span class="hex">#B5C4B1</span></div>
+    <div class="circle" style="background: #C1CBD7"><span>193</span><span>203</span><span>215</span><span class="hex">#C1CBD7</span></div>
+    <div class="circle" style="background: #AFB0B2"><span>175</span><span>176</span><span>178</span><span class="hex">#AFB0B2</span></div>
+
+    <!-- Row 4 -->
+    <div class="circle" style="background: #ECECEA"><span>236</span><span>236</span><span>234</span><span class="hex">#ECECEA</span></div>
+    <div class="circle" style="background: #FFFAF4"><span>255</span><span>250</span><span>244</span><span class="hex">#FFFAF4</span></div>
+    <div class="circle" style="background: #96A48B"><span>150</span><span>164</span><span>139</span><span class="hex">#96A48B</span></div>
+    <div class="circle" style="background: #7B8B6F"><span>123</span><span>139</span><span>111</span><span class="hex">#7B8B6F</span></div>
+    <div class="circle" style="background: #8696A7"><span>134</span><span>150</span><span>167</span><span class="hex">#8696A7</span></div>
+    <div class="circle" style="background: #9CA8B8"><span>156</span><span>168</span><span>184</span><span class="hex">#9CA8B8</span></div>
+
+    <!-- Row 5 -->
+    <div class="circle" style="background: #DFD6D7"><span>223</span><span>214</span><span>215</span><span class="hex">#DFD6D7</span></div>
+    <div class="circle" style="background: #656565; color: #fff;"><span>101</span><span>101</span><span>101</span><span class="hex">#656565</span></div>
+    <div class="circle" style="background: #A6A6A8"><span>166</span><span>166</span><span>168</span><span class="hex">#A6A6A8</span></div>
+    <div class="circle" style="background: #7A7281; color: #fff;"><span>122</span><span>114</span><span>129</span><span class="hex">#7A7281</span></div>
+    <div class="circle" style="background: #965454; color: #fff;"><span>150</span><span>84</span><span>84</span><span class="hex">#965454</span></div>
+    <div class="circle" style="background: #6B5152; color: #fff;"><span>107</span><span>81</span><span>82</span><span class="hex">#6B5152</span></div>
+
+    <!-- Row 6 -->
+    <div class="circle" style="background: #D3D4CC"><span>211</span><span>212</span><span>204</span><span class="hex">#D3D4CC</span></div>
+    <div class="circle" style="background: #E0CDCF"><span>224</span><span>205</span><span>207</span><span class="hex">#E0CDCF</span></div>
+    <div class="circle" style="background: #C9C0D3"><span>201</span><span>192</span><span>211</span><span class="hex">#C9C0D3</span></div>
+    <div class="circle" style="background: #EEE5F8"><span>238</span><span>229</span><span>248</span><span class="hex">#EEE5F8</span></div>
+    <div class="circle" style="background: #A27E7E; color: #fff;"><span>162</span><span>126</span><span>126</span><span class="hex">#A27E7E</span></div>
+    <div class="circle" style="background: #EAD0D1"><span>234</span><span>208</span><span>209</span><span class="hex">#EAD0D1</span></div>
+</div>
+
+</body>
+</html>
