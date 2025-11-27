@@ -132,33 +132,7 @@ function newMvp(){
         w:1,  h:6,  d:1,
     });
 
-    // const c=document.createElement('canvas');
-    // ctx=c.getContext('2d');
-    // c.width=800;c.height=400;
-    // let g=ctx.createLinearGradient(0,0,0,c.height);
-
-    // g.addColorStop(0,'#7A4141');
-    // g.addColorStop(1,'#7A4141');
-
-    // ctx.fillStyle=g;ctx.fillRect(0,0,c.width,c.height);
-
-    // // function cloud(x,y,scale){
-    // //     ctx.save();
-    // //     ctx.globalAlpha=0.9;ctx.translate(x,y);ctx.scale(scale,scale);
-    // //     ctx.beginPath();ctx.arc(0,0,30,0,Math.PI*2);
-    // //     ctx.arc(30,-10,25,0,Math.PI*2);
-    // //     ctx.arc(60,0,30,0,Math.PI*2);
-    // //     ctx.arc(30,10,28,0,Math.PI*2);
-    // //     ctx.closePath();ctx.fillStyle='white';ctx.fill();ctx.restore();
-    // // }
-    // // cloud(120,100,1.2);cloud(500,80,1);cloud(350,140,1.3);
-
-    // // ---------- 追加：把 canvas 导出成一个 img 对象（不修改上面代码） ----------
-    // const img = document.createElement('img');
-    // img.id = 'skyTexture';                // <-- 你的 WebGL 程序用这个 ID 取到 img
-    // img.src = c.toDataURL('image/png');   // 将 canvas 内容转为 data URL 并赋给 img
-    // img.style.display = 'none';           // 隐藏在页面上（可按需显示）
-    // document.body.appendChild(img);
+// ===========================================================
 
     const c = document.createElement('canvas');
     const ctx = c.getContext('2d');
@@ -177,18 +151,18 @@ function newMvp(){
     ctx.fillRect(0, 0, c.width, c.height);
 
     // 2. 用轻微噪声制造“云雾感”（但顶部不绘制）
-    const id = ctx.getImageData(0, 0, c.width, c.height);
-    const d = id.data;
-    for (let y = c.height * 0.2; y < c.height; y++) {
-        for (let x = 0; x < c.width; x++) {
-            const i = (y * c.width + x) * 4;
-            const n = (Math.random() - 0.5) * 40; // 云的细节（非常轻）
-            d[i] += n;
-            d[i+1] += n;
-            d[i+2] += n;
-        }
-    }
-    ctx.putImageData(id, 0, 0);
+    // const id = ctx.getImageData(0, 0, c.width, c.height);
+    // const d = id.data;
+    // for (let y = c.height * 0.2; y < c.height; y++) {
+    //     for (let x = 0; x < c.width; x++) {
+    //         const i = (y * c.width + x) * 4;
+    //         const n = (Math.random() - 0.5) * 40; // 云的细节（非常轻）
+    //         d[i] += n;
+    //         d[i+1] += n;
+    //         d[i+2] += n;
+    //     }
+    // }
+    // ctx.putImageData(id, 0, 0);
 
 
     // 输出 img，用于 WebGL
@@ -218,6 +192,29 @@ function newMvp(){
 
     logicFunc(testcubedata)
     const getdata = logicData(testcubedata)
-    dataProcess(getdata, 'test0002', {x:0}) 
+
+    // dataProc.process(getdata, 'test0002', {x:0})
+
+    const testData = [
+        {
+            x: 10, y: 10, z: 10,
+            w: 1, d: 1, h: 1,
+        },
+        {
+            x: 20, y: 10, z: 10,
+            w: 1, d: 1, h: 1,
+        },
+        {
+            del: 1,
+        },
+        {
+            x: 40, y: 10, z: 10,
+            w: 1, d: 1, h: 1,
+        },
+    ];
+        
+
+    ;
+    dataProc.process(getdata, 'test0002', {x:0});
    
 }
