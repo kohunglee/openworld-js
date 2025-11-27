@@ -315,13 +315,9 @@ const W = {
             if (!just_compute) {
               let safeMat;
               // try {
-                // // //const raw = W.next?.[object.n]?.M || W.next?.[object.n]?.m;
-                // // // const arr = new DOMMatrix(raw).toFloat32Array();
-                // // // safeMat = arr.some(v => !Number.isFinite(v)) ? new DOMMatrix() : new DOMMatrix(raw);
-                const raw = W.next?.[object.n]?.M || W.next?.[object.n]?.m;  //+4 gpt 给的一个不报错之解决方案
-                const safeMatObj = safeDOMMatrix(raw);
-                const arr = safeMatObj.toFloat32Array();
-                safeMat = safeMatObj;
+                const raw = W.next?.[object.n]?.M || W.next?.[object.n]?.m;
+                const arr = new DOMMatrix(raw).toFloat32Array();
+                safeMat = arr.some(v => !Number.isFinite(v)) ? new DOMMatrix() : new DOMMatrix(raw);
               // } catch {
               //   safeMat = new DOMMatrix();
               // }
@@ -516,49 +512,6 @@ W.smooth = (state, dict = {}, vertices = [], iterate, iterateSwitch, i, j, A, B,
     W.models[state.type].normals[Ci] = dict[C[0]+"_"+C[1]+"_"+C[2]] = dict[C[0]+"_"+C[1]+"_"+C[2]].map((a,i) => a + normal[i]);
   }
 }
-
-// gpt 给的一个不报错之解决方案（临时）
-// ==============================
-function safeDOMMatrix(raw) {
-  try {
-    if (!raw) return new DOMMatrix();
-
-    // 如果 raw 是 DOMMatrix 本身
-    if (raw instanceof DOMMatrix) {
-      const arr = raw.toFloat32Array();
-      if (arr.some(v => !Number.isFinite(v))) return new DOMMatrix();
-      return raw;
-    }
-
-    // 如果 raw 是普通对象（DOMMatrixInit）
-    if (typeof raw === 'object') {
-      const m = new DOMMatrix(raw);
-      const arr = m.toFloat32Array();
-      if (arr.some(v => !Number.isFinite(v))) return new DOMMatrix();
-      return m;
-    }
-
-    // 如果 raw 是数组（4x4）
-    if (Array.isArray(raw)) {
-      if (raw.length === 16 && raw.every(v => Number.isFinite(v))) {
-        return new DOMMatrix([
-          raw[0], raw[1], raw[2], raw[3],
-          raw[4], raw[5], raw[6], raw[7],
-          raw[8], raw[9], raw[10], raw[11],
-          raw[12], raw[13], raw[14], raw[15],
-        ]);
-      }
-    }
-
-    return new DOMMatrix();
-
-  } catch {
-    return new DOMMatrix();
-  }
-}
-
-
-
 
 // 3D模型
 // ========
