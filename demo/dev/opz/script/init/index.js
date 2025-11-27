@@ -117,9 +117,9 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
 
     for (const fn of funcs) {
         const name = fn.name || 'anonymous';
-        console.time(name);
+        // console.time(name);
         fn();
-        console.timeEnd(name);
+        // console.timeEnd(name);
     }
 
     console.timeEnd('load-------------------');

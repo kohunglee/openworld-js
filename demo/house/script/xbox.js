@@ -2,7 +2,7 @@
 // 开启游戏手柄
 const xbox = {
     play : () => {
-        const DEADZONE = 0.05;
+        let deadzone = 0.05;
         let highPreciDeg = 1;
 
         let _anyKeyDown = false; //+ 用于监听是否有按键被按下
@@ -26,6 +26,7 @@ const xbox = {
             const isReverseMVPMoveX = document.getElementById('reverseMVPMoveX').checked ? -1 : 1;
             const isReverseMVPMoveY = document.getElementById('reverseMVPMoveY').checked ? -1 : 1;
             let isDoubleCameraSpeed = document.getElementById('doubleCameraSpeed').checked ? 2 : 1;
+            deadzone = parseFloat(document.getElementById('deadzoneValue').value) || 0.05;
             if(highPreciDeg === 0.1 && isDoubleCameraSpeed === 2){
                 isDoubleCameraSpeed = 1;
             }
@@ -38,10 +39,10 @@ const xbox = {
 
                 // ====== 摇杆（实时输出） ======
                 if (gp.axes && gp.axes.length >= 4 && _anyKeyDown === false && isUseXBOX) {
-                    const leftX  = formatAxis(applyDeadzone(gp.axes[0], DEADZONE)) * isReverseMVPMoveX;
-                    const leftY  = formatAxis(applyDeadzone(gp.axes[1], DEADZONE)) * isReverseMVPMoveY;
-                    const rightX = -formatAxis(applyDeadzone(gp.axes[2], DEADZONE)) * isInverteCamX;
-                    const rightY = -formatAxis(applyDeadzone(gp.axes[3], DEADZONE)) * isInverteCamY;
+                    const leftX  = formatAxis(applyDeadzone(gp.axes[0], deadzone)) * isReverseMVPMoveX;
+                    const leftY  = formatAxis(applyDeadzone(gp.axes[1], deadzone)) * isReverseMVPMoveY;
+                    const rightX = -formatAxis(applyDeadzone(gp.axes[2], deadzone)) * isInverteCamX;
+                    const rightY = -formatAxis(applyDeadzone(gp.axes[3], deadzone)) * isInverteCamY;
                     k.keys['viewBackward'] = xbox.roundHalfUp(leftY, isUseHighPreci);
                     k.keys['viewRight'] = xbox.roundHalfUp(leftX, isUseHighPreci);
                     k.keys.turnRight += rightX * highPreciDeg * isDoubleCameraSpeed;
