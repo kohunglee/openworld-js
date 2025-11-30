@@ -91,6 +91,12 @@ const dataProc = {
             instances: dataProc.myCubeInstances, // 实例属性的数组
             mix: 0.7,
         });
+        // k.W.cube({  // 渲染实例化
+        //     n: instName,
+        //     t: greenStone,  // 大理石
+        //     instances: dataProc.myCubeInstances, // 实例属性的数组
+        //     mix: 0.7,
+        // });
     },
 
     // 数据处理总入口
