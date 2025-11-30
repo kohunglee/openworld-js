@@ -10,6 +10,9 @@ function logicData(myData){
         floor2: { shelf: { L: {}, C: {}, T: {}, CD: {}, }, }
     }
     k.bookS = {};  // 初始化 书 管理系统，储存 书架定位书
+    
+    var urlParams = new URLSearchParams(globalThis.location.search);  // 获取 URL
+    k.isLogicAdd = urlParams.get('logicadd');  // 获取 url 的 id 参数
 
     if(k.isLogicAdd !== 'no'){
         if(document.getElementById('myHUDObjEditor')){
@@ -31,6 +34,11 @@ function logicData(myData){
             }
         });
 
+        // 将外墙 [44~48] [78~80]，设置为纹理 t 为第二种材质
+        if(true){
+            
+        }
+
         // 建造第一层
         if(true) {
             // 里屋，对称大小书柜、以及【书架定位书 103】
@@ -50,7 +58,6 @@ function logicData(myData){
                 10,  // 地板
                 [1, 9],  // 桌子
                 [41, 48],  // 窗墙
-                43, // 隔断墙
                 [37, 40]  // 柱子,  // 柱子
             ]
 
