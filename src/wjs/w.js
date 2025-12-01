@@ -316,7 +316,7 @@ const W = {
               let safeMat;
               // try {
                 const raw = W.next?.[object.n]?.M || W.next?.[object.n]?.m;
-                const arr = new DOMMatrix(raw).toFloat32Array();
+                const arr = new safeDOMMatrix(raw).toFloat32Array();
                 safeMat = arr.some(v => !Number.isFinite(v)) ? new DOMMatrix() : new DOMMatrix(raw);
               // } catch {
               //   safeMat = new DOMMatrix();
@@ -512,6 +512,39 @@ W.smooth = (state, dict = {}, vertices = [], iterate, iterateSwitch, i, j, A, B,
     W.models[state.type].normals[Ci] = dict[C[0]+"_"+C[1]+"_"+C[2]] = dict[C[0]+"_"+C[1]+"_"+C[2]].map((a,i) => a + normal[i]);
   }
 }
+
+// 安全矩阵计算
+// ======================
+// 永不报错的 DOMMatrix 构造器
+function safeDOMMatrix(raw) {
+    // 1. 尝试把 raw 转成数组
+    let arr;
+    try {
+        if (raw instanceof DOMMatrix) {
+            arr = Array.from(raw.toFloat32Array());
+        } else if (Array.isArray(raw)) {
+            arr = raw.slice();
+        } else if (raw && typeof raw === 'object') {
+            const m = new DOMMatrix(raw);
+            arr = Array.from(m.toFloat32Array());
+        } else {
+            arr = [];
+        }
+    } catch(e){
+        // 完全无法解析 → fallback 空数组
+        arr = [];
+    }
+
+    // 2. 保证数组至少有 16 个数（矩阵大小）
+    while (arr.length < 16) arr.push(0);
+
+    // 3. 把所有 NaN 和 Infinity 清理掉
+    arr = arr.map(v => (Number.isFinite(v) ? v : 0));
+
+    // 4. 永远不会失败
+    return new DOMMatrix(arr);
+}
+
 
 // 3D模型
 // ========
