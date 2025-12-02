@@ -14,7 +14,7 @@ export default {
     positionsStatusTA : null,  // 位置和状态
     bodyProp : null,           // 属性
     physicsPropsTA : null,     // 物理属性
-    freeSlots : null,          // 空位表
+    freeSlots : null,          // 空位表（之后改成纯数学运算吧，使用表，有点多此一举了，虽然并不浪费太多时间）
     indexToArgs : new Map(),   // index -> args 对应表
     spatialGrid : new Map(),   // 区块  -> index 对应表
     initBodyTypeArray : function(MAX_BODIES = 1_000_000){  // 根据最多物体数量，初始化
@@ -30,6 +30,7 @@ export default {
                 quat = {x: 0, y: 0, z: 0, w: 1},
                 mass = 0, width = 1, depth = 1, height = 1, size = 1,
                 rX = 0, rY = 0, rZ = 0,
+                customIdx = -1,  // 自定义的 index ，会覆盖原有档案里的 index 对象的内容
             } = {}){
         const myargs = Array.from(arguments)[0];  // 提取参数
         myargs.deleteFunc = null;  // 删除（临时）时会执行的函数
@@ -40,7 +41,7 @@ export default {
             quat = this.eulerToQuaternion({rX,rY,rZ});
         }
         if (this.freeSlots.length === 0) {alert('BodyTypeArray 容量已达上限，需要扩容！'); return false;};  // 没有空位就退，否则占个位子
-        const index = this.freeSlots.pop();
+        const index = (customIdx > -1) ? customIdx : this.freeSlots.pop();
         const p_offset = index * 8;  //+8 向 TA 传数据的起点，并传入数据（繁琐写法，但性能高）
         this.positionsStatus[p_offset] = X;  
         this.positionsStatus[p_offset + 1] = Y;
