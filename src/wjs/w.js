@@ -455,11 +455,33 @@ const W = {
   // 辅助函数
   // ========
   
-  // 在两个值之间插值
-  lerp: (item, property) => 
-    W.next[item]?.a
-    ? W.current[item][property] + (W.next[item][property] -  W.current[item][property]) * (W.next[item].f / W.next[item].a)
-    : W.next[item][property],
+  // // 在两个值之间插值
+  // lerp: (item, property) => 
+  //   W.next[item]?.a
+  //   ? W.current[item][property] + (W.next[item][property] -  W.current[item][property]) * (W.next[item].f / W.next[item].a)
+  //   : W.next[item][property],
+  // 在两个值之间插值 (修复版：增加 NaN 防御)
+  lerp: (item, property) => {
+    const next = W.next[item];
+    const curr = W.current[item];
+    // 1. 如果没有 next，直接返回 0 防止报错
+    if (!next) return 0;
+    // 2. 获取目标值，如果 undefined 默认为 0
+    const targetVal = next[property] || 0;
+    
+    // 3. 如果没有过渡时间 a，或者 a <= 0，直接一步到位
+    if (!next.a || next.a <= 0) return targetVal;
+
+    // 4. 获取当前值，如果当前值没有，就用目标值代替（防止 undefined 参与计算）
+    const currentVal = (curr && curr[property] !== undefined) ? curr[property] : targetVal;
+    
+    // 5. 计算进度，限制在 0~1 之间 (防止过冲导致数值溢出)
+    let t = next.f / next.a;
+    // if (t < 0) t = 0; // 通常不需要，f 从 0 开始
+    // if (t > 1) t = 1; // 你的 draw 逻辑里已经限制了 f > a，但为了安全可以加上
+
+    return currentVal + (targetVal - currentVal) * t;
+  },
   
   // 过渡一个项目
   animation: (item, m = new DOMMatrix) =>
