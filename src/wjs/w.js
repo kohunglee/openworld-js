@@ -302,7 +302,9 @@ const W = {
               W.next[object.n].m.preMultiplySelf(W.next[object.g].M || W.next[object.g].m);
             }
 
-            //---- 易报错代码
+            //---- 易报错代码 ----------------------------------------------------------------
+
+
             function safeUniformMatrix(gl, location, mat) {  // 安全传矩阵，确保不会报错，数据合法
               // try {
                 const arr = mat?.toFloat32Array?.() || [];
@@ -314,13 +316,22 @@ const W = {
             }
             if (!just_compute) {
               let safeMat;
-              // try {
-                const raw = W.next?.[object.n]?.M || W.next?.[object.n]?.m;
+              const raw = W.next?.[object.n]?.M || W.next?.[object.n]?.m;
+
+              try {  // 希望会捕获到吧
+                if(Math.random() > 1){
+                  console.log(object.n);
+                }
                 const arr = new DOMMatrix(raw).toFloat32Array();
                 safeMat = arr.some(v => !Number.isFinite(v)) ? new DOMMatrix() : new DOMMatrix(raw);
-              // } catch {
-              //   safeMat = new DOMMatrix();
-              // }
+              } catch {
+                W.testcount = (W.testcount || 0) + 1;
+                if(W.testcount < 3000){
+                  console.log('矩阵数据出错了：', W.testcount, object.n);
+                  console.log(raw);
+                  console.log('---------------');
+                }
+              }
 
               safeUniformMatrix(W.gl, W.uniformLocations.m, safeMat);
 
@@ -333,7 +344,9 @@ const W = {
 
               safeUniformMatrix(W.gl, W.uniformLocations.im, inv);
             }
-            //----
+
+            
+            //------------------------------------------------------------------------------------
 
         }
         if(!just_compute){  // 渲染可见物体
