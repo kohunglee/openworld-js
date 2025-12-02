@@ -134,38 +134,7 @@ function newMvp(){
 
 // ===========================================================
 
-    const c = document.createElement('canvas');
-    const ctx = c.getContext('2d');
-    c.width = 1024;
-    c.height = 512;
-    let g = ctx.createLinearGradient(0, 0, 0, c.height);  // 1. 背景主渐变（纯蓝 → 淡蓝）
-    g.addColorStop(0.00, '#4fa9ff');   // 顶部：纯蓝，极点不易失真
-    g.addColorStop(0.17, '#6ec3ff');   // 中段
-    g.addColorStop(0.35, '#a9e0ff');   // 接近地平线
-    g.addColorStop(0.50, '#eff6fbff');   // 底部：白（云带）
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, c.width, c.height);
-    const skyTexture = new Image();  // 输出 img，用于 WebGL
-    skyTexture.src = c.toDataURL();
 
-    skyTexture.onload = () => {
-
-        // 天空盒测试
-        k.W.sphere({  // 主角的右腿
-            // g:'mainPlayer',
-            n:'skybox_test',
-            y: 25,
-            x: 0,
-            z: 0,
-            rz:0,
-            size: 2500,
-            uncullface: 1,
-            t: skyTexture,
-            // s: 1,
-            rx: 10,
-            ns: true,
-        });
-    };
 
     logicFunc(testcubedata)
     const getdata = logicData(testcubedata)
@@ -190,8 +159,93 @@ function newMvp(){
         },
     ];
         
+    // 注意，这是一个失败的案例，没有考虑 内外层 纹理, 所以这个函数，就在这里用
+    function analyzeTexture(myData){
+        const result = new Array();
+        const len = myData.length;
+        for(let i = 0; i < len; i++){
+            const obj = myData[i];
+            const texture = obj?.t ?? 0;
+            if(result[texture] === undefined){
+                result[texture] = [];
+            }
+            result[texture].push(obj);
+        }
+        return result;
+    }
+    const get2data =  analyzeTexture(getdata);  // 得到不同纹理的两份数据
 
-    ;
-    dataProc.process(getdata, 'test0002', {x:0});
-   
+    // dataProc.process(get2data[0], 'texture_0', {x:0}, dls);
+
+    k.tempData = get2data[0];
+    if(get2data[1]){
+        const id = dataProc.process(get2data[1], 'texture_1', {x:0}, greenStone);
+    }
+    if(get2data[2]){
+        const id = dataProc.process(get2data[2], 'texture_2', {x:0}, dls);
+    }
+
+    // 内部的监测
+    /**
+     * 位置: X:16.54, Y:0.75, Z:-14.36
+     * X 53
+     * Z -45.7
+     * Y 18.5
+     * 
+     * X: 16.5 ~ 53
+     * Y: 0.75 ~ 18.5
+     * Z: -14.4 ~ -45.7
+     */
+
+    // 1. 定义检测配置 (将数据提取出来，方便以后扩展为数组)
+    // 这里的 range 只是一个示例，以后你可以从服务器加载一个巨大的数组
+    const targetZone = {
+        x: [16.5, 53],
+        y: [0.75, 18.5],
+        z: [-14.4, -45.7] // 即使顺序写反，我们在逻辑里也能处理
+    };
+
+    let inSetOK = false;
+    let inSetIndex = -1;  // 内部装修的 万数块 id
+
+    // 2. 封装一个通用的判断函数
+    // 这个函数不关心具体业务，只关心“点”是否在“盒子”里
+    const isInside = (val, range) => {
+        const min = Math.min(range[0], range[1]);
+        const max = Math.max(range[0], range[1]);
+        return val >= min && val <= max;
+    };
+
+    const checkPlayerPosition = () => {
+        const { X, Y, Z } = k.mainVPlayer;
+        
+        // 核心判断逻辑，读起来像英语句子一样自然
+        const inRange = 
+            isInside(X, targetZone.x) &&
+            isInside(Y, targetZone.y) &&
+            isInside(Z, targetZone.z);
+
+        if (inRange) {  // 在范围内
+            if(inSetOK === false) {  // 还没有建造
+                inSetIndex = dataProc.process(get2data[0], 'texture_0', {x:0}, dls);
+                inSetOK = true;
+                console.log('wsk id 为 ', inSetIndex);
+            }
+        } else {  // 不在范围内
+            if(inSetOK === true) {  // 如果建造了
+                k.deleteModBlock(inSetIndex);
+                inSetOK = false;
+                inSetIndex = -1;
+                console.log('delete 了');
+            }
+        }
+    };
+
+    // 3. 启动定时器 (100ms = 1秒10次)
+    // 建议保存 timer ID 以便后续可以 clearInterval 停止它
+    const timerId = setInterval(checkPlayerPosition, 100);
+
+
+    
+
 }
