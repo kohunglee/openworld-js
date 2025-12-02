@@ -52,7 +52,7 @@ if(false){
         }
     });
 } else {
-    document.body.insertAdjacentHTML('beforeend', '<div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);font:bold 48px sans-serif;color:rgba(0,0,0,0.7);pointer-events:none;z-index:9999;">建造⚠️⚠️⚠️模式<br>请<br>退<br>出<br>⚠️</div>'); 
+    // document.body.insertAdjacentHTML('beforeend', '<div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);font:bold 48px sans-serif;color:rgba(0,0,0,0.7);pointer-events:none;z-index:9999;">建造⚠️⚠️⚠️模式<br>请<br>退<br>出<br>⚠️</div>'); 
     build(k);// 毛坯构建器
 }
 
@@ -117,9 +117,9 @@ k.loadTexture(k.svgTextureLib).then(loadedImage => {
 
     for (const fn of funcs) {
         const name = fn.name || 'anonymous';
-        console.time(name);
+        // console.time(name);
         fn();
-        console.timeEnd(name);
+        // console.timeEnd(name);
     }
 
     console.timeEnd('load-------------------');

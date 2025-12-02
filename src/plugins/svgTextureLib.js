@@ -8,6 +8,8 @@ export default function(ccgxkObj){
 
   const greenStoneborder = genStone(0, 0, 1024, 1024);
 
+  const greenStone = genStone(-5, -20, 1024 + 5, 1024 + 20);
+
   const frosted = `
 <svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
   <filter id="opaque-frost">
@@ -59,7 +61,7 @@ export default function(ccgxkObj){
       { id:'greenStoneborder', type: 'svg-rasterize', svgCode: greenStoneborder },
 
       // 石头纹理
-      // { id:'greenStone', type: 'svg-rasterize', svgCode: greenStone },
+      { id:'greenStone', type: 'svg-rasterize', svgCode: greenStone },
 
       // 磨砂
       // { id:'frosted', type: 'svg-rasterize', svgCode: frosted },
