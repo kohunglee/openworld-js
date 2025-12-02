@@ -25,8 +25,8 @@ function setVK() {
     const localTime = now.toLocaleString();
     
     console.log(`我的 ID: ${k.rId}  ` + localTime);
-    // const workerUrl = "wss://wsslib.ccgxk.com";
-    const workerUrl = "wss://wsa.ccgxk.com/ws/";  // 新服务器
+    const workerUrl = "wss://myshwsa.ccgxk.com/ws/";  // 新服务器
+
     k.frendMap = new Map(); // 用于存储好友的实例 ID 和对应的实例索引
     k.rIdSet = new Set();  // 用于储存已经有过的 id
     globalThis.vkSocket = new WebSocket(workerUrl);

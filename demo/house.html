@@ -127,15 +127,21 @@
         </ul>
         <h4>移动设备</h4>
         <p>初步支持，尚在测试，欢迎探索...</p>
+        <h4>手柄操作</h4>
+        <p>暂时支持 XBOX 风格的游戏手柄，具体操作按钮暂定为 <a href="https://picx.zhimg.com/v2-e798053c336c15dc243c11f3f8abedbd" target="_blank">此图所示</a>，欢迎试用！ </p>
+        
         <hr>
     </div>
 
     <div>
         <h3>简单设置</h3>
         <ul>
+            <h4>图像</h4>
             <li>FOV 视角大小（默认60）<input type="number" step="1" name="wFovValue" id="wFovValue" value="60" max="1000" min="1">
                 <button id="wFovSet">启用</button>
             </li>
+
+            <h4>游戏手柄</h4>
             <li>
                 <label>
                     <input type="checkbox" id="useGamepad" checked>
@@ -146,10 +152,49 @@
             <li>
                 <label>
                     <input type="checkbox" id="hiPrecisionMove">
-                    高精度人物移动（在手柄模式下）
+                    高精度人物移动（移动速度根据力感调整）
                 </label>
             </li>
 
+            <li>
+                <label>
+                    <input type="checkbox" id="reverseMVPMoveX">
+                    反转角色移动 X 轴
+                </label>
+            </li>
+
+            <li>
+                <label>
+                    <input type="checkbox" id="reverseMVPMoveY">
+                    反转角色移动 Y 轴
+                </label>
+            </li>
+
+            <li>
+                <label>
+                    <input type="checkbox" id="inverteCamX">
+                    翻转视角 X 轴
+                </label>
+            </li>
+
+            <li>
+                <label>
+                    <input type="checkbox" id="inverteCamY">
+                    翻转视角 Y 轴
+                </label>
+            </li>
+
+            <li>
+                <label>
+                    <input type="checkbox" id="doubleCameraSpeed">
+                    双倍视角旋转速度
+                </label>
+            </li>
+
+            <li>最小敏感度：<input type="number" step="0.01" name="deadzoneValue" id="deadzoneValue" value="0.05" max="1" min="0.01">
+            </li>
+
+            <h4>其他</h4>
             <li>
                 <label>
                     <input type="checkbox" id="noBookRender">
