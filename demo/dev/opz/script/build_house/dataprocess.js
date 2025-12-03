@@ -69,17 +69,17 @@ const dataProc = {
     addPhysical: (data, instData) => {
         const boxLen = instData.length;  // 正常添加的数量
         const restLen = dataProc.totalCube - boxLen;  // 空置的数量
-        dataProc.wskIdx = k.cursorIdx;  // 计算出 万数块 ID
-        // dataProc.wskIdx = dataProc.calWskIdx();
+        // dataProc.wskIdx = k.cursorIdx;  // 计算出 万数块 ID
+        dataProc.wskIdx = dataProc.calWskIdx();
+        console.log('万数块 ID: ', dataProc.wskIdx);
         for (let index = 0; index < boxLen; index++) {  // 入档案，添加物理体
-            const idx = dataProc.wskIdx + index;
             k.addTABox({
                 DPZ : 4,
                 isPhysical: (data[index]?.st) ? false : true,  // 是否有物理属性
                 mass: 0,
                 background: '#4dff00ff',  // 调试时的高亮颜色
                 mixValue: 0.5,
-                customIdx: idx,  // 按照计算的索引
+                customIdx: dataProc.wskIdx + index,  // 按照计算的索引
                 isShadow: false,
                 X: instData[index].x,
                 Y: instData[index].y,
@@ -92,12 +92,6 @@ const dataProc = {
                 rZ: instData[index].rz,
                 isInvisible: true,  // 只被探测，而不可见
             });
-        }
-        for(let i = 0; i < restLen; i++) {  // 占位，使其能满 1 万块
-            k.addTABox({
-                isPhysical: false,
-                isVisualMode: false,
-            })
         }
     },
 
