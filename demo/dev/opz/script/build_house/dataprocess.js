@@ -11,7 +11,7 @@ const dataProc = {
     totalCube: 10000,  // 总方块数
     cubeIndex: 0,  // 计数器
     myCubeInstances: [],  // 最终生成的实例数据，的容器
-    currentBlockIndex: -1,  // 当前万数块的 ID
+    wskIdx: -1,  // 当前万数块的 ID
 
     // 读取和理解单个数据，放入 myCubeInstances 里，返回 index
     readData : (data, isHidden = false, offset = {}) => {
@@ -69,14 +69,17 @@ const dataProc = {
     addPhysical: (data, instData) => {
         const boxLen = instData.length;  // 正常添加的数量
         const restLen = dataProc.totalCube - boxLen;  // 空置的数量
-        dataProc.currentBlockIndex = k.cursorIdx;  // 计算出 万数块 ID
+        dataProc.wskIdx = k.cursorIdx;  // 计算出 万数块 ID
+        // dataProc.wskIdx = dataProc.calWskIdx();
         for (let index = 0; index < boxLen; index++) {  // 入档案，添加物理体
+            const idx = dataProc.wskIdx + index;
             k.addTABox({
                 DPZ : 4,
                 isPhysical: (data[index]?.st) ? false : true,  // 是否有物理属性
                 mass: 0,
                 background: '#4dff00ff',  // 调试时的高亮颜色
                 mixValue: 0.5,
+                customIdx: idx,  // 按照计算的索引
                 isShadow: false,
                 X: instData[index].x,
                 Y: instData[index].y,
@@ -104,11 +107,23 @@ const dataProc = {
      */
     renderInst: (instName, texture) => {
         k.W.cube({  // 渲染实例化
-            n: 'wsk_' + dataProc.currentBlockIndex,
+            n: 'wsk_' + dataProc.wskIdx,
             t: texture,  // 大理石
             instances: dataProc.myCubeInstances, // 实例属性的数组
             mix: 0.7,
         });
+    },
+
+    // 计算当前的 万数块 idx
+    // 从 0 开始，一万一万数，哪个空缺，哪个就申请为当前的 万数块
+    calWskIdx: () => {
+        const len = k.MAX_BODIES;
+        for(let index = 0; index < len; index += 10000){
+            if(k.indexToArgs.get(index) === undefined) {  // 发现空缺
+                return index;
+            }
+        }
+        return 0;  // 理论上这行根本执行不到
     },
 
     // 数据处理总入口
@@ -122,7 +137,7 @@ const dataProc = {
         dataProc.addPhysical(data, dataProc.myCubeInstances);  // 添加物理体
         dataProc.renderInst(instName, texture);  // 渲染实例化
 
-        const wskID = dataProc.currentBlockIndex;
+        const wskID = dataProc.wskIdx;
 
         // 重新置空
         if(true){
@@ -130,7 +145,7 @@ const dataProc = {
             dataProc.buildMode = 0;
             dataProc.totalCube = 10000;
             dataProc.cubeIndex = 0;
-            dataProc.currentBlockIndex = -1;
+            dataProc.wskIdx = -1;
         }
 
         return wskID;

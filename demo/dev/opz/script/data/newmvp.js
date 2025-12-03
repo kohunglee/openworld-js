@@ -175,8 +175,6 @@ function newMvp(){
     }
     const get2data =  analyzeTexture(getdata);  // 得到不同纹理的两份数据
 
-    // dataProc.process(get2data[0], 'texture_0', {x:0}, dls);
-
     k.tempData = get2data[0];
     if(get2data[1]){
         const id = dataProc.process(get2data[1], 'texture_1', {x:0}, greenStone);
@@ -243,7 +241,7 @@ function newMvp(){
 
     // 3. 启动定时器 (100ms = 1秒10次)
     // 建议保存 timer ID 以便后续可以 clearInterval 停止它
-    const timerId = setInterval(checkPlayerPosition, 100);
+    // const timerId = setInterval(checkPlayerPosition, 100);
 
 
     
