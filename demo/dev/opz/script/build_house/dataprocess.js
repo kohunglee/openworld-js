@@ -95,19 +95,6 @@ const dataProc = {
         }
     },
 
-    // 渲染实例化
-    /**
-     * 每个实例 cube 容器，都使用 wsk_ + 万数块 ID 格式，方便删除
-     */
-    renderInst: (instName, texture) => {
-        k.W.cube({  // 渲染实例化
-            n: 'wsk_' + dataProc.wskIdx,
-            t: texture,  // 大理石
-            instances: dataProc.myCubeInstances, // 实例属性的数组
-            mix: 0.7,
-        });
-    },
-
     // 计算当前的 万数块 idx
     // 从 0 开始，一万一万数，哪个空缺，哪个就申请为当前的 万数块
     calWskIdx: () => {
@@ -120,16 +107,29 @@ const dataProc = {
         return 0;  // 理论上这行根本执行不到
     },
 
+    // 渲染实例化
+    /**
+     * 每个实例 cube 容器，都使用 wsk_ + 万数块 ID 格式，方便删除
+     */
+    renderInst: (texture) => {
+        k.W.cube({  // 渲染实例化
+            n: 'wsk_' + dataProc.wskIdx,
+            t: texture,  // 大理石
+            instances: dataProc.myCubeInstances, // 实例属性的数组
+            mix: 0.7,
+        });
+    },
+
     // 数据处理总入口
     // 默认的纹理是 dls，也就是大理石
-    process: (data, instName = 'manyCubes', offset, texture = dls) => {
+    process: (data, offset, texture = dls) => {
         console.log(data.length, '个方块数据，开始处理');
 
         D = null;  // 释放内存（删去临时数据产生的内存）后续不用这个了，先放着
 
         dataProc.fullInst(data, offset);  // 填充实例化容器
         dataProc.addPhysical(data, dataProc.myCubeInstances);  // 添加物理体
-        dataProc.renderInst(instName, texture);  // 渲染实例化
+        dataProc.renderInst(texture);  // 渲染实例化
 
         const wskID = dataProc.wskIdx;
 
