@@ -11,6 +11,8 @@ export default function(ccgxkObj) {
         hotAction : (index) => {
             const G = ccgxkObj.centerDot.init;
             const thisObj = ccgxkObj;
+            const objID = document.getElementById('objID');
+            const myHUDModal = document.getElementById('myHUDModal');
             if(thisObj.hotPoint + 0 > 1_000_000) return 0;
             G.indexHotCurr = index || thisObj.hotPoint + 0;  // 将 index 数字定格，防止被更改
             G.unlockPointer();  // 解锁鼠标
@@ -51,6 +53,7 @@ export default function(ccgxkObj) {
         keyEvent : (e) => {
             const G = ccgxkObj.centerDot.init;
             const key = e.key.toLowerCase();
+            const magicNum = document.getElementById('magicNum');
             if(G.disListen() === false && document.activeElement.tagName !== 'INPUT') {  // 仅在编辑器打开且未激活 input 有效
                 if(key >= "0" && key <= "9" || key === '-') {  // 数字键，激活【神奇数字叠加值】
                     magicNum.hidden = false;
@@ -67,6 +70,8 @@ export default function(ccgxkObj) {
                     const directionSign = isForwardMove ? forwardSign : sidewaysSign;  // 最终的推力方向
                     const step = G.stepValue;
                     var delta = action.dir * directionSign * step;  // 计算步长
+                    const objPosX = document.getElementById('objPosX');
+                    const objPosZ = document.getElementById('objPosZ');
                     const feet = { x: objPosX, z: objPosZ };  // 机器人的两个轴
                     const forwardAxisName = G.forwardAxis.axis;  // 确定朝向轴
                     const targetAxisName = isForwardMove ? forwardAxisName : (forwardAxisName === 'x' ? 'z' : 'x');
@@ -93,11 +98,9 @@ export default function(ccgxkObj) {
                 const mvpBody = ccgxkObj.mainVPlayer.body;
                 if(mvpBody.mass === 0){
                     mvpBody.mass = 50;  // 重量还原
-                    // mvpBody.collisionFilterMask = 0xFFFFFFFF;
                     G.music('unfrozen');
                 } else {
                     mvpBody.mass = 0;  // 重量归 0
-                    // mvpBody.collisionFilterMask = 0;
                     mvpBody.velocity.set(0, 0, 0);  // 设置线速度为0
                     mvpBody.angularVelocity.set(0, 0, 0);  // 设置角速度为0
                     mvpBody.force.set(0, 0, 0);  // 清除所有作用力
