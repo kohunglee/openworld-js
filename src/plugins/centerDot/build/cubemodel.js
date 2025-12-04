@@ -74,6 +74,7 @@ export default function(ccgxkObj) {
          * newArgs : 方块自定义的新自身属性参数
          *  */
         modelUpdate : (e, customIndex = -1, isKeyOk = false, newArgs) => {
+            console.log('spatialGrid 需要从 array 变为 set');
             const G = ccgxkObj.centerDot.init;
             if(isRealTimeUpdata.checked === false && isKeyOk === false){ return 0; }  // 临时退出，不更新模型
             var index = G.indexHotCurr;
@@ -136,6 +137,7 @@ export default function(ccgxkObj) {
                 const DPZ = 2;  // 假设 DPZ 是 2
                 const _this = ccgxkObj;
                 const gridKey = `${DPZ}_${Math.floor(lastArgs.X / _this.gridsize[DPZ])}_${Math.floor(lastArgs.Z / _this.gridsize[DPZ])}`;
+                
                 let indicesInCell = _this.spatialGrid.get(gridKey);
                 if (!indicesInCell) { indicesInCell = [] }
                 indicesInCell.push(index);

@@ -7,11 +7,20 @@
  * （废弃）备注：后续判断，则判断 blockIndex 对应的 indexToArgs 是否存在，不存在则该块儿已经被删除，目前先这样设计
  */
 export default function(ccgxkObj){
-    ccgxkObj.deleteModBlock = function(blockIndex){
+    ccgxkObj.deleteModBlock = function(blockIndex, cobj = ccgxkObj){
         for(let i = blockIndex; i < blockIndex + 10000; i++){
-            k.hiddenTABox(i);  //+ 档案删除大法
-            k.indexToArgs.delete(i);
+            cobj.hiddenTABox(i);  //+ 档案删除大法
+            
+            // 删除在 spatialGrid 里的记录
+            if(1){
+                const gridkey = cobj.indexToArgs.get(i)?.initGridKey;
+                if(gridkey){
+                    cobj.spatialGrid.get(gridkey).delete(i);
+                }
+            }
+            cobj.indexToArgs.delete(i);
+            
         }
-        ccgxkObj.W.delete('wsk_' + blockIndex);
+        cobj.W.delete('wsk_' + blockIndex);
     }
 }
