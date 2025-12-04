@@ -77,6 +77,25 @@ function newMvp(){
 
 // ======================== 实验区 ===================================
 
+    // 生成供 build 插件使用的数据
+    if(1){
+        const buildCubeData = new Array();  
+        for(let i = 0; i < 1000; i++){  // 生成原始数据
+            buildCubeData[i] =  {
+                "x": 20,
+                "y": 10,
+                "z": 20,
+                "w": 1,
+                "h": 1,
+                "d": 1,
+            };
+        }
+        const id = dataProc.process(buildCubeData, {x:0}, dls);
+        k.centerDot.init.wskId = id;
+    }
+
+    // ----------
+
     logicFunc(testcubedata)
     const getdata = logicData(testcubedata)
 

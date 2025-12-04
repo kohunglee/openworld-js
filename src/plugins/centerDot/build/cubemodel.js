@@ -5,7 +5,7 @@
  */
 
 export default function(ccgxkObj) {
-    
+
     var g = {
         // 显示被选中的模型，物体变红
         isDisplayHotModel : false,
@@ -32,6 +32,7 @@ export default function(ccgxkObj) {
         },
 
         // 操作方块
+        wskId : 0,  // 默认的 wskId，用于建造器使用
         operaCube : (type = 0, vis = false) => {
             const G = ccgxkObj.centerDot.init;
             if(G.isDisplayHotModel === false) { vis = true }  // 显示红色
@@ -41,7 +42,7 @@ export default function(ccgxkObj) {
                 G.modelUpdate(null, newIndex);
                 G.music('copyCube');
             }
-            if(type === 1){  // 添加一个方块
+            if(type === 1){  // 添加一个方块（根据 Z 按键，参考得出的新方块）
                 const mVP = obj.mainVPlayer;
                 const northAngle = obj.calYAngle(mVP.rX, mVP.rY, mVP.rZ);
                 const plus_z = 5 * Math.cos(northAngle);
@@ -51,7 +52,7 @@ export default function(ccgxkObj) {
                     Y: mVP.Y,
                     Z: mVP.Z  - plus_z,
                 };
-                const new_rY = (G.newCubePosType === 1) ? 0 : northAngle * 180 / Math.PI;
+                const new_rY = (G.newCubePosType === 1) ? 0 : northAngle * 180 / Math.PI;  // 是否旋转
                 G.modelUpdate(null, newIndex, false, {
                     X: newPos.X, Y: newPos.Y, Z: newPos.Z,
                     rX: 0, rY: new_rY, rZ: 0,
@@ -74,7 +75,6 @@ export default function(ccgxkObj) {
          * newArgs : 方块自定义的新自身属性参数
          *  */
         modelUpdate : (e, customIndex = -1, isKeyOk = false, newArgs) => {
-            console.log('spatialGrid 需要从 array 变为 set');
             const G = ccgxkObj.centerDot.init;
             if(isRealTimeUpdata.checked === false && isKeyOk === false){ return 0; }  // 临时退出，不更新模型
             var index = G.indexHotCurr;
@@ -111,7 +111,8 @@ export default function(ccgxkObj) {
             if(lastArgs.insColor) {  // 如果有 insColor，则实例也更新
                 newInstanceData.b = lastArgs.insColor.replace('#', '');
             }
-            ccgxkObj.W.updateInstance('manyCubes', index, newInstanceData);  // 更新一下实例化模型
+            
+            ccgxkObj.W.updateInstance('wsk_' + G.wskId, index, newInstanceData);  // 更新一下实例化模型
             const quat = ccgxkObj.eulerToQuaternion({  // 将欧拉角转换为四元数
                 rX: newInstanceData.rx,
                 rY: newInstanceData.ry,
@@ -137,10 +138,9 @@ export default function(ccgxkObj) {
                 const DPZ = 2;  // 假设 DPZ 是 2
                 const _this = ccgxkObj;
                 const gridKey = `${DPZ}_${Math.floor(lastArgs.X / _this.gridsize[DPZ])}_${Math.floor(lastArgs.Z / _this.gridsize[DPZ])}`;
-                
                 let indicesInCell = _this.spatialGrid.get(gridKey);
-                if (!indicesInCell) { indicesInCell = [] }
-                indicesInCell.push(index);
+                if (!indicesInCell) { indicesInCell = new Set() }
+                indicesInCell.add(index);
                 _this.spatialGrid.set(gridKey, indicesInCell);
             }
         },

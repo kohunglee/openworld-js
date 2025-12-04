@@ -71,7 +71,6 @@ export default function(ccgxkObj) {
 
         // 保存到本地的浏览器里
         saveToLocalSt : () => {
-            const G = ccgxkObj.centerDot.init;
             const cubeDATA = g.getCubesData();
             if (ccgxkObj.cellpageid_geturl) {
                 localStorage.setItem(`ow_${ccgxkObj.cellpageid_geturl}`, JSON.stringify(cubeDATA));

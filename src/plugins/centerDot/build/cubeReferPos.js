@@ -40,6 +40,7 @@ export default function(ccgxkObj) {
 
                     const mVP = ccgxkObj.mainVPlayer;
                     const new_ry = ((mVP.rX)? 1: -1) * mVP.rY;
+
                     W.cube({
                         n: CUBE_NAME,
                         ry: new_ry,  // 让方块的旋转角度始终以正交模式添加
@@ -55,11 +56,6 @@ export default function(ccgxkObj) {
                             });
                         }
                     });
-                    // document.addEventListener('click', function(event) {
-                    //     if (event.button === 0) {  // 0 表示鼠标左键
-                    //         console.log('鼠标左键被点击了！');
-                    //     }
-                    // });
                     break;
                 case 0:  // 关闭模式
                     ccgxkObj.notCenterDot = false;  // 重新启用【中心点插件】类内容
