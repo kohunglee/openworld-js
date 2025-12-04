@@ -56,11 +56,14 @@ export default {
         this.physicsProps[p_offset + 2] = height;
         this.physicsProps[p_offset + 3] = depth;
         this.physicsProps[p_offset + 4] = DPZ;  // DPZ
+
         const gridKey = `${DPZ}_${Math.floor(X / this.gridsize[DPZ])}_${Math.floor(Z / this.gridsize[DPZ])}`;  //+5 计算区块 key，并填进数组，再填入表
+        myargs.initGridKey = gridKey;  // 临时储存，初始化的 gridKey
         let indicesInCell = this.spatialGrid.get(gridKey);
         if (!indicesInCell) { indicesInCell = [] }
         indicesInCell.push(index);
         this.spatialGrid.set(gridKey, indicesInCell);
+
         this.indexToArgs.set(index, myargs);  // index -> args
         return index;
     },

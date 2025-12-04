@@ -138,6 +138,7 @@ function newMvp(){
 
     logicFunc(testcubedata)
     const getdata = logicData(testcubedata)
+    dataProc.process(getdata, 'texture_1', {x:0}, greenStone);
 
     // dataProc.process(getdata, 'test0002', {x:0})
 
@@ -176,12 +177,12 @@ function newMvp(){
     const get2data =  analyzeTexture(getdata);  // 得到不同纹理的两份数据
 
     k.tempData = get2data[0];
-    if(get2data[1]){
-        const id = dataProc.process(get2data[1], 'texture_1', {x:0}, greenStone);
-    }
-    if(get2data[2]){
-        const id = dataProc.process(get2data[2], 'texture_2', {x:0}, dls);
-    }
+    // if(get2data[1]){
+    //     const id = dataProc.process(get2data[1], 'texture_1', {x:0}, greenStone);
+    // }
+    // if(get2data[2]){
+    //     const id = dataProc.process(get2data[2], 'texture_2', {x:0}, dls);
+    // }
 
     // 内部的监测
     /**
@@ -242,8 +243,4 @@ function newMvp(){
     // 3. 启动定时器 (100ms = 1秒10次)
     // 建议保存 timer ID 以便后续可以 clearInterval 停止它
     // const timerId = setInterval(checkPlayerPosition, 100);
-
-
-    
-
 }
