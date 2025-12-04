@@ -56,22 +56,11 @@ export default {
         this.physicsProps[p_offset + 2] = height;
         this.physicsProps[p_offset + 3] = depth;
         this.physicsProps[p_offset + 4] = DPZ;  // DPZ
-
         const gridKey = `${DPZ}_${Math.floor(X / this.gridsize[DPZ])}_${Math.floor(Z / this.gridsize[DPZ])}`;  //+5 计算区块 key，并填进数组，再填入表
         myargs.initGridKey = gridKey;  // （实验用）临时储存，存到 Args 里，只存初始化时的 gridKey
-
-        // let indicesInCell = this.spatialGrid.get(gridKey);  // array 版本的 区块值
-        // if (!indicesInCell) { indicesInCell = [] }
-        // indicesInCell.push(index);
-        // this.spatialGrid.set(gridKey, indicesInCell);
-
-        // set 版本
-        if(1){
-            const cell = this.spatialGrid.get(gridKey) || new Set();
-            cell.add(index);
-            this.spatialGrid.set(gridKey, cell);
-        }
-
+        const cell = this.spatialGrid.get(gridKey) || new Set();
+        cell.add(index);
+        this.spatialGrid.set(gridKey, cell);
         this.indexToArgs.set(index, myargs);  // index -> args
         return index;
     },

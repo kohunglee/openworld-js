@@ -69,7 +69,6 @@ const dataProc = {
     addPhysical: (data, instData) => {
         const boxLen = instData.length;  // 正常添加的数量
         const restLen = dataProc.totalCube - boxLen;  // 空置的数量
-        // dataProc.wskIdx = k.cursorIdx;  // 计算出 万数块 ID
         dataProc.wskIdx = dataProc.calWskIdx();
         console.log('万数块 ID: ', dataProc.wskIdx);
         for (let index = 0; index < boxLen; index++) {  // 入档案，添加物理体

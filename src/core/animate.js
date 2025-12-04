@@ -40,32 +40,13 @@ export default {
                         const currentGridKey = `${thisDPZ}_${Math.floor(this.positionsStatus[p_offset] / this.gridsize[thisDPZ])}_${Math.floor(this.positionsStatus[p_offset + 2] / this.gridsize[thisDPZ])}`;
                         if(orginGridKey) {
                             if(currentGridKey !== orginGridKey){
-
-                                // var indicesInCell_orige = this.spatialGrid.get(orginGridKey);  //+8 删去已失效的 key
-                                // if(indicesInCell_orige){
-                                //     // const indexInCell = indicesInCell_orige.indexOf(index);  // 删除原来的 记录
-                                //     // if(indexInCell > -1){
-                                //     //     indicesInCell_orige.splice(indexInCell, 1);
-                                //     //     this.spatialGrid.set(orginGridKey, indicesInCell_orige);
-                                //     // }
-                                //     indicesInCell_orige.delete(1);
-                                // }
-                                // var indicesInCell = this.spatialGrid.get(currentGridKey);  //+4 添加新的 key
-                                // if (!indicesInCell) { indicesInCell = [] }
-                                // indicesInCell.push(index);
-                                // this.spatialGrid.set(currentGridKey, indicesInCell);
-
-                                // 测试使用 set
-                                if(true){
-                                    this.spatialGrid.get(originGridKey)?.delete(index);  // 删去已失效的 key //使用问号，考虑到了键值为空的情况
-                                    let cell = this.spatialGrid.get(currentGridKey);  //+ 添加新的 key
-                                    if (!cell) {
-                                        cell = new Set();
-                                        this.spatialGrid.set(currentGridKey, cell);
-                                    }
-                                    cell.add(index);
+                                this.spatialGrid.get(orginGridKey)?.delete(index);  // 删去已失效的 key //使用问号，考虑到了键值为空的情况
+                                let cell = this.spatialGrid.get(currentGridKey);  //+ 添加新的 key
+                                if (!cell) {
+                                    cell = new Set();
+                                    this.spatialGrid.set(currentGridKey, cell);
                                 }
-
+                                cell.add(index);
                             }
                         }
                         indexItem.gridkey = currentGridKey; 
