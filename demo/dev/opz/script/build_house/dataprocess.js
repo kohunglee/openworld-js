@@ -15,6 +15,10 @@ const dataProc = {
 
     // 读取和理解单个数据，放入 myCubeInstances 里，返回 index
     readData : (data, isHidden = false, offset = {}) => {
+        if(data.length > 10000){
+            console.error('申请 万数块 不能使用长度大于 10000 的数据！');
+            return -1;
+        }
         if(data.del) {  // 处理已被标记 删除 的数据，按照【空模型】处理默认参数
             data = {
                 x: 999999999, y: 999999999, z: 999999999,
@@ -31,9 +35,9 @@ const dataProc = {
         }
         dataProc.myCubeInstances.push(result);  // 数据放入（填充）实例化容器
 
-        if(isHidden !== true) {  // K 记录当前有多少存入实例化的模型
-            k.visCubeLen = dataProc.cubeIndex;
-        }
+        // if(isHidden !== true) {  // K 记录当前有多少存入实例化的模型
+        //     k.visCubeLen = dataProc.cubeIndex;
+        // }
 
         return dataProc.cubeIndex++;  // 返回当前模型的索引
     },
@@ -49,7 +53,7 @@ const dataProc = {
         console.log('-----');
 
         if(dataProc.buildMode) {  // 非建造模式，补全空模型
-            for (let index = 0; index < dataProc.totalCube - k.visCubeLen; index++) {  // 空模型，填充容器里多余的空间（建造模式）
+            for (let index = 0; index < dataProc.totalCube - dataProc.cubeIndex; index++) {  // 空模型，填充容器里多余的空间（建造模式）
                 dataProc.readData({
                     x: 999999999, y: 999999999, z: 999999999,
                     w: 0.001, d: 0.001, h: 0.001,

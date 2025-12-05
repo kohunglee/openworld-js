@@ -44,9 +44,10 @@ export default function(ccgxkObj) {
             }
             if(type === 1){  // 添加一个方块（根据 Z 按键，参考得出的新方块）
                 const mVP = obj.mainVPlayer;
+                const mvpSize = 0.5;  // （实验）现在主角的大小是 0.5
                 const northAngle = obj.calYAngle(mVP.rX, mVP.rY, mVP.rZ);
-                const plus_z = 5 * Math.cos(northAngle);
-                const plus_x = 5 * Math.sin(northAngle);
+                const plus_z = 5 * Math.cos(northAngle) * mvpSize;
+                const plus_x = 5 * Math.sin(northAngle) * mvpSize;
                 const newPos = {
                     X: mVP.X - plus_x,
                     Y: mVP.Y,
@@ -56,7 +57,7 @@ export default function(ccgxkObj) {
                 G.modelUpdate(null, newIndex, false, {
                     X: newPos.X, Y: newPos.Y, Z: newPos.Z,
                     rX: 0, rY: new_rY, rZ: 0,
-                    width: 1, height: 1, depth: 1,
+                    width: 1 * mvpSize, height: 1 * mvpSize, depth: 1 * mvpSize,
                     isInvisible: vis,
                 });
                 G.music('addCube0');  // 添加方块
