@@ -14,13 +14,13 @@ export default {
     positionsStatusTA : null,  // 位置和状态
     bodyProp : null,           // 属性
     physicsPropsTA : null,     // 物理属性
-    freeSlots : null,          // 空位表
+    cursorIdx : 0,             // 添加物体时的 index 游标（试用中）
     indexToArgs : new Map(),   // index -> args 对应表
     spatialGrid : new Map(),   // 区块  -> index 对应表
-    initBodyTypeArray : function(MAX_BODIES = 1_000_000){  // 根据最多物体数量，初始化
-        this.positionsStatus = new Float32Array(MAX_BODIES * 8);  // [x, y, z, qx, qy, qz, qw, status]
-        this.physicsProps = new Float32Array(MAX_BODIES * 8);  // [mass, width, height, depth]
-        this.freeSlots = new Array(MAX_BODIES).fill(0).map((_, i) => MAX_BODIES - 1 - i); // 一个从大到小排列的空闲索引栈，如 [5,4,3,2,1]
+    MAX_BODIES : 1_000_000,
+    initBodyTypeArray : function(){  // 根据最多物体数量，初始化 位置 和 物理属性 容器
+        this.positionsStatus = new Float32Array(this.MAX_BODIES * 8);  // [x, y, z, qx, qy, qz, qw, status]
+        this.physicsProps = new Float32Array(this.MAX_BODIES * 8);  // [mass, width, height, depth]
     },
 
     // 最起初的添加物体，TA 物体
@@ -30,6 +30,7 @@ export default {
                 quat = {x: 0, y: 0, z: 0, w: 1},
                 mass = 0, width = 1, depth = 1, height = 1, size = 1,
                 rX = 0, rY = 0, rZ = 0,
+                customIdx = -1,  // 自定义的 index，会覆盖原有档案里的 index 对象的内容
             } = {}){
         const myargs = Array.from(arguments)[0];  // 提取参数
         myargs.deleteFunc = null;  // 删除（临时）时会执行的函数
@@ -39,8 +40,8 @@ export default {
         if(rX || rY || rZ){  // 处理旋转
             quat = this.eulerToQuaternion({rX,rY,rZ});
         }
-        if (this.freeSlots.length === 0) {alert('BodyTypeArray 容量已达上限，需要扩容！'); return false;};  // 没有空位就退，否则占个位子
-        const index = this.freeSlots.pop();
+        if (this.cursorIdx >= this.MAX_BODIES) {alert('BodyTypeArray 容量已达上限，需要扩容！'); return false;};  // 没有空位就退，否则占个位子
+        const index = (customIdx > -1) ? customIdx : this.cursorIdx++;
         const p_offset = index * 8;  //+8 向 TA 传数据的起点，并传入数据（繁琐写法，但性能高）
         this.positionsStatus[p_offset] = X;  
         this.positionsStatus[p_offset + 1] = Y;
@@ -56,10 +57,10 @@ export default {
         this.physicsProps[p_offset + 3] = depth;
         this.physicsProps[p_offset + 4] = DPZ;  // DPZ
         const gridKey = `${DPZ}_${Math.floor(X / this.gridsize[DPZ])}_${Math.floor(Z / this.gridsize[DPZ])}`;  //+5 计算区块 key，并填进数组，再填入表
-        let indicesInCell = this.spatialGrid.get(gridKey);
-        if (!indicesInCell) { indicesInCell = [] }
-        indicesInCell.push(index);
-        this.spatialGrid.set(gridKey, indicesInCell);
+        myargs.initGridKey = gridKey;  // （实验用）临时储存，存到 Args 里，只存初始化时的 gridKey
+        const cell = this.spatialGrid.get(gridKey) || new Set();
+        cell.add(index);
+        this.spatialGrid.set(gridKey, cell);
         this.indexToArgs.set(index, myargs);  // index -> args
         return index;
     },
@@ -212,7 +213,7 @@ export default {
         }
     },
 
-    // 添加主角（历史遗留问题，设立此函数，方便添加主角）
+    // 添加不计入档案的物理体（历史遗留问题，设立此函数，方便添加主角、天空盒等）
     addPhy : function({
                 colliGroup = 2,  // 碰撞组，全能为 1， 静止石头为 2
                 name = 'k'+ this.bodyObjName++,  // 如果没指认，则使用随机数生成 ID

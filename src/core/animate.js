@@ -40,18 +40,13 @@ export default {
                         const currentGridKey = `${thisDPZ}_${Math.floor(this.positionsStatus[p_offset] / this.gridsize[thisDPZ])}_${Math.floor(this.positionsStatus[p_offset + 2] / this.gridsize[thisDPZ])}`;
                         if(orginGridKey) {
                             if(currentGridKey !== orginGridKey){
-                                var indicesInCell_orige = this.spatialGrid.get(orginGridKey);  //+8 删去已失效的 key
-                                if(indicesInCell_orige){
-                                    const indexInCell = indicesInCell_orige.indexOf(index);
-                                    if(indexInCell > -1){
-                                        indicesInCell_orige.splice(indexInCell, 1);
-                                        this.spatialGrid.set(orginGridKey, indicesInCell_orige);
-                                    }
+                                this.spatialGrid.get(orginGridKey)?.delete(index);  // 删去已失效的 key //使用问号，考虑到了键值为空的情况
+                                let cell = this.spatialGrid.get(currentGridKey);  //+ 添加新的 key
+                                if (!cell) {
+                                    cell = new Set();
+                                    this.spatialGrid.set(currentGridKey, cell);
                                 }
-                                var indicesInCell = this.spatialGrid.get(currentGridKey);  //+4 添加新的 key
-                                if (!indicesInCell) { indicesInCell = [] }
-                                indicesInCell.push(index);
-                                this.spatialGrid.set(currentGridKey, indicesInCell);
+                                cell.add(index);
                             }
                         }
                         indexItem.gridkey = currentGridKey; 
