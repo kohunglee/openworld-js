@@ -77,6 +77,8 @@ function newMvp(){
 
 // ======================== 实验区 ===================================
 
+
+
     // 生成供 build 插件使用的数据
     if(1){
         const buildCubeData = new Array();
@@ -99,7 +101,7 @@ function newMvp(){
     // ----------
 
     logicFunc(testcubedata)
-    const getdata = logicData(testcubedata)
+    const getdata = logicData(testcubedata);  // 得到整个图书馆的数据
 
     // 分离不同的 t
     // 临时函数
@@ -119,6 +121,37 @@ function newMvp(){
     }
     const get2data =  analyzeTexture(getdata);  // 得到不同纹理的 3 份数据
 
+    console.log(get2data);
+
+
+
+
+
+// ======================== 垃圾区 ===================================
+
+    // if(1){
+    //     const id = dataProc.process(get2data[1], {x:0}, greenStone, true);  // 定位块
+        
+    //     console.log('图书馆的 wsk Id ：' + id);
+    //     const posblockIdx001 = id;  // 远景（定位块）
+    //     const posblockIdx002 = id + 1;  // 中景
+    //     const posblockIdx003 = id + 2;  // 近景
+
+    //     let statusL = 0, statusM = 0, statusX = 0;
+    //     k.indexToArgs.get(posblockIdx001).activeFunc = () => {  // 远景（在遥远的远方）
+
+    //     }
+    //     k.indexToArgs.get(posblockIdx002).activeFunc = () => {  // 中景（在建筑外面，但不至于太远）
+    //         if(statusM === 1){return 0}
+    //         console.log('渲染中景');
+    //         status = 1;
+    //     }
+    //     k.indexToArgs.get(posblockIdx003).activeFunc = () => {  // 近景（进入建筑）
+
+    //     }
+    // }
+
+    /*
     k.tempData = get2data[0];
     if(get2data[0]){
         const id = dataProc.process(get2data[0], {x:0}, greenStone);  // 外墙
@@ -129,6 +162,5 @@ function newMvp(){
     if(get2data[2]){
         const id = dataProc.process(get2data[2], {x:0}, dls);  // 内部
     }
-
-// ======================== 垃圾区 ===================================
+    */
 }

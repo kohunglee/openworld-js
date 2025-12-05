@@ -9,7 +9,6 @@ export default function(ccgxkObj) {
 
         // 获取（和下载）当前的所有方块数据
         getCubesData : (isDownload = false, rangeA = 0, rangeB = ccgxkObj.visCubeLen, isJson = false) => {
-            // console.time('生成所有数据');
             const G = ccgxkObj.centerDot.init;
             var cubeDATA = [];
             rangeB++;
@@ -65,18 +64,30 @@ export default function(ccgxkObj) {
             } else {
                 return isJson ?  JSON.stringify(cubeDATA) : cubeDATA;
             }
-
-            
         },
 
         // 保存到本地的浏览器里
         saveToLocalSt : () => {
             const cubeDATA = g.getCubesData();
-            if (ccgxkObj.cellpageid_geturl) {
-                localStorage.setItem(`ow_${ccgxkObj.cellpageid_geturl}`, JSON.stringify(cubeDATA));
-                alert('保存到 localStorage 成功！');
-            } else {
-                alert('当前页面没有 id 参数，无法保存到本地');
+
+            // if (ccgxkObj.cellpageid_geturl) {
+            //     localStorage.setItem(`ow_${ccgxkObj.cellpageid_geturl}`, JSON.stringify(cubeDATA));
+            //     alert('保存到 localStorage 成功！');
+            // } else {
+            //     alert('当前页面没有 id 参数，无法保存到本地');
+            // }
+
+            // 将数据写入到 剪切板 里
+            if(1){
+                const index = +document.getElementById('objID').value;
+                const copydata = JSON.stringify(cubeDATA[index]);
+                const t = document.createElement('textarea');
+                t.value = copydata + ',';
+                document.body.appendChild(t);
+                t.select();
+                document.execCommand('copy');
+                t.remove();
+                console.log(index + ' : ' + copydata);
             }
         },
 
