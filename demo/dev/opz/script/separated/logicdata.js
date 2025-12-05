@@ -15,9 +15,9 @@ function logicData(myData){
     k.isLogicAdd = urlParams.get('logicadd');  // 获取 url 的 id 参数
 
     if(k.isLogicAdd !== 'no'){
-        if(document.getElementById('myHUDObjEditor')){
-            document.getElementById('myHUDObjEditor').style.backgroundColor = 'blue';  // 提醒自己，不要按动保存
-        }
+        // if(document.getElementById('myHUDObjEditor')){
+        //     document.getElementById('myHUDObjEditor').style.backgroundColor = 'blue';  // 提醒自己，不要按动保存
+        // }
 
         const indices = [  // 静态物体，不参与物理计算
             82, 83, 85,

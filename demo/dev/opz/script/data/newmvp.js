@@ -79,17 +79,19 @@ function newMvp(){
 
     // 生成供 build 插件使用的数据
     if(1){
-        const buildCubeData = new Array();  
-        for(let i = 0; i < 1000; i++){  // 生成原始数据
+        const buildCubeData = new Array();
+        const buildLen = 9500;  // 保险一点
+        for(let i = 0; i < buildLen; i++){  // 生成原始数据
             buildCubeData[i] =  {
-                "x": 20,
-                "y": 10,
-                "z": 20,
-                "w": 1,
-                "h": 1,
-                "d": 1,
+                "x": 9999999,
+                "y": -9999999,
+                "z": 9999999,
+                "w": 0.00001,
+                "h": 0.00001,
+                "d": 0.00001,
             };
         }
+        k.visCubeLen = -1;  // 建造器设置 index 使用
         const id = dataProc.process(buildCubeData, {x:0}, dls);
         k.centerDot.init.wskId = id;
     }
