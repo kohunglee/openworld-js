@@ -5,193 +5,162 @@ function newMvp(){
     const mainVPSize = 0.5;  // 主角的大小，方便建造
     k.W.cube({  // 隐藏显示原主角
         n:'mainPlayer',
-        // b : '#f0f8ff42',
         hidden: true,
         size: mainVPSize,
     });
 
     k.W.sphere({  // 主角的头
-        g:'mainPlayer',
-        n:'mvp_head',
-        y: 0.82,
-        x: 0,
-        z: 0,
-        s: 1,
-        size: 0.5,
+        g:'mainPlayer', n:'mvp_head',
+        y: 0.82, x: 0, z: 0, s: 1, size: 0.5,
     });
 
     k.W.cube({  // 主角的脖子
-        g:'mainPlayer',
-        n:'mvp_neck',
-        y: 0.6,
-        x: 0,
-        z: 0,
-        w:0.1,  h:0.1,  d:0.1,
+        g:'mainPlayer', n:'mvp_neck', y: 0.6,
+        x: 0, z: 0, w:0.1,  h:0.1,  d:0.1,
     });
 
     k.W.cube({  // 主角的身体
-        g:'mainPlayer',
-        n:'mvp_body',
-        y: 0.3,
-        x: 0,
-        z: 0,
-        // b:'#0088ff8f',
-        w:0.6,  h:0.5,  d:0.1,
+        g:'mainPlayer', n:'mvp_body', y: 0.3, x: 0,
+        z: 0, w:0.6,  h:0.5,  d:0.1,
     });
 
     // 关节
     k.W.cube({  // 关节：主角的右胳膊
         g:'mainPlayer',
-        n:'joint_test',
-        y: 0.47,
-        x: 0.30,
-        z: 0,
-        rz:15,
-        ry:0,
-        w:0.1,  h:0.1,  d:0.1,
-        // hidden: true,
+        n:'joint_test', y: 0.47, x: 0.30, z: 0,
+        rz:15, ry:0, w:0.1,  h:0.1,  d:0.1, 
     });
 
 
     k.W.cube({  // 主角的右胳膊
-        g:'joint_test',
-        n:'aaa',
-        y: -2,
-        x: 0,
-        z: 0,
-        rz:0,
-        // b:'#0088ff8f',
-        w:1,  h:5,  d:1,
+        g:'joint_test', n:'aaa', y: -2,
+        x: 0, z: 0, rz:0, w:1,  h:5,  d:1,
     });
 
     // 关节
     k.W.cube({  // 关节：主角的右胳膊
-        g:'mainPlayer',
-        n:'joint_test_left',
-        y: 0.47,
-        x: -0.30,
-        z: 0,
-        rz:-15,
-        ry:0,
-        w:0.1,  h:0.1,  d:0.1,
-        // hidden: true,
+        g:'mainPlayer', n:'joint_test_left', y: 0.47, x: -0.30,
+        z: 0, rz:-15, ry:0, w:0.1,  h:0.1,  d:0.1, 
     });
 
 
     k.W.cube({  // 主角的右胳膊
         g:'joint_test_left',
-        n:'bbb',
-        y: -2,
-        x: 0,
-        z: 0,
-        rz:0,
-        // b:'#0088ff8f',
-        w:1,  h:5,  d:1,
+        n:'bbb', y: -2, x: 0, z: 0, rz:0, w:1,  h:5,  d:1,
     });
 
     // 关节
     k.W.cube({  // 关节：主角的右腿
         g:'mainPlayer',
         n:'joint_test_right_leg',
-        y: 0.1,
-        x: 0.15,
-        z: 0,
-        
-        w:0.1,  h:0.1,  d:0.1,
-        // hidden: true,
+        y: 0.1, x: 0.15, z: 0, w:0.1,  h:0.1,  d:0.1,
     });
 
     k.W.cube({  // 主角的右腿
         g:'joint_test_right_leg',
         n:'rightleg',
-        y: -3,
-        x: 0,
-        z: 0,
-        rz:0,
-        w:1,  h:6,  d:1,
+        y: -3, x: 0, z: 0, rz:0, w:1,  h:6,  d:1,
     });
 
     // 关节
     k.W.cube({  // 关节：主角的左腿
         g:'mainPlayer',
         n:'joint_test_left_leg',
-        y: 0.1,
-        x: -0.15,
-        z: 0,
-        
+        y: 0.1, x: -0.15, z: 0, 
         w:0.1,  h:0.1,  d:0.1,
     });
 
     k.W.cube({  // 主角的右腿
-        g:'joint_test_left_leg',
-        n:'leftleg',
-        y: -3,
-        x: 0,
-        z: 0,
-        rz:0,
-        w:1,  h:6,  d:1,
+        g:'joint_test_left_leg', n:'leftleg', y: -3,
+        x: 0, z: 0, rz:0, w:1,  h:6,  d:1,
     });
 
-// ===========================================================
+// ======================== 实验区 ===================================
 
-    const c = document.createElement('canvas');
-    const ctx = c.getContext('2d');
-    c.width = 1024;
-    c.height = 512;
-    let g = ctx.createLinearGradient(0, 0, 0, c.height);  // 1. 背景主渐变（纯蓝 → 淡蓝）
-    g.addColorStop(0.00, '#4fa9ff');   // 顶部：纯蓝，极点不易失真
-    g.addColorStop(0.17, '#6ec3ff');   // 中段
-    g.addColorStop(0.35, '#a9e0ff');   // 接近地平线
-    g.addColorStop(0.50, '#eff6fbff');   // 底部：白（云带）
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, c.width, c.height);
-    const skyTexture = new Image();  // 输出 img，用于 WebGL
-    skyTexture.src = c.toDataURL();
 
-    skyTexture.onload = () => {
 
-        // 天空盒测试
-        k.W.sphere({  // 主角的右腿
-            // g:'mainPlayer',
-            n:'skybox_test',
-            y: 25,
-            x: 0,
-            z: 0,
-            rz:0,
-            size: 2500,
-            uncullface: 1,
-            t: skyTexture,
-            // s: 1,
-            rx: 10,
-            ns: true,
-        });
-    };
+    // 生成供 build 插件使用的数据
+    if(1){
+        const buildCubeData = new Array();
+        const buildLen = 9500;  // 保险一点
+        for(let i = 0; i < buildLen; i++){  // 生成原始数据
+            buildCubeData[i] =  {
+                "x": 9999999,
+                "y": -9999999,
+                "z": 9999999,
+                "w": 0.00001,
+                "h": 0.00001,
+                "d": 0.00001,
+            };
+        }
+        k.visCubeLen = -1;  // 建造器设置 index 使用
+        const id = dataProc.process(buildCubeData, {x:0}, dls);
+        k.centerDot.init.wskId = id;
+    }
+
+    // ----------
 
     logicFunc(testcubedata)
-    const getdata = logicData(testcubedata)
+    const getdata = logicData(testcubedata);  // 得到整个图书馆的数据
 
-    // dataProc.process(getdata, 'test0002', {x:0})
+    // 分离不同的 t
+    // 临时函数
+    // 注意，这是一个失败的案例，没有考虑 内外层 纹理, 所以这个函数，就在这里用
+    function analyzeTexture(myData){
+        const result = new Array();
+        const len = myData.length;
+        for(let i = 0; i < len; i++){
+            const obj = myData[i];
+            const texture = obj?.t ?? 0;
+            if(result[texture] === undefined){
+                result[texture] = [];
+            }
+            result[texture].push(obj);
+        }
+        return result;
+    }
+    const get2data =  analyzeTexture(getdata);  // 得到不同纹理的 3 份数据
 
-    const testData = [
-        {
-            x: 10, y: 10, z: 10,
-            w: 1, d: 1, h: 1,
-        },
-        {
-            x: 20, y: 10, z: 10,
-            w: 1, d: 1, h: 1,
-        },
-        {
-            del: 1,
-        },
-        {
-            x: 40, y: 10, z: 10,
-            w: 1, d: 1, h: 1,
-        },
-    ];
+    console.log(get2data);
+
+
+
+
+
+// ======================== 垃圾区 ===================================
+
+    // if(1){
+    //     const id = dataProc.process(get2data[1], {x:0}, greenStone, true);  // 定位块
         
+    //     console.log('图书馆的 wsk Id ：' + id);
+    //     const posblockIdx001 = id;  // 远景（定位块）
+    //     const posblockIdx002 = id + 1;  // 中景
+    //     const posblockIdx003 = id + 2;  // 近景
 
-    ;
-    dataProc.process(getdata, 'test0002', {x:0});
-   
+    //     let statusL = 0, statusM = 0, statusX = 0;
+    //     k.indexToArgs.get(posblockIdx001).activeFunc = () => {  // 远景（在遥远的远方）
+
+    //     }
+    //     k.indexToArgs.get(posblockIdx002).activeFunc = () => {  // 中景（在建筑外面，但不至于太远）
+    //         if(statusM === 1){return 0}
+    //         console.log('渲染中景');
+    //         status = 1;
+    //     }
+    //     k.indexToArgs.get(posblockIdx003).activeFunc = () => {  // 近景（进入建筑）
+
+    //     }
+    // }
+
+    /*
+    k.tempData = get2data[0];
+    if(get2data[0]){
+        const id = dataProc.process(get2data[0], {x:0}, greenStone);  // 外墙
+    }
+    if(get2data[1]){
+        const id = dataProc.process(get2data[1], {x:0}, greenStone);  // 外墙
+    }
+    if(get2data[2]){
+        const id = dataProc.process(get2data[2], {x:0}, dls);  // 内部
+    }
+    */
 }

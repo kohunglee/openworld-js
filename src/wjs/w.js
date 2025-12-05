@@ -302,7 +302,9 @@ const W = {
               W.next[object.n].m.preMultiplySelf(W.next[object.g].M || W.next[object.g].m);
             }
 
-            //---- 易报错代码
+            //---- 易报错代码 ----------------------------------------------------------------
+
+
             function safeUniformMatrix(gl, location, mat) {  // 安全传矩阵，确保不会报错，数据合法
               // try {
                 const arr = mat?.toFloat32Array?.() || [];
@@ -314,13 +316,22 @@ const W = {
             }
             if (!just_compute) {
               let safeMat;
-              // try {
-                const raw = W.next?.[object.n]?.M || W.next?.[object.n]?.m;
-                const arr = new safeDOMMatrix(raw).toFloat32Array();
+              const raw = W.next?.[object.n]?.M || W.next?.[object.n]?.m;
+
+              try {  // 希望会捕获到吧
+                if(Math.random() > 1){
+                  console.log(object.n);
+                }
+                const arr = new DOMMatrix(raw).toFloat32Array();
                 safeMat = arr.some(v => !Number.isFinite(v)) ? new DOMMatrix() : new DOMMatrix(raw);
-              // } catch {
-              //   safeMat = new DOMMatrix();
-              // }
+              } catch {
+                W.testcount = (W.testcount || 0) + 1;
+                if(W.testcount < 3000){
+                  console.log('矩阵数据出错了：', W.testcount, object.n);
+                  console.log(raw);
+                  console.log('---------------');
+                }
+              }
 
               safeUniformMatrix(W.gl, W.uniformLocations.m, safeMat);
 
@@ -333,7 +344,9 @@ const W = {
 
               safeUniformMatrix(W.gl, W.uniformLocations.im, inv);
             }
-            //----
+
+            
+            //------------------------------------------------------------------------------------
 
         }
         if(!just_compute){  // 渲染可见物体
@@ -442,11 +455,33 @@ const W = {
   // 辅助函数
   // ========
   
-  // 在两个值之间插值
-  lerp: (item, property) => 
-    W.next[item]?.a
-    ? W.current[item][property] + (W.next[item][property] -  W.current[item][property]) * (W.next[item].f / W.next[item].a)
-    : W.next[item][property],
+  // // 在两个值之间插值
+  // lerp: (item, property) => 
+  //   W.next[item]?.a
+  //   ? W.current[item][property] + (W.next[item][property] -  W.current[item][property]) * (W.next[item].f / W.next[item].a)
+  //   : W.next[item][property],
+  // 在两个值之间插值 (修复版：增加 NaN 防御)
+  lerp: (item, property) => {
+    const next = W.next[item];
+    const curr = W.current[item];
+    // 1. 如果没有 next，直接返回 0 防止报错
+    if (!next) return 0;
+    // 2. 获取目标值，如果 undefined 默认为 0
+    const targetVal = next[property] || 0;
+    
+    // 3. 如果没有过渡时间 a，或者 a <= 0，直接一步到位
+    if (!next.a || next.a <= 0) return targetVal;
+
+    // 4. 获取当前值，如果当前值没有，就用目标值代替（防止 undefined 参与计算）
+    const currentVal = (curr && curr[property] !== undefined) ? curr[property] : targetVal;
+    
+    // 5. 计算进度，限制在 0~1 之间 (防止过冲导致数值溢出)
+    let t = next.f / next.a;
+    // if (t < 0) t = 0; // 通常不需要，f 从 0 开始
+    // if (t > 1) t = 1; // 你的 draw 逻辑里已经限制了 f > a，但为了安全可以加上
+
+    return currentVal + (targetVal - currentVal) * t;
+  },
   
   // 过渡一个项目
   animation: (item, m = new DOMMatrix) =>
@@ -512,39 +547,6 @@ W.smooth = (state, dict = {}, vertices = [], iterate, iterateSwitch, i, j, A, B,
     W.models[state.type].normals[Ci] = dict[C[0]+"_"+C[1]+"_"+C[2]] = dict[C[0]+"_"+C[1]+"_"+C[2]].map((a,i) => a + normal[i]);
   }
 }
-
-// 安全矩阵计算
-// ======================
-// 永不报错的 DOMMatrix 构造器
-function safeDOMMatrix(raw) {
-    // 1. 尝试把 raw 转成数组
-    let arr;
-    try {
-        if (raw instanceof DOMMatrix) {
-            arr = Array.from(raw.toFloat32Array());
-        } else if (Array.isArray(raw)) {
-            arr = raw.slice();
-        } else if (raw && typeof raw === 'object') {
-            const m = new DOMMatrix(raw);
-            arr = Array.from(m.toFloat32Array());
-        } else {
-            arr = [];
-        }
-    } catch(e){
-        // 完全无法解析 → fallback 空数组
-        arr = [];
-    }
-
-    // 2. 保证数组至少有 16 个数（矩阵大小）
-    while (arr.length < 16) arr.push(0);
-
-    // 3. 把所有 NaN 和 Infinity 清理掉
-    arr = arr.map(v => (Number.isFinite(v) ? v : 0));
-
-    // 4. 永远不会失败
-    return new DOMMatrix(arr);
-}
-
 
 // 3D模型
 // ========

@@ -15,9 +15,11 @@ function logicData(myData){
     k.isLogicAdd = urlParams.get('logicadd');  // 获取 url 的 id 参数
 
     if(k.isLogicAdd !== 'no'){
-        if(document.getElementById('myHUDObjEditor')){
-            document.getElementById('myHUDObjEditor').style.backgroundColor = 'blue';  // 提醒自己，不要按动保存
-        }
+        // if(document.getElementById('myHUDObjEditor')){
+        //     document.getElementById('myHUDObjEditor').style.backgroundColor = 'blue';  // 提醒自己，不要按动保存
+        // }
+
+
 
         const indices = [  // 静态物体，不参与物理计算
             82, 83, 85,
@@ -34,9 +36,40 @@ function logicData(myData){
             }
         });
 
-        // 将外墙 [44~48] [78~80]，设置为纹理 t 为第二种材质
+        // 将外墙 [44~48] [78~80] 等等等外面那一圈，设置为纹理 t 为第二种材质
+        // 另外还有 定位块
+        // 现在决定，定位块默认使用 t = 1
         if(true){
-            
+            [
+                112, 113, 114,
+            ].forEach(index => {
+                    if (myData[index]) {
+                        myData[index].t = 1;
+                    }
+                }
+            );
+            [
+                44, 45, 46, 47, 48, 78, 79, 80,
+                10, 55, 62, 
+                65, 66, 49, 77,
+                76, 81, 59, 63, 56,
+                54, 57, 58,
+            ].forEach(index => {
+                    if (myData[index]) {
+                        myData[index].t = 2;
+                    }
+                }
+            );
+
+            [
+                49, 66, 65, 64,
+                55, 10, 54, 56,
+            ].forEach(index => {
+                    if (myData[index]) {
+                        myData[index].t = 3;
+                    }
+                }
+            );
         }
 
         // 建造第一层

@@ -306,7 +306,7 @@ const htmlCode = `
                     </div>
                 </details>
                 <hr>
-                <button class="texture-saveCubeData" id="textureSaveCubeData">保存数据</button>
+                <button class="texture-saveCubeData" id="textureSaveCubeData">复制数据</button>
                 <button class="texture-getCubeData" id="textureGetCubeData">下载数据</button>
             </div>
         </div>

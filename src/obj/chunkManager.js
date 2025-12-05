@@ -45,14 +45,16 @@ export default {
         const newActiveIndices = new Set();  // 待做出隐藏动作的物体的 index 列表
         const indicesToHide = new Set(this.currentlyActiveIndices);  // 待做出隐藏动作的物体的 index 列表
         for(const key of activeGridKeys){
-            const indicesInGrid = this.spatialGrid.get(key);  // 取物体使用（spatialGrid，物体花名册）
-            if (indicesInGrid) {
+            const indicesInGrid = this.spatialGrid.get(key);  // Set 或 undefined
+            if (indicesInGrid instanceof Set) {
                 for (const index of indicesInGrid) {
+
                     const minY = this.gridsizeY[this.physicsProps[index * 8 + 4]].toFixed(2);
-                    // const minY = 1.35;
-                    if(Math.abs(this.positionsStatus[index * 8 + 1] - mVP.Y) < minY){  // 高度距离（Y）要接近
+
+                    if (Math.abs(this.positionsStatus[index * 8 + 1] - mVP.Y) < minY) {
                         newActiveIndices.add(index);
                     }
+
                 }
             }
         }
