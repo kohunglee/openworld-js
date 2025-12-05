@@ -34,11 +34,6 @@ const dataProc = {
             result.b = data.b;
         }
         dataProc.myCubeInstances.push(result);  // 数据放入（填充）实例化容器
-
-        // if(isHidden !== true) {  // K 记录当前有多少存入实例化的模型
-        //     k.visCubeLen = dataProc.cubeIndex;
-        // }
-
         return dataProc.cubeIndex++;  // 返回当前模型的索引
     },
 
@@ -127,15 +122,11 @@ const dataProc = {
     // 默认的纹理是 dls，也就是大理石
     process: (data, offset, texture = dls) => {
         console.log(data.length, '个方块数据，开始处理');
-
         D = null;  // 释放内存（删去临时数据产生的内存）后续不用这个了，先放着
-
         dataProc.fullInst(data, offset);  // 填充实例化容器
         dataProc.addPhysical(data, dataProc.myCubeInstances);  // 添加物理体
         dataProc.renderInst(texture);  // 渲染实例化
-
         const wskID = dataProc.wskIdx;
-
         // 重新置空
         if(true){
             dataProc.myCubeInstances = [];
@@ -144,7 +135,6 @@ const dataProc = {
             dataProc.cubeIndex = 0;
             dataProc.wskIdx = -1;
         }
-
         return wskID;
     },
 }
