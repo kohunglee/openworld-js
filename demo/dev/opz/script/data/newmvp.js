@@ -64,10 +64,6 @@ function newMvp(){
 
 // ======================== 实验区 ===================================
 
-
-
-
-
     // 生成供 build 插件使用的数据
     if(1){
         const buildCubeData = new Array();
@@ -90,8 +86,6 @@ function newMvp(){
 
     // 得到图书馆数据
     let get2data;  // 数据容器
-    let lk001, lk002;  // 简模1 极简模2 的 wsk id
-    const lkmodel = [{"x":84.924,"y":9.101,"z":32.463,"w":36,"h":17,"d":30}];
     if(1){
         logicFunc(testcubedata)
         const getdata = logicData(testcubedata);  // 图书馆源数据
@@ -111,46 +105,70 @@ function newMvp(){
         get2data =  analyzeTexture(getdata);  // 得到不同纹理的 3 份数据
     }
 
-    // 生成一个测试使用的 定位块
+    // 定位块 的业务逻辑
+    let lk001, lk002;  // 简模1 极简模2 的 wsk id
+    const lkmodel      = [{"x":32.557,"y":9.101,"z":29.457,"w":36,"h":17,"d":30,b:"#C7B8A1"}];  // 简模
+    const lkmodelLarge = [{"x":32.557,"y":9.101,"z":29.457,"w":20,"h":17,"d":60,b:"#FFFAF4"}];  // 极其极其简模
     if(1){
 
-        // 外墙
+        // 外墙和简模(目前的逻辑，在正常行走内，无误。若角色直接穿越，则会 bug，先不理会)
         if(1){
-            const data = [{"x":32.557,"y":1.5,"z":29.457,"w":0.5,"h":0.5,"d":0.5}];
-            data[0].dz = 2;
-            const testwsk = dataProc.process(data, {x:0}, dls);
-            let wq2, wq3;
-            k.indexToArgs.get(testwsk + 0).activeFunc = () => {  // 近景
-                wq2 = dataProc.process(get2data[2], {z:60}, greenStone);  // 外墙
-                wq3 = dataProc.process(get2data[3], {z:60}, greenStone);  // 外墙
-
+            const posBlockMiddle = [{"x":32.557,"y":1.5,"z":29.457,"w":0.5,"h":0.5,"d":0.5}];  // 定位块（外墙 - 简模）
+            posBlockMiddle[0].dz = 2;
+            const posBlockMiddleIdx = dataProc.process(posBlockMiddle, {x:0}, dls);  // 放置定位块
+            let outBrickWsk2, outBrickWsk3;
+            k.indexToArgs.get(posBlockMiddleIdx + 0).activeFunc = () => {  // 近景激活
+                outBrickWsk2 = dataProc.process(get2data[2], {z:60}, greenStone);  // 外墙 2
+                outBrickWsk3 = dataProc.process(get2data[3], {z:60}, greenStone);  // 外墙 3
+                console.log('outBrickWsk2  ' + outBrickWsk2);
+                console.log('outBrickWsk3  ' + outBrickWsk3);
                 if(lk001) {  // 删除简模1
                     k.deleteModBlock(lk001);
                     lk001 = null;
                 }
             }
-            k.indexToArgs.get(testwsk + 0).deleteFunc = () => {  // 离开（注意，只能先增后减，以防冲突）
+            k.indexToArgs.get(posBlockMiddleIdx + 0).deleteFunc = () => {  // 离开（注意，只能先增后减，以防冲突）
                 lk001 = dataProc.process(lkmodel, {z:0}, dls);  // 增加简模1
-                k.deleteModBlock(wq2);  //+ 删除外墙
-                k.deleteModBlock(wq3);
+                k.deleteModBlock(outBrickWsk2);  //+ 删除外墙
+                k.deleteModBlock(outBrickWsk3);
+            }
+
+            const posBlockLarge = [{"x":32.557,"y":1.5,"z":29.457,"w":0.5,"h":0.5,"d":0.5}];  // 定位块（极其极其简模）
+            posBlockLarge[0].dz = 1;
+            const posBlockLargeIdx = dataProc.process(posBlockLarge, {x:0}, dls);  // 放置定位块
+            k.indexToArgs.get(posBlockLargeIdx + 0).activeFunc = () => {
+                lk001 = dataProc.process(lkmodel, {z:0}, dls);  // 增加简模1
+                if(lk002){
+                    k.deleteModBlock(lk002);
+                    lk002 = null;
+                }
+
+            }
+            k.indexToArgs.get(posBlockLargeIdx + 0).deleteFunc = () => {
+                lk002 = dataProc.process(lkmodelLarge, {z:0}, dls);
+                if(lk001) {  // 删除简模1
+                    k.deleteModBlock(lk001);
+                    lk001 = null;
+                }
             }
         }
 
         // 内部装潢
         if(1){
-            const data = [{"x":32.557,"y":1.5,"z":29.457,"w":0.5,"h":0.5,"d":0.5}];
+            const data = [{"x":32.557,"y":1.5,"z":29.457,"w":0.5,"h":0.5,"d":0.5}];  // 定位块（内部）
             data[0].dz = 3;
             const testwsk = dataProc.process(data, {x:0}, dls);
+            console.log('testwsk' + testwsk);
             let id0;
             k.indexToArgs.get(testwsk + 0).activeFunc = () => {  // 近景
-                id0 = dataProc.process(get2data[0], {z:60}, dls);  // 外墙
+                id0 = dataProc.process(get2data[0], {z:60}, dls);
+                console.log('装潢' + id0);
             }
             k.indexToArgs.get(testwsk + 0).deleteFunc = () => {  // 删除
                 k.deleteModBlock(id0);
+                console.log('删除装潢');
             }
         }
-
-
     }
 
     

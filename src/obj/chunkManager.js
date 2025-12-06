@@ -31,8 +31,8 @@ export default {
      * 5：小角落里才能看到的特殊纹理（如，书本上详细的字）
      * （与 DPZ 值挨个对应，从 0 开始）
      */
-    gridsize : new Uint16Array([10000, 300, 100, 20, 5, 1]),
-    gridsizeY : new Float32Array([10000, 300, 100, 20, 5, 1]),
+    gridsize : new Uint16Array([10000, 200, 100, 20, 5, 1]),
+    gridsizeY : new Float32Array([10000, 200, 100, 20, 5, 1]),
 
     // 新的 dynaNodes（适用于长宽 40 以内的物体），lab 版本
     currentlyActiveIndices : new Set(),  // 当前激活状态的物体。也可保存本次的激活物体列表，供下一次使用

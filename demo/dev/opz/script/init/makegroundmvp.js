@@ -17,10 +17,9 @@ function makeGroundMvp(){
     if(true){
         const X = 0, Y = -0.5, Z = 0;
         const width = 2500, depth = 2500, height = 2;
-        k.addPhy({  // 地面物理体
+        k.groundObj = k.addPhy({  // 地面物理体
             name: 'ground',
-            colliGroup: 2,
-            isShadow: 'ok',
+            colliGroup: 1,
             X: X, Y: Y, Z: Z,
             width: width, depth: depth, height: height,
             mass: 0,
