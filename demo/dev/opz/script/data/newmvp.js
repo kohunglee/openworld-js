@@ -64,6 +64,42 @@ function newMvp(){
 
 // ======================== 实验区 ===================================
 
+    // 特殊队列，试一下吧
+    function specialQueue(interval = 200) {
+
+        const queue = [];
+        let isRunning = false;
+
+        function runNext() {
+            if (queue.length === 0) {
+                isRunning = false;
+                return;
+            }
+
+            isRunning = true;
+
+            const fn = queue.shift(); // 取出第一个
+            try {
+                fn();
+            } catch (e) {
+                console.error("specialQueue function error:", e);
+            }
+
+            // 下一个函数在 200ms 后执行
+            setTimeout(runNext, interval);
+        }
+
+        return {
+            add(fn) {
+                if (typeof fn !== "function") return;
+                queue.push(fn);
+                if (!isRunning) runNext();
+            }
+        };
+    }
+    const q = specialQueue(200);
+
+
     // 生成供 build 插件使用的数据
     if(1){
         const buildCubeData = new Array();

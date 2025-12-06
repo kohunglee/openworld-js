@@ -67,7 +67,8 @@ const dataProc = {
     addPhysical: (data, instData) => {
         const boxLen = instData.length;  // 正常添加的数量
         const restLen = dataProc.totalCube - boxLen;  // （先作废）空置的数量
-        dataProc.wskIdx = dataProc.calWskIdx();
+        // dataProc.wskIdx = dataProc.calWskIdx();
+
         // console.log('万数块 ID: ', dataProc.wskIdx);
         for (let index = 0; index < boxLen; index++) {  // 入档案，添加物理体
             k.addTABox({
@@ -125,6 +126,8 @@ const dataProc = {
     process: (data, offset, texture = dls) => {
         // console.log(data.length, '个方块数据，开始处理');
         D = null;  // 释放内存（删去临时数据产生的内存）后续不用这个了，先放着
+        dataProc.wskIdx = dataProc.calWskIdx();  //+ 马上计算 wsk id，并占位！
+        k.indexToArgs.set(dataProc.wskIdx, {n: 'is has data'});
         dataProc.fullInst(data, offset);  // 填充实例化容器
         dataProc.addPhysical(data, dataProc.myCubeInstances);  // 添加物理体
         dataProc.renderInst(texture);  // 渲染实例化

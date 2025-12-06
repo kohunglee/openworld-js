@@ -15,8 +15,8 @@ function makeGroundMvp(){
 
     // 添加地面
     if(true){
-        const X = 0, Y = -0.5, Z = 0;
-        const width = 2500, depth = 2500, height = 2;
+        const X = 0, Y = -0.5 - 2, Z = 0;
+        const width = 250, depth = 250, height = 6;
         k.groundObj = k.addPhy({  // 地面物理体
             name: 'ground',
             colliGroup: 1,
