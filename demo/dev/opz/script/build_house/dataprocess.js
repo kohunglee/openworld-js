@@ -43,8 +43,8 @@ const dataProc = {
         for (let index = 0; index < len; index++) {  // 实心数据，填充实例化容器
             dataProc.readData(data[index], false, offset);
         }
-        console.log('共', dataProc.cubeIndex, '个可见方块（包括 del）');
-        console.log('-----');
+        // console.log('共', dataProc.cubeIndex, '个可见方块（包括 del）');
+        // console.log('-----');
 
         if(dataProc.buildMode) {  // 非建造模式，补全空模型
             for (let index = 0; index < dataProc.totalCube - dataProc.cubeIndex; index++) {  // 空模型，填充容器里多余的空间（建造模式）
@@ -68,7 +68,7 @@ const dataProc = {
         const boxLen = instData.length;  // 正常添加的数量
         const restLen = dataProc.totalCube - boxLen;  // （先作废）空置的数量
         dataProc.wskIdx = dataProc.calWskIdx();
-        console.log('万数块 ID: ', dataProc.wskIdx);
+        // console.log('万数块 ID: ', dataProc.wskIdx);
         for (let index = 0; index < boxLen; index++) {  // 入档案，添加物理体
             k.addTABox({
                 DPZ : (data[index]?.dz) ? data[index]?.dz : 4,
@@ -109,6 +109,9 @@ const dataProc = {
      * 每个实例 cube 容器，都使用 wsk_ + 万数块 ID 格式，方便删除
      */
     renderInst: (texture) => {
+        console.log('实例化 ' + dataProc.wskIdx);
+        console.log(dataProc.myCubeInstances);
+        console.log('----');
         k.W.cube({  // 渲染实例化
             n: 'wsk_' + dataProc.wskIdx,
             t: texture,  // 大理石
@@ -120,7 +123,7 @@ const dataProc = {
     // 数据处理总入口
     // 默认的纹理是 dls，也就是大理石
     process: (data, offset, texture = dls) => {
-        console.log(data.length, '个方块数据，开始处理');
+        // console.log(data.length, '个方块数据，开始处理');
         D = null;  // 释放内存（删去临时数据产生的内存）后续不用这个了，先放着
         dataProc.fullInst(data, offset);  // 填充实例化容器
         dataProc.addPhysical(data, dataProc.myCubeInstances);  // 添加物理体
