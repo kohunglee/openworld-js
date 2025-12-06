@@ -8,60 +8,48 @@ function newMvp(){
         hidden: true,
         size: mainVPSize,
     });
-
     k.W.sphere({  // 主角的头
         g:'mainPlayer', n:'mvp_head',
         y: 0.82, x: 0, z: 0, s: 1, size: 0.5,
     });
-
     k.W.cube({  // 主角的脖子
         g:'mainPlayer', n:'mvp_neck', y: 0.6,
         x: 0, z: 0, w:0.1,  h:0.1,  d:0.1,
     });
-
     k.W.cube({  // 主角的身体
         g:'mainPlayer', n:'mvp_body', y: 0.3, x: 0,
         z: 0, w:0.6,  h:0.5,  d:0.1,
     });
-
     // 关节
     k.W.cube({  // 关节：主角的右胳膊
         g:'mainPlayer',
         n:'joint_test', y: 0.47, x: 0.30, z: 0,
         rz:15, ry:0, w:0.1,  h:0.1,  d:0.1, 
     });
-
-
     k.W.cube({  // 主角的右胳膊
         g:'joint_test', n:'aaa', y: -2,
         x: 0, z: 0, rz:0, w:1,  h:5,  d:1,
     });
-
     // 关节
     k.W.cube({  // 关节：主角的右胳膊
         g:'mainPlayer', n:'joint_test_left', y: 0.47, x: -0.30,
         z: 0, rz:-15, ry:0, w:0.1,  h:0.1,  d:0.1, 
     });
-
-
     k.W.cube({  // 主角的右胳膊
         g:'joint_test_left',
         n:'bbb', y: -2, x: 0, z: 0, rz:0, w:1,  h:5,  d:1,
     });
-
     // 关节
     k.W.cube({  // 关节：主角的右腿
         g:'mainPlayer',
         n:'joint_test_right_leg',
         y: 0.1, x: 0.15, z: 0, w:0.1,  h:0.1,  d:0.1,
     });
-
     k.W.cube({  // 主角的右腿
         g:'joint_test_right_leg',
         n:'rightleg',
         y: -3, x: 0, z: 0, rz:0, w:1,  h:6,  d:1,
     });
-
     // 关节
     k.W.cube({  // 关节：主角的左腿
         g:'mainPlayer',
@@ -69,13 +57,14 @@ function newMvp(){
         y: 0.1, x: -0.15, z: 0, 
         w:0.1,  h:0.1,  d:0.1,
     });
-
     k.W.cube({  // 主角的右腿
         g:'joint_test_left_leg', n:'leftleg', y: -3,
         x: 0, z: 0, rz:0, w:1,  h:6,  d:1,
     });
 
 // ======================== 实验区 ===================================
+
+
 
 
 
@@ -91,6 +80,7 @@ function newMvp(){
                 "w": 0.00001,
                 "h": 0.00001,
                 "d": 0.00001,
+                "dz": 0,  // dpz 先设置成 0 ，方便调试
             };
         }
         k.visCubeLen = -1;  // 建造器设置 index 使用
@@ -98,30 +88,76 @@ function newMvp(){
         k.centerDot.init.wskId = id;
     }
 
-    // ----------
-
-    logicFunc(testcubedata)
-    const getdata = logicData(testcubedata);  // 得到整个图书馆的数据
-
-    // 分离不同的 t
-    // 临时函数
-    // 注意，这是一个失败的案例，没有考虑 内外层 纹理, 所以这个函数，就在这里用
-    function analyzeTexture(myData){
-        const result = new Array();
-        const len = myData.length;
-        for(let i = 0; i < len; i++){
-            const obj = myData[i];
-            const texture = obj?.t ?? 0;
-            if(result[texture] === undefined){
-                result[texture] = [];
+    // 得到图书馆数据
+    let get2data;  // 数据容器
+    let lk001, lk002;  // 简模1 极简模2 的 wsk id
+    const lkmodel = [{"x":84.924,"y":9.101,"z":32.463,"w":36,"h":17,"d":30}];
+    if(1){
+        logicFunc(testcubedata)
+        const getdata = logicData(testcubedata);  // 图书馆源数据
+        function analyzeTexture(myData){  // 分离不同的 t
+            const result = new Array();
+            const len = myData.length;
+            for(let i = 0; i < len; i++){
+                const obj = myData[i];
+                const texture = obj?.t ?? 0;
+                if(result[texture] === undefined){
+                    result[texture] = [];
+                }
+                result[texture].push(obj);
             }
-            result[texture].push(obj);
+            return result;
         }
-        return result;
+        get2data =  analyzeTexture(getdata);  // 得到不同纹理的 3 份数据
     }
-    const get2data =  analyzeTexture(getdata);  // 得到不同纹理的 3 份数据
 
-    console.log(get2data);
+    // 生成一个测试使用的 定位块
+    if(1){
+
+        // 外墙
+        if(1){
+            const data = [{"x":32.557,"y":1.5,"z":29.457,"w":0.5,"h":0.5,"d":0.5}];
+            data[0].dz = 2;
+            const testwsk = dataProc.process(data, {x:0}, dls);
+            let wq2, wq3;
+            k.indexToArgs.get(testwsk + 0).activeFunc = () => {  // 近景
+                wq2 = dataProc.process(get2data[2], {z:60}, greenStone);  // 外墙
+                wq3 = dataProc.process(get2data[3], {z:60}, greenStone);  // 外墙
+
+                if(lk001) {  // 删除简模1
+                    k.deleteModBlock(lk001);
+                    lk001 = null;
+                }
+            }
+            k.indexToArgs.get(testwsk + 0).deleteFunc = () => {  // 离开（注意，只能先增后减，以防冲突）
+                lk001 = dataProc.process(lkmodel, {z:0}, dls);  // 增加简模1
+                k.deleteModBlock(wq2);  //+ 删除外墙
+                k.deleteModBlock(wq3);
+            }
+        }
+
+        // 内部装潢
+        if(1){
+            const data = [{"x":32.557,"y":1.5,"z":29.457,"w":0.5,"h":0.5,"d":0.5}];
+            data[0].dz = 3;
+            const testwsk = dataProc.process(data, {x:0}, dls);
+            let id0;
+            k.indexToArgs.get(testwsk + 0).activeFunc = () => {  // 近景
+                id0 = dataProc.process(get2data[0], {z:60}, dls);  // 外墙
+            }
+            k.indexToArgs.get(testwsk + 0).deleteFunc = () => {  // 删除
+                k.deleteModBlock(id0);
+            }
+        }
+
+
+    }
+
+    
+
+
+
+    // console.log(get2data);
 
 
 
