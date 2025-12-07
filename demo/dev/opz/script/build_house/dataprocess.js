@@ -67,9 +67,6 @@ const dataProc = {
     addPhysical: (data, instData) => {
         const boxLen = instData.length;  // 正常添加的数量
         const restLen = dataProc.totalCube - boxLen;  // （先作废）空置的数量
-        // dataProc.wskIdx = dataProc.calWskIdx();
-
-        // console.log('万数块 ID: ', dataProc.wskIdx);
         for (let index = 0; index < boxLen; index++) {  // 入档案，添加物理体
             k.addTABox({
                 DPZ : (data[index]?.dz) ? data[index]?.dz : 4,
@@ -110,9 +107,9 @@ const dataProc = {
      * 每个实例 cube 容器，都使用 wsk_ + 万数块 ID 格式，方便删除
      */
     renderInst: (texture) => {
-        console.log('实例化 ' + dataProc.wskIdx);
-        console.log(dataProc.myCubeInstances);
-        console.log('----');
+        if(k.W.next['wsk_50000']){
+            k.deleteModBlock(50000);
+        }
         k.W.cube({  // 渲染实例化
             n: 'wsk_' + dataProc.wskIdx,
             t: texture,  // 大理石
@@ -124,7 +121,6 @@ const dataProc = {
     // 数据处理总入口
     // 默认的纹理是 dls，也就是大理石
     process: (data, offset, texture = dls) => {
-        // console.log(data.length, '个方块数据，开始处理');
         D = null;  // 释放内存（删去临时数据产生的内存）后续不用这个了，先放着
         dataProc.wskIdx = dataProc.calWskIdx();  //+ 马上计算 wsk id，并占位！
         k.indexToArgs.set(dataProc.wskIdx, {n: 'is has data'});
