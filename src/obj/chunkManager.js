@@ -2,6 +2,8 @@
  * 动态区块管理
  * 
  * 将地图世界分区，以及 n 个优先级，动态加载和卸载模型
+ * 
+ * 仍然有 bug ，即不同方向，还是检测不准
  */
 export default {
 
@@ -20,10 +22,17 @@ export default {
     /**
      * DPZ 的单个区块面积大小，可认为该单位半径圆外接方内有效
      * 物理效果生效的前提是，物体最长长度应小于该 DPZ 的值的两倍，如 DPZ=4，就要小于 2*5=10。
+     * dpz 的值建议物体：
+     * 0：任何时候都显示
+     * 1：远远看到（如，图书馆超级简单简模与普通简模的分界）
+     * 2：可在附近大区块显示的建筑模型（如，图书馆简模与详细轮廓的分界）
+     * 3：远远看着就显示的（如，图书馆内装修）
+     * 4：走进才能看到（如，显示图书馆里的书本）
+     * 5：小角落里才能看到的特殊纹理（如，书本上详细的字）
      * （与 DPZ 值挨个对应，从 0 开始）
      */
-    gridsize : new Uint16Array([10000, 1000, 100, 20, 5, 1]),
-    gridsizeY : new Float32Array([10000, 1000, 100, 20, 5, 1]),
+    gridsize : new Uint16Array([10000, 200, 100, 20, 5, 1]),
+    gridsizeY : new Float32Array([10000, 200, 100, 20, 5, 1]),
 
     // 新的 dynaNodes（适用于长宽 40 以内的物体），lab 版本
     currentlyActiveIndices : new Set(),  // 当前激活状态的物体。也可保存本次的激活物体列表，供下一次使用
@@ -48,13 +57,10 @@ export default {
             const indicesInGrid = this.spatialGrid.get(key);  // Set 或 undefined
             if (indicesInGrid instanceof Set) {
                 for (const index of indicesInGrid) {
-
                     const minY = this.gridsizeY[this.physicsProps[index * 8 + 4]].toFixed(2);
-
                     if (Math.abs(this.positionsStatus[index * 8 + 1] - mVP.Y) < minY) {
                         newActiveIndices.add(index);
                     }
-
                 }
             }
         }
