@@ -30,9 +30,9 @@ deleteModBlock(k);  // 激活删除插件
 // 配置 DPZ 的参数
 if(true){
     k.gridsize[4] = 6;
-    k.gridsizeY[2] = 20;  // 指示牌（这三行是 Y 方向的 dpz 设定）
-    k.gridsizeY[3] = 1.35;  // 大部分物体
-    k.gridsizeY[4] = 1.35;  // 书本分层渲染
+    // k.gridsizeY[2] = 20;  // 指示牌（这三行是 Y 方向的 dpz 设定）
+    // k.gridsizeY[3] = 1.35;  // 大部分物体
+    // k.gridsizeY[4] = 1.35;  // 书本分层渲染
 }
 
 // 发布模式，不使用毛坯构建器

@@ -1,0 +1,5 @@
+编译那个 go 文件
+
+go mod init myapp;
+
+GOOS=windows GOARCH=386 go build -o app-32bit.exe
