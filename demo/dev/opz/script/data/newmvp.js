@@ -64,46 +64,6 @@ function newMvp(){
 
 // ======================== 实验区 ===================================
 
-    // 特殊队列，试一下吧
-    function specialQueue(interval = 200) {
-
-        const queue = [];
-        let isRunning = false;
-
-        function runNext() {
-            if (queue.length === 0) {
-                isRunning = false;
-                return;
-            }
-
-            isRunning = true;
-
-            const fn = queue.shift(); // 取出第一个
-            try {
-                fn();
-            } catch (e) {
-                console.error("specialQueue function error:", e);
-            }
-
-            // 下一个函数在 200ms 后执行
-            setTimeout(runNext, interval);
-        }
-
-        return {
-            add(fn) {
-                if (typeof fn !== "function") return;
-                queue.push(fn);
-                if (!isRunning) runNext();
-            }
-        };
-    }
-    const q = specialQueue(2000);
-    // q.add( ()=>{console.log(1)} );
-    // q.add( ()=>{console.log(2)} );
-    // q.add( ()=>{console.log(3)} );
-
-    q.add()
-
     // 生成供 build 插件使用的数据
     if(1){
         const buildCubeData = new Array();
@@ -148,7 +108,7 @@ function newMvp(){
 
 
     // 定位块 的业务逻辑
-    if(1){
+    if(false){
 
         window.mvppos = -1;
 
@@ -313,8 +273,93 @@ function newMvp(){
             }
 
         }
+    }
 
+    // gemini 生成的代码
+    if(1){
+        const triggerState = {
+            inGemZone: false,   // 宝石
+            inBoardZone: false, // 木板
+            inHutZone: false    // 小屋
+        };
+        window.mvppos = -1;
+        let requestStateUpdate, runBusinessLogic;
 
+        // 计算当前状态
+        if(1){
+            let stateDebounceTimer = null;  // 防抖计时器变量
+
+            requestStateUpdate = () => {  // 延时决策
+                if (stateDebounceTimer) {  // 如果 xx 毫秒内，有新的函数被激活，则消除旧的，留下最新的
+                    clearTimeout(stateDebounceTimer);
+                }
+                stateDebounceTimer = setTimeout(() => {
+                    evaluateFinalState(); // 倒计时结束，执行最终裁判
+                    stateDebounceTimer = null;
+                }, 30);
+            };
+            
+            const evaluateFinalState = () => {
+                let targetState = 4;
+                if (triggerState.inGemZone) {
+                    targetState = 1;
+                } else if (triggerState.inBoardZone) {
+                    targetState = 2;
+                } else if (triggerState.inHutZone) {
+                    targetState = 3;
+                } else {
+                    targetState = 4;
+                }
+                if (window.mvppos !== targetState) {  // 如果最终状态等于当前状态，忽略
+                    window.mvppos = targetState;
+                    runBusinessLogic(targetState);  // 判断完毕，执行最终函数
+                }
+            };
+
+        }
+
+        // 执行
+        if(1){
+            runBusinessLogic = (state) => {
+                switch (state) {
+                    case 1:
+                        console.log("📍 最终定位: 宝石 (Gem)");
+                        break;
+                    case 2:
+                        console.log("📍 最终定位: 木板 (Board)");
+                        break;
+                    case 3:
+                        console.log("📍 最终定位: 小屋 (Hut)");
+                        break;
+                    case 4:
+                        console.log("📍 最终定位: 天际线 (Skyline)");
+                        break;
+                }
+            };
+        }
+
+        // 放置这三个定位块
+        if(1){
+            const triggers = [
+                { key: 'inGemZone',   dz: 3, name: '近景' },
+                { key: 'inBoardZone', dz: 2, name: '中景' },
+                { key: 'inHutZone',   dz: 1, name: '远景' }
+            ];
+            triggers.forEach(conf => {
+                const data = [{ "x": 32.557, "y": 1.5, "z": 29.457, "w": 0.5, "h": 50, "d": 0.5 }];
+                data[0].dz = conf.dz;
+                const idx = dataProc.process(data, { x: 0 }, dls);  // 放置模型
+                const args = k.indexToArgs.get(idx + 0);
+                args.activeFunc = () => {  // 激活函数
+                    triggerState[conf.key] = true;
+                    requestStateUpdate();
+                };
+                args.deleteFunc = () => {  // 删除函数
+                    triggerState[conf.key] = false;
+                    requestStateUpdate();
+                };
+            });
+        }
     }
 
     // // 定位块 的业务逻辑
