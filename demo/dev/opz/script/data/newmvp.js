@@ -105,205 +105,83 @@ function newMvp(){
         get2data =  analyzeTexture(getdata);  // 得到不同纹理的 3 份数据
     }
 
-    // 定位块 的业务逻辑
-    if(false){
-
-        window.mvppos = -1;
-
-        let x, m, m2, l, ll;  // 分别对应 宝石、木板、小屋、天际线 的 wsk idx
-        const x_m = get2data[0];  //+ 四种规格对应的模型文件
-        const m_m = get2data[2];
-        const m2_m = get2data[3];
-        const l_m =  [{"x":32.557,"y":9.101,"z":29.457,"w":36,"h":17,"d":30,b:"#ff0000ff"}];
-        const ll_m = [{"x":32.557,"y":9.101,"z":29.457,"w":20,"h":17,"d":60,b:"#110d07ff"}];
-
-        const posChangeFunc = (pos) => {
-            const  last = mvppos;
-
-            mvppos = pos;
-            switch (mvppos) {
-                case 1:
-
-                    console.log('宝石');
-                    if(!x){
-                        x = dataProc.process(x_m, {z:60}, dls);  // 放置宝石
-                        // console.log(x);
-                    }
-                    if(!m){
-                        m = dataProc.process(m_m, {z:60}, dls);
-                        // console.log(m);
-                    }
-                    if(!m2){
-                        m2 = dataProc.process(m2_m, {z:60}, dls);
-                        // console.log(m2);
-                    }
-
-                    if(l){
-                        // console.log(l);
-                        k.deleteModBlock(l);
-                        l = null;
-                    }
-
-                    break;
-                case 2:
-                    console.log('木板');
-
-                    if(!m){
-                        m = dataProc.process(m_m, {z:60}, dls);
-                        // console.log(m);
-                    }
-                    if(!m2){
-                        m2 = dataProc.process(m2_m, {z:60}, dls);  
-                        // console.log(m2);
-                    }
-
-                    if(x){
-                        // console.log(x);
-                        k.deleteModBlock(x);
-                        x = null;
-                    }
-
-                    if(l){
-                        k.deleteModBlock(l);
-                        l = null;
-                    }
-
-
-                    break;
-                case 3:
-
-                    console.log('小屋');
-                    if(!l){
-                        l = dataProc.process(l_m, {z:60}, dls);
-                    }
-
-                    if(x){
-                        k.deleteModBlock(x);
-                        x = null;
-                    }
-                    if(m){
-                        k.deleteModBlock(m);
-                        m = null;
-                    }
-                    if(m2){
-                        k.deleteModBlock(m2);
-                        m2 = null;
-                    }
-
-
-                    // l = dataProc.process(l_m, {z:60}, dls);  // 放置小屋
-                    // if(ll){
-                    //     k.deleteModBlock(ll);
-                    // }
-
-                    // if(!l){
-                    //     l = dataProc.process(l_m, {z:60}, dls);  
-                    // }
-                    // if(x){
-                    //     k.deleteModBlock(x);
-                    //     x = null;
-                    // }
-                    // if(m){
-                    //     k.deleteModBlock(m);
-                    //     m = null;
-                    // }
-                    // if(l){
-                    //     k.deleteModBlock(l);
-                    //     l = null;
-                    // }
-
-                    break;
-                case 4:
-
-                    // console.log('天际线');
-                    // ll = dataProc.process(ll_m, {z:60}, dls);  // 放置天际线
-
-                    break;
-            }
-        }
-
-        // 外墙和简模(目前的逻辑，在正常行走内，无误。若角色直接穿越，则会 bug，先不理会)
-        if(1){
-
-            if(1){
-                const data = [{"x":32.557,"y":1.5,"z":29.457,"w":0.5,"h":0.5,"d":0.5}];  // 花瓶定位块
-                data[0].dz = 3;
-                const testwsk = dataProc.process(data, {x:0}, dls);
-                k.indexToArgs.get(testwsk + 0).activeFunc = () => {  // 近景
-                    if(mvppos === 2){
-                        posChangeFunc(1);
-                    }
-                }
-                k.indexToArgs.get(testwsk + 0).deleteFunc = () => {  // 删除
-                    if(mvppos === 1){
-                        posChangeFunc(2);
-                    }
-                }
-            }
-
-            if(1){
-                const posBlockMiddle = [{"x":32.557,"y":1.5,"z":29.457,"w":0.5,"h":50.5,"d":0.5}];  // 雨林定位块
-                posBlockMiddle[0].dz = 2;
-                const posBlockMiddleIdx = dataProc.process(posBlockMiddle, {x:0}, dls);
-                k.indexToArgs.get(posBlockMiddleIdx + 0).activeFunc = () => {
-                    posChangeFunc(2);
-                }
-                k.indexToArgs.get(posBlockMiddleIdx + 0).deleteFunc = () => {
-                    if(mvppos === 2){
-                        posChangeFunc(3);
-                    }
-                    
-                }
-            }
+    /** --------------------------------------------------------------------- */
 
 
 
-            if(false){
-                const posBlockLarge = [{"x":32.557,"y":1.5,"z":29.457,"w":0.5,"h":0.5,"d":0.5}];  // 星光定位块
-                posBlockLarge[0].dz = 1;
-                const posBlockLargeIdx = dataProc.process(posBlockLarge, {x:0}, dls);
-                k.indexToArgs.get(posBlockLargeIdx + 0).activeFunc = () => {
-                    posChangeFunc(3);
-                }
-                k.indexToArgs.get(posBlockLargeIdx + 0).deleteFunc = () => {
-                    posChangeFunc(4);
-                }
-            }
 
-        }
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // 四种模型
+    const x_m = get2data[0];  //+ 四种规格对应的模型文件
+    const m_m = get2data[2];
+    const m2_m = get2data[3];
+    const l_m =  [{"x":32.557,"y":9.101,"z":29.457 - 50,"w":36,"h":17,"d":30,b:"#ff0000ff"}];  // 红块
+    const ll_m = [{"x":32.557,"y":9.101,"z":29.457,"w":20,"h":17,"d":60,b:"#110d07ff"}];
+
+    // 触发器模型
+    const triggers = [
+        { key: 'inGemZone',   dz: 3, name: '近景' },
+        { key: 'inBoardZone', dz: 2, name: '中景' },
+        { key: 'inHutZone',   dz: 1, name: '远景' }
+    ];
+    const triggersPosData = [{ "x": 32.557, "y": 1.5, "z": 29.457, "w": 0.5, "h": 50, "d": 0.5 }];
+
+
+    tri();
+
+    tri(160);
+
+
+
+
+
+
 
     // gemini 生成的代码，太美了
-    if(1){
+    function tri(zDis = 60) {
         const triggerState = {
             inGemZone: false,   // 宝石
             inBoardZone: false, // 木板
             inHutZone: false    // 小屋
         };
-        window.mvppos = -1;
+        let mvppos = -1;
         let requestStateUpdate, runBusinessLogic;
         let runGemfunc, runHutfunc, runBoardfunc, runSkylinefunc;
 
         // 四个激活函数
         if(1){
             let x, m, m2, l, ll;  // 分别对应 宝石、木板、小屋、天际线 的 wsk idx
-            const x_m = get2data[0];  //+ 四种规格对应的模型文件
-            const m_m = get2data[2];
-            const m2_m = get2data[3];
-            const l_m =  [{"x":32.557,"y":9.101,"z":29.457,"w":36,"h":17,"d":30,b:"#ff0000ff"}];
-            const ll_m = [{"x":32.557,"y":9.101,"z":29.457,"w":20,"h":17,"d":60,b:"#110d07ff"}];
+
             runGemfunc = () => {  // 宝石
                 if(!x){
-                    x = dataProc.process(x_m, { z: 60 }, dls);
+                    x = dataProc.process(x_m, { z: zDis }, dls);
                     console.log(x);
                 }
                 if(!m){
-                    m = dataProc.process(m_m, { z: 60 }, dls);
+                    m = dataProc.process(m_m, { z: zDis }, dls);
                     console.log(m);
                 }
                 // ----------
                 if(!m2){
-                    m2 = dataProc.process(m2_m, { z: 60 }, dls);
+                    m2 = dataProc.process(m2_m, { z: zDis }, dls);
                     console.log(m2);
                 }
                 if(l){
@@ -317,10 +195,10 @@ function newMvp(){
             };
             runBoardfunc = () => {  // 木板
                 if(!m){
-                    m = dataProc.process(m_m, { z: 60 }, dls);
+                    m = dataProc.process(m_m, { z: zDis }, dls);
                 }
                 if(!m2){
-                    m2 = dataProc.process(m2_m, { z: 60 }, dls);
+                    m2 = dataProc.process(m2_m, { z: zDis }, dls);
                 }
                 // ----------
                 if(x){
@@ -338,7 +216,7 @@ function newMvp(){
             };
             runHutfunc = () => {  // 小屋
                 if(!l){
-                    l = dataProc.process(l_m, { z: 60 }, dls);
+                    l = dataProc.process(l_m, { z: zDis }, dls);
                 }
                 // ----------
                 if(x){
@@ -360,7 +238,7 @@ function newMvp(){
             };
             runSkylinefunc = () => {  // 天际线
                 if(!ll){
-                    ll = dataProc.process(ll_m, { z: 60 }, dls);
+                    ll = dataProc.process(ll_m, { z: zDis }, dls);
                 }
                 // ----------
                 if(x){
@@ -405,8 +283,8 @@ function newMvp(){
                 } else {
                     targetState = 4;
                 }
-                if (window.mvppos !== targetState) {  // 如果最终状态等于当前状态，忽略
-                    window.mvppos = targetState;
+                if (mvppos !== targetState) {  // 如果最终状态等于当前状态，忽略
+                    mvppos = targetState;
                     runBusinessLogic(targetState);  // 判断完毕，执行最终函数
                 }
             };
@@ -438,15 +316,10 @@ function newMvp(){
 
         // 放置这三个定位块
         if(1){
-            const triggers = [
-                { key: 'inGemZone',   dz: 3, name: '近景' },
-                { key: 'inBoardZone', dz: 2, name: '中景' },
-                { key: 'inHutZone',   dz: 1, name: '远景' }
-            ];
             triggers.forEach(conf => {
-                const data = [{ "x": 32.557, "y": 1.5, "z": 29.457, "w": 0.5, "h": 50, "d": 0.5 }];
-                data[0].dz = conf.dz;
-                const idx = dataProc.process(data, { x: 0 }, dls);  // 放置模型
+                
+                triggersPosData[0].dz = conf.dz;
+                const idx = dataProc.process(triggersPosData, { x: 0, z: zDis - 60 }, dls);  // 放置模型
                 const args = k.indexToArgs.get(idx + 0);
                 args.activeFunc = () => {  // 激活函数
                     triggerState[conf.key] = true;
@@ -459,6 +332,8 @@ function newMvp(){
             });
         }
     }
+
+
 
 
 // ======================== 垃圾区 ===================================
