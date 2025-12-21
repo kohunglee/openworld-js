@@ -64,13 +64,13 @@ requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)
 script.src='./opz/fps/fps.js';document.head.appendChild(script);})()
 
 // baidu tongji
-var _hmt = _hmt || [];
-(function() {
-    var hm = document.createElement("script");
-    hm.src = "https://hm.baidu.com/hm.js?7f32626143786db9efbf3749f9a87aed";
-    var s = document.getElementsByTagName("script")[0]; 
-    s.parentNode.insertBefore(hm, s);
-})();
+// var _hmt = _hmt || [];
+// (function() {
+//     var hm = document.createElement("script");
+//     hm.src = "https://hm.baidu.com/hm.js?7f32626143786db9efbf3749f9a87aed";
+//     var s = document.getElementsByTagName("script")[0]; 
+//     s.parentNode.insertBefore(hm, s);
+// })();
 
 k.star = (index) => {  // 闪烁按照 ID 寻找方块
     if(k.starInt){

@@ -66,10 +66,8 @@ const dataProc = {
      */
     addPhysical: (data, instData) => {
         const boxLen = instData.length;  // 正常添加的数量
-        const restLen = dataProc.totalCube - boxLen;  // （先作废）空置的数量
-        // console.log(data);
         for (let index = 0; index < boxLen; index++) {  // 入档案，添加物理体
-            k.addTABox({
+            const args = {
                 DPZ : (data[index]?.dz) ? data[index]?.dz : 4,
                 isPhysical: (data[index]?.st) ? false : true,  // 是否有物理属性
                 mass: 0,
@@ -87,7 +85,9 @@ const dataProc = {
                 rY: instData[index].ry,
                 rZ: instData[index].rz,
                 isInvisible: true,  // 只被探测，而不可见
-            });
+            };
+            if(index === 0){ args.dataName = dataProc.dataName }  // 只在第一个模型上添加。供删除时使用，防止错删
+            k.addTABox(args);
         }
     },
 
@@ -109,7 +109,7 @@ const dataProc = {
      */
     renderInst: (texture) => {
         k.W.cube({  // 渲染实例化
-            n: 'wsk_' + dataProc.wskIdx,
+            n: 'wsk_' + dataProc.wskIdx + '_' + dataProc.dataName,
             t: texture,  // 大理石
             instances: dataProc.myCubeInstances, // 实例属性的数组
             mix: 0.7,
@@ -118,14 +118,16 @@ const dataProc = {
 
     // 数据处理总入口
     // 默认的纹理是 dls，也就是大理石
-    process: (data, offset, texture = dls) => {
+    process: (data, offset, texture = dls, name = 'noName') => {
         D = null;  // 释放内存（删去临时数据产生的内存）后续不用这个了，先放着
         dataProc.wskIdx = dataProc.calWskIdx();  //+ 马上计算 wsk id，并占位！
+        dataProc.dataName = Math.floor(Math.random() * 1000000);  // 防止冲突，防止错删
         k.indexToArgs.set(dataProc.wskIdx, {n: 'is has data'});
         dataProc.fullInst(data, offset);  // 填充实例化容器
         dataProc.addPhysical(data, dataProc.myCubeInstances);  // 添加物理体
         dataProc.renderInst(texture);  // 渲染实例化
         const wskID = dataProc.wskIdx;
+
         // 重新置空
         if(true){
             dataProc.myCubeInstances = [];
@@ -134,6 +136,7 @@ const dataProc = {
             dataProc.cubeIndex = 0;
             dataProc.wskIdx = -1;
         }
+
         return wskID;
     },
 }
