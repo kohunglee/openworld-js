@@ -319,9 +319,8 @@ function newMvp(){
         // 放置这三个定位块
         if(1){
             triggers.forEach(conf => {
-                
                 triggersPosData[0].dz = conf.dz;
-                const idx = dataProc.process(triggersPosData, { x: xDis, z: zDis - 60 }, dls, 'setTriModel');  // 放置模型
+                const idx = dataProc.process(triggersPosData, { x: xDis, z: zDis - 60 }, dls, 'setTriModel', false);  // 放置模型
                 const args = k.indexToArgs.get(idx + 0);
                 args.activeFunc = () => {  // 激活函数
                     triggerState[conf.key] = true;
