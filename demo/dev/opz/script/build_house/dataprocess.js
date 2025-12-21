@@ -118,9 +118,25 @@ const dataProc = {
 
     // 数据处理总入口
     // 默认的纹理是 dls，也就是大理石
-    process: (data, offset, texture = dls, name = 'noName') => {
+    process: (data, offset, texture = dls, name = 'noName', isWskBlock = true) => {
         D = null;  // 释放内存（删去临时数据产生的内存）后续不用这个了，先放着
-        dataProc.wskIdx = dataProc.calWskIdx();  //+ 马上计算 wsk id，并占位！
+        
+        if(isWskBlock){
+            dataProc.wskIdx = dataProc.calWskIdx();  //+ 马上计算 wsk id，并占位！
+        } else {
+            dataProc.wskIdx = -1;
+            for(let idx = 990000; idx < k.MAX_BODIES; idx++){  // 非万数块，计算 990000~999999 之间的空闲索引
+                if(k.indexToArgs.get(idx) === undefined){
+                    dataProc.wskIdx = idx;
+                    break;
+                }
+            }
+            if(dataProc.wskIdx === -1){
+                console.error('万数块不足，无法创建新的万数块，请删除一些万数块再试！');
+                return -1;
+            }
+        }
+
         dataProc.dataName = Math.floor(Math.random() * 1000000);  // 防止冲突，防止错删
         k.indexToArgs.set(dataProc.wskIdx, {n: 'is has data'});
         dataProc.fullInst(data, offset);  // 填充实例化容器
