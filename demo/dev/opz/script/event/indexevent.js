@@ -19,7 +19,7 @@ function addPressAction(el, onPress, onRelease) {
     };
 
     el.addEventListener('mousedown', press);
-    el.addEventListener('touchstart', press);
+    el.addEventListener('touchstart', press, { passive: true });
 
     el.addEventListener('mouseup', release);
     el.addEventListener('touchend', release);
@@ -92,6 +92,7 @@ function teleportTo(x, y, z, turn = null) {
 
 $("goOPOS").addEventListener("click", () => teleportTo(7.6, 10, 16.5, -146));
 $("goHall").addEventListener("click", () => teleportTo(31, 10, -31, 180));
+$("goFar").addEventListener("click", () => teleportTo(-42, 0.75, 358, 328));
 
 
 // ========================
