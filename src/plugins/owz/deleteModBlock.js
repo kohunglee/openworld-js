@@ -8,6 +8,9 @@
  */
 export default function(ccgxkObj){
     ccgxkObj.deleteModBlock = function(blockIndex, cobj = ccgxkObj){
+
+        const dataName = cobj.indexToArgs.get(blockIndex).dataName;
+
         for(let i = blockIndex; i < blockIndex + 10000; i++){
             cobj.hiddenTABox(i);  //+ 档案删除大法
             
@@ -21,6 +24,8 @@ export default function(ccgxkObj){
             cobj.indexToArgs.delete(i);
             
         }
-        cobj.W.delete('wsk_' + blockIndex);
+
+        
+        cobj.W.delete('wsk_' + blockIndex + '_' + dataName);
     }
 }
