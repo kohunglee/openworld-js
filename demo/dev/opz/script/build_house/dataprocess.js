@@ -7,18 +7,20 @@
 const dataProc = {
 
     // 一些参数
-    buildMode: 0,  // 是否是建造模式，如果不是，则不渲染空模型
-    totalCube: 10000,  // 总方块数
-    cubeIndex: 0,  // 计数器
-    myCubeInstances: [],  // 最终生成的实例数据，的容器
-    wskIdx: -1,  // 当前万数块的 ID
+    buildMode: 0,       // 是否是建造模式，如果不是，则不渲染空模型
+    totalCube: 10000,   // 总方块数 (根据 type 动态改变)
+    cubeIndex: 0,       // 计数器
+    myCubeInstances: [],// 最终生成的实例数据，的容器
+    wskIdx: -1,         // 当前万数块的 ID
+    dataName: '',       // 当前数据的随机别名
 
     // 读取和理解单个数据，放入 myCubeInstances 里，返回 index
     readData : (data, isHidden = false, offset = {}) => {
-        if(data.length > 10000){
-            console.error('申请 万数块 不能使用长度大于 10000 的数据！');
+        // 安全检查：如果超出当前类型的容量，不再处理
+        if(dataProc.cubeIndex >= dataProc.totalCube){
             return -1;
         }
+
         if(data.del) {  // 处理已被标记 删除 的数据，按照【空模型】处理默认参数
             data = {
                 x: 999999999, y: 999999999, z: 999999999,
@@ -40,14 +42,17 @@ const dataProc = {
     // 填充 myCubeInstances
     fullInst: (data, offset)=>{
         const len = data.length;
-        for (let index = 0; index < len; index++) {  // 实心数据，填充实例化容器
+        // 1. 填充实心数据
+        for (let index = 0; index < len; index++) {
+            if(dataProc.cubeIndex >= dataProc.totalCube) break; // 防止数据溢出
             dataProc.readData(data[index], false, offset);
         }
-        // console.log('共', dataProc.cubeIndex, '个可见方块（包括 del）');
-        // console.log('-----');
 
-        if(dataProc.buildMode) {  // 非建造模式，补全空模型
-            for (let index = 0; index < dataProc.totalCube - dataProc.cubeIndex; index++) {  // 空模型，填充容器里多余的空间（建造模式）
+        // 2. 填充空模型（仅非建造模式）
+        // 这里的 totalCube 已经根据 type 被修改了（10000 或 100 或 1）
+        if(dataProc.buildMode) {
+            const remaining = dataProc.totalCube - dataProc.cubeIndex;
+            for (let index = 0; index < remaining; index++) {
                 dataProc.readData({
                     x: 999999999, y: 999999999, z: 999999999,
                     w: 0.001, d: 0.001, h: 0.001,
@@ -57,15 +62,8 @@ const dataProc = {
     },
 
     // 遍历 instData，添加物理体
-    /**
-     * 按照块儿来计算。
-     * 一共是 100 万的数量，相当于 100 块，每个占用 1 万个索引
-     * 比如：
-     * 第一块的 index 是 0~9999 ，在档案数量里，就是 1~10000 个
-     * 而 0 就是这个万数块儿的 ID。
-     */
     addPhysical: (data, instData) => {
-        const boxLen = instData.length;  // 正常添加的数量
+        const boxLen = instData.length;
         for (let index = 0; index < boxLen; index++) {  // 入档案，添加物理体
             const args = {
                 DPZ : (data[index]?.dz) ? data[index]?.dz : 4,
@@ -86,69 +84,100 @@ const dataProc = {
                 rZ: instData[index].rz,
                 isInvisible: true,  // 只被探测，而不可见
             };
-            if(index === 0){ args.dataName = dataProc.dataName }  // 只在第一个模型上添加。供删除时使用，防止错删
+            if(index === 0){ args.dataName = dataProc.dataName }  // 只在第一个模型上添加。供删除时使用
             k.addTABox(args);
         }
     },
 
-    // 计算当前的 万数块 idx
-    // 从 0 开始，一万一万数，哪个空缺，哪个就申请为当前的 万数块
-    calWskIdx: () => {
-        const len = k.MAX_BODIES;
-        for(let index = 0; index < len; index += 10000){
-            if(k.indexToArgs.get(index) === undefined) {  // 发现空缺
-                return index;
+    // 通用索引计算器：根据范围和步长寻找空位
+    calcFreeIdx: (start, end, step) => {
+        for(let idx = start; idx < end; idx += step){
+            // 只需要判断“头”索引是否被占用，因为占用时会锁住一整块
+            if(k.indexToArgs.get(idx) === undefined) {
+                return idx;
             }
         }
-        return 0;  // 理论上这行根本执行不到
+        return -1; // 没有空位
     },
 
     // 渲染实例化
-    /**
-     * 每个实例 cube 容器，都使用 wsk_ + 万数块 ID 格式，方便删除
-     */
     renderInst: (texture) => {
-        k.W.cube({  // 渲染实例化
+
+        // 注意：名字依然保留 wsk_ 前缀，为了兼容现有的删除逻辑（它按前缀查找或按索引删除）
+        // 如果需要区分，可以在这里把 n 改成 'bsk_' 等，但需要同步修改删除模块
+        k.W.cube({
             n: 'wsk_' + dataProc.wskIdx + '_' + dataProc.dataName,
-            t: texture,  // 大理石
-            instances: dataProc.myCubeInstances, // 实例属性的数组
+            t: texture,
+            instances: dataProc.myCubeInstances,
             mix: 0.7,
         });
     },
 
     // 数据处理总入口
-    // 默认的纹理是 dls，也就是大理石
-    process: (data, offset, texture = dls, name = 'noName', isWskBlock = true) => {
-        D = null;  // 释放内存（删去临时数据产生的内存）后续不用这个了，先放着
+    // type: 1=万数块(0-90w), 2=百数块(90w-99w), 3=单数块(99w-100w)
+    process: (data, offset, texture = dls, name = 'noName', type = 1, noIns = false) => {
+        D = null;  // 释放内存
+
+        // 1. 根据 type 定义规则配置
+        let startIdx, endIdx, step, cap;
         
-        if(isWskBlock){
-            dataProc.wskIdx = dataProc.calWskIdx();  //+ 马上计算 wsk id，并占位！
-        } else {
-            dataProc.wskIdx = -1;
-            for(let idx = 990000; idx < k.MAX_BODIES; idx++){  // 非万数块，计算 990000~999999 之间的空闲索引
-                if(k.indexToArgs.get(idx) === undefined){
-                    dataProc.wskIdx = idx;
-                    break;
-                }
-            }
-            if(dataProc.wskIdx === -1){
-                console.error('万数块不足，无法创建新的万数块，请删除一些万数块再试！');
-                return -1;
-            }
+        switch (type) {
+            case 1: // 万数块
+                startIdx = 0; 
+                endIdx = 900000; 
+                step = 10000; 
+                cap = 10000;
+                break;
+            case 2: // 百数块 (新增)
+                startIdx = 63_0000; 
+                endIdx = 990000; 
+                step = 300; 
+                cap = 300;
+                break;
+            case 3: // 单数块
+                startIdx = 990000; 
+                endIdx = 1000000; 
+                step = 1; 
+                cap = 1;
+                break;
+            default: // 默认回滚到万数块
+                startIdx = 0; endIdx = 900000; step = 10000; cap = 10000;
+                break;
         }
 
-        dataProc.dataName = Math.floor(Math.random() * 1000000);  // 防止冲突，防止错删
-        k.indexToArgs.set(dataProc.wskIdx, {n: 'is has data'});
-        dataProc.fullInst(data, offset);  // 填充实例化容器
-        dataProc.addPhysical(data, dataProc.myCubeInstances);  // 添加物理体
-        dataProc.renderInst(texture);  // 渲染实例化
+        // 2. 检查数据量是否合规
+        if(data.length > cap){
+            console.error(`数据量(${data.length}) 超出 type=${type} 的最大容量(${cap})!`);
+            return -1;
+        }
+
+        // 3. 计算索引
+        dataProc.wskIdx = dataProc.calcFreeIdx(startIdx, endIdx, step);
+
+        if(dataProc.wskIdx === -1){
+            console.error(`Type ${type} 类型的存储空间已满（${startIdx}~${endIdx}），无法创建！`);
+            return -1;
+        }
+
+        // 4. 设置当前处理的环境变量
+        dataProc.totalCube = cap; // 设置总容量
+        dataProc.dataName = Math.floor(Math.random() * 1000000);
+        
+        // 占位
+        k.indexToArgs.set(dataProc.wskIdx, {n: 'is has data', type: type}); // 可以在这里记录 type，供未来删除模块优化使用
+
+        // 5. 执行创建流程
+        dataProc.fullInst(data, offset);        // 填充容器
+        dataProc.addPhysical(data, dataProc.myCubeInstances); // 添加物理体
+        if(!noIns) { dataProc.renderInst(texture) };           // 渲染
+
         const wskID = dataProc.wskIdx;
 
-        // 重新置空
+        // 6. 重置状态
         if(true){
             dataProc.myCubeInstances = [];
             dataProc.buildMode = 0;
-            dataProc.totalCube = 10000;
+            dataProc.totalCube = 10000; // 恢复默认值
             dataProc.cubeIndex = 0;
             dataProc.wskIdx = -1;
         }
@@ -156,5 +185,3 @@ const dataProc = {
         return wskID;
     },
 }
-
-
