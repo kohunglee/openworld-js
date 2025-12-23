@@ -31,7 +31,7 @@ export default {
         this.world.broadphase = new CANNON.SAPBroadphase(this.world); // 宽相检测算法
         // this.world.broadphase = new CANNON.NaiveBroadphase(); // 全局检测算法
         this.world.solver.iterations = 10; // 物理迭代
-        this.world.addContactMaterial(this.cannonDefaultCantactMaterial);  // 默认材质关联
+        this.world.addContactMaterial(this.cannonDefaultContactMaterial);  // 默认材质关联
         this.initBodyTypeArray(1_000_000);  // 初始化一个物体信息库
         this.eventListener();  // 事件监听
         this.animatePhy(); // 动画 (物理)

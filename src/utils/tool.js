@@ -49,11 +49,13 @@ export default {
     },
 
     // 默认 cannon js 材质关联材质
-    cannonDefaultCantactMaterial : new CANNON.ContactMaterial( // 默认材质关联材质
+    cannonDefaultContactMaterial : new CANNON.ContactMaterial( // 默认材质关联材质
         new CANNON.Material(),
         new CANNON.Material(), {
-            friction: 100, // 摩擦力
-            restitution: 0.1, // 弹性系数
+            friction: 0.3,
+            restitution: 0.0,
+            contactEquationStiffness: 1e8,
+            contactEquationRelaxation: 3
     }),
 
     // 音乐合成器
