@@ -146,7 +146,6 @@ function newMvp(){
 
 
     tri();
-
     tri(160);
 
     let number = 14;
@@ -179,12 +178,10 @@ function newMvp(){
                 }
                 if(!m){
                     m = dataProc.process(m_m, { x: xDis, z: zDis }, dls, 'board', 2);
-                    // console.log(m);
                 }
                 // ----------
                 if(!m2){
                     m2 = dataProc.process(m2_m, { x: xDis, z: zDis }, dls, 'board2', 2);
-                    // console.log(m2);
                 }
                 if(l){
                     k.deleteModBlock(l);
@@ -297,19 +294,15 @@ function newMvp(){
             runBusinessLogic = (state) => {
                 switch (state) {
                     case 1:
-                        // console.log("📍 最终定位: 宝石 (Gem)");
                         runGemfunc();
                         break;
                     case 2:
-                        // console.log("📍 最终定位: 木板 (Board)");
                         runBoardfunc();
                         break;
                     case 3:
-                        // console.log("📍 最终定位: 小屋 (Hut)");
                         runHutfunc();
                         break;
                     case 4:
-                        // console.log("📍 最终定位: 天际线 (Skyline)");
                         runSkylinefunc();
                         break;
                 }
