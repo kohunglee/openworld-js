@@ -146,13 +146,12 @@ function newMvp(){
 
 
     tri();
-
     tri(160);
 
-    let number = 3;
+    let number = 14;
     for (let i = 1; i <= number; i++) {
         for (let j = 1; j <= number; j++) {
-            tri(160 + 40 * i, -40 * j);
+            tri(160 + 50 * i - 500, -60 * j);
         }
     }
 
@@ -178,13 +177,11 @@ function newMvp(){
                     x = dataProc.process(x_m, { x: xDis, z: zDis }, dls, 'gem');
                 }
                 if(!m){
-                    m = dataProc.process(m_m, { x: xDis, z: zDis }, dls, 'board');
-                    console.log(m);
+                    m = dataProc.process(m_m, { x: xDis, z: zDis }, dls, 'board', 2);
                 }
                 // ----------
                 if(!m2){
-                    m2 = dataProc.process(m2_m, { x: xDis, z: zDis }, dls, 'board2');
-                    console.log(m2);
+                    m2 = dataProc.process(m2_m, { x: xDis, z: zDis }, dls, 'board2', 2);
                 }
                 if(l){
                     k.deleteModBlock(l);
@@ -197,10 +194,10 @@ function newMvp(){
             };
             runBoardfunc = () => {  // 木板
                 if(!m){
-                    m = dataProc.process(m_m, { x: xDis, z: zDis }, dls, 'board');
+                    m = dataProc.process(m_m, { x: xDis, z: zDis }, dls, 'board', 2);
                 }
                 if(!m2){
-                    m2 = dataProc.process(m2_m, { x: xDis, z: zDis }, dls, 'board2');
+                    m2 = dataProc.process(m2_m, { x: xDis, z: zDis }, dls, 'board2', 2);
                 }
                 // ----------
                 if(x){
@@ -218,7 +215,7 @@ function newMvp(){
             };
             runHutfunc = () => {  // 小屋
                 if(!l){
-                    l = dataProc.process(l_m, { x: xDis, z: zDis }, dls, 'hut');
+                    l = dataProc.process(l_m, { x: xDis, z: zDis }, dls, 'hut', 2);
                 }
                 // ----------
                 if(x){
@@ -240,7 +237,7 @@ function newMvp(){
             };
             runSkylinefunc = () => {  // 天际线
                 if(!ll){
-                    ll = dataProc.process(ll_m, { x: xDis,z: zDis }, dls, 'skyline');
+                    ll = dataProc.process(ll_m, { x: xDis,z: zDis }, dls, 'skyline', 2);
                 }
                 // ----------
                 if(x){
@@ -297,19 +294,15 @@ function newMvp(){
             runBusinessLogic = (state) => {
                 switch (state) {
                     case 1:
-                        // console.log("📍 最终定位: 宝石 (Gem)");
                         runGemfunc();
                         break;
                     case 2:
-                        // console.log("📍 最终定位: 木板 (Board)");
                         runBoardfunc();
                         break;
                     case 3:
-                        // console.log("📍 最终定位: 小屋 (Hut)");
                         runHutfunc();
                         break;
                     case 4:
-                        // console.log("📍 最终定位: 天际线 (Skyline)");
                         runSkylinefunc();
                         break;
                 }
@@ -319,9 +312,9 @@ function newMvp(){
         // 放置这三个定位块
         if(1){
             triggers.forEach(conf => {
-                
                 triggersPosData[0].dz = conf.dz;
-                const idx = dataProc.process(triggersPosData, { x: xDis, z: zDis - 60 }, dls, 'setTriModel');  // 放置模型
+                triggersPosData[0].st = 1;
+                const idx = dataProc.process(triggersPosData, { x: xDis, z: zDis - 60 }, dls, 'setTriModel', 3, true);  // 放置模型
                 const args = k.indexToArgs.get(idx + 0);
                 args.activeFunc = () => {  // 激活函数
                     triggerState[conf.key] = true;

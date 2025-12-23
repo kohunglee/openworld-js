@@ -17,13 +17,41 @@ function makeGroundMvp(){
     if(true){
         const X = 0, Y = -0.5 - 2, Z = 0;
         const width = 2500, depth = 2500, height = 6;
-        k.groundObj = k.addPhy({  // 地面物理体
-            name: 'ground',
-            colliGroup: 1,
-            X: X, Y: Y, Z: Z,
-            width: width, depth: depth, height: height,
-            mass: 0,
-        });
+        // k.groundObj = k.addPhy({  // 地面物理体
+        //     name: 'ground',
+        //     colliGroup: 1,
+        //     X: X, Y: Y, Z: Z,
+        //     width: width, depth: depth, height: height,
+        //     mass: 0,
+        // });
+
+        // plane 地面
+        if(true){
+            const groundSurfaceY = 0.5; 
+            const planeShape = new CANNON.Plane();
+
+            // 3. 创建刚体
+            const groundBody = new CANNON.Body({
+                mass: 0, // 0 = 静态 (STATIC)，不会动
+                position: new CANNON.Vec3(0, groundSurfaceY, 0), // 直接设置表面高度
+                shape: planeShape,
+                material: k.cannonDefaultContactMaterial || null 
+            });
+            groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
+            groundBody.collisionFilterGroup = 1;
+            if (k.stoneGroupNum && k.allGroupNum) {
+                groundBody.collisionFilterMask = k.stoneGroupNum | k.allGroupNum;
+            } else {
+                groundBody.collisionFilterMask = -1; // 与一切碰撞
+            }
+            k.world.addBody(groundBody);
+            k.groundObj = {
+                name: 'ground',
+                body: groundBody,
+                width: 99999, depth: 99999, height: 0 
+            };
+        }
+
         k.W.cube({  // 地面渲染
             n: 'ground',
             w: width, d: depth, h: height,
