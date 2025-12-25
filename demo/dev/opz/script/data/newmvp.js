@@ -107,28 +107,6 @@ function newMvp(){
 
     /** --------------------------------------------------------------------- */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // 四种模型
     const x_m = get2data[0];  //+ 四种规格对应的模型文件
     const m_m = get2data[2];
@@ -146,19 +124,54 @@ function newMvp(){
 
 
     tri();
-    tri(160);
 
-    let number = 14;
-    for (let i = 1; i <= number; i++) {
-        for (let j = 1; j <= number; j++) {
-            tri(160 + 50 * i - 500, -60 * j);
+    // 慢慢来
+    if(1){
+        let number = 57;
+        let total = number * number; // 3249 次
+        let count = 0;
+
+        console.log("开始利用闲时执行...");
+        const startTime = performance.now();
+
+        function doWork(deadline) {
+            // deadline.timeRemaining() > 0 表示当前这一帧还有空闲时间
+            // count < total 表示任务还没做完
+            while (deadline.timeRemaining() > 0 && count < total) {
+                
+                // 还原 i 和 j
+                let i = Math.floor(count / number) + 1;
+                let j = (count % number) + 1;
+                
+                tri(160 + 50 * i - 500, -60 * j);  // 执行业务逻辑
+
+                count++;
+            }
+
+            if (count < total) {  // 还没做完，请求下一个闲时片断
+                
+                requestIdleCallback(doWork);
+            } else {
+                const endTime = performance.now();
+                console.log(`%c 任务全部完成！`, 'color: #4caf50; font-weight: bold;');
+                console.log(`总计耗时: ${((endTime - startTime) / 1000).toFixed(2)} 秒`);
+            }
         }
+
+        // 开启闲时调度
+        requestIdleCallback(doWork);
     }
 
+    
+
+    k.SPRINT_MAX_SPEED = 1000;  // 临时测试，主角加速
 
 
     // gemini 生成的代码，太美了
     function tri(zDis = 60, xDis = 0){
+        
+        
+
         const triggerState = {
             inGemZone: false,   // 宝石
             inBoardZone: false, // 木板
@@ -237,7 +250,7 @@ function newMvp(){
             };
             runSkylinefunc = () => {  // 天际线
                 if(!ll){
-                    ll = dataProc.process(ll_m, { x: xDis,z: zDis }, dls, 'skyline', 2);
+                    // ll = dataProc.process(ll_m, { x: xDis,z: zDis }, dls, 'skyline', 2);
                 }
                 // ----------
                 if(x){
@@ -326,6 +339,9 @@ function newMvp(){
                 };
             });
         }
+
+
+        
     }
 
 
