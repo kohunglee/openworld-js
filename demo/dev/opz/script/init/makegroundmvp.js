@@ -17,16 +17,16 @@ function makeGroundMvp(){
     if(true){
         const X = 0, Y = -0.5 - 2, Z = 0;
         const width = 2500, depth = 2500, height = 6;
-        // k.groundObj = k.addPhy({  // 地面物理体
-        //     name: 'ground',
-        //     colliGroup: 1,
-        //     X: X, Y: Y, Z: Z,
-        //     width: width, depth: depth, height: height,
-        //     mass: 0,
-        // });
+        k.groundObj = k.addPhy({  // 地面物理体
+            name: 'ground',
+            colliGroup: 1,
+            X: X, Y: Y, Z: Z,
+            width: width, depth: depth, height: height,
+            mass: 0,
+        });
 
         // plane 地面
-        if(true){
+        if(false){
             const groundSurfaceY = 0.5; 
             const planeShape = new CANNON.Plane();
 
