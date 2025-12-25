@@ -13,7 +13,7 @@ import centerDot from '@src/plugins/centerDot_clean.js';
 import sound from '@src/plugins/sound.js';
 import build from '@src/plugins/centerDot/build.js';
 import testSampleAni from '@src/plugins/testSampleAni.js';
-xmap(k, 100, {x: -33, z: 32});            // 小地图
+xmap(k, 2);            // 小地图
 cookieSavePos(k);   // 保存当前位置
 svgTextureLib(k);   // 纹理预设库
 xdashpanel(k);      // 仪表盘
