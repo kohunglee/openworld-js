@@ -111,8 +111,8 @@ function newMvp(){
     const x_m = get2data[0];  //+ 四种规格对应的模型文件
     const m_m = get2data[2];
     const m2_m = get2data[3];
-    const l_m =  [{"x":32.557,"y":9.101,"z":29.457 - 50,"w":36,"h":17,"d":30,b:"#ff0000ff"}];  // 红块
-    const ll_m = [{"x":32.557,"y":9.101,"z":29.457,"w":20,"h":17,"d":60,b:"#110d07ff"}];
+    const l_m =  [{"x":32.557,"y":9.101,"z":29.457 - 60,"w":36,"h":17,"d":30,b:"#f29898ff"}];  // 红块
+    const ll_m = [{"x":32.557,"y":9.101,"z":29.457 - 60,"w":36,"h":17,"d":30,b:"#ffc978ff"}];
 
     // 触发器模型
     const triggers = [
@@ -164,7 +164,7 @@ function newMvp(){
 
     
 
-    k.SPRINT_MAX_SPEED = 1000;  // 临时测试，主角加速
+    // k.SPRINT_MAX_SPEED = 1000;  // 临时测试，主角加速
 
 
     // gemini 生成的代码，太美了
@@ -250,7 +250,7 @@ function newMvp(){
             };
             runSkylinefunc = () => {  // 天际线
                 if(!ll){
-                    // ll = dataProc.process(ll_m, { x: xDis,z: zDis }, dls, 'skyline', 2);
+                    ll = dataProc.process(ll_m, { x: xDis,z: zDis }, dls, 'skyline', 2);
                 }
                 // ----------
                 if(x){
