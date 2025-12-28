@@ -111,8 +111,8 @@ function newMvp(){
     const x_m = get2data[0];  //+ 四种规格对应的模型文件
     const m_m = get2data[2];
     const m2_m = get2data[3];
-    const l_m =  [{"x":32.557,"y":9.101,"z":29.457 - 50,"w":36,"h":17,"d":30,b:"#ff0000ff"}];  // 红块
-    const ll_m = [{"x":32.557,"y":9.101,"z":29.457,"w":20,"h":17,"d":60,b:"#110d07ff"}];
+    const l_m =  [{"x":32.557,"y":9.101,"z":29.457 - 60,"w":36,"h":17,"d":30,b:"#ff0000ff"}];  // 红块
+    const ll_m = [{"x":32.557,"y":9.101,"z":29.457 - 60,"w":36,"h":17,"d":30,b:"#ffc978ff"}];
 
     // 触发器模型
     const triggers = [
@@ -250,7 +250,8 @@ function newMvp(){
             };
             runSkylinefunc = () => {  // 天际线
                 if(!ll){
-                    // ll = dataProc.process(ll_m, { x: xDis,z: zDis }, dls, 'skyline', 2);
+                    ll = dataProc.process(ll_m, { x: xDis,z: zDis }, dls, 'skyline', 2);
+                    
                 }
                 // ----------
                 if(x){
@@ -337,15 +338,24 @@ function newMvp(){
                     triggerState[conf.key] = false;
                     requestStateUpdate();
                 };
+
             });
         }
-
-
-        
     }
 
+    const insData = [
+        {x:0,y:20,z:0,w:1,h:1,d:1},
+        {x:0,y:25,z:0,w:1,h:1,d:1},
+    ];
+    
+    k.W.cube({
+        n: 'skyline_cube',
+        t: dls,
+        instances: insData,
+        mix: 0.7,
+    });
 
-
+    k.W.updateInstance('skyline_cube', 0, { w: 30 });  // 让第一个实例变宽
 
 // ======================== 垃圾区 ===================================
 
