@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="pragma" content="no-cache">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="./opz/css/style.css">
+<style> body { margin: 0; } </style>
+<title>Open World Zone</title>
+<img src="./opz/assets/sky.jpg" id="sky" hidden>
+<img src="./opz/assets/cubemap.png" id="cubemap" hidden>
+<img src="./opz/assets/skytestimg.png" id="skytestimg" alt="" hidden>
+<img src="./opz/assets/texture.jpeg" alt="" id="dls" hidden>
+<img src="./opz/assets/myhouse.jpg" alt="" id="myhouse" hidden>
+<canvas id="openworldCanv" style="width:99vw;height:99vh"></canvas>
+
+<script src="./opz/assets/cannon-x-dev.js"></script> <!-- 物理引擎 -->
+<!-- <script src="../../src/cannon/cannon.min.js"></script> 物理引擎 -->
+
+
+<script src="./opz/script/init/makegroundmvp.js"></script> <!-- 地面和人物初始化 -->
+<script src="./opz/script/data/newmvp.js"></script> <!-- 新角色 ======== 临时实验室 ========= -->
+
+<script src="./opz/script/separated/cubedata.js"></script> <!-- 模型数据 -->
+<script src="./opz/script/kit/csvread.js"></script> <!-- csv 读取器 -->
+
+<script src="./opz/script/separated/startbuild.js"></script> <!-- 开始建造的初始化准备 -->
+<script src="./opz/script/separated/logicbuild.js"></script> <!-- 建造逻辑工具函数 -->
+<script src="./opz/script/separated/logicdata.js"></script> <!-- 建造逻辑 -->
+
+<script src="./opz/script/board/signboard.js"></script> <!-- 指示板 -->
+<script src="./opz/script/event/bookhot.js"></script> <!-- 书本热点相关 -->
+<script src="./opz/script/booktext/textinshelf.js"></script> <!-- 书架书本文字 -->
+<script src="./opz/script/book_func/booksystem.js"></script> <!-- 书系统 -->
+<script src="./opz/script/book_func/booksystemtool.js"></script> <!-- 书系统的工具函数 -->
+
+<!-- 数据处理，今天的重点 -->
+<script src="./opz/script/build_house/dataprocess.js"></script> 
+
+<script src="./opz/script/vk/vktool.js"></script> <!-- vk处理的工具 -->
+<script src="./opz/script/vk/vk.js"></script> <!-- vk处理 -->
+<script src="./opz/script/event/event.js"></script> <!-- 事件 -->
+<script src="./opz/script/other/dog.js"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "@src/": "../../src/"
+  }
+}
+</script>
+<script type="module" src="./opz/script/init/index.js" ></script>
+
+<!---- [ 下面是测试 ] --->
+
+
+<div id="bookInfoLT"></div>
+<div id="someCtrl">
+    <button id="btn01" style="width: 105px;">更多信息</button>
+</div>
+<div id="mCtrl" class="pad onlymobile moselect">
+  <button class="cell moselect" id="turnL">←</button>
+  <button class="cell moselect" id="goF">前</button>
+  <button class="cell moselect" id="turnR">→</button>
+
+  <button class="cell moselect" id="goL">左</button>
+  <button class="cell moselect" id="goJump">蹦</button>
+  <button class="cell moselect" id="goR">右</button>
+
+  <button class="cell moselect" id="lookUp">上</button>
+  <button class="cell moselect" id="goB">后</button>
+  <button class="cell moselect" id="lookDn">下</button>
+</div>
+<div class="info-modal zindex-1" id="myinfoModal">
+    <div>
+    <button id="closeBtn">关闭</button>
+
+    <a href="//github.com/kohunglee/openworld-js" target="_blank">
+        <img src="https://img.shields.io/github/stars/kohunglee/openworld-js?style=social" 
+            alt="GitHub Repo stars" 
+            style="height: 30px;margin-bottom: -10px;">
+    </a>
+    
+    <hr>
+
+    <div>
+        <h3>快捷操作</h3>
+            <button id="goOPOS">到原点</button>
+            <button id="goHall">到大厅</button>
+            <button id="goFar">到远处</button>
+            <button id="displayPadInPC">显示/隐藏 移动端控件</button>
+            <button id="tabView">切换视角(V)</button>
+        <hr>
+    </div>
+
+    <div>
+        <h3>在线人数</h3>
+        <input type="checkbox" id="closeVK"> <span class="moselect">关闭在线功能（下次进来也会自动关闭）</span><br><br>
+        <div id="onlineInfo">
+            当前在线人数：<span id="onlineCount">1</span>&nbsp;&nbsp;<span id="isConneting"></span>
+            <ul id="frendPosInfo"></ul>
+        </div>
+        
+        <hr>
+    </div>
+
+    <div>
+        <h3>简介</h3>
+        <p>这是一个基于 WebGL 开发的 js 库 <a href="https://github.com/kohunglee/openworld-js/" target="_blank">openworld-js</a> 的测试演示程序。该库仍在开发，目的是成为一个 40kb 的极小体积游戏引擎，里面包含了三维渲染和物理引擎。</p>
+        <p>如您所见，这是一个类似于图书馆的建筑，里面放置了 30万 本「书」，目前这些「书」还没有被填充，未来几日会被填充一下（不一定是书）。内置了 websocket 可以实现让我们多人在线互动，相互游玩在建筑之间。非常的有趣！</p>
+        <p>手机端，因为算力太差，固只作为电脑端的预览，欢迎大家访问电脑端！</p>
+        <p>新想法、想添加的功能或建议、反馈，可在 <a href="https://www.zhihu.com/question/389957213/answer/1962681678376984942" target="_blank">此处</a> 留言。后续会添加到致谢名单！（ <a href="mailto:2528852314@qq.com">kohunglee@foxmail.com</a> ）</p>
+        <p>这里可以观看 Demo 视频 <a href="https://b23.tv/boAGbqj" target="_blank">https://b23.tv/boAGbqj</a> 。</p>
+        <hr>
+    </div>
+
+    <div>
+        <h3>操作方式</h3>
+        <h4>电脑</h4>
+        <ul>
+            <li>W A S D,或键盘上的方向键，控制 主角 前后左右移动，老生常谈...</li>
+            <li>鼠标单击画面后，滑动，可以控制视角。</li>
+            <li>空格 或 E 为跳跃（推荐使用 E ，敲键盘声音更小）。</li>
+            <li>shift 或 Q 为快速跑（推荐使用 Q，小拇指不会酸疼 😂）。</li>
+            <li>图书馆东侧的楼梯，需要按 shift 或 Q 辅助前进，才能轻松上去！</li>
+            <li>F 键，frozen ，冻结到空中。</li>
+            <li>V 键，可以切换视角，远景、近景、第一人称视角。</li>
+            <li>单击后，圆点可以选择物体，左上角是物体的数字 ID，目前尚在测试，便于建模，也可用于选择或交互。</li>
+        </ul>
+        <h4>移动设备</h4>
+        <p>初步支持，尚在测试，欢迎探索...</p>
+        <hr>
+    </div>
+
+    <div>
+        <h3>简单设置</h3>
+        <ul>
+            <li>FOV 视角大小（默认60）<input type="number" step="1" name="wFovValue" id="wFovValue" value="60" max="1000" min="1">
+                <button id="wFovSet">启用</button>
+            </li>
+        </ul>
+        <hr>
+    </div>
+
+    <div style="font-family: monospace;">
+        <h3>更新记录</h3>
+        <ul>
+            <li>2025-11-10 - 修复帧率与运动速率的 bug（近期工作忙，新功能更新会延后）</li>
+            <li>2025-10-30 - 可以关闭在线功能</li>
+            <li>2025-10-29 - 增加了颜色标注，完善了前1000网站书架</li>
+            <li>2025-10-23 - 人数变化提示音、显示手机端标识</li>
+            <li>2025-10-22 - 添加了【更多信息】，优化了多人在线，增加了移动端的初步控件</li>
+        </ul>
+        <hr>
+    </div>
+
+    <div>
+        <h3>注意事项</h3>
+        <ul>
+            <li>本项目仍在开发中，功能不完善，可能存在 BUG ，请多包涵</li>
+            <li>建议使用较新的浏览器，如 Chrome、Firefox 等，以获得更好的体验</li>
+            <li>如果遇到问题、想新增功能，可以在 GitHub 仓库中提交 <a href="https://github.com/kohunglee/openworld-js/issues" target="_blank">issue</a> 或 <a target="_blank" href="//www.ccgxk.com/webgl/566.html">文章主页</a> </li>
+        </ul>
+        <hr>
+    </div>
+
+    <div>
+        <h3>精彩项目</h3>
+  
+        <hr>
+    </div>
+    
+    <button id="closeBtn02">关闭</button>
+    </div>
+</div>
+<script src="./opz/script/event/indexevent.js"></script> <!-- 主页面的事件（按钮事件或移动端） -->
+
+
+
+
+
+<style>
+    .author-card {
+    background-color: white;
+    border: 1px solid hsl(0, 0%, 85%);
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    font-family: system-ui, -apple-system, sans-serif;
+    }
+    .author-card__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    }
+    .author-card__content {
+    padding: 1.5rem;
+    }
+    .author-card__name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.9);
+    margin: 0 0 0.75rem 0;
+    }
+    .author-card__bio {
+    font-size: 1rem;
+    color: rgba(0, 0, 0, 0.75);
+    line-height: 1.6;
+    margin: 0;
+    }
+    .author-card__bio--highlight {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.85);
+    }
+</style>
+
+<div class="author-card">
+  <img class="author-card__image"  src="URL"  alt="A thoughtful professional in a modern workspace" >
+  <div class="author-card__content">
+    <h2 class="author-card__name">Alex Morgan</h2>
+    <p class="author-card__bio">
+      Alex is a passionate software engineer specializing in modern frontend architectures. 
+      When not advocating for <span class="author-card__bio--highlight">BEM methodology</span> 
+      or building accessible web components, you can find them experimenting with new CSS features 
+      or hiking with their golden retriever. They believe clean code and clean mountains 
+      both contribute to a better world.
+    </p>
+  </div>
+</div>
