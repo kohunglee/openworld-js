@@ -1,5 +1,7 @@
 # openworld.js (ow.min.js)
 
+<img width="200" alt="image" src="https://github.com/user-attachments/assets/10467c5b-f0c8-487a-ba0f-13d4a443f76d" />
+
 A 40kb+ webgl library, with concise code and extensive world sandbox! World engine prioritizes first-person view!The world is your viewpoint. 
 
 # more
