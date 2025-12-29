@@ -1,387 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="OpenWorld.Js - Ultra-lightweight modular WebGL framework. KB-size, 60 FPS everywhere.">
     <title>OpenWorld.Js — Ultra-lightweight WebGL Framework</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+    </style>
     <style>
-        /* =====================================================
-           OpenWorld.Js White Edition – Pure Light & Future Tech
-           CSS lines: 532  |  纯白 · 极简 · 呼吸光 · 2025
-           ===================================================== */
-
-        :root {
-            --bg: #fafafa;
-            --bg-card: #ffffff;
-            --primary: #00e5c1;     /* 荧光青绿 */
-            --primary-soft: #b3ffec;
-            --text: #1a1a1a;
-            --text-light: #555555;
-            --text-muted: #888888;
-            --border: rgba(0, 229, 193, 0.15);
-            --shadow: 0 20px 40px rgba(0, 229, 193, 0.08);
-            --glow: 0 0 30px rgba(0, 229, 193, 0.4);
-            --glow-strong: 0 0 50px rgba(0, 229, 193, 0.6);
-            --gradient: linear-gradient(135deg, #00e5c1 0%, #00a3ff 100%);
-        }
-
-        * { margin:0; padding:0; box-sizing:border-box; }
-        html { scroll-behavior: smooth; }
-        
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: system-ui, sans-serif;
-            line-height: 1.8;
-            font-weight: 400;
-            overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(0,229,193,0.06) 0%, transparent 25%),
-                radial-gradient(circle at 80% 20%, rgba(0,163,255,0.06) 0%, transparent 25%);
-        }
-
-        /* Subtle animated grid */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image: 
-                linear-gradient(rgba(0,229,193,0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,229,193,0.04) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none;
-            animation: drift 160s linear infinite;
-            z-index: -1;
-        }
-
-        @keyframes drift {
-            0% { transform: translate(0,0); }
-            100% { transform: translate(60px,60px); }
-        }
-
-        .header {
-            text-align: center;
-            padding: 14vh 20px 10vh;
-            position: relative;
-        }
-
-        .header h1 {
-            font-family: sans-serif;
-            font-size: clamp(4.5rem, 12vw, 10rem);
-            font-weight: 900;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.03em;
-            margin-bottom: 0.15em;
-            text-shadow: var(--glow);
-            animation: breathe 6s ease-in-out infinite;
-        }
-
-        @keyframes breathe {
-            0%, 100% { filter: brightness(1) saturate(1); }
-            50% { filter: brightness(1.15) saturate(1.3); }
-        }
-
-        .tagline {
-            font-size: 1.35rem;
-            color: var(--primary);
-            font-weight: 600;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin: 1.5rem 0;
-        }
-
-        .badge {
-            display: inline-block;
-            background: rgba(0,229,193,0.08);
-            border: 1.5px solid var(--primary);
-            color: var(--primary);
-            padding: 10px 24px;
-            border-radius: 50px;
-            font-weight: 500;
-            backdrop-filter: blur(12px);
-            box-shadow: var(--glow);
-        }
-
-        .container {
-            max-width: 1160px;
-            margin: 0 auto;
-            padding: 0 30px;
-        }
-
-        .intro {
-            text-align: center;
-            max-width: 840px;
-            margin: 0 auto 7rem;
-            font-size: 1.3rem;
-            color: var(--text-light);
-        }
-
-        .highlight { color: var(--primary); font-weight: 600; }
-
-        .btn {
-            display: inline-block;
-            padding: 16px 42px;
-            margin: 15px;
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            letter-spacing: 1px;
-            transition: all 0.5s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: var(--gradient);
-            opacity: 0.12;
-            transition: left 0.7s;
-        }
-
-        .btn:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow);
-            color: white;
-            background: var(--primary);
-        }
-
-        .btn:hover::before { left: 100%; }
-
-        .section {
-            padding: 120px 0;
-        }
-
-        .section-title {
-            font-family: sans-serif;
-            font-size: 3.6rem;
-            text-align: center;
-            margin-bottom: 4.5rem;
-            color: var(--text);
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .demo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
-            gap: 48px;
-        }
-
-        .demo-card {
-            background: var(--bg-card);
-            border-radius: 28px;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
-            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            border: 1px solid var(--border);
-        }
-
-        .demo-card:hover {
-            transform: translateY(-24px);
-            box-shadow: var(--shadow), var(--glow-strong);
-        }
-
-        .card-content {
-            padding: 48px 40px;
-        }
-
-        .card-title {
-            font-family: sans-serif;
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
-
-        .card-desc {
-            color: var(--text-light);
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-        }
-
-        .card-link {
-            color: var(--primary);
-            font-weight: 600;
-            text-decoration: none;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .card-link:hover {
-            border-color: var(--primary);
-            text-shadow: var(--glow);
-        }
-
-        .footer {
-            text-align: center;
-            padding: 100px 20px 60px;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .footer a { color: var(--primary); text-decoration: none; }
-        .footer a:hover { text-decoration: underline; }
-
-        /* Floating light particles */
-        .particles {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .particle {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            background: var(--primary);
-            border-radius: 50%;
-            opacity: 0.3;
-            box-shadow: var(--glow);
-            animation: floatUp 18s infinite linear;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 0.4; }
-            90% { opacity: 0.2; }
-            100% { transform: translateY(-100px) scale(1); opacity: 0; }
-        }
-
-        .scroll-hint {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 2rem;
-            color: var(--primary);
-            animation: bounce 2.5s infinite;
-        }
-
-        @keyframes bounce {
-            0%,100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-15px); }
-        }
-
-        @media (max-width: 768px) {
-            .demo-grid { grid-template-columns: 1fr; }
-            .btn { display: block; width: 280px; margin: 18px auto; }
-        }
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-700 antialiased selection:bg-emerald-100 selection:text-emerald-700">
 
-    <div class="particles" id="particles"></div>
+    <div class="max-w-3xl mx-auto px-6 py-12 md:py-16">
+        
+        <!-- Header Section -->
+        <header class="text-center mb-12">
+            <!-- Logo -->
+            <div class="mb-6">
+                <img src="owzlogo.png" 
+                     alt="OpenWorld.js Logo" 
+                     style="-webkit-user-drag: none; user-drag: none; user-select: none;"
+                     class="h-24 w-auto mx-auto object-contain hover:scale-105 transition-transform duration-300">
+            </div>
 
-    <header class="header">
-        <div class="container">
-            <h1>OpenWorld.Js</h1>
-            <div class="tagline">Ultra-lightweight • Modular • Instant</div>
-            <div class="badge">~40 KB gzipped • Blazing-fast on every device</div>
-            <div style="margin:3rem 0; text-align:center;line-height: 0.1;">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-3">
+                OpenWorld.Js
+            </h1>
+            
+            <p class="text-lg text-slate-500 font-medium">
+                Ultra-lightweight • Modular • Instant
+            </p>
+            
+            <div class="mt-4">
+                <span class="inline-flex items-center rounded-full bg-slate-200/50 px-3 py-1 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">
+                    ~40 KB gzipped • Blazing-fast
+                </span>
+            </div>
+
+            <!-- Github Icon -->
+            <div class="mt-6 flex justify-center">
                 <a href="https://github.com/kohunglee/OpenWorld-js" target="_blank"
-                style="display:inline-block; padding:14px; border-radius:50%; background:rgba(0,229,193,0.08); 
-                        border:2px solid transparent; transition:all 0.4s;"
-                onmouseover="this.style.borderColor='var(--primary)'; this.children[0].style.transform='scale(1.15)'"
-                onmouseout="this.style.borderColor='transparent'; this.children[0].style.transform='scale(1)'">
-                <svg height="32" width="32" viewBox="0 0 16 16" fill="currentColor" style="color:var(--primary); transition:transform 0.3s;">
-                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-                </svg>
+                   class="group p-3 rounded-full bg-white border border-slate-200 hover:border-emerald-400 hover:shadow-sm transition-all duration-300">
+                    <svg class="w-6 h-6 text-slate-400 group-hover:text-emerald-500 transition-colors" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
                 </a>
             </div>
-        </div>
-        <div class="scroll-hint">↓</div>
-    </header>
+        </header>
 
-    <section class="intro">
-        <div class="container">
-            <p>
-                An <span class="highlight">extremely lightweight</span> WebGL framework built with fully detachable plugins.<br>
-                Designed for <span class="highlight">instant-loading</span> 3D websites, model viewers, and immersive experiences that start in the blink of an eye.
+        <!-- Intro -->
+        <section class="mb-16 text-center max-w-xl mx-auto">
+            <p class="text-slate-600 leading-relaxed text-lg">
+                An <span class="text-slate-900 font-semibold">extremely lightweight</span> WebGL framework built with fully detachable plugins. 
+                Designed for <span class="text-slate-900 font-semibold">instant-loading</span> 3D websites.
             </p>
-            <div style="margin-top: 3rem;">
-                <a href="https://github.com/kohunglee/OpenWorld-js" class="btn" target="_blank">GitHub Repository</a>
-                <a href="#demos" class="btn">View Demos</a>
+            <div class="mt-8 flex gap-4 justify-center">
+                <a href="https://github.com/kohunglee/OpenWorld-js" target="_blank" 
+                   class="bg-slate-900 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-slate-700 transition-colors">
+                    GitHub Repository
+                </a>
+                <a href="#demos" 
+                   class="bg-white border border-slate-200 text-slate-700 px-5 py-2 rounded-md text-sm font-medium hover:bg-slate-50 transition-colors">
+                    View Demos
+                </a>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="section" id="demos">
-        <div class="container">
-            <h2 class="section-title">Showcase Demos</h2>
+        <!-- Demos Grid -->
+        <section id="demos" class="mb-16 scroll-mt-10">
+            <div class="flex items-center mb-6">
+                <h2 class="text-xl font-bold text-slate-900">Showcase</h2>
+                <div class="h-px bg-slate-200 flex-grow ml-4"></div>
+            </div>
 
-            <div class="demo-grid">
-                <div class="demo-card">
-                    <div class="card-content">
-                        <h3 class="card-title">Infinite Library</h3>
-                        <p class="card-desc">Procedurally generated library capable of holding 300,000 books. Fully interactive, silky smooth even on mobile.</p>
-                        <a href="./demo/house.html?logicadd=1" target="_blank" class="card-link">Launch Demo →</a>
-                        <br><br>
-                        <a href="https://www.zhihu.com/question/389957213/answer/1962681678376984942" target="_blank" style="font-size:0.9rem;color:#888;">Original Zhihu Post</a>
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Card 1 -->
+                <div class="group bg-white rounded-xl border border-slate-200 p-6 hover:border-emerald-300 transition-colors duration-300">
+                    <h3 class="font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors">Infinite Library</h3>
+                    <p class="text-sm text-slate-500 mb-4 leading-relaxed">
+                        Procedurally generated library capable of holding 300,000 books. Fully interactive, silky smooth even on mobile.
+                    </p>
+                    <div class="flex items-center justify-between text-xs">
+                        <a href="./demo/house.html?logicadd=1" target="_blank" class="font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+                            Launch Demo <span>→</span>
+                        </a>
+                        <a href="https://www.zhihu.com/question/389957213/answer/1962681678376984942" target="_blank" class="text-slate-400 hover:text-slate-600 hover:underline">
+                            Original Zhihu Post
+                        </a>
                     </div>
                 </div>
 
-                <div class="demo-card">
-                    <div class="card-content">
-                        <h3 class="card-title">Cyberpunk City</h3>
-                        <p class="card-desc">Randomly generated neon city where you can write glowing text on any wall in real-time — no server required.</p>
-                        <a href="//git.ccgxk.com/myWorkSpace/webgl_show/cyber_city/cbcity.html" target="_blank" class="card-link">Launch Demo →</a>
-                        <br><br>
-                        <a href="//www.ccgxk.com/webgl/cyber_city.html" target="_blank" style="font-size:0.9rem;color:#888;">Usage Guide</a>
+                <!-- Card 2 -->
+                <div class="group bg-white rounded-xl border border-slate-200 p-6 hover:border-emerald-300 transition-colors duration-300">
+                    <h3 class="font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors">Cyberpunk City</h3>
+                    <p class="text-sm text-slate-500 mb-4 leading-relaxed">
+                        Randomly generated neon city where you can write glowing text on any wall in real-time — no server required.
+                    </p>
+                    <div class="flex items-center justify-between text-xs">
+                        <a href="//git.ccgxk.com/myWorkSpace/webgl_show/cyber_city/cbcity.html" target="_blank" class="font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+                            Launch Demo <span>→</span>
+                        </a>
+                        <a href="//www.ccgxk.com/webgl/cyber_city.html" target="_blank" class="text-slate-400 hover:text-slate-600 hover:underline">
+                            Usage Guide
+                        </a>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="section">
-        <div class="container">
-            <h2 class="section-title">Documentation</h2>
-            <p style="text-align:center;font-size:1.3rem;color:#555;">
-                API documentation is being polished every day...<br>
-                <a href="./doc" target="_blank" style="color:var(--primary);font-weight:600;">Coming very soon →</a>
-            </p>
-        </div>
-    </section>
+        <!-- Documentation & Footer -->
+        <footer class="text-center border-t border-slate-200 pt-8">
+            <div class="mb-8">
+                <p class="text-slate-500 text-sm mb-1">API documentation is being polished...</p>
+                <a href="./doc" target="_blank" class="text-emerald-600 font-semibold text-sm hover:underline">Coming very soon →</a>
+            </div>
+            
+            <div class="text-xs text-slate-400 flex flex-col md:flex-row justify-center gap-2 md:gap-6">
+                <span>© 2017 – <script>document.write(new Date().getFullYear())</script> OpenWorld.Js</span>
+                <span>Made by <a href="https://www.ccgxk.com" target="_blank" class="hover:text-slate-600 transition-colors">ccGxk</a></span>
+            </div>
+        </footer>
 
-    <footer class="footer">
-        <div>© 2017 – <script>document.write(new Date().getFullYear())</script> OpenWorld.Js</div>
-        <div>Made with passion by <a href="https://www.ccgxk.com" target="_blank">ccGxk</a></div>
-    </footer>
+        <script>
+            // Ultra-light floating particles (<1.5KB)
+            const p = document.getElementById('particles');
+            for(let i = 0; i < 40; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'particle';
+                dot.style.left = Math.random() * 100 + 'vw';
+                dot.style.animationDelay = Math.random() * 18 + 's';
+                dot.style.animationDuration = (Math.random() * 15 + 15) + 's';
+                p.appendChild(dot);
+            }
+        </script>
 
-    <script>
-        // Ultra-light floating particles (<1.5KB)
-        const p = document.getElementById('particles');
-        for(let i = 0; i < 40; i++) {
-            const dot = document.createElement('div');
-            dot.className = 'particle';
-            dot.style.left = Math.random() * 100 + 'vw';
-            dot.style.animationDelay = Math.random() * 18 + 's';
-            dot.style.animationDuration = (Math.random() * 15 + 15) + 's';
-            p.appendChild(dot);
-        }
-    </script>
+        <!-- Original Baidu Analytics -->
+        <script>
+            var _hmt = _hmt || [];
+            (function() {
+                var hm = document.createElement("script");
+                hm.src = "https://hm.baidu.com/hm.js?7f32626143786db9efbf3749f9a87aed";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
+        </script>
 
-    <!-- Original Baidu Analytics -->
-    <script>
-        var _hmt = _hmt || [];
-        (function() {
-            var hm = document.createElement("script");
-            hm.src = "https://hm.baidu.com/hm.js?7f32626143786db9efbf3749f9a87aed";
-            var s = document.getElementsByTagName("script")[0];
-            s.parentNode.insertBefore(hm, s);
-        })();
-    </script>
+    </div>
 </body>
 </html>
