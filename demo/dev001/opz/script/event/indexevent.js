@@ -195,3 +195,17 @@ function applyFOV() {
 
 $("wFovSet").onclick = applyFOV;
 $("wFovValue").onchange = applyFOV;
+
+// ========================
+// 疾跑最高速度 设置
+// ========================
+
+function applyHSpeed() {
+    k.SPRINT_MAX_SPEED = parseFloat($("hSpeedValue").value);
+}
+
+$("hSpeedSet").onclick = applyHSpeed;
+$("hSpeedValue").onchange = applyHSpeed;
+
+
+hSpeedSet
