@@ -4,59 +4,59 @@
 <meta http-equiv="expires" content="0">
 <meta http-equiv="pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="./house/css/style.css">
+<link rel="stylesheet" href="./opz/css/style.css">
 <style> body { margin: 0; } </style>
 <title>Open World Zone</title>
-<img src="./cbcity/texture.jpeg" alt="" id="dls" hidden>
+<img src="./opz/assets/sky.jpg" id="sky" hidden>
+<img src="./opz/assets/cubemap.png" id="cubemap" hidden>
+<img src="./opz/assets/skytestimg.png" id="skytestimg" alt="" hidden>
+<img src="./opz/assets/texture.jpeg" alt="" id="dls" hidden>
+<img src="./opz/assets/myhouse.jpg" alt="" id="myhouse" hidden>
 <canvas id="openworldCanv" style="width:99vw;height:99vh"></canvas>
 
-<script src="../src/cannon/cannon.min.js"></script>
-<!-- <script src="./house/script/cannon.min.js"></script> -->
- 
+<script src="./opz/assets/cannon-x-dev.js"></script> <!-- 物理引擎 -->
+<!-- <script src="../../src/cannon/cannon.min.js"></script> 物理引擎 -->
 
-<script src="./house/script/cubedata.js"></script> <!-- 模型数据 -->
-<script src="./house/script/csvread.js"></script> <!-- csv 读取器 -->
 
-<script src="./house/script/makegroundmvp.js"></script> <!-- 地面和人物初始化 -->
-<script src="./house/script/newmvp.js"></script> <!-- 新角色 -->
+<script src="./opz/script/init/makegroundmvp.js"></script> <!-- 地面和人物初始化 -->
+<script src="./opz/script/data/newmvp.js"></script> <!-- 新角色 ======== 临时实验室 ========= -->
 
-<script src="./house/script/startbuild.js"></script> <!-- 开始建造的初始化准备 -->
+<script src="./opz/script/separated/cubedata.js"></script> <!-- 模型数据 -->
+<script src="./opz/script/kit/csvread.js"></script> <!-- csv 读取器 -->
 
-<script src="./house/script/logicbuild.js"></script> <!-- 建造逻辑工具函数 -->
-<script src="./house/script/logicdata.js"></script> <!-- 建造逻辑 -->
+<script src="./opz/script/separated/startbuild.js"></script> <!-- 开始建造的初始化准备 -->
+<script src="./opz/script/separated/logicbuild.js"></script> <!-- 建造逻辑工具函数 -->
+<script src="./opz/script/separated/logicdata.js"></script> <!-- 建造逻辑 -->
 
-<script src="./house/script/signboard.js"></script> <!-- 指示板 -->
+<script src="./opz/script/board/signboard.js"></script> <!-- 指示板 -->
+<script src="./opz/script/event/bookhot.js"></script> <!-- 书本热点相关 -->
+<script src="./opz/script/booktext/textinshelf.js"></script> <!-- 书架书本文字 -->
+<script src="./opz/script/book_func/booksystem.js"></script> <!-- 书系统 -->
+<script src="./opz/script/book_func/booksystemtool.js"></script> <!-- 书系统的工具函数 -->
 
-<script src="./house/script/bookhot.js"></script> <!-- 书本热点相关 -->
-<script src="./house/script/textinshelf.js"></script> <!-- 书架书本文字 -->
-<script src="./house/script/booksystem.js"></script> <!-- 书系统 -->
-<script src="./house/script/booksystemtool.js"></script> <!-- 书系统的工具函数 -->
+<!-- 数据处理，今天的重点 -->
+<script src="./opz/script/build_house/dataprocess.js"></script> 
 
-<script src="./house/script/dataprocess.js"></script> <!-- 数据处理 -->
-
-<script src="./house/script/vktool.js"></script> <!-- vk处理的工具 -->
-<script src="./house/script/vk.js"></script> <!-- vk处理 -->
-<script src="./house/script/event.js"></script> <!-- 事件 -->
-
-<script src="./house/script/dog.js"></script>
-<script src="./house/script/xbox.js"></script>
+<script src="./opz/script/vk/vktool.js"></script> <!-- vk处理的工具 -->
+<script src="./opz/script/vk/vk.js"></script> <!-- vk处理 -->
+<script src="./opz/script/event/event.js"></script> <!-- 事件 -->
+<script src="./opz/script/other/dog.js"></script>
 
 <script type="importmap">
 {
   "imports": {
-    "@src/": "../src/",
-    "@plugins/": "../src/plugins/"
+    "@src/": "../../src/"
   }
 }
 </script>
-<script type="module" src="./house/script/index.js" ></script>
+<script type="module" src="./opz/script/init/index.js" ></script>
 
 <!---- [ 下面是测试 ] --->
 
 
 <div id="bookInfoLT"></div>
 <div id="someCtrl">
-    <button id="btn01" style="width: 105px;">面板(Tab)</button>
+    <button id="btn01" style="width: 105px;">更多信息</button>
 </div>
 <div id="mCtrl" class="pad onlymobile moselect">
   <button class="cell moselect" id="turnL">←</button>
@@ -87,6 +87,7 @@
         <h3>快捷操作</h3>
             <button id="goOPOS">到原点</button>
             <button id="goHall">到大厅</button>
+            <button id="goFar">到远处</button>
             <button id="displayPadInPC">显示/隐藏 移动端控件</button>
             <button id="tabView">切换视角(V)</button>
         <hr>
@@ -100,17 +101,6 @@
             <ul id="frendPosInfo"></ul>
         </div>
         
-        <hr>
-    </div>
-
-    <div>
-        <h3>置顶公告</h3>
-        <p> 年底的一个 demo 版本。 </p>
-        <p>看这个 <a href="../demo/dev001/" target="_blank">demo001</a> ，是目前一个实现了多个建筑的 demo，动态加载很多建筑。 </p>
-        <p> 2025年12月29日 02:22:15 <br> </p>
-        <p>都一个月了，为什么看着没多大变化？还没更新？放弃了吗？</p>
-        <p>答：并没有！也永远不会放弃！大家可以在代码仓库 <a href="https://github.com/kohunglee/openworld-js/" target="_blank">openworld-js</a> 看到，我们每天都在更新代码。只是我们的侧重点是内部一些抽象的功能。为了实现更大的世界，能够根据主角位置，动态加载....  建造新的建筑其实最简单了。感谢大家！</p>
-        <p>于 2025-12-04 13:57:26</p>
         <hr>
     </div>
 
@@ -139,81 +129,18 @@
         </ul>
         <h4>移动设备</h4>
         <p>初步支持，尚在测试，欢迎探索...</p>
-        <h4>手柄操作</h4>
-        <p>暂时支持 XBOX 风格的游戏手柄，具体操作按钮暂定为 <a href="https://picx.zhimg.com/v2-e798053c336c15dc243c11f3f8abedbd" target="_blank">此图所示</a>，欢迎试用！ </p>
-        
         <hr>
     </div>
 
     <div>
         <h3>简单设置</h3>
         <ul>
-            <h4>图像</h4>
             <li>FOV 视角大小（默认60）<input type="number" step="1" name="wFovValue" id="wFovValue" value="60" max="1000" min="1">
                 <button id="wFovSet">启用</button>
             </li>
-
-            <h4>游戏手柄</h4>
-            <li>
-                <label>
-                    <input type="checkbox" id="useGamepad" checked>
-                    使用游戏手柄
-                </label>
+            <li>疾跑最高速度（默认15）<input type="number" step="1" name="wFovValue" id="hSpeedValue" value="15" max="10000" min="1">
+                <button id="hSpeedSet">启用</button>
             </li>
-
-            <li>
-                <label>
-                    <input type="checkbox" id="hiPrecisionMove">
-                    高精度人物移动（移动速度根据力感调整）
-                </label>
-            </li>
-
-            <li>
-                <label>
-                    <input type="checkbox" id="reverseMVPMoveX">
-                    反转角色移动 X 轴
-                </label>
-            </li>
-
-            <li>
-                <label>
-                    <input type="checkbox" id="reverseMVPMoveY">
-                    反转角色移动 Y 轴
-                </label>
-            </li>
-
-            <li>
-                <label>
-                    <input type="checkbox" id="inverteCamX">
-                    翻转视角 X 轴
-                </label>
-            </li>
-
-            <li>
-                <label>
-                    <input type="checkbox" id="inverteCamY">
-                    翻转视角 Y 轴
-                </label>
-            </li>
-
-            <li>
-                <label>
-                    <input type="checkbox" id="doubleCameraSpeed">
-                    双倍视角旋转速度
-                </label>
-            </li>
-
-            <li>最小敏感度：<input type="number" step="0.01" name="deadzoneValue" id="deadzoneValue" value="0.05" max="1" min="0.01">
-            </li>
-
-            <h4>其他</h4>
-            <li>
-                <label>
-                    <input type="checkbox" id="noBookRender">
-                    不渲染书本（在图书馆游逛不卡顿）
-                </label>
-            </li>
-            <!---占位，翻转 X Y 轴 -->
         </ul>
         <hr>
     </div>
@@ -221,8 +148,6 @@
     <div style="font-family: monospace;">
         <h3>更新记录</h3>
         <ul>
-            <li>2025-11-26 - 添加了手柄支持</li> 
-            <li>2025-11-21 - 底层有一些问题需要解决，正在重构中，敬请期待</li>    
             <li>2025-11-10 - 修复帧率与运动速率的 bug（近期工作忙，新功能更新会延后）</li>
             <li>2025-10-30 - 可以关闭在线功能</li>
             <li>2025-10-29 - 增加了颜色标注，完善了前1000网站书架</li>
@@ -244,21 +169,12 @@
 
     <div>
         <h3>精彩项目</h3>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7518429849653447"
-            crossorigin="anonymous"></script>
-        <ins class="adsbygoogle"
-            style="display:block; text-align:center;"
-            data-ad-layout="in-article"
-            data-ad-format="fluid"
-            data-ad-client="ca-pub-7518429849653447"
-            data-ad-slot="8665279496"></ins>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
+  
         <hr>
     </div>
     
     <button id="closeBtn02">关闭</button>
     </div>
 </div>
-<script src="./house/script/indexevent.js"></script> <!-- 主页面的事件（按钮事件或移动端） -->
+<script src="./opz/script/event/indexevent.js"></script> <!-- 主页面的事件（按钮事件或移动端） -->
+
