@@ -24,7 +24,7 @@ function newMvp(){
     k.W.cube({  // 关节：主角的右胳膊
         g:'mainPlayer',
         n:'joint_test', y: 0.47, x: 0.30, z: 0,
-        rz:15, ry:0, w:0.1,  h:0.1,  d:0.1, 
+        rz:15, ry:0, w:0.1,  h:0.1,  d:0.1,
     });
     k.W.cube({  // 主角的右胳膊
         g:'joint_test', n:'aaa', y: -2,
@@ -33,7 +33,7 @@ function newMvp(){
     // 关节
     k.W.cube({  // 关节：主角的右胳膊
         g:'mainPlayer', n:'joint_test_left', y: 0.47, x: -0.30,
-        z: 0, rz:-15, ry:0, w:0.1,  h:0.1,  d:0.1, 
+        z: 0, rz:-15, ry:0, w:0.1,  h:0.1,  d:0.1,
     });
     k.W.cube({  // 主角的右胳膊
         g:'joint_test_left',
@@ -54,7 +54,7 @@ function newMvp(){
     k.W.cube({  // 关节：主角的左腿
         g:'mainPlayer',
         n:'joint_test_left_leg',
-        y: 0.1, x: -0.15, z: 0, 
+        y: 0.1, x: -0.15, z: 0,
         w:0.1,  h:0.1,  d:0.1,
     });
     k.W.cube({  // 主角的右腿
@@ -72,7 +72,7 @@ function newMvp(){
 
             // ===== 扫描数据 =====
             const type1 = [], type2 = [], type3 = [];
-            const [m1, m2, m3] = dataProc.typesMeta;
+            const [m1, m2, m3] = k.dataProc.typesMeta;
 
             for (let i = m1.startIdx; i < m1.endIdx; i += m1.step) if (k.indexToArgs.has(i)) type1.push(i);
             for (let i = m2.startIdx; i < m2.endIdx; i += m2.step) if (k.indexToArgs.has(i)) type2.push(i);
@@ -84,7 +84,7 @@ function newMvp(){
                 const idx = m1.startIdx + i * m1.step;
                 const has = k.indexToArgs.has(idx);
                 const info = has ? k.indexToArgs.get(idx) : null;
-                gridHTML += `<span title="idx:${idx} ${info ? '' : '空'}" 
+                gridHTML += `<span title="idx:${idx} ${info ? '' : '空'}"
                     style="display:inline-block;width:18px;height:18px;line-height:18px;text-align:center;
                     font-size:11px;margin:1px;cursor:default;border-radius:2px;
                     background:${has ? '#3a7bd5' : '#e0e0e0'};color:${has ? '#fff' : '#999'};">
@@ -164,7 +164,7 @@ function newMvp(){
             };
         }
         k.visCubeLen = -1;  // 建造器设置 index 使用
-        const id = dataProc.process(buildCubeData, {x:0}, dls);
+        const id = k.dataProc.process(buildCubeData, {x:0}, dls);
         k.centerDot.init.wskId = id;
     }
 
@@ -208,30 +208,13 @@ function newMvp(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // 开始
 
 /** --------------------------------------------------------------------- */
 
 /**
  * 模型文件在此定义，4 种规格的模型
- * 
+ *
  * 临时测试嘛，所以先写死了，后期再研究怎么使用其他的模型。
  */
 const x_m  = get2data[0];
@@ -242,7 +225,7 @@ const ll_m = [{"x":32.557,"y":9.101,"z":29.457 - 60,"w":36,"h":17,"d":30, b:"#ff
 
 /**
  * 触发器模型
- * 
+ *
  * 论形状，其实都是一根棍儿，不显示而已。
  * 因为，我并不准备在场景中显示。
  * 这个触发器，在 引擎 那边，会实时检测与主角的位置距离，到达一定距离，会触发激活函数。
@@ -263,7 +246,7 @@ const triggersPosData = [{ "x": 32.557, "y": 1.5, "z": 29.457, "w": 0.5, "h": 50
  *
  * 完全独立于【万数块系统】。
  * 预分配 total 个槽位，每个 tri() 调用认领一个。
- * 
+ *
  * 软删除：把对应槽位缩到极小、扔到极远，视觉消失但 drawcall 不变。
  */
 const SkylineSystem = (() => {
@@ -406,23 +389,23 @@ function tri(zDis = 60, xDis = 0) {
         let x, m, m2, l;  // 不再需要 ll 天际线了，天际线由 SkylineSystem 管理
 
         runGemfunc = () => {
-            if (!x)  x  = dataProc.process(x_m,  { x: xDis, z: zDis }, dls, 'gem');
-            if (!m)  m  = dataProc.process(m_m,  { x: xDis, z: zDis }, dls, 'board',  2);
-            if (!m2) m2 = dataProc.process(m2_m, { x: xDis, z: zDis }, dls, 'board2', 2);
+            if (!x)  x  = k.dataProc.process(x_m,  { x: xDis, z: zDis }, dls, 'gem');
+            if (!m)  m  = k.dataProc.process(m_m,  { x: xDis, z: zDis }, dls, 'board',  2);
+            if (!m2) m2 = k.dataProc.process(m2_m, { x: xDis, z: zDis }, dls, 'board2', 2);
             if (l)  { k.deleteModBlock(l);  l  = null; }
             SkylineSystem.hide(skySlot);  // 进入近景，隐藏天际线
         };
 
         runBoardfunc = () => {
-            if (!m)  m  = dataProc.process(m_m,  { x: xDis, z: zDis }, dls, 'board',  2);
-            if (!m2) m2 = dataProc.process(m2_m, { x: xDis, z: zDis }, dls, 'board2', 2);
+            if (!m)  m  = k.dataProc.process(m_m,  { x: xDis, z: zDis }, dls, 'board',  2);
+            if (!m2) m2 = k.dataProc.process(m2_m, { x: xDis, z: zDis }, dls, 'board2', 2);
             if (x)  { k.deleteModBlock(x);  x  = null; }
             if (l)  { k.deleteModBlock(l);  l  = null; }
             SkylineSystem.hide(skySlot);  // 进入中景，隐藏天际线
         };
 
         runHutfunc = () => {
-            if (!l) l = dataProc.process(l_m, { x: xDis, z: zDis }, dls, 'hut', 2);
+            if (!l) l = k.dataProc.process(l_m, { x: xDis, z: zDis }, dls, 'hut', 2);
             if (x)  { k.deleteModBlock(x);  x  = null; }
             if (m)  { k.deleteModBlock(m);  m  = null; }
             if (m2) { k.deleteModBlock(m2); m2 = null; }
@@ -481,7 +464,7 @@ function tri(zDis = 60, xDis = 0) {
         triggers.forEach(conf => {
             triggersPosData[0].dz = conf.dz;
             triggersPosData[0].st = 1;
-            const idx  = dataProc.process(triggersPosData, { x: xDis, z: zDis - 60 }, dls, 'setTriModel', 3, true);
+            const idx  = k.dataProc.process(triggersPosData, { x: xDis, z: zDis - 60 }, dls, 'setTriModel', 3, true);
             const args = k.indexToArgs.get(idx + 0);
             args.activeFunc = () => {  // 激活函数
                 triggerState[conf.key] = true;
@@ -494,7 +477,7 @@ function tri(zDis = 60, xDis = 0) {
         });
     }
 }
-    
+
 // ======================== 垃圾区 ===================================
 
 }
