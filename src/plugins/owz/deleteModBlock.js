@@ -22,7 +22,7 @@ export default function (ccgxkObj) {
         dataName: '',       // 当前数据的随机别名
 
         // 各[数块]的占比情况
-        // 注意，当前只能是 63、1、300 ，因为 deleteModBlock 插件，目前还是写死的（后续再优化）。
+        // 注意，默认 63、1、300 
         typesMeta: (() => {
             const W1 = 63, W3 = 1, step2 = 300;
             const types = [
@@ -185,19 +185,21 @@ export default function (ccgxkObj) {
     };
 
     // 按照块儿删除模型
-    // 自动识别 万数块(10000)、百数块(100)、单数块(1)
+    // 自动识别 万数块、百数块、单数块（通过 typesMeta 动态获取）
     ccgxkObj.deleteModBlock = function (blockIndex, cobj) {
         cobj = cobj || ccgxkObj;
         const rootArgs = cobj.indexToArgs.get(blockIndex);  // 头索引 元数据
         if (!rootArgs) { return }
         const dataName = rootArgs.dataName;
-        let blockSize;  //+ 确定删除块儿的大小
-        if (blockIndex >= 990000) {
-            blockSize = 1;
-        } else if (blockIndex >= 63_0000) {
-            blockSize = 300;
-        } else {
-            blockSize = 10000;
+
+        // 通过 typesMeta 动态判断 blockSize
+        let blockSize = dataProc.typesMeta[0].step; // 默认万数块
+        for (let i = 0; i < dataProc.typesMeta.length; i++) {
+            const meta = dataProc.typesMeta[i];
+            if (blockIndex >= meta.startIdx && blockIndex < meta.endIdx) {
+                blockSize = meta.step;
+                break;
+            }
         }
         for (let i = blockIndex; i < blockIndex + blockSize; i++) {  // 删除档案
             cobj.hiddenTABox(i);
