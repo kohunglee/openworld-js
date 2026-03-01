@@ -72,20 +72,19 @@ function newMvp(){
 
             // ===== 扫描数据 =====
             const type1 = [], type2 = [], type3 = [];
+            const [m1, m2, m3] = dataProc.typesMeta;
 
-            for (let i = 0; i < 63_0000; i += 1_0000)  if (k.indexToArgs.has(i)) type1.push(i);
-            for (let i = 63_0000; i < 99_0000; i += 300) if (k.indexToArgs.has(i)) type2.push(i);
-            for (let i = 99_0000; i < 100_0000; i += 1)  if (k.indexToArgs.has(i)) type3.push(i);
+            for (let i = m1.startIdx; i < m1.endIdx; i += m1.step) if (k.indexToArgs.has(i)) type1.push(i);
+            for (let i = m2.startIdx; i < m2.endIdx; i += m2.step) if (k.indexToArgs.has(i)) type2.push(i);
+            for (let i = m3.startIdx; i < m3.endIdx; i += m3.step) if (k.indexToArgs.has(i)) type3.push(i);
 
-            const t1Total = 63, t2Total = 1200, t3Total = 10000;
-
-            // ===== 万数块网格 (10x7 grid) =====
+            // ===== 万数块网格 =====
             let gridHTML = '';
-            for (let i = 0; i < 63; i++) {
-                const idx = i * 1_0000;
+            for (let i = 0; i < m1.total; i++) {
+                const idx = m1.startIdx + i * m1.step;
                 const has = k.indexToArgs.has(idx);
                 const info = has ? k.indexToArgs.get(idx) : null;
-                gridHTML += `<span title="idx:${idx} ${info ? `` : '空'}" 
+                gridHTML += `<span title="idx:${idx} ${info ? '' : '空'}" 
                     style="display:inline-block;width:18px;height:18px;line-height:18px;text-align:center;
                     font-size:11px;margin:1px;cursor:default;border-radius:2px;
                     background:${has ? '#3a7bd5' : '#e0e0e0'};color:${has ? '#fff' : '#999'};">
@@ -97,7 +96,6 @@ function newMvp(){
             // ===== 进度条生成函数 =====
             const bar = (used, total, color) => {
                 const pct = Math.round((used / total) * 100);
-                const filled = Math.round(pct / 5); // 20格
                 return `
                     <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
                         <div style="flex:1;height:10px;background:#e0e0e0;border-radius:5px;overflow:hidden;">
@@ -107,14 +105,15 @@ function newMvp(){
                     </div>`;
             };
 
+            const w = n => Math.round(n / 1_0000);  // 转换为 w 单位显示
+
             // ===== 拼装 HTML =====
             container.innerHTML = `
                 <div style="font-family:monospace;font-size:12px;line-height:1.6;">
 
-                    <!-- 万数块网格 -->
                     <div style="margin-bottom:10px;">
                         <div style="font-size:11px;color:#888;margin-bottom:4px;">
-                            万数块 &nbsp;${type1.length} / ${t1Total} 已用
+                            万数块 &nbsp;${type1.length} / ${m1.total} 已用
                             &nbsp;<span style="color:#3a7bd5;">■ 占用</span>
                             &nbsp;<span style="color:#999;">· 空闲</span>
                         </div>
@@ -123,19 +122,17 @@ function newMvp(){
 
                     <hr style="border:none;border-top:1px solid #ddd;margin:8px 0;">
 
-                    <!-- 三类进度条 -->
                     <div>
-                        <div style="font-size:11px;color:#555;margin-bottom:2px;">万数块 (0 ~ 63w)</div>
-                        ${bar(type1.length, t1Total, '#3a7bd5')}
+                        <div style="font-size:11px;color:#555;margin-bottom:2px;">万数块 (0 ~ ${w(m1.endIdx)}w)</div>
+                        ${bar(type1.length, m1.total, '#3a7bd5')}
 
-                        <div style="font-size:11px;color:#555;margin:6px 0 2px;">百数块 (63w ~ 99w)</div>
-                        ${bar(type2.length, t2Total, '#9b59b6')}
+                        <div style="font-size:11px;color:#555;margin:6px 0 2px;">百数块 (${w(m2.startIdx)}w ~ ${w(m2.endIdx)}w)</div>
+                        ${bar(type2.length, m2.total, '#9b59b6')}
 
-                        <div style="font-size:11px;color:#555;margin:6px 0 2px;">单数块 (99w ~ 100w)</div>
-                        ${bar(type3.length, t3Total, '#27ae60')}
+                        <div style="font-size:11px;color:#555;margin:6px 0 2px;">单数块 (${w(m3.startIdx)}w ~ ${w(m3.endIdx)}w)</div>
+                        ${bar(type3.length, m3.total, '#27ae60')}
                     </div>
 
-                    <!-- 底部时间戳 -->
                     <div style="font-size:10px;color:#aaa;margin-top:8px;text-align:right;">
                         更新于 ${new Date().toLocaleTimeString()}
                     </div>
