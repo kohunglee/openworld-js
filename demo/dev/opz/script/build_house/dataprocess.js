@@ -14,6 +14,23 @@ const dataProc = {
     wskIdx: -1,         // 当前万数块的 ID
     dataName: '',       // 当前数据的随机别名
 
+    // 各[数块]的占比情况
+    // 注意，当前只能是 63、1、300 ，因为 deleteModBlock 插件，目前还是写死的（后续再优化）。
+    typesMeta: (() => {
+        const W1 = 63, W3 = 1, step2 = 300;
+        const types = [
+            [W1 * 1_0000,                                           1_0000],  // 万数块
+            [Math.floor((100 - W1 - W3) * 1_0000 / step2) * step2,  step2],   // 百数块
+            [W3 * 1_0000,                                                1],  // 单数块
+        ];
+        let cursor = 0;
+        return types.map(([span, cap]) => {
+            const meta = { startIdx: cursor, endIdx: cursor + span, step: cap, total: span / cap };
+            cursor += span;
+            return meta;
+        });
+    })(),
+
     // 读取数据，预处理
     readData : (data, isHidden = false, offset = {}) => {
         if(dataProc.cubeIndex >= dataProc.totalCube){ return -1 }// 超出容量（如 300 个），不再处理
@@ -110,35 +127,67 @@ const dataProc = {
     process: (data, offset, texture = dls, name = 'noName', type = 1, noIns = false) => {
         D = null;  // 释放内存（暂时使用，可能无意义）
 
-        let startIdx, endIdx, step, cap;  //+ 根据 type 定义规则配置
-        switch (type) {
-            case 1:  // 万数块 (每个 1w 容量，共 63 个)
-                startIdx = 0; 
-                endIdx = 63_0000; 
-                step = 1_0000; 
-                cap = 1_0000;
-                break;
-            case 2:  // 百数块 (每个 300 容量，共 1200 个)
-                startIdx = 63_0000; 
-                endIdx = 99_0000; 
-                step = 300; 
-                cap = 300;
-                break;
-            case 3:  // 单数块（每个 1 容量，共 1w 个）
-                startIdx = 99_0000; 
-                endIdx = 100_0000; 
-                step = 1; 
-                cap = 1;
-                break;
-            default:  // 默认回滚到万数块
-                startIdx = 0; endIdx = 63_0000; step = 1_0000; cap = 1_0000;
-                break;
-        }
+        // 老的 分配 法则（已废弃，用于注解这个概念）
+        // let startIdx, endIdx, step, cap;  //+ 根据 type 定义规则配置
+        // switch (type) {
+        //     case 1:  // 万数块 (每个 1w 容量，共 63 个)
+        //         startIdx = 0; 
+        //         endIdx = 63_0000; 
+        //         step = 1_0000; 
+        //         cap = 1_0000;
+        //         break;
+        //     case 2:  // 百数块 (每个 300 容量，共 1200 个)
+        //         startIdx = 63_0000; 
+        //         endIdx = 99_0000; 
+        //         step = 300; 
+        //         cap = 300;
+        //         break;
+        //     case 3:  // 单数块（每个 1 容量，共 1w 个）
+        //         startIdx = 99_0000; 
+        //         endIdx = 100_0000; 
+        //         step = 1; 
+        //         cap = 1;
+        //         break;
+        //     default:  // 默认回滚到万数块
+        //         startIdx = 0; endIdx = 63_0000; step = 1_0000; cap = 1_0000;
+        //         break;
+        // }
 
-        if(data.length > cap){
-            console.error(`数据量(${data.length}) 超出 type=${type} 的最大容量(${cap})!`);
-            return -1;
-        }
+        /**
+         * 新的分配方式
+         * 
+         * W1: 万数块数，单位为万，
+         * W3: 单数块数，单位为万，
+         * step2: 为百数块的容量，如 300 个
+         * 
+         * 系统会自己算出索引占据情况。
+         */
+        // const W1 = 63, W3 = 1, step2 = 300;
+        // const types = [
+        //     [W1 * 1_0000,                                          1_0000],  // type1: 万数块
+        //     [Math.floor((100 - W1 - W3) * 1_0000 / step2) * step2, step2],  // type2: 百数块
+        //     [W3 * 1_0000,                                               1],  // type3: 单数块
+        // ];
+        // const [span, cap] = types[type - 1] ?? types[0];
+        // const step = cap;
+        // const startIdx = types.slice(0, type - 1).reduce((s, [n]) => s + n, 0);
+        // const endIdx = startIdx + span;
+        const { startIdx, endIdx, step } = dataProc.typesMeta[type - 1] ?? dataProc.typesMeta[0];
+        const cap = step;  // cap 就是单块容量，等于 step
+
+
+
+
+
+
+
+
+
+
+        // if(data.length > cap){
+        //     console.error(`数据量(${data.length}) 超出 type=${type} 的最大容量(${cap})!`);
+        //     return -1;
+        // }
         
         dataProc.wskIdx = dataProc.calcFreeIdx(startIdx, endIdx, step);  // 计算索引
         if(dataProc.wskIdx === -1){

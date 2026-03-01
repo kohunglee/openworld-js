@@ -20,7 +20,7 @@ const W = {
     W.current = {};
     W.next = {};
     W.textures = {};
-    W.viewLimit = 5000;   // 视野
+    W.viewLimit = 50000;   // 视野
     W.gl = canvas.getContext('webgl2');
     W.gl.blendFunc(770 , 771);
     W.gl.activeTexture(33984);
