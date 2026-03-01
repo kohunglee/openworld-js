@@ -233,7 +233,9 @@ function newMvp(){
 /** --------------------------------------------------------------------- */
 
 /**
- * 模型文件在此定义，始终规格的模型
+ * 模型文件在此定义，4 种规格的模型
+ * 
+ * 临时测试嘛，所以先写死了，后期再研究怎么使用其他的模型。
  */
 const x_m  = get2data[0];
 const m_m  = get2data[2];
@@ -243,6 +245,12 @@ const ll_m = [{"x":32.557,"y":9.101,"z":29.457 - 60,"w":36,"h":17,"d":30, b:"#ff
 
 /**
  * 触发器模型
+ * 
+ * 论形状，其实都是一根棍儿，不显示而已。
+ * 因为，我并不准备在场景中显示。
+ * 这个触发器，在 引擎 那边，会实时检测与主角的位置距离，到达一定距离，会触发激活函数。
+ * 三个触发器，对应三个距离。
+ * 分别是近景、中景、远景，触发不同的业务逻辑，显示不同的模型。
  */
 const triggers = [
     { key: 'inGemZone',   dz: 3, name: '近景' },
@@ -254,10 +262,11 @@ const triggersPosData = [{ "x": 32.557, "y": 1.5, "z": 29.457, "w": 0.5, "h": 50
 
 /** --------------------------------------------------------------------- */
 /**
- * 天际线独立实例化系统
+ * 天际线块，独立实例化系统
  *
- * 完全独立于万数块系统。
+ * 完全独立于【万数块系统】。
  * 预分配 total 个槽位，每个 tri() 调用认领一个。
+ * 
  * 软删除：把对应槽位缩到极小、扔到极远，视觉消失但 drawcall 不变。
  */
 const SkylineSystem = (() => {
@@ -265,10 +274,11 @@ const SkylineSystem = (() => {
     const SOFT_DELETE_POS = { x: 999999, y: 999999, z: 999999, w: 0.001, h: 0.001, d: 0.001 };
 
     let instances = [];
-    let realPositions = [];   // ← 单独存真实坐标，hide() 不会污染它
+    let realPositions = [];   // 单独存真实坐标，hide() 不会污染它（因为对象，是引用嘛，一改全改了，可能是这样）
     let slotIndex = 0;
     let initialized = false;
 
+    // 初始化这个实例化容器，容量为 count 个
     function init(count) {
         instances = [];
         realPositions = [];
@@ -287,12 +297,13 @@ const SkylineSystem = (() => {
         console.log(`%c[SkylineSystem] 初始化完成，预分配 ${count} 个槽位`, 'color:#ffc978;font-weight:bold;');
     }
 
+
+    // 认领（宣称）
     function claim(xDis, zDis) {
         if (!initialized) { console.error('[SkylineSystem] 未初始化！'); return -1; }
         if (slotIndex >= instances.length) { console.error('[SkylineSystem] 槽位已满！'); return -1; }
-
         const idx = slotIndex++;
-        const base = ll_m[0];
+        const base = ll_m[0];  // 模板模型数据和位置数据
         const realPos = {
             x: base.x + xDis,
             y: base.y,
@@ -301,18 +312,19 @@ const SkylineSystem = (() => {
             h: base.h,
             d: base.d,
         };
-        realPositions[idx] = realPos;   // ← 真实坐标存到独立数组
+        realPositions[idx] = realPos;   // 真实坐标存到独立数组
         instances[idx] = { ...realPos };
         k.W.updateInstance(SKYLINE_NAME, idx, realPos);
         return idx;
     }
 
+    // 对指定 idx 的槽位软删除
     function hide(idx) {
         if (idx < 0) return;
-        // 只更新引擎，不动 realPositions
         k.W.updateInstance(SKYLINE_NAME, idx, { ...SOFT_DELETE_POS });
     }
 
+    // 对指定 idx 槽位，恢复显示
     function show(idx) {
         if (idx < 0) return;
         const pos = realPositions[idx];  // ← 从独立数组取真实坐标
@@ -344,7 +356,7 @@ tri();
  */
 if (1) {
     let number = 57;
-    let total  = number * number;
+    let total  = number * number;  // 3249 个，最多 3333 个，因为总容量 1w （好像可以改到 万数块） ，每个占 3 个。
     let count  = 0;
 
     console.log("开始利用闲时执行...");
@@ -354,7 +366,7 @@ if (1) {
         while (deadline.timeRemaining() > 0 && count < total) {
             let i = Math.floor(count / number) + 1;
             let j = (count % number) + 1;
-            tri(160 + 50 * i - 2000, -60 * j);
+            tri(160 + 50 * i - 2000, -60 * j);  // 在这里添加（tri 会添加三个「触发棍子」）
             count++;
         }
         if (count < total) {
@@ -394,7 +406,7 @@ function tri(zDis = 60, xDis = 0) {
 
     // 四个激活函数
     if (1) {
-        let x, m, m2, l;  // 不再需要 ll，天际线由 SkylineSystem 管理
+        let x, m, m2, l;  // 不再需要 ll 天际线了，天际线由 SkylineSystem 管理
 
         runGemfunc = () => {
             if (!x)  x  = dataProc.process(x_m,  { x: xDis, z: zDis }, dls, 'gem');
@@ -432,14 +444,13 @@ function tri(zDis = 60, xDis = 0) {
 
     // 计算当前状态（防抖）
     if (1) {
-        let stateDebounceTimer = null;
-
+        let stateDebounceTimer = null;  // 防抖计时器变量（解决那个莫名其妙的 bug）
         requestStateUpdate = () => {
-            if (stateDebounceTimer) clearTimeout(stateDebounceTimer);
+            if (stateDebounceTimer) clearTimeout(stateDebounceTimer);  // 如果 xx 毫秒内，有新的函数被激活，则消除旧的，留下最新的
             stateDebounceTimer = setTimeout(() => {
                 evaluateFinalState();
                 stateDebounceTimer = null;
-            }, 15);
+            }, 15);  // 15ms 是一个比较安全的值，在 20 性能下，最久冲突为 13ms
         };
 
         const evaluateFinalState = () => {
@@ -449,14 +460,14 @@ function tri(zDis = 60, xDis = 0) {
             else if (triggerState.inHutZone)   targetState = 3;
             else                               targetState = 4;
 
-            if (mvppos !== targetState) {
+            if (mvppos !== targetState) {  // 如果最终状态等于当前状态，忽略
                 mvppos = targetState;
-                runBusinessLogic(targetState);
+                runBusinessLogic(targetState);  // 判断完毕，执行最终函数
             }
         };
     }
 
-    // 执行分发
+    // 执行，按照不同的状态，执行不同的函数
     if (1) {
         runBusinessLogic = (state) => {
             switch (state) {
@@ -475,31 +486,18 @@ function tri(zDis = 60, xDis = 0) {
             triggersPosData[0].st = 1;
             const idx  = dataProc.process(triggersPosData, { x: xDis, z: zDis - 60 }, dls, 'setTriModel', 3, true);
             const args = k.indexToArgs.get(idx + 0);
-            args.activeFunc = () => {
+            args.activeFunc = () => {  // 激活函数
                 triggerState[conf.key] = true;
                 requestStateUpdate();
             };
-            args.deleteFunc = () => {
+            args.deleteFunc = () => {  // 删除函数
                 triggerState[conf.key] = false;
                 requestStateUpdate();
             };
         });
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
     
 // ======================== 垃圾区 ===================================
-
 
 }
