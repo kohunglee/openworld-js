@@ -2,7 +2,7 @@
  * 数据处理（等待被转化为插件）
  * -----------
  * 开始按照既定的规则，把 myData 给绘制出来
- * del: 完全删除没数据的
+ * del: 完全删除，没数据的，空模型
  */
 const dataProc = {
 
@@ -16,7 +16,7 @@ const dataProc = {
 
     // 读取数据，预处理
     readData : (data, isHidden = false, offset = {}) => {
-        if(dataProc.cubeIndex >= dataProc.totalCube){  return -1 }// 超出容量（如 300 个），不再处理
+        if(dataProc.cubeIndex >= dataProc.totalCube){ return -1 }// 超出容量（如 300 个），不再处理
         if(data.del) {  // 处理已被标记 删除 的数据，按照【空模型】处理
             data = {
                 x: 999999999, y: 999999999, z: 999999999,
@@ -112,26 +112,26 @@ const dataProc = {
 
         let startIdx, endIdx, step, cap;  //+ 根据 type 定义规则配置
         switch (type) {
-            case 1:  // 万数块
+            case 1:  // 万数块 (每个 1w 容量，共 63 个)
                 startIdx = 0; 
-                endIdx = 900000; 
-                step = 10000; 
-                cap = 10000;
+                endIdx = 63_0000; 
+                step = 1_0000; 
+                cap = 1_0000;
                 break;
-            case 2:  // 百数块 (新增)
+            case 2:  // 百数块 (每个 300 容量，共 1200 个)
                 startIdx = 63_0000; 
-                endIdx = 990000; 
+                endIdx = 99_0000; 
                 step = 300; 
                 cap = 300;
                 break;
-            case 3:  // 单数块
-                startIdx = 990000; 
-                endIdx = 1000000; 
+            case 3:  // 单数块（每个 1 容量，共 1w 个）
+                startIdx = 99_0000; 
+                endIdx = 100_0000; 
                 step = 1; 
                 cap = 1;
                 break;
             default:  // 默认回滚到万数块
-                startIdx = 0; endIdx = 900000; step = 10000; cap = 10000;
+                startIdx = 0; endIdx = 63_0000; step = 1_0000; cap = 1_0000;
                 break;
         }
 
@@ -145,9 +145,10 @@ const dataProc = {
             console.error(`Type ${type} 类型的存储空间已满（${startIdx}~${endIdx}），无法创建！`);
             return -1;
         }
+
         dataProc.totalCube = cap; // 设置总容量
         dataProc.dataName = Math.floor(Math.random() * 1000000);  // 为了防止删除 W 元素冲突
-        k.indexToArgs.set(dataProc.wskIdx, {n: 'is has data', type: type}); // （暂时无用）可以在这里记录 type，供未来删除模块优化使用
+        k.indexToArgs.set(dataProc.wskIdx, {n: 'is has data', type: type});  //（暂时无用）可以在这里记录 type，供未来删除模块优化使用
 
         dataProc.fullInst(data, offset);  // 填充容器
         dataProc.addPhysical(data, dataProc.myCubeInstances);  // 添加物理体

@@ -76,18 +76,18 @@ function makeGroundMvp(){
         const skyTexture = new Image();  // 输出 img，用于 WebGL
         skyTexture.src = c.toDataURL();
         skyTexture.onload = () => {  // 天空盒测试
-            k.W.sphere({
-                n:'skybox_test',
-                y: 25,
-                x: 0,
-                z: 0,
-                rz:0,
-                size: 2500,
-                uncullface: 1,
-                t: skyTexture,
-                rx: 10,
-                ns: true,
-            });
+            // k.W.sphere({
+            //     n:'skybox_test',
+            //     y: 25,
+            //     x: 0,
+            //     z: 0,
+            //     rz:0,
+            //     size: 2500,
+            //     uncullface: 1,
+            //     t: skyTexture,
+            //     rx: 10,
+            //     ns: true,
+            // });
         };
     }
 
