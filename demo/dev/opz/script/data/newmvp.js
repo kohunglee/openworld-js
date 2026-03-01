@@ -321,7 +321,8 @@ const SkylineSystem = (() => {
  * 预计建筑总数，必须和下面循环的 number*number 一致
  * +1 是给 tri() 第一次直接调用（无偏移）用的
  */
-const BUILDING_COUNT = 57 * 57 + 1;
+const BUILDING_NUMBER = 47;
+const BUILDING_COUNT = BUILDING_NUMBER * BUILDING_NUMBER + 1;
 SkylineSystem.init(BUILDING_COUNT);
 
 
@@ -335,7 +336,7 @@ tri();
  * 生成几千个建筑
  */
 if (1) {
-    let number = 57;
+    let number = BUILDING_NUMBER;
     let total  = number * number;  // 3249 个，最多 3333 个，因为总容量 1w （好像可以改到 万数块） ，每个占 3 个。
     let count  = 0;
 
