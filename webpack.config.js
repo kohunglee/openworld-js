@@ -76,7 +76,7 @@ const developmentConfig = {
   },
   plugins: [
     new webpack.BannerPlugin({
-      banner: '/*! openworld.js v1.0.0 | (c) kohunglee | MIT License */',
+      banner: '/*! openworld.js v1.0.0 | (c) github/kohunglee | MIT License */',
       raw: true,
       entryOnly: true,
     }),

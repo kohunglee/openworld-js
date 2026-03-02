@@ -10,7 +10,6 @@ import inputPanel from './panel/inputPanel.js';
 import event from './event.js';
 import model from './cubemodel.js';
 import cubeReferPosJS from './cubeReferPos.js';
-import viewCtrl from './viewCtrl.js';
 import pCommEvent from './panel/pCommEvent.js';
 import pEvent from './panel/pEvent.js';
 import pBassSet from './panel/pBassSet.js';
@@ -24,7 +23,6 @@ export default function(ccgxkObj) {
     event(ccgxkObj);
     model(ccgxkObj);
     cubeReferPosJS(ccgxkObj);
-    viewCtrl(ccgxkObj);
     pCommEvent(ccgxkObj);
     pEvent(ccgxkObj);
     pBassSet(ccgxkObj);
@@ -38,10 +36,6 @@ export default function(ccgxkObj) {
 
     ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){  // 热点事件
         G.hotAction();
-    });
-
-    ccgxkObj.hooks.on('ctrlSEvent', function(ccgxkObj, e){  // Ctrl + S 保存事件
-        // G.saveToLocalSt();
     });
 
     ccgxkObj.hooks.on('jump', function(ccgxkObj, e){  // 热点事件
@@ -83,35 +77,35 @@ export default function(ccgxkObj) {
     });
 
     // 单击确认按钮（更新模型）
-    textureEditorOk.addEventListener('click',  function(){
+    document.getElementById('textureEditorOk').addEventListener('click',  function(){
         G.modelUpdate(null, -1, true);
     } );
 
     // 【实时更新】勾选框 和 确认按钮 两个只显示一个
-    isRealTimeUpdata.addEventListener('change', ()=>{
-        textureEditorOk.hidden = isRealTimeUpdata.checked;
+    document.getElementById('isRealTimeUpdata').addEventListener('change', ()=>{
+        document.getElementById('textureEditorOk').hidden = document.getElementById('isRealTimeUpdata').checked;
     });
-    textureEditorOk.hidden = isRealTimeUpdata.checked;
+    document.getElementById('textureEditorOk').hidden = document.getElementById('isRealTimeUpdata').checked;
 
     // 单击复制 +1 按钮
-    textureCopyCubes.addEventListener('click', () => {
+    document.getElementById('textureCopyCubes').addEventListener('click', () => {
         G.operaCube(0);
 
     });
 
     // 单击恢复按钮
-    textureEditorReset.addEventListener('click', () => {
+    document.getElementById('textureEditorReset').addEventListener('click', () => {
         G.insertEdiFromBackUp();  // 填充数据
         G.modelUpdate();  // 根据数据更新模型
     });
     
     // 下载方块的数据
-    textureGetCubeData.addEventListener('click', () => {
+    document.getElementById('textureGetCubeData').addEventListener('click', () => {
         G.getCubesData(true);
     });
 
     // 保存到 localstorage 里数据
-    textureSaveCubeData.addEventListener('click', () => {
+    document.getElementById('textureSaveCubeData').addEventListener('click', () => {
         G.saveToLocalSt();
     });
 
@@ -120,6 +114,12 @@ export default function(ccgxkObj) {
     document.addEventListener('keydown', (event) => { if (event.key === 'Shift') { G.setInputsStep('0.001') } });
     document.addEventListener('keyup', (event) => { if (event.key === 'Shift') { G.setInputsStep('0.1') } });
     window.addEventListener('blur', () => { G.setInputsStep('0.1') });  // 窗口失去焦点时，增幅变为 0.1
+
+    let e_presets = document.getElementById('e_presets'), e_round = document.getElementById('e_round'), e_zero = document.getElementById('e_zero'), e_delete = document.getElementById('e_delete');
+    let e_bassL = document.getElementById('e_bassL'), e_bassT = document.getElementById('e_bassT'), e_bassR = document.getElementById('e_bassR'), e_bassB = document.getElementById('e_bassB');
+
+    let myHUDObjEditor = document.getElementById('myHUDObjEditor');  // 编辑面板
+    let magicNum = document.getElementById('magicNum');  // 魔法数字输入框
 
     // 面板上一些扩展功能面板
     e_presets.addEventListener('click', G.e_presets );  // 单击形状【预设】按钮

@@ -92,7 +92,6 @@ export default {
             this.canvas.height = window.innerHeight;
             this.W.resetView();
         });
-
     },
 
     // 键盘事件处理逻辑

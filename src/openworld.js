@@ -11,8 +11,7 @@ import addobj from './obj/addobj.js';
 import animate from './core/animate.js';
 
 // 插件
-// import wjsShadow from './plugins/webgl/wjsShadow.js';
-import dynamicIns from './plugins/webgl/wjsDynamicIns.js';
+import dynamicIns from '../../plugins/webgl/wjsDynamicIns.js';
 
 
 // 主对象
@@ -29,7 +28,6 @@ const openworld = {
 }
 
 // 启用插件
-// wjsShadow(openworld);  // 开启阴影（暂时有性能问题，待改进）
 dynamicIns(openworld);  // 开启实例化的动态操作
 
 // 兼容浏览器平台

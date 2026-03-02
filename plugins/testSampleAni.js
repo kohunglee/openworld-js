@@ -20,21 +20,6 @@ export default function(ccgxkObj) {
                 { name: 'joint_test_left_leg',   value: 0,  axis: 'rx' }
             ]
         },
-        jump: {  // 跳跃
-            duration: 300,
-            joints: [
-                // { name: 'joint_test',            start: 30,  end: 75,  axis: 'z' },
-                // { name: 'joint_test_left',       start: -30, end: -75, axis: 'z' },
-                // { name: 'joint_test_right_leg',  start: 10,  end: 20,  axis: 'x' },
-                // { name: 'joint_test_left_leg',   start: 10,  end: 20,  axis: 'x' }
-            ],
-            stopPose: [
-                // { name: 'joint_test',      value: 15, axis: 'rz' },
-                // { name: 'joint_test_left', value: -15, axis: 'rz' },
-                // { name: 'joint_test_right_leg',  value: 0,  axis: 'rx'  },
-                // { name: 'joint_test_left_leg',   value: 0,  axis: 'rx' }
-            ]
-        }
     };
 
     // 动画管理
@@ -149,7 +134,7 @@ export default function(ccgxkObj) {
             // 只有当两个键都松开时才停止动画，或者根据您的需求调整
             // 这里简化为，任何一个键松开，都停止当前动画
             // animationManager.stopCurrent();
-            if (event.code === 'KeyW') animationManager.stopCurrent();
+            if (event.code === 'KeyW') { animationManager.stopCurrent() };
         }
     });
 }

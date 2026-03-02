@@ -19,9 +19,9 @@ export default function(ccgxkObj) {
 
         const m = new DOMMatrix();  // 重新计算该条数据的矩阵
         m.translateSelf(
-                (instance.x || 0) + (state.x || 0),
-                (instance.y || 0) + (state.y || 0),
-                (instance.z || 0) + (state.z || 0))
+            (instance.x || 0) + (state.x || 0),
+            (instance.y || 0) + (state.y || 0),
+            (instance.z || 0) + (state.z || 0))
         .rotateSelf(instance.rx || 0, instance.ry || 0, instance.rz || 0)
         .scaleSelf(instance.w || 1, instance.h || 1, instance.d || 1);
 

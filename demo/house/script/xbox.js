@@ -151,22 +151,6 @@ const xbox = {
                             }
                         }
 
-                        // if (name === "up" ) {
-                        //     k.keys['viewForward'] = value;
-                        // }
-
-                        // if (name === "down" ) {
-                        //     k.keys['viewBackward'] = value;
-                        // }
-
-                        // if (name === "left" ) {
-                        //     k.keys['viewLeft'] = value;
-                        // }
-
-                        // if (name === "right" ) {
-                        //     k.keys['viewRight'] = value;
-                        // }
-
                         // 保存当前状态供下一帧使用
                         window.gamepadButtonState[bi] = { pressed, value };
                     });
