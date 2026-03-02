@@ -20,7 +20,7 @@ xdashpanel(k);      // 仪表盘
 commModel(k);       // 基础模型库
 centerDot(k);       // 开启中心点取物
 sound(k);           // 声音插件
-build(k);           // 构建方块器
+// build(k);           // 构建方块器
 testSampleAni(k);   // 简单的人物动画实现
 
 // 配置 DPZ 的参数
