@@ -70,13 +70,6 @@ export default function(ccgxkObj) {
         saveToLocalSt : () => {
             const cubeDATA = g.getCubesData();
 
-            // if (ccgxkObj.cellpageid_geturl) {
-            //     localStorage.setItem(`ow_${ccgxkObj.cellpageid_geturl}`, JSON.stringify(cubeDATA));
-            //     alert('保存到 localStorage 成功！');
-            // } else {
-            //     alert('当前页面没有 id 参数，无法保存到本地');
-            // }
-
             // 将数据写入到 剪切板 里
             if(1){
                 const index = +document.getElementById('objID').value;

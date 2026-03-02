@@ -306,42 +306,18 @@ const W = {
 
 
             function safeUniformMatrix(gl, location, mat) {  // 安全传矩阵，确保不会报错，数据合法
-              // try {
-                const arr = mat?.toFloat32Array?.() || [];
-                if (!arr.length || arr.some(v => !Number.isFinite(v))) throw new Error();
-                gl.uniformMatrix4fv(location, false, arr);
-              // } catch {
-              //   gl.uniformMatrix4fv(location, false, new DOMMatrix().toFloat32Array());
-              // }
+              const arr = mat?.toFloat32Array?.() || [];
+              if (!arr.length || arr.some(v => !Number.isFinite(v))) throw new Error();
+              gl.uniformMatrix4fv(location, false, arr);
             }
+
             if (!just_compute) {
               let safeMat;
               const raw = W.next?.[object.n]?.M || W.next?.[object.n]?.m;
-
-              try {  // 希望会捕获到吧
-                if(Math.random() > 1){
-                  console.log(object.n);
-                }
-                const arr = new DOMMatrix(raw).toFloat32Array();
-                safeMat = arr.some(v => !Number.isFinite(v)) ? new DOMMatrix() : new DOMMatrix(raw);
-              } catch {
-                W.testcount = (W.testcount || 0) + 1;
-                if(W.testcount < 3000){
-                  console.log('矩阵数据出错了：', W.testcount, object.n);
-                  console.log(raw);
-                  console.log('---------------');
-                }
-              }
-
+              const arr = new DOMMatrix(raw).toFloat32Array();
+              safeMat = arr.some(v => !Number.isFinite(v)) ? new DOMMatrix() : new DOMMatrix(raw);
               safeUniformMatrix(W.gl, W.uniformLocations.m, safeMat);
-
-              let inv;
-              // try {
-                inv = safeMat.is2D ? safeMat.inverse() : safeMat.invertSelf();
-              // } catch {
-              //   inv = new DOMMatrix();
-              // }
-
+              let inv = safeMat.is2D ? safeMat.inverse() : safeMat.invertSelf();
               safeUniformMatrix(W.gl, W.uniformLocations.im, inv);
             }
 

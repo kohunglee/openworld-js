@@ -109,12 +109,6 @@ export default function(ccgxkObj) {
                 }
             }
 
-
-            if(key === 'r') {  // 添加一个新的方块（跟随）
-                // G.operaCube(1);
-                // G.hotAction(ccgxkObj.visCubeLen + 1 );
-            }
-
             if(key === 'x' && G.newCubePosType) {  // 添加一个新的方块（固定）
                 G.operaCube(1, true);
                 G.displayRefer();      // 关闭参考模型

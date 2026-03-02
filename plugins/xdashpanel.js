@@ -32,12 +32,13 @@ export default function(ccgxkObj) {
             var dynaNodesCon = this.calPosID(mVP?.X, mVP?.Y, mVP?.Z, 2);
             posIDMVP.textContent = dynaNodesCon.replace(/[Dd]/g,'东').replace(/[Xx]/g,'西').replace(/[Nn]/g,'南').replace(/[Bb]/g,'北');  // 一秒显示一次主角位置编码
             fpsInfo.textContent = ('FPS：' + fps.toFixed(1) + '  ，渲染：' + this.W.drawTime );  // 一秒显示一次 FPS
-            modListCount.textContent = ('当前模型数：' +
-                                        ' 激活 ' +this.currentlyActiveIndices.size +
-                                        `（物理 ${this.world.bodies.length} | 渲染 ${this._calWNotHidden()}）` +
-                                        `（已入档案 ${this.indexToArgs.size}）` +
-                                        `（纹理 ${this.textureMap.size}）` +
-                                        ' |');
+            modListCount.textContent = (
+                '当前模型数：' +
+                ' 激活 ' +this.currentlyActiveIndices.size +
+                `（物理 ${this.world.bodies.length} | 渲染 ${this._calWNotHidden()}）` +
+                `（已入档案 ${this.indexToArgs.size}）` +
+                `（纹理 ${this.textureMap.size}）` +
+                ' |');
         }
     }
 
@@ -60,7 +61,6 @@ export default function(ccgxkObj) {
         }
         return length;
     }
-
 
     ccgxkObj.hooks.on('animatePreFrame', function(_this){
         _this.showFPS1S(); // 显示 FPS 和 一秒一次 的函数

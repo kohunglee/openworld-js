@@ -2,13 +2,14 @@
  * 动画进程相关
  */
 export default {
+
     // 按照列表将 物理体 逐个 物理计算可视化 更新
     gridKeyCurrentTime : 0,  // 辅助更新 gridKey 的工具时间值
     updataBodylist : function(){
         this.dynaNodes_lab();  // 一帧计算区块一次
         for (const index of this.currentlyActiveIndices) {  // 暂时选择遍历吧，反正也显示不了几个，也兼容后续的 mass 改变
             const p_offset = index * 8;
-            if(this.positionsStatus[p_offset + 7] > 0){  // 选择 状态码/mass 大于 0 的物体
+            if(this.positionsStatus[p_offset + 7] > 0){  // 选择 状态码（也就是 mass） 大于 0 的物体
                 const indexItem = this.indexToArgs.get(index);
                 const canBody = indexItem.body;
                 if(!canBody) continue;
@@ -62,7 +63,7 @@ export default {
         this.world.step(1 / 60); // 时间步长 1/60，用于更新物理世界
     },
 
-    // 物理世界稳定 75 帧计算
+    // 物理世界，按照稳定 75 帧计算
     targetFps : 75, // 物理目标帧率
     animatePhy: function() {
         const _this = this;

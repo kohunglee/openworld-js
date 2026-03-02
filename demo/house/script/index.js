@@ -4,15 +4,15 @@ globalThis.k = openworldApp;
 k.initWorld('openworldCanv');
 
 // 导入插件模块
-import xmap from '@src/plugins/xmap.js';
-import cookieSavePos from '@src/plugins/cookieSavePos.js';
-import svgTextureLib from '@src/plugins/svgTextureLib.js';
-import xdashpanel from '@src/plugins/xdashpanel.js';
-import commModel from '@src/plugins/webgl/commModel.js';
-import centerDot from '@src/plugins/centerDot_clean.js';
-import sound from '@src/plugins/sound.js';
-import build from '@src/plugins/centerDot/build.js';
-import testSampleAni from '@src/plugins/testSampleAni.js';
+import xmap from '@plugins/xmap.js';
+import cookieSavePos from '@plugins/cookieSavePos.js';
+import svgTextureLib from '@plugins/svgTextureLib.js';
+import xdashpanel from '@plugins/xdashpanel.js';
+import commModel from '@plugins/webgl/commModel.js';
+import centerDot from '@plugins/centerDot_clean.js';
+import sound from '@plugins/sound.js';
+import build from '@plugins/centerDot/build.js';
+import testSampleAni from '@plugins/testSampleAni.js';
 xmap(k, 100, {x: -33, z: 32});            // 小地图
 cookieSavePos(k);   // 保存当前位置
 svgTextureLib(k);   // 纹理预设库
@@ -20,7 +20,7 @@ xdashpanel(k);      // 仪表盘
 commModel(k);       // 基础模型库
 centerDot(k);       // 开启中心点取物
 sound(k);           // 声音插件
-// build(k);           // 构建方块器
+build(k);           // 构建方块器
 testSampleAni(k);   // 简单的人物动画实现
 
 // 配置 DPZ 的参数
@@ -32,7 +32,7 @@ if(true){
 }
 
 // 发布模式，不使用毛坯构建器
-if(true){
+if(false){
     // 一些键盘事件
     const keyHandler = e => myevent.keyEvent(e, k);
     document.addEventListener('keydown', keyHandler);
