@@ -22,9 +22,9 @@ export default {
     canvas : null,
 
     // 初始化
-    initWorld : function(canvas){
+    initWorld : function(canvas, showOriginAxis = true){
         this.canvas = window.document.getElementById(canvas);
-        this.initW(this.canvas);
+        this.initW(this.canvas, showOriginAxis);
         this.world = new CANNON.World();
         this.world.gravity.set(0, -9.82, 0); // 地球重力9.82m/s²
         this.world.broadphase = new CANNON.SAPBroadphase(this.world); // 宽相检测算法
@@ -37,7 +37,7 @@ export default {
     },
 
     // 初始化 W 引擎
-    initW : function(c){
+    initW : function(c, showOriginAxis){
         const W = this.W;
         c.width = window.innerWidth * this.displayViewTime;
         c.height = window.innerHeight * this.displayViewTime;
@@ -46,13 +46,15 @@ export default {
         W.light({ x: 0.5, y: -0.3, z: 0.5});
         W.clearColor(this.colorClear);
         W.camera({n:'camera', fov: this.fov});
-        W.group({n:'posZero',x:0,y:1,z:0});  //+8 下面这几行，绘制原点坐标轴
-        W.cube({g:'posZero',x:5,w:10,h:.5,d:.5,b:"f44"});
-        W.cube({g:'posZero',y:5,h:10,w:.5,d:.5,b:"4f4"});
-        W.cube({g:'posZero',z:5,d:10,w:.5,h:.5,b:"44f"});
-        W.pyramid({g:'posZero',size:1,x:10,rz:-90,b:"f44"});
-        W.pyramid({g:'posZero',size:1,y:10,b:"4f4"});
-        W.pyramid({g:'posZero',size:1,z:10,rx:90,b:"44f"});
-        W.sphere({n:'posZeroSphere',x:0, y:0, z:0, size:5, s:1, b:"#FF145B"});
+        if(showOriginAxis) {  // 是否显示坐标轴中心点模型
+            W.group({n:'posZero',x:0,y:1,z:0});  //+8 下面这几行，绘制原点坐标轴
+            W.cube({g:'posZero',x:5,w:10,h:.5,d:.5,b:"f44"});
+            W.cube({g:'posZero',y:5,h:10,w:.5,d:.5,b:"4f4"});
+            W.cube({g:'posZero',z:5,d:10,w:.5,h:.5,b:"44f"});
+            W.pyramid({g:'posZero',size:1,x:10,rz:-90,b:"f44"});
+            W.pyramid({g:'posZero',size:1,y:10,b:"4f4"});
+            W.pyramid({g:'posZero',size:1,z:10,rx:90,b:"44f"});
+            W.sphere({n:'posZeroSphere',x:0, y:0, z:0, size:5, s:1, b:"#FF145B"});
+        }
     },
 }
