@@ -92,7 +92,7 @@ function teleportTo(x, y, z, turn = null) {
 
 $("goOPOS").addEventListener("click", () => teleportTo(7.6, 10, 16.5, -146));
 $("goHall").addEventListener("click", () => teleportTo(31, 10, -31, 180));
-$("goFar").addEventListener("click", () => teleportTo(-42, 0.75, 358, 328));
+$("goFar").addEventListener("click", () => teleportTo(-42, 750, 358, 328));
 
 
 // ========================
