@@ -4,12 +4,46 @@
 <meta http-equiv="expires" content="0">
 <meta http-equiv="pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style> body { margin: 0; } </style>
+<style>
+    body { margin: 0; }
+    #fovControl {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 15px;
+        border-radius: 8px;
+        color: white;
+        font-family: monospace;
+        z-index: 1000;
+    }
+    #fovControl label {
+        display: block;
+        margin-bottom: 8px;
+    }
+    #fovControl input[type="range"] {
+        width: 150px;
+    }
+    #fovValue {
+        display: inline-block;
+        width: 40px;
+        text-align: right;
+        color: #4ecdc4;
+    }
+</style>
 
 <title>WJS 初级教程 - 开放世界引擎</title>
 
 <body>
     <img src="../assest/texture.jpeg" id="marble" hidden>
+    <img src="../assest/GoldenLion.jpg" id="goldenLion" hidden>
+
+    <!-- FOV 控制滑动杆 -->
+    <div id="fovControl">
+        <label>FOV: <span id="fovValue">30</span>°</label>
+        <input type="range" id="fovSlider" min="10" max="120" value="30" step="1">
+    </div>
+
     <canvas id="openworldCanv" style="width:99vw;height:99vh"></canvas>
     <script src="../../cannon/cannon29kb.js"></script>
     <script type="module" src="./main.js" ></script>
