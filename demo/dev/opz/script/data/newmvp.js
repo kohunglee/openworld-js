@@ -335,7 +335,7 @@ tri();
 /**
  * 生成几千个建筑
  */
-if (1) {
+if (false) {
     let number = BUILDING_NUMBER;
     let total  = number * number;  // 3249 个，最多 3333 个，因为总容量 1w （好像可以改到 万数块） ，每个占 3 个。
     let count  = 0;
@@ -347,7 +347,23 @@ if (1) {
         while (deadline.timeRemaining() > 0 && count < total) {
             let i = Math.floor(count / number) + 1;
             let j = (count % number) + 1;
-            tri(160 + 50 * i - 2000, -60 * j);  // 在这里添加（tri 会添加三个「触发棍子」）
+
+            // tri(160 + 50 * i - 2000, -60 * j);  // 在这里添加（tri 会添加三个「触发棍子」）
+            // 从几条主干道延伸出去
+const branches = 6;
+const branchAngle = (Math.floor(count / (total / branches))) * (Math.PI * 2 / branches);
+const branchNoise = (Math.random() - 0.5) * 0.8;  // 枝干的摆动
+
+const depth    = (count % (total / branches)) / (total / branches);  // 0~1，枝干深度
+const spread   = depth * 2000;  // 越深越远
+const wobble   = Math.sin(depth * Math.PI * 6) * 300 * depth;  // 枝干弯曲
+
+const angle = branchAngle + branchNoise + wobble * 0.001;
+const x = Math.cos(angle) * spread + (Math.random() - 0.5) * 150;
+const z = Math.sin(angle) * spread + (Math.random() - 0.5) * 150;
+
+tri(x, z);
+
             count++;
         }
         if (count < total) {
@@ -355,6 +371,139 @@ if (1) {
         } else {
             const endTime = performance.now();
             console.log(`%c 任务全部完成！`, 'color: #4caf50; font-weight: bold;');
+            console.log(`总计耗时: ${((endTime - startTime) / 1000).toFixed(2)} 秒`);
+        }
+    }
+
+    requestIdleCallback(doWork);
+}
+
+
+
+if (1) {
+    const BUILDING_W = 50;
+    const BUILDING_D = 40;
+    const PADDING    = 25;
+    const SPREAD     = 2400;
+    const MAX_TRY    = 40;
+
+    const placedBuildings = [];
+
+    // 空间哈希，O(1) 碰撞检测
+    const CELL_W  = BUILDING_W + PADDING;
+    const CELL_D  = BUILDING_D + PADDING;
+    const gridMap = new Map();
+
+    function gridKey(x, z) {
+        const gx = Math.floor(x / CELL_W);
+        const gz = Math.floor(z / CELL_D);
+        return `${gx},${gz}`;
+    }
+
+    function getNeighborKeys(x, z) {
+        const gx = Math.floor(x / CELL_W);
+        const gz = Math.floor(z / CELL_D);
+        const keys = [];
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dz = -1; dz <= 1; dz++) {
+                keys.push(`${gx + dx},${gz + dz}`);
+            }
+        }
+        return keys;
+    }
+
+    function isOverlap(x, z) {
+        for (const key of getNeighborKeys(x, z)) {
+            const cell = gridMap.get(key);
+            if (!cell) continue;
+            for (const b of cell) {
+                if (
+                    Math.abs(x - b.x) < CELL_W &&
+                    Math.abs(z - b.z) < CELL_D
+                ) return true;
+            }
+        }
+        return false;
+    }
+
+    function registerBuilding(x, z) {
+        const key = gridKey(x, z);
+        if (!gridMap.has(key)) gridMap.set(key, []);
+        gridMap.get(key).push({ x, z });
+        placedBuildings.push({ x, z });
+    }
+
+    function tryPlace(genX, genZ, seed) {
+        if (!isOverlap(genX, genZ)) {
+            registerBuilding(genX, genZ);
+            return { x: genX, z: genZ };
+        }
+        // 用伪随机找附近空位
+        const rands = k.genPR(seed, MAX_TRY * 2);
+        for (let t = 0; t < MAX_TRY; t++) {
+            const tx = genX + (rands[t * 2]     - 0.5) * SPREAD * 0.3;
+            const tz = genZ + (rands[t * 2 + 1] - 0.5) * SPREAD * 0.3;
+            if (!isOverlap(tx, tz)) {
+                registerBuilding(tx, tz);
+                return { x: tx, z: tz };
+            }
+        }
+        return null;
+    }
+
+    // 用伪随机预生成所有候选坐标（种子固定 = 布局固定）
+    const number = BUILDING_NUMBER;
+    const total  = number * number;
+    const rands  = k.genPR(42, total * 4);  // 种子 42，每个建筑用 4 个随机数
+
+    let count = 0;
+    console.log("开始利用闲时执行...");
+    const startTime = performance.now();
+
+    function doWork(deadline) {
+        while (deadline.timeRemaining() > 0 && count < total) {
+            const r0 = rands[count * 4    ];
+            const r1 = rands[count * 4 + 1];
+            const r2 = rands[count * 4 + 2];
+            const r3 = rands[count * 4 + 3];
+
+            // 银河螺旋 + 多城市核心混合
+            const useSpiralCity = r0 < 0.6;  // 60% 螺旋，40% 城市核心
+
+            let genX, genZ;
+
+            if (useSpiralCity) {
+                // 螺旋臂
+                const angle  = r1 * Math.PI * 10;
+                const radius = r2 * SPREAD;
+                genX = Math.cos(angle) * radius + (r3 - 0.5) * 180;
+                genZ = Math.sin(angle) * radius + (r0 - 0.5) * 180;
+            } else {
+                // 多城市核心
+                const cities = [
+                    { x:    0, z:    0 },
+                    { x: 1200, z:  600 },
+                    { x: -800, z: 1000 },
+                    { x:  500, z:-1200 },
+                ];
+                const city   = cities[Math.floor(r1 * cities.length)];
+                const angle  = r2 * Math.PI * 2;
+                const radius = Math.pow(r3, 0.5) * 600;
+                genX = city.x + Math.cos(angle) * radius;
+                genZ = city.z + Math.sin(angle) * radius;
+            }
+
+            const pos = tryPlace(genX, genZ, count * 7 + 13);
+            if (pos) tri(pos.x, pos.z);
+
+            count++;
+        }
+
+        if (count < total) {
+            requestIdleCallback(doWork);
+        } else {
+            const endTime = performance.now();
+            console.log(`%c 任务全部完成！放置 ${placedBuildings.length} 栋建筑`, 'color:#4caf50;font-weight:bold;');
             console.log(`总计耗时: ${((endTime - startTime) / 1000).toFixed(2)} 秒`);
         }
     }
