@@ -87,9 +87,9 @@ for (let i = 0; i < 100; i++) {
   k.addTABox({
     DPZ: 5,
     X: (Math.random() - 0.5) * 20,
-    Y: 2 + Math.random() * 3,
+    Y: 0 + Math.random() * 3,
     Z: (Math.random() - 0.5) * 20,
-    size: 0.15, shape: 'sphere',
+    size: 0.3, shape: 'sphere',
     background: 'ffff00',
     isPhysical: false,
     activeFunc: (idx) => {
