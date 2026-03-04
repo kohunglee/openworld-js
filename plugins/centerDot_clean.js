@@ -144,8 +144,6 @@ export default function(ccgxkObj) {
             2 : {x: 0, y: 1.8, z: 2},  // 第三视角（较近）
             3 : {x: 0, y: 1.5, z: 1},  // 第三视角（很近）
         },
-
- 
     };
     globalVar = ccgxkObj.centerDot;
     const template = document.createElement('template');  //+4 将 html 节点添加到文档

@@ -75,6 +75,7 @@ const htmlCode = `
         bottom: 5px;
         padding: 0.3em;
         color: #ffffff;
+        font-size: 12px;
     }
 </style>
 <div id="myHUD" class="myHUD">

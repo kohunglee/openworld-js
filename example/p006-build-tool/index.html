@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta http-equiv="cache-control" content="no-cache"> <!-- 禁止缓存 html（可选） ---->
+<meta http-equiv="expires" content="0">
+<meta http-equiv="pragma" content="no-cache">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style> body { margin: 0; } </style>
+
+<title>纹理添加</title>
+
+<body>
+    <img src="./assest/texture.jpeg" id="marble" hidden>
+    <canvas id="openworldCanv" style="width:99vw;height:99vh"></canvas>
+    <script src="../../cannon/cannon29kb.js"></script> <!-- 导入配套的物理引擎 ---->
+    <script type="importmap">
+        {
+            "imports": {
+                "@plugins/": "../../plugins/"
+            }
+        }
+    </script>
+    <script type="module" src="./main.js" ></script>
+</body>

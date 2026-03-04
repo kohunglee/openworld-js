@@ -15,8 +15,11 @@ export default function(ccgxkObj) {
             input.addEventListener('keydown', (e)=>{  // 主要用于处理魔法数字
                 if(magicNum.value){
                     if(e.key === 'ArrowUp') {
+                        e.preventDefault();       // ← 阻止默认的 +0.1
+                        e.stopPropagation();
                         input.value = (+magicNum.value + +input.value);
                         G.modelUpdate();
+                        e.stopPropagation();
                     }
                     if(e.key.slice(0, 5) === 'Arrow') {
                         G.clearMagicNum();
