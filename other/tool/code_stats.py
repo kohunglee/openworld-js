@@ -15,6 +15,13 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 EXCLUDE_FOLDER = "other"
 OUTPUT_HTML = Path(__file__).parent / "code_stats.html"
 
+# 忽略的文件名
+IGNORE_FILES = [
+    "cannon-x-dev.js",
+    "logicdata.js",
+    "package-lock.json",
+]
+
 
 # 代码文件扩展名
 CODE_EXTENSIONS = {
@@ -22,7 +29,7 @@ CODE_EXTENSIONS = {
     '.py', '.java', '.cpp', '.c', '.h', '.hpp',
     '.go', '.rs', '.swift', '.kt',
     '.html', '.css', '.scss', '.less', '.sass',
-    '.json', '.md', '.yml', '.yaml', '.toml',
+    '.json', '.yml', '.yaml', '.toml',
     '.sql', '.sh', '.bash',
 }
 
@@ -89,6 +96,8 @@ def scan_directory(root_path, parent_path=None):
             continue
         if item.name.startswith('.'):
             continue
+        if item.name in IGNORE_FILES:
+            continue
 
         if item.is_dir():
             child = scan_directory(item, parent_path / root_path.name)
@@ -151,17 +160,21 @@ def build_tree_html(node, indent=0):
     else:
         icon = "📄" if is_code_file(Path(node['name'])) else "📦"
         lines_str = "{:,}".format(node['lines'])
+        # 超过200行的文件添加黄色背景
+        line_count_class = "line-count"
+        if node['lines'] > 200 and is_code_file(Path(node['name'])):
+            line_count_class = "line-count line-count-highlight"
         html += '''
         <div class="tree-item file" style="padding-left: %dpx;">
             <span class="arrow"></span>
             <span class="icon">%s</span>
             <span class="name">%s</span>
             <span class="stats">
-                <span class="line-count">%s 行</span>
+                <span class="%s">%s 行</span>
                 <span class="size">%s</span>
             </span>
         </div>
-        ''' % (indent * 24, icon, node['name'], lines_str, format_size(node['size']))
+        ''' % (indent * 24, icon, node['name'], line_count_class, lines_str, format_size(node['size']))
 
     return html
 
@@ -300,8 +313,28 @@ def generate_html(tree_data, total_lines, total_size, total_files, gen_time):
             min-width: 100px;
             text-align: right;
         }
+        .tree-item .line-count-highlight {
+            background: #fef08a;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
         .folder-content {
             margin-left: 0;
+        }
+        .toggle-all-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .toggle-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
         .footer {
             padding: 20px;
@@ -343,6 +376,7 @@ def generate_html(tree_data, total_lines, total_size, total_files, gen_time):
         </div>
 
         <div class="tree">
+            <button class="toggle-all-btn" onclick="toggleAllFolders()">🔄 全部展开/折叠</button>
             <div class="tree-title">📂 项目结构</div>
 ''')
     html_parts.append(build_tree_html(tree_data))
@@ -364,6 +398,30 @@ def generate_html(tree_data, total_lines, total_size, total_files, gen_time):
                 folderContent.style.display = 'none';
                 arrow.textContent = '▶';
             }
+        }
+        function toggleAllFolders() {
+            const arrows = document.querySelectorAll('.tree-item.folder .arrow');
+            let anyHidden = false;
+            arrows.forEach(arrow => {
+                const folderContent = arrow.parentElement.nextElementSibling;
+                if (folderContent && (folderContent.style.display === 'none' || !folderContent.style.display)) {
+                    anyHidden = true;
+                }
+            });
+            arrows.forEach(arrow => {
+                const folderContent = arrow.parentElement.nextElementSibling;
+                if (folderContent) {
+                    if (anyHidden) {
+                        folderContent.style.display = 'block';
+                        arrow.textContent = '▼';
+                    } else {
+                        if (arrow.closest('.tree-item').style.paddingLeft !== '0px') {
+                            folderContent.style.display = 'none';
+                            arrow.textContent = '▶';
+                        }
+                    }
+                }
+            });
         }
     </script>
 </body>

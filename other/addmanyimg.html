@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>WebGL2 · 实例化渲染 × sampler2DArray</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0f;
+    color: #e0e0e0;
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  #hud {
+    position: absolute;
+    top: 16px; left: 16px;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 12px;
+    line-height: 1.9;
+    z-index: 10;
+    backdrop-filter: blur(6px);
+    min-width: 220px;
+  }
+  #hud h2 { font-size: 13px; color: #7eb8f7; margin-bottom: 6px; letter-spacing: 1px; }
+  #hud span { color: #f7c948; }
+  #legend {
+    position: absolute;
+    bottom: 16px; left: 16px;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 11px;
+    z-index: 10;
+    display: flex; gap: 14px; flex-wrap: wrap;
+  }
+  .swatch { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 12px; height: 12px; border-radius: 3px; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+  #err { color: #f55; padding: 20px; font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="hud">
+  <h2>⬡ WebGL2 Instance Demo</h2>
+  实例数量：<span id="s-count">500</span><br>
+  纹理层数：<span id="s-layers">6</span>（sampler2DArray）<br>
+  帧率 FPS：<span id="s-fps">--</span><br>
+  绘制调用：<span style="color:#7ef7a8">1 draw call</span>
+</div>
+<div id="legend" id="legend"></div>
+<canvas id="c"></canvas>
+<div id="err"></div>
+
+<script>
+// ─────────────────────────────────────────────
+//  配置
+// ─────────────────────────────────────────────
+const NUM_INSTANCES = 500;
+const TEX_SIZE      = 64;   // 每张程序纹理的宽高
+const NUM_LAYERS    = 6;    // 纹理数组层数（6种图案）
+
+// ─────────────────────────────────────────────
+//  WebGL2 初始化
+// ─────────────────────────────────────────────
+const canvas = document.getElementById('c');
+canvas.width  = window.innerWidth;
+canvas.height = window.innerHeight;
+const gl = canvas.getContext('webgl2');
+if (!gl) {
+  document.getElementById('err').textContent =
+    '❌ 浏览器不支持 WebGL2，请用 Chrome/Firefox 最新版。';
+  throw new Error('no webgl2');
+}
+
+// ─────────────────────────────────────────────
+//  着色器
+// ─────────────────────────────────────────────
+const VS = `#version 300 es
+precision highp float;
+
+// 每顶点
+in vec2 a_pos;       // 四边形本地坐标 [-0.5, 0.5]
+in vec2 a_uv;        // uv [0,1]
+
+// 每实例 (divisor=1)
+in vec2  i_pos;      // 世界位置
+in float i_scale;    // 缩放
+in float i_rot;      // 旋转角（弧度）
+in float i_speed;    // 自转速度（用于动画）
+in float i_texIdx;   // 纹理层索引 [0, NUM_LAYERS)
+in float i_phase;    // 漂浮相位
+
+out vec2  v_uv;
+out float v_texIdx;
+
+uniform float u_time;
+uniform vec2  u_res;
+
+void main() {
+  float t   = u_time;
+  float rot = i_rot + t * i_speed;
+
+  // 漂浮偏移
+  vec2 floatOff = vec2(
+    sin(t * 0.7 + i_phase) * 0.02,
+    cos(t * 0.9 + i_phase * 1.3) * 0.015
+  );
+
+  mat2 R = mat2(cos(rot), -sin(rot), sin(rot), cos(rot));
+  vec2 p = R * (a_pos * i_scale) + i_pos + floatOff;
+
+  // NDC（考虑宽高比）
+  float aspect = u_res.x / u_res.y;
+  p.x /= aspect;
+
+  gl_Position = vec4(p, 0.0, 1.0);
+  v_uv    = a_uv;
+  v_texIdx = i_texIdx;
+}
+`;
+
+const FS = `#version 300 es
+precision highp float;
+
+in vec2  v_uv;
+in float v_texIdx;
+
+uniform highp sampler2DArray u_texArray;  // ← 核心：纹理数组
+uniform float u_time;
+
+out vec4 fragColor;
+
+void main() {
+  // 用 floor 取整层索引（float→int）
+  float layer = floor(v_texIdx + 0.5);
+  vec4 col = texture(u_texArray, vec3(v_uv, layer));
+
+  // 丢弃透明像素（让图形边缘干净）
+  if (col.a < 0.05) discard;
+
+  // 轻微呼吸光晕
+  float pulse = 0.85 + 0.15 * sin(u_time * 2.0 + layer);
+  fragColor = vec4(col.rgb * pulse, col.a);
+}
+`;
+
+function compileShader(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+    throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+function linkProgram(vs, fs) {
+  const p = gl.createProgram();
+  gl.attachShader(p, vs); gl.attachShader(p, fs);
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS))
+    throw new Error(gl.getProgramInfoLog(p));
+  return p;
+}
+
+const prog = linkProgram(
+  compileShader(gl.VERTEX_SHADER, VS),
+  compileShader(gl.FRAGMENT_SHADER, FS)
+);
+gl.useProgram(prog);
+
+// ─────────────────────────────────────────────
+//  几何：带 UV 的四边形（2三角形）
+// ─────────────────────────────────────────────
+//   pos(xy)  uv(xy)
+const quadVerts = new Float32Array([
+  -0.5, -0.5,  0, 0,
+   0.5, -0.5,  1, 0,
+   0.5,  0.5,  1, 1,
+  -0.5,  0.5,  0, 1,
+]);
+const quadIdx = new Uint16Array([0,1,2, 0,2,3]);
+
+const vaoQ = gl.createVertexArray();
+gl.bindVertexArray(vaoQ);
+
+const vbQuad = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vbQuad);
+gl.bufferData(gl.ARRAY_BUFFER, quadVerts, gl.STATIC_DRAW);
+
+const ibQuad = gl.createBuffer();
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibQuad);
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, quadIdx, gl.STATIC_DRAW);
+
+const stride = 4 * 4; // 4 floats × 4 bytes
+const locPos = gl.getAttribLocation(prog, 'a_pos');
+const locUV  = gl.getAttribLocation(prog, 'a_uv');
+gl.enableVertexAttribArray(locPos);
+gl.vertexAttribPointer(locPos, 2, gl.FLOAT, false, stride, 0);
+gl.enableVertexAttribArray(locUV);
+gl.vertexAttribPointer(locUV,  2, gl.FLOAT, false, stride, 8);
+
+// ─────────────────────────────────────────────
+//  实例数据（每实例 6 个 float）
+//  layout: [posX, posY, scale, rot, speed, texIdx, phase]
+// ─────────────────────────────────────────────
+const INST_FLOATS = 7;
+const instData = new Float32Array(NUM_INSTANCES * INST_FLOATS);
+
+function rnd(a, b) { return a + Math.random() * (b - a); }
+
+for (let i = 0; i < NUM_INSTANCES; i++) {
+  const base = i * INST_FLOATS;
+  instData[base + 0] = rnd(-1.0, 1.0);              // posX  (NDC调整前)
+  instData[base + 1] = rnd(-1.0, 1.0);              // posY
+  instData[base + 2] = rnd(0.04, 0.14);             // scale
+  instData[base + 3] = rnd(0, Math.PI * 2);         // rot init
+  instData[base + 4] = rnd(-0.6, 0.6);              // rot speed
+  instData[base + 5] = Math.floor(rnd(0, NUM_LAYERS)); // texIdx
+  instData[base + 6] = rnd(0, Math.PI * 2);         // float phase
+}
+
+const vbInst = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vbInst);
+gl.bufferData(gl.ARRAY_BUFFER, instData, gl.STATIC_DRAW);
+
+const instStride = INST_FLOATS * 4;
+function instAttrib(name, size, offset) {
+  const loc = gl.getAttribLocation(prog, name);
+  if (loc < 0) return;
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, size, gl.FLOAT, false, instStride, offset * 4);
+  gl.vertexAttribDivisor(loc, 1); // ← 每实例前进一次
+}
+instAttrib('i_pos',    2, 0);
+instAttrib('i_scale',  1, 2);
+instAttrib('i_rot',    1, 3);
+instAttrib('i_speed',  1, 4);
+instAttrib('i_texIdx', 1, 5);
+instAttrib('i_phase',  1, 6);
+
+gl.bindVertexArray(null);
+
+// ─────────────────────────────────────────────
+//  程序生成纹理数组（6 种图案）
+//  用 Canvas 2D API 画，再上传到 GPU
+// ─────────────────────────────────────────────
+const PATTERNS = [
+  // 0: 星形
+  (ctx, s) => {
+    ctx.fillStyle = '#0a0a1a';
+    ctx.fillRect(0,0,s,s);
+    ctx.save();
+    ctx.translate(s/2, s/2);
+    ctx.fillStyle = '#f7c948';
+    ctx.shadowColor = '#f7c94888';
+    ctx.shadowBlur = 8;
+    drawStar(ctx, 0, 0, 5, s*0.42, s*0.18);
+    ctx.restore();
+  },
+  // 1: 六边形
+  (ctx, s) => {
+    ctx.fillStyle = '#0a1a0a';
+    ctx.fillRect(0,0,s,s);
+    ctx.save(); ctx.translate(s/2,s/2);
+    ctx.beginPath();
+    for (let k=0; k<6; k++) {
+      const a = (k/6)*Math.PI*2 - Math.PI/6;
+      k===0 ? ctx.moveTo(Math.cos(a)*s*0.44, Math.sin(a)*s*0.44)
+            : ctx.lineTo(Math.cos(a)*s*0.44, Math.sin(a)*s*0.44);
+    }
+    ctx.closePath();
+    ctx.fillStyle = '#3ef078';
+    ctx.shadowColor = '#3ef07888'; ctx.shadowBlur = 10;
+    ctx.fill();
+    ctx.restore();
+  },
+  // 2: 圆形渐变
+  (ctx, s) => {
+    ctx.fillStyle = '#0a0a1a';
+    ctx.fillRect(0,0,s,s);
+    const g = ctx.createRadialGradient(s/2,s/2,2, s/2,s/2,s*0.44);
+    g.addColorStop(0,'#7eb8f7');
+    g.addColorStop(0.5,'#3060c0');
+    g.addColorStop(1,'#3060c000');
+    ctx.beginPath();
+    ctx.arc(s/2,s/2,s*0.44,0,Math.PI*2);
+    ctx.fillStyle = g;
+    ctx.fill();
+  },
+  // 3: 菱形
+  (ctx, s) => {
+    ctx.fillStyle = '#1a0a0a';
+    ctx.fillRect(0,0,s,s);
+    ctx.save(); ctx.translate(s/2,s/2);
+    ctx.beginPath();
+    ctx.moveTo(0,-s*0.44); ctx.lineTo(s*0.3,0);
+    ctx.lineTo(0,s*0.44);  ctx.lineTo(-s*0.3,0);
+    ctx.closePath();
+    ctx.fillStyle = '#f76060';
+    ctx.shadowColor='#f7606088'; ctx.shadowBlur=10;
+    ctx.fill();
+    ctx.restore();
+  },
+  // 4: 三角形
+  (ctx, s) => {
+    ctx.fillStyle = '#0f0a1a';
+    ctx.fillRect(0,0,s,s);
+    ctx.save(); ctx.translate(s/2,s/2);
+    ctx.beginPath();
+    for (let k=0; k<3; k++) {
+      const a = (k/3)*Math.PI*2 - Math.PI/2;
+      k===0 ? ctx.moveTo(Math.cos(a)*s*0.44, Math.sin(a)*s*0.44)
+            : ctx.lineTo(Math.cos(a)*s*0.44, Math.sin(a)*s*0.44);
+    }
+    ctx.closePath();
+    ctx.fillStyle = '#c87ef7';
+    ctx.shadowColor='#c87ef788'; ctx.shadowBlur=10;
+    ctx.fill();
+    ctx.restore();
+  },
+  // 5: 十字/加号
+  (ctx, s) => {
+    ctx.fillStyle = '#0a1a1a';
+    ctx.fillRect(0,0,s,s);
+    ctx.fillStyle = '#3ef0e8';
+    ctx.shadowColor='#3ef0e888'; ctx.shadowBlur=8;
+    const w = s*0.18, h = s*0.44;
+    ctx.fillRect(s/2-w/2, s/2-h/2, w, h);
+    ctx.fillRect(s/2-h/2, s/2-w/2, h, w);
+  },
+];
+
+const LABELS = ['⭐ 星形', '⬡ 六边形', '● 圆形', '◆ 菱形', '▲ 三角形', '✚ 十字'];
+const COLORS  = ['#f7c948','#3ef078','#7eb8f7','#f76060','#c87ef7','#3ef0e8'];
+
+function drawStar(ctx, cx, cy, pts, outer, inner) {
+  ctx.beginPath();
+  for (let k=0; k<pts*2; k++) {
+    const r = k%2===0 ? outer : inner;
+    const a = (k/(pts*2))*Math.PI*2 - Math.PI/2;
+    k===0 ? ctx.moveTo(cx+Math.cos(a)*r, cy+Math.sin(a)*r)
+          : ctx.lineTo(cx+Math.cos(a)*r, cy+Math.sin(a)*r);
+  }
+  ctx.closePath();
+  ctx.fill();
+}
+
+// 用 offscreen canvas 生成每层像素
+function makeLayerPixels(patternFn) {
+  const c2 = document.createElement('canvas');
+  c2.width = c2.height = TEX_SIZE;
+  const ctx2 = c2.getContext('2d');
+  patternFn(ctx2, TEX_SIZE);
+  return ctx2.getImageData(0, 0, TEX_SIZE, TEX_SIZE).data;
+}
+
+const tex = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D_ARRAY, tex);
+// 分配存储：mip=1, 格式RGBA8, 宽, 高, 层数
+gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, TEX_SIZE, TEX_SIZE, NUM_LAYERS);
+
+PATTERNS.forEach((pat, i) => {
+  const pixels = makeLayerPixels(pat);
+  gl.texSubImage3D(
+    gl.TEXTURE_2D_ARRAY,
+    0,              // mip level
+    0, 0, i,        // xoffset, yoffset, zoffset(层)
+    TEX_SIZE, TEX_SIZE, 1,
+    gl.RGBA, gl.UNSIGNED_BYTE,
+    pixels
+  );
+});
+
+gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+// 绑定到纹理单元 0
+gl.activeTexture(gl.TEXTURE0);
+gl.bindTexture(gl.TEXTURE_2D_ARRAY, tex);
+gl.uniform1i(gl.getUniformLocation(prog, 'u_texArray'), 0);
+
+// ─────────────────────────────────────────────
+//  Uniform 位置
+// ─────────────────────────────────────────────
+const uTime = gl.getUniformLocation(prog, 'u_time');
+const uRes  = gl.getUniformLocation(prog, 'u_res');
+
+// ─────────────────────────────────────────────
+//  GL 状态
+// ─────────────────────────────────────────────
+gl.enable(gl.BLEND);
+gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+gl.clearColor(0.04, 0.04, 0.06, 1.0);
+
+// ─────────────────────────────────────────────
+//  图例
+// ─────────────────────────────────────────────
+const leg = document.getElementById('legend');
+LABELS.forEach((lbl, i) => {
+  const d = document.createElement('div');
+  d.className = 'swatch';
+  d.innerHTML = `<span class="dot" style="background:${COLORS[i]}"></span>${lbl}`;
+  leg.appendChild(d);
+});
+document.getElementById('s-count').textContent  = NUM_INSTANCES;
+document.getElementById('s-layers').textContent = NUM_LAYERS;
+
+// ─────────────────────────────────────────────
+//  渲染循环
+// ─────────────────────────────────────────────
+let lastT = 0, frames = 0, fpsTime = 0;
+
+function render(ts) {
+  const t = ts * 0.001;
+  const dt = t - lastT; lastT = t;
+
+  // FPS
+  frames++; fpsTime += dt;
+  if (fpsTime >= 0.5) {
+    document.getElementById('s-fps').textContent = (frames / fpsTime).toFixed(1);
+    frames = 0; fpsTime = 0;
+  }
+
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  gl.useProgram(prog);
+  gl.uniform1f(uTime, t);
+  gl.uniform2f(uRes, canvas.width, canvas.height);
+
+  gl.bindVertexArray(vaoQ);
+
+  // 一次 draw call 渲染全部 500 个实例 ↓
+  gl.drawElementsInstanced(
+    gl.TRIANGLES,
+    6,              // 索引数（2个三角形）
+    gl.UNSIGNED_SHORT,
+    0,
+    NUM_INSTANCES   // 实例数
+  );
+
+  gl.bindVertexArray(null);
+  requestAnimationFrame(render);
+}
+
+// 响应窗口大小变化
+window.addEventListener('resize', () => {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+requestAnimationFrame(render);
+</script>
+</body>
+</html>
