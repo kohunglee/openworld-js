@@ -4,5 +4,5 @@
  * 功能是....
  */
 export default function(ccgxkObj) {
-    console.log('导入自己的插件成功');
+    console.log('导入 xxx 插件成功');
 }
