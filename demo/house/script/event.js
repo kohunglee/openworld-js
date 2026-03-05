@@ -28,6 +28,4 @@ const myevent = {
 
         document.removeEventListener('keydown', myevent.keyEvent);
     },
-
-
 }   
