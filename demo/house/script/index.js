@@ -11,7 +11,7 @@ import xdashpanel from '@plugins/xdashpanel.js';
 import commModel from '@plugins/webgl/commModel.js';
 import centerDot from '@plugins/centerDot_clean.js';
 import sound from '@plugins/sound.js';
-import build from '@plugins/centerDot/build.js';
+// import build from '@plugins/centerDot/build.js';
 import testSampleAni from '@plugins/testSampleAni.js';
 xmap(k, 100, {x: -33, z: 32});            // 小地图
 cookieSavePos(k);   // 保存当前位置
