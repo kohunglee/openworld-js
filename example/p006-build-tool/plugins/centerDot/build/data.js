@@ -52,21 +52,27 @@ export default function(ccgxkObj) {
                     cubeDATA[i] = {del:1};
                 }
             }
-            if(isDownload){  // 下载
-                const jsonScroll = JSON.stringify(cubeDATA, null, 2);
-                const blob = new Blob([jsonScroll], { type: 'application/json' });
+            if(isDownload){  // 在新标签页打开
+                let lines = ['['];
+                for (let i = rangeA; i < rangeB; i++) {
+                    if ((i - rangeA) % 5 === 0) {
+                        lines.push(`\n\n/* ——— ${i} ——— */`);  // 构建带注释的 JSON 文本
+                    }
+                    const isLast = (i === rangeB - 1);
+                    lines.push('  ' + JSON.stringify(cubeDATA[i]) + (isLast ? '' : ','));
+                }
+                lines.push('\n\n]');
+                const textContent = lines.join('\n');
+
+                const blob = new Blob([textContent], { type: 'text/plain; charset=utf-8' });
                 const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `cubeData-${ccgxkObj.cellpageid_geturl}-${new Date(Date.now()).toLocaleString('sv-SE').replace(/[-:T\s]/g, '')}.json`; // 给卷轴起个带时间戳的名字
-                link.click();
-                URL.revokeObjectURL(url); // 释放这个临时URL
+                window.open(url, '_blank');
             } else {
                 return isJson ?  JSON.stringify(cubeDATA) : cubeDATA;
             }
         },
 
-        // 保存到本地的浏览器里
+        // 保存到本地的浏览器里（目前的功能是，单个模型，写到 粘贴框 里，函数名还没变）
         saveToLocalSt : () => {
             const cubeDATA = g.getCubesData();
 

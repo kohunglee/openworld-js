@@ -97,7 +97,8 @@ const htmlCode = `
     
     <div> <button id="closeBtn">关闭</button> </div>
     
-    
+    <div id="wskStudio"></div><!-- 万数块临时测试使用 -->
+
     <div> <button id="closeBtn02">关闭</button> </div>
 </div>
 `;
