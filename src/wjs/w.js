@@ -170,6 +170,7 @@ const W = {
         } else {
           state.isInstanced = false;
         }
+        W.wjsHooks.emitSync('after_setState', state, W);  // 钩子
         if (state.fov) {  // 根据 fov 计算【投影矩阵】
           const aspect = W.canvas.width / W.canvas.height;
           const near = 0.1;
@@ -294,6 +295,7 @@ const W = {
             object.tile?.[1] || 1
           );
         }
+        W.wjsHooks.emitSync('before_draw', object, W);  // 钩子
         if (!object.isInstanced) {  // 处理普通对象
             if(object.f < object.a) object.f += dt;
             if(object.f > object.a) object.f = object.a;

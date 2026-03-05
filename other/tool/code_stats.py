@@ -18,7 +18,6 @@ OUTPUT_HTML = Path(__file__).parent / "code_stats.html"
 # 忽略的文件名
 IGNORE_FILES = [
     "cannon-x-dev.js",
-    "logicdata.js",
     "package-lock.json",
 ]
 
