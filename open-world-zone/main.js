@@ -16,6 +16,8 @@ centerDot(k);       // 开启中心点取物
 testSampleAni(k);   // 简单的人物动画实现
 
 // 导入私有的插件模块
+import dataProc from './plugins/dataProc/dataProc.js';  // 数据处理，万数块 系统
+dataProc(k);
 import mvp from './plugins/mvp/mvp.js';
 mvp(k);
 import somecube from './plugins/somecube/somecube.js';
@@ -24,6 +26,9 @@ import normalevent from './plugins/normalevent/normalevent.js';
 normalevent(k);
 import tab from './plugins/tab/tab.js';
 tab(k);
+import signboard from './plugins/signboard/signboard.js';
+signboard(k);
+
 
 
 // 添加地面

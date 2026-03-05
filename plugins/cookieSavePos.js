@@ -4,12 +4,14 @@
  */
 
 export default function(ccgxkObj){
+    const pageKey = 'lastPos_mvp_' + location.pathname.replace(/\//g, '_');  // 页面不串 cookie
+
     // 一秒执行一次
     setInterval(() => {
         if(ccgxkObj?.isMVPInit !== true){ return 0 }
         const mvp = ccgxkObj.mainVPlayer;
         const mPos = mvp.body.position;  //+2 储存主角的位置到 COOKIE
-        setObjectCookie('lastPos_mvp', {
+        setObjectCookie(pageKey, {
             x: mPos.x, y: mPos.y, z: mPos.z,
             rX: mvp.rX, rY:ccgxkObj.keys.turnRight, rZ:mvp.rZ,  // 暂时不研究了，好像没法储存旋转
         }); // 存储对象到Cookie
@@ -38,5 +40,5 @@ export default function(ccgxkObj){
         }
         return null;
     }
-    ccgxkObj.lastPos = getObjectCookie('lastPos_mvp');
+    ccgxkObj.lastPos = getObjectCookie(pageKey);
 }

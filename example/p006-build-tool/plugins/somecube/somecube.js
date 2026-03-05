@@ -8,19 +8,21 @@ export default function(ccgxkObj) {
 
     const insts = [];
 
-    // 100 个正常摆放（10×10 阵列）
-    for (let row = 0; row < 10; row++) {
-        for (let col = 0; col < 10; col++) {
+    // 9 个正常摆放（3×3 阵列）
+    for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 3; col++) {
             insts.push({
-                x: col * 2, y: 1, z: row * 2,
+                x: col * 2, y: 1, z: row * 2 + 10,
                 w: 1, d: 1, h: 1,
                 rx: 0, ry: 0, rz: 0,
             });
         }
     }
 
-    // 其余 9900 个扔到很远的地方
-    for (let i = 0; i < 9900; i++) {
+    insts.push({"x":4,"z":4,"y":4},);
+
+    // 其余 9990 个扔到很远的地方
+    for (let i = 0; i < 9990; i++) {
         insts.push({
             x: 999999999, y: 999999999, z: 999999999,
             w: 0.001, d: 0.001, h: 0.001,
@@ -28,7 +30,7 @@ export default function(ccgxkObj) {
         });
     }
     
-    k.visCubeLen = 100;  // build 插件必要的！
+    k.visCubeLen = 9;  // build 插件必要的！
     for (let i = 0; i < insts.length; i++) {
         const c = insts[i];
         k.addTABox({

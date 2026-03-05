@@ -74,6 +74,7 @@ export default function(ccgxkObj) {
                     top: 50px;
                     left: 10px;
                     color: white;
+                    text-shadow: 0 0 6px black;
                 }
                 .EdiArgsInput, #objID {
                     background-color: #fff0f066;
