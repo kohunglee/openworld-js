@@ -20,20 +20,19 @@ import mvp from './plugins/mvp/mvp.js';
 mvp(k);
 import somecube from './plugins/somecube/somecube.js';
 somecube(k);
-import tex2darr from './plugins/tex2darr/tex2darr.js';
-tex2darr(k);
 import normalevent from './plugins/normalevent/normalevent.js';
 normalevent(k);
 import tab from './plugins/tab/tab.js';
 tab(k);
 
 
-
 // 添加地面
 const gX = 0, gY = -2.5, gZ = 0;
 const gW = 250, gD = 250, gH = 6;
 k.addPhy({ name:'ground-phy', X:gX, Y:gY, Z:gZ, width:gW, depth:gD, height:gH });  // 物理体
-k.W.cube({ n:'ground', x:gX, y:gY, z:gZ, w:gW, d:gD, h:gH, t:marble, mix:0.7, b:'#7B8B6F', tile:[10, 10] });  // 渲染体
+k.W.cube({ n:'ground', x:gX, y:gY, z:gZ, w:gW, d:gD, h:gH, t:marble, b: '#96A48B', mix: 0.6, tile:[10, 10] });  // 渲染体
+
+
 
 // 添加主角
 const lastPos = k?.lastPos || {x:21 + Math.random() * 10, y:5.00, z:15 + Math.random() * 10, rX:0, rY:0, rZ:0};
