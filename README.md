@@ -28,5 +28,9 @@ OpenWorld-JS is a JavaScript engine for building interactive 3D worlds directly 
 
 ## 介绍
 
+主业太忙，过两天再写，啊，再写！
 
+## 优点
+
+1. 体积极小
 
