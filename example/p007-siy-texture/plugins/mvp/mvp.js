@@ -1,0 +1,98 @@
+/**
+ * 主角样式插件
+ * ========
+ * 一个人形。顺便生成天空盒。
+ */
+export default function(ccgxkObj) {
+    // console.log('导入自己的 MVP 插件成功');
+    const mainVPSize = 1;  // 主角的大小，方便建造
+    ccgxkObj.W.cube({  // 隐藏显示原主角
+        n:'mainPlayer',
+        hidden: true,
+        size: mainVPSize,
+    });
+    ccgxkObj.W.sphere({  // 主角的头
+        g:'mainPlayer', n:'mvp_head',
+        y: 0.82, x: 0, z: 0, s: 1, size: 0.5,
+    });
+    ccgxkObj.W.cube({  // 主角的脖子
+        g:'mainPlayer', n:'mvp_neck', y: 0.6,
+        x: 0, z: 0, w:0.1,  h:0.1,  d:0.1,
+    });
+    ccgxkObj.W.cube({  // 主角的身体
+        g:'mainPlayer', n:'mvp_body', y: 0.3, x: 0,
+        z: 0, w:0.6,  h:0.5,  d:0.1,
+    });
+    // 关节
+    ccgxkObj.W.cube({  // 关节：主角的右胳膊
+        g:'mainPlayer',
+        n:'joint_test', y: 0.47, x: 0.30, z: 0,
+        rz:15, ry:0, w:0.1,  h:0.1,  d:0.1, 
+    });
+    ccgxkObj.W.cube({  // 主角的右胳膊
+        g:'joint_test', n:'aaa', y: -2,
+        x: 0, z: 0, rz:0, w:1,  h:5,  d:1,
+    });
+    // 关节
+    ccgxkObj.W.cube({  // 关节：主角的右胳膊
+        g:'mainPlayer', n:'joint_test_left', y: 0.47, x: -0.30,
+        z: 0, rz:-15, ry:0, w:0.1,  h:0.1,  d:0.1, 
+    });
+    ccgxkObj.W.cube({  // 主角的右胳膊
+        g:'joint_test_left',
+        n:'bbb', y: -2, x: 0, z: 0, rz:0, w:1,  h:5,  d:1,
+    });
+    // 关节
+    ccgxkObj.W.cube({  // 关节：主角的右腿
+        g:'mainPlayer',
+        n:'joint_test_right_leg',
+        y: 0.1, x: 0.15, z: 0, w:0.1,  h:0.1,  d:0.1,
+    });
+    ccgxkObj.W.cube({  // 主角的右腿
+        g:'joint_test_right_leg',
+        n:'rightleg',
+        y: -3, x: 0, z: 0, rz:0, w:1,  h:6,  d:1,
+    });
+    // 关节
+    ccgxkObj.W.cube({  // 关节：主角的左腿
+        g:'mainPlayer',
+        n:'joint_test_left_leg',
+        y: 0.1, x: -0.15, z: 0, 
+        w:0.1,  h:0.1,  d:0.1,
+    });
+    ccgxkObj.W.cube({  // 主角的右腿
+        g:'joint_test_left_leg', n:'leftleg', y: -3,
+        x: 0, z: 0, rz:0, w:1,  h:6,  d:1,
+    });
+
+    // 天空盒的渲染和生成
+    if(true) {
+        const c = document.createElement('canvas');
+        const ctx = c.getContext('2d');
+        c.width = 1024;
+        c.height = 512;
+        let g = ctx.createLinearGradient(0, 0, 0, c.height);  // 1. 背景主渐变（纯蓝 → 淡蓝）
+        g.addColorStop(0.00, '#4fa9ff');   // 顶部：纯蓝，极点不易失真
+        g.addColorStop(0.17, '#6ec3ff');   // 中段
+        g.addColorStop(0.35, '#a9e0ff');   // 接近地平线
+        g.addColorStop(0.50, '#eff6fbff');   // 底部：白（云带）
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, c.width, c.height);
+        const skyTexture = new Image();  // 输出 img，用于 WebGL
+        skyTexture.src = c.toDataURL();
+        skyTexture.onload = () => {  // 天空盒测试
+            k.W.sphere({
+                n:'skybox_test',
+                y: 25,
+                x: 0,
+                z: 0,
+                rz:0,
+                size: 2500,
+                uncullface: 1,
+                t: skyTexture,
+                rx: 10,
+                ns: true,
+            });
+        };
+    }
+}
