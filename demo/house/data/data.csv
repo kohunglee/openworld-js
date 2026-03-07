@@ -1,3 +1,4 @@
+id,url,display_name,brand_name,description,category
 1,google.com,谷歌网,Google,全球最大的搜索引擎，提供网络搜索服务【资料可信度95%】,搜索引擎,
 2,mail.ru,邮件网,Mail.ru,俄罗斯领先的互联网门户，提供邮件和新闻服务【资料可信度90%】,综合门户,
 3,microsoft.com,微软网,Microsoft,全球知名科技公司，提供软件和硬件产品【资料可信度95%】,科技企业,

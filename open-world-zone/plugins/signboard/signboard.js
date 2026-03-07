@@ -9,11 +9,11 @@ import demodata from './demodata.js';
 import hookon from './hookon.js';
 
 // 入口
-export default function(ccgxkObj) {
+export default async function(ccgxkObj) {
 
     const kitfunc = kit(ccgxkObj);  //+ 引入函数
     const signFunc = kitfunc.signFunc;
     hookon(ccgxkObj, signFunc);  // 挂载钩子
 
-    demodata(ccgxkObj);  // 引入数据
+    await demodata(ccgxkObj, kitfunc, signFunc);  // 引入数据（异步加载CSV），传入kit实例和signFunc
 }
