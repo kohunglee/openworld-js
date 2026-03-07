@@ -8,6 +8,7 @@ export default function(ccgxkObj, signFunc) {
     ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this){  // 调用钩子设定绘制规则
         const index = drawItem.index;
         const id = drawItem.id;
+        console.log(signFunc[id]);
         if(signFunc[id]){  // 这个就是 func
             signFunc[id](ctx, width, height, drawItem, _this);
             ccgxkObj.W.next['T' + index].hidden = false;

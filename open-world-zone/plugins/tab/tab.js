@@ -33,22 +33,35 @@ export default function(ccgxkObj) {
     };
 
     window.addEventListener("keydown", e => {
-    if (e.key === "Tab") {
-        e.preventDefault(); // 阻止 Tab 切换焦点的默认行为
-        const isHidden = modal.classList.contains("zindex-1");
-        if (isHidden) {
-            showModal();
-            k.keys['viewForward'] = 0;
-            k.keys['viewBackward'] = 0;
-            k.keys['viewLeft'] = 0;
-            k.keys['viewRight'] = 0;
-            unlockPointer();
-        } else {
-            hideModal();
-            lockPointer();
+        if (e.key === "Tab") {
+            e.preventDefault(); // 阻止 Tab 切换焦点的默认行为
+            const isHidden = modal.classList.contains("zindex-1");
+            if (isHidden) {
+                showModal();
+                k.keys['viewForward'] = 0;
+                k.keys['viewBackward'] = 0;
+                k.keys['viewLeft'] = 0;
+                k.keys['viewRight'] = 0;
+                unlockPointer();
+            } else {
+                hideModal();
+                lockPointer();
+            }
         }
-    }
     });
+
+    // ========================
+    // 快捷移动按钮
+    // ========================
+
+    function teleportTo(x, y, z, turn = null) {
+        const p = k.mainVPlayer.body.position;
+        p.x = x; p.y = y; p.z = z;
+        if (turn !== null) k.keys.turnRight = turn;
+    }
+
+    $("goOPOS").addEventListener("click", () => teleportTo(7.6, 10, 16.5, 0));
+    $("goHall").addEventListener("click", () => teleportTo(31, 10, -31, 90));
 }
 
 const htmlCode = `
@@ -96,6 +109,15 @@ const htmlCode = `
 <div class="info-modal zindex-1" id="myinfoModal">
     
     <div> <button id="closeBtn">关闭</button> </div>
+
+    <div>
+        <h3>快捷操作</h3>
+            <button id="goOPOS">到原点</button>
+            <button id="goHall">到大厅</button>
+            <button id="displayPadInPC">显示/隐藏 移动端控件</button>
+            <button id="tabView">切换视角(V)</button>
+        <hr>
+    </div>
     
     <div id="wskStudio"></div><!-- 万数块临时测试使用 -->
 
