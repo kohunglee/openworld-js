@@ -4,7 +4,7 @@
 export default async function(ccgxkObj, kitInstance, signFunc) {
 
     // 加载CSV数据
-    const csvData = await kitInstance.loadCSV('./plugins/signboard/data.csv');
+    const csvData = await kitInstance.loadCSV('./plugins/signboard/test.csv');
 
     // 构建 target -> content 的映射
     const contentMap = {};
@@ -35,8 +35,8 @@ export default async function(ccgxkObj, kitInstance, signFunc) {
             "x": startX + (i - 1) * spacing,
             "y": y,
             "z": z,
-            "w": 20,
-            "h": 3,
+            "w": 8,
+            "h": 4,
             "dz": 1,
             "st": 1,
             "t": funcName,
