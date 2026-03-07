@@ -1,11 +1,9 @@
-id,url,display_name,brand_name,description,category,
-1,google.com,谷歌网,Google,全球最大的搜索引擎，提供网络搜索服务【资料可信度95%】,搜索引擎,
-2,mail.ru,邮件网,Mail.ru,俄罗斯领先的互联网门户，提供邮件和新闻服务【资料可信度90%】,综合门户,
-3,microsoft.com,微软网,Microsoft,全球知名科技公司，提供软件和硬件产品【资料可信度95%】,科技企业,
-4,facebook.com,脸书网,Facebook,全球最大的社交网络平台，连接用户分享内容【资料可信度95%】,社交网络,
-5,googleapis.com,谷歌API,Google APIs,提供谷歌的各种应用程序编程接口服务【资料可信度90%】,开发平台,
-6,dzen.ru,德森网,Dzen,俄罗斯的新闻和内容聚合平台，由Yandex运营【资料可信度85%】,内容聚合,
-7,cloudflare.com,云耀网,Cloudflare,提供内容分发网络和网络安全服务【资料可信度90%】,网络服务,
-8,amazonaws.com,亚马逊云,Amazon Web Services,亚马逊的云计算服务平台，提供基础设施【资料可信度95%】,云服务,
-9,youtube.com,优兔网,YouTube,全球最大的视频分享平台，用户上传观看视频【资料可信度95%】,视频平台,
-10,apple.com,苹果网,Apple,全球知名科技公司，销售电子产品和软件【资料可信度95%】,科技企业,
+id,target,content,func
+0,sign001,你好山东,1
+1,sign002,你真棒,1
+2,sign003,静夜思,1
+3,sign004,举头望明月,1
+4,sign005,低头思故乡,1
+5,sign006,春眠不觉晓,1
+6,sign007,处处闻啼鸟,1
+7,sign008,夜来风雨声,1
