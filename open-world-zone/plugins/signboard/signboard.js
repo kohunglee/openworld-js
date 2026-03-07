@@ -15,5 +15,5 @@ export default function(ccgxkObj) {
     const signFunc = kitfunc.signFunc;
     hookon(ccgxkObj, signFunc);  // 挂载钩子
 
-    demodata(ccgxkObj);
+    demodata(ccgxkObj);  // 引入数据
 }

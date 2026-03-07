@@ -18,6 +18,7 @@ export default function(ccgxkObj) {
         data: data,
         name: 'texture-test',
         type: 1,
+        // model: 'plane',  // 暂时先使用 cube 吧，容易看
         invisible: false, noIns: true,  // 纹理使用这种组合
     });
 }

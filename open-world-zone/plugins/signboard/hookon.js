@@ -4,7 +4,7 @@
  * 这个就是 引擎 如何处理自定义纹理的逻辑
  */
 export default function(ccgxkObj, signFunc) {
-    ccgxkObj.errExpRatio = 500;  // 调节绘制分辨率
+    ccgxkObj.errExpRatio = 50;  // 调节绘制分辨率(以 100 为基准，越大越清晰)
     ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this){  // 调用钩子设定绘制规则
         const index = drawItem.index;
         const id = drawItem.id;
