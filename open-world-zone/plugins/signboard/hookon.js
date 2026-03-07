@@ -1,15 +1,17 @@
 /**
  * 挂载到 hook 上
- * 
+ *
  * 这个就是 引擎 如何处理自定义纹理的逻辑
  */
 export default function(ccgxkObj, signFunc) {
     ccgxkObj.errExpRatio = 50;  // 调节绘制分辨率(以 100 为基准，越大越清晰)
-    ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this){  // 调用钩子设定绘制规则
+
+    ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this){
         const index = drawItem.index;
         const id = drawItem.id;
-        if(signFunc[id]){  // 这个就是 func
-            signFunc[id](ctx, width, height, drawItem, _this);
+
+        if(signFunc.has(id)){
+            signFunc.get(id)(ctx, width, height, drawItem, _this);
             ccgxkObj.W.next['T' + index].hidden = false;
             _this.indexToArgs.get(index).isInvisible = false;
         } else {
