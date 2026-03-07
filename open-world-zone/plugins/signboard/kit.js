@@ -19,23 +19,43 @@ export default function(ccgxkObj) {
             ctx.fillStyle = '#ffffff';  //+ 背景
             ctx.fillRect(0, 0, width, height);
 
-            // 自适应字体大小，确保文字完全显示
-            let fontSize = 50 * hp;
-            ctx.font = `900 ${fontSize}px "Microsoft YaHei", sans-serif`;
-            let textWidth = ctx.measureText(text).width;
+            // 每20个字符换行
+            const charsPerLine = 20;
+            const lines = [];
+            for (let i = 0; i < text.length; i += charsPerLine) {
+                lines.push(text.slice(i, i + charsPerLine));
+            }
+
+            // 根据行数自适应字体大小
+            const lineCount = lines.length;
+            let fontSize = lineCount <= 1 ? 50 * hp : Math.max(16, (50 * hp) / lineCount);
+            const lineHeight = fontSize * 1.2;
             const maxWidth = width - padding * 2;
 
-            // 如果文字太宽，缩小字体
-            while (textWidth > maxWidth && fontSize > 16) {
-                fontSize *= 0.9;
-                ctx.font = `900 ${fontSize}px "Microsoft YaHei", sans-serif`;
-                textWidth = ctx.measureText(text).width;
+            // 确保每行文字不超宽，必要时缩小字体
+            ctx.font = `900 ${fontSize}px "Microsoft YaHei", sans-serif`;
+            for (const line of lines) {
+                let textWidth = ctx.measureText(line).width;
+                while (textWidth > maxWidth && fontSize > 16) {
+                    fontSize *= 0.9;
+                    ctx.font = `900 ${fontSize}px "Microsoft YaHei", sans-serif`;
+                    textWidth = ctx.measureText(line).width;
+                }
             }
+
+            // 计算整体高度，让所有行垂直居中
+            const totalHeight = lineCount * lineHeight;
+            let startY = (height - totalHeight) / 2 + lineHeight / 2;
 
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = kit.libRed;
-            ctx.fillText(text, 50 * wp, 50 * hp);
+
+            // 逐行居中绘制
+            for (const line of lines) {
+                ctx.fillText(line, 50 * wp, startY);
+                startY += lineHeight;
+            }
         },
 
         // 文字自动换行 ctx canvas，排版工具
@@ -73,47 +93,37 @@ export default function(ccgxkObj) {
             const headers = headerLine.split(',');
 
             return rows.map(line => {
-            const cols = line.split(',');
-            const obj = {};
-            headers.forEach((key, i) => {
-            const val = cols[i];
-            // 自动转换数字类型，保留字符串类型（如 t 参数）
-            obj[key] = isNaN(val) ? val : parseFloat(val);
-            });
-            return obj;
+                const cols = line.split(',');
+                const obj = {};
+                headers.forEach((key, i) => {
+                    const val = cols[i];
+                    // 自动转换数字类型，保留字符串类型（如 t 参数）
+                    obj[key] = isNaN(val) ? val : parseFloat(val);
+                });
+                return obj;
             });
         },
     };
 
-    // 用于钩子使用的函数
-    kit.signFunc = {
+    // 用于钩子使用的函数 (使用 Map 存储，适合大量数据)
+    kit.signFunc = new Map();
 
-        // 东 标
-        eastSign : (ctx, width, height, drawItem, _this) => {
-            kit.dirSign(ctx, width, height, '东');
-        },
-
-        // 静夜思 第一句
-        poemLine1 : (ctx, width, height, drawItem, _this) => {
-            kit.dirSign(ctx, width, height, '床前明月光');
-        },
-
-        // 静夜思 第二句
-        poemLine2 : (ctx, width, height, drawItem, _this) => {
-            kit.dirSign(ctx, width, height, '疑是地上霜');
-        },
-
-        // 静夜思 第三句
-        poemLine3 : (ctx, width, height, drawItem, _this) => {
-            kit.dirSign(ctx, width, height, '举头望明月');
-        },
-
-        // 静夜思 第四句
-        poemLine4 : (ctx, width, height, drawItem, _this) => {
-            kit.dirSign(ctx, width, height, '低头思故乡');
-        },
-
-    };
+    // 预置函数
+    kit.signFunc.set('eastSign', (ctx, width, height, drawItem, _this) => {
+        kit.dirSign(ctx, width, height, '东');
+    });
+    kit.signFunc.set('poemLine1', (ctx, width, height, drawItem, _this) => {
+        kit.dirSign(ctx, width, height, '床前明月光');
+    });
+    kit.signFunc.set('poemLine2', (ctx, width, height, drawItem, _this) => {
+        kit.dirSign(ctx, width, height, '疑是地上霜');
+    });
+    kit.signFunc.set('poemLine3', (ctx, width, height, drawItem, _this) => {
+        kit.dirSign(ctx, width, height, '举头望明月');
+    });
+    kit.signFunc.set('poemLine4', (ctx, width, height, drawItem, _this) => {
+        kit.dirSign(ctx, width, height, '低头思故乡');
+    });
 
     return kit;
 }
