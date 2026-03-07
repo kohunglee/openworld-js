@@ -33,9 +33,9 @@ signboard(k);
 
 // 添加地面
 const gX = 0, gY = -2.5, gZ = 0;
-const gW = 250, gD = 250, gH = 6;
+const gW = 25000, gD = 25000, gH = 6;
 k.addPhy({ name:'ground-phy', X:gX, Y:gY, Z:gZ, width:gW, depth:gD, height:gH });  // 物理体
-k.W.cube({ n:'ground', x:gX, y:gY, z:gZ, w:gW, d:gD, h:gH, t:marble, b: '#96A48B', mix: 0.6, tile:[10, 10] });  // 渲染体
+k.W.cube({ n:'ground', x:gX, y:gY, z:gZ, w:gW, d:gD, h:gH, t:marble, b: '#96A48B', mix: 0.6, tile:[1000, 1000] });  // 渲染体
 
 
 

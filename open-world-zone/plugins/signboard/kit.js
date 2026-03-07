@@ -16,7 +16,7 @@ export default function(ccgxkObj) {
             const hp = height / 100;
             const padding = 10 * wp; // 内边距
 
-            ctx.fillStyle = '#d8e1d8ff';  //+ 背景
+            ctx.fillStyle = '#ffffff';  //+ 背景
             ctx.fillRect(0, 0, width, height);
 
             // 自适应字体大小，确保文字完全显示
@@ -61,6 +61,27 @@ export default function(ccgxkObj) {
                     }
                 }
                 _ctx.fillText(line, x, y);  // 最后剩下的一行
+        },
+
+        // 阅读 csv
+        loadCSV : async (url) => {
+            const res = await fetch(url);
+            const text = await res.text();
+            const [headerLine, ...rows] = text.trim().split(/\r?\n/);
+
+            // 获取表头（例如：x,y,z,w,h,t）
+            const headers = headerLine.split(',');
+
+            return rows.map(line => {
+            const cols = line.split(',');
+            const obj = {};
+            headers.forEach((key, i) => {
+            const val = cols[i];
+            // 自动转换数字类型，保留字符串类型（如 t 参数）
+            obj[key] = isNaN(val) ? val : parseFloat(val);
+            });
+            return obj;
+            });
         },
     };
 

@@ -73,15 +73,15 @@ export default function (ccgxkObj) {
         },
 
         // 遍历 instData，添加物理体
-        addPhysical: function (data, instData, invisible) {
+        addPhysical: function (data, instData, invisible, model) {
             const boxLen = instData.length;
             for (let index = 0; index < boxLen; index++) {  // 入档案，添加物理体
                 const args = {
                     DPZ: data[index]?.dz ?? 4,
                     isPhysical: (data[index]?.st) ? false : true,  // 是否有物理属性
                     mass: 0,
-                    background: '#4dff00ff',  // 调试时的高亮颜色
-                    mixValue: 0.5,
+                    background: '#ffffff',  // 调试时的高亮颜色（无用）
+                    mixValue: 0,  // 直接设成 0 吧，供纹理使用
                     customIdx: dataProc.wskIdx + index,  // 按照计算的索引
                     isShadow: false,
                     X: instData[index].x,
@@ -93,6 +93,7 @@ export default function (ccgxkObj) {
                     rX: instData[index].rx,
                     rY: instData[index].ry,
                     rZ: instData[index].rz,
+                    shape: model,
                     isInvisible: invisible,  // 是否只被探测，而不可见
                 };
                 if(instData[index].t) { args.texture = instData[index].t }
@@ -149,7 +150,7 @@ export default function (ccgxkObj) {
             ccgxkObj.indexToArgs.set(dataProc.wskIdx, { n: name, type: type });  //（暂时无用）可以在这里记录 type，供未来删除模块优化使用
 
             dataProc.fullInst(data, offset);  // 填充容器
-            dataProc.addPhysical(data, dataProc.myCubeInstances, invisible);  // 添加物理体
+            dataProc.addPhysical(data, dataProc.myCubeInstances, invisible, model);  // 添加物理体
             if (!noIns) { dataProc.renderInst(texture, model) };  // 渲染
 
             const wskID = dataProc.wskIdx;
