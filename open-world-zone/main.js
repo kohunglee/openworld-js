@@ -10,6 +10,8 @@ import cookieSavePos from '@plugins/cookieSavePos.js';
 cookieSavePos(k);   // 保存当前位置
 import xdashpanel from '@plugins/xdashpanel.js';
 xdashpanel(k);      // 仪表盘
+import sound from '@plugins/sound.js';
+sound(k);      // 仪表盘
 import centerDot from '@plugins/centerDot_clean.js';
 centerDot(k);       // 开启中心点取物
 import testSampleAni from '@plugins/testSampleAni.js';

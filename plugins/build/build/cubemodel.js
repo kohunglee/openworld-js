@@ -34,7 +34,6 @@ export default function(ccgxkObj) {
         // 操作方块（仅在【复制】和【Z键添加】用到）
         wskId : 0,  // 默认的 wskId，用于建造器使用
         operaCube : (type = 0, vis = false) => {
-            console.log('operaCube');
             const G = ccgxkObj.centerDot.init;
             if(G.isDisplayHotModel === false) { vis = true }  // 显示红色
             const obj = ccgxkObj;
