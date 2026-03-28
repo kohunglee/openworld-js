@@ -14,14 +14,15 @@ cookieSavePos(k);   // 保存当前位置
 xdashpanel(k);      // 仪表盘
 centerDot(k);       // 开启中心点取物
 testSampleAni(k);   // 简单的人物动画实现
+import build from '@plugins/build/build.js';
+build(k);           // 建造器
 
 // 导入私有的插件模块
 import mvp from './plugins/mvp/mvp.js';
 import somecube from './plugins/somecube/somecube.js';
-import build from './plugins/centerDot/build.js';
 mvp(k);
 somecube(k);
-build(k);
+
 
 // 添加地面
 const gX = 0, gY = -2.5, gZ = 0;

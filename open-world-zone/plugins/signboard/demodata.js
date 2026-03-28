@@ -17,7 +17,7 @@ export default async function(ccgxkObj, kitInstance, signFunc) {
     const totalBoards = csvData.length;
     const startX = -40;
     const spacing = 16;
-    const y = 3;
+    const y = 9;
     const z = 20;
 
     for (let i = 1; i <= totalBoards; i++) {
@@ -48,6 +48,7 @@ export default async function(ccgxkObj, kitInstance, signFunc) {
         data: data,
         name: 'site-signs',
         type: 1,
+        model : 'billboard',
         invisible: false, noIns: true,  // 纹理专用
     });
 }

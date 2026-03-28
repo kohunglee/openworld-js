@@ -5,39 +5,39 @@ k.initWorld('openworldCanv', true);
 
 // 导入公共插件模块
 import xmap from '@plugins/xmap.js';
-import cookieSavePos from '@plugins/cookieSavePos.js';
-import xdashpanel from '@plugins/xdashpanel.js';
-import centerDot from '@plugins/centerDot_clean.js';
-import testSampleAni from '@plugins/testSampleAni.js';
 xmap(k, 1);         // 小地图
+import cookieSavePos from '@plugins/cookieSavePos.js';
 cookieSavePos(k);   // 保存当前位置
+import xdashpanel from '@plugins/xdashpanel.js';
 xdashpanel(k);      // 仪表盘
+import centerDot from '@plugins/centerDot_clean.js';
 centerDot(k);       // 开启中心点取物
+import testSampleAni from '@plugins/testSampleAni.js';
 testSampleAni(k);   // 简单的人物动画实现
+import build from '@plugins/build/build.js';
+build(k);           // 建造器
 
 // 导入私有的插件模块
 import dataProc from './plugins/dataProc/dataProc.js';  // 数据处理，万数块 系统
 dataProc(k);
-import mvp from './plugins/mvp/mvp.js';
+import mvp from './plugins/mvp/mvp.js';  // 主角
 mvp(k);
-import somecube from './plugins/somecube/somecube.js';
+import build_lab from './plugins/build_lab/build_lab.js';  // 建造器使用的容器
+build_lab(k);
+import somecube from './plugins/somecube/somecube.js';  // 几个实验块儿
 somecube(k);
-import normalevent from './plugins/normalevent/normalevent.js';
+import normalevent from './plugins/normalevent/normalevent.js';  // 常用的事件
 normalevent(k);
-import tab from './plugins/tab/tab.js';
+import tab from './plugins/tab/tab.js';  // tab 侧边框里的内容
 tab(k);
-import signboard from './plugins/signboard/signboard.js';
-signboard(k);
-
-
+// import signboard from './plugins/signboard/signboard.js';  // 指示牌测试
+// signboard(k);
 
 // 添加地面
 const gX = 0, gY = -2.5, gZ = 0;
-const gW = 25000, gD = 25000, gH = 6;
+const gW = 2500, gD = 2500, gH = 6;
 k.addPhy({ name:'ground-phy', X:gX, Y:gY, Z:gZ, width:gW, depth:gD, height:gH });  // 物理体
-k.W.cube({ n:'ground', x:gX, y:gY, z:gZ, w:gW, d:gD, h:gH, t:marble, b: '#96A48B', mix: 0.6, tile:[1000, 1000] });  // 渲染体
-
-
+k.W.cube({ n:'ground', x:gX, y:gY, z:gZ, w:gW, d:gD, h:gH, t:marble, b: '#96A48B', mix: 0.6, tile:[100, 100] });  // 渲染体
 
 // 添加主角
 const lastPos = k?.lastPos || {x:21 + Math.random() * 10, y:5.00, z:15 + Math.random() * 10, rX:0, rY:0, rZ:0};

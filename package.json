@@ -1,14 +1,14 @@
 {
-  "name": "myopenworlddev",
+  "name": "openworld",
   "version": "1.0.0",
-  "main": "openworld.js",
+  "main": "src/openworld.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "kohunglee",
+  "license": "MIT",
   "description": "",
   "devDependencies": {
     "@eslint/js": "^9.39.1",
