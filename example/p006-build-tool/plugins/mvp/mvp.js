@@ -4,7 +4,7 @@
  * 一个人形
  */
 export default function(ccgxkObj) {
-    console.log('导入自己的 MVP 插件成功');
+    // console.log('导入自己的 MVP 插件成功');
     const mainVPSize = 1;  // 主角的大小，方便建造
     ccgxkObj.W.cube({  // 隐藏显示原主角
         n:'mainPlayer',

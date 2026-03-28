@@ -82,7 +82,8 @@ export default function(ccgxkObj) {
          * newArgs : 方块自定义的新自身属性参数
          *  */
         modelUpdate : (e, customIndex = -1, isKeyOk = false, newArgs) => {
-            console.log('modelUpdate', customIndex, isKeyOk, newArgs);
+            // console.log('modelUpdate', customIndex, isKeyOk, newArgs);
+            const wInstName = k?.wBuildInstName ?? 'wsk_0';
             const G = ccgxkObj.centerDot.init;
             if(isRealTimeUpdata.checked === false && isKeyOk === false){ return 0; }  // 临时退出，不更新模型
             var index = G.indexHotCurr;  // 若 customIndex = -1 时，此行有效
@@ -122,7 +123,7 @@ export default function(ccgxkObj) {
                 newInstanceData.b = lastArgs.insColor.replace('#', '');
             }
             
-            ccgxkObj.W.updateInstance('wsk_' + G.wskId, index, newInstanceData);  // 更新一下实例化模型
+            ccgxkObj.W.updateInstance(wInstName, index, newInstanceData);  // 更新一下实例化模型
             const quat = ccgxkObj.eulerToQuaternion({  // 将欧拉角转换为四元数
                 rX: newInstanceData.rx,
                 rY: newInstanceData.ry,

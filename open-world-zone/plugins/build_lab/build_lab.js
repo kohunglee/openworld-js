@@ -1,10 +1,10 @@
 /**
- * 一些方块 插件
+ * 供【建造器】使用的 实验块儿
  * ========
- * 功能是....
+ * 
  */
 export default function(ccgxkObj) {
-    // console.log('导入自己的 方块 插件成功');
+    console.log('导入自己的 方块 插件成功');
 
     const insts = [];
 
@@ -21,6 +21,26 @@ export default function(ccgxkObj) {
 
     insts.push({"x":4,"z":4,"y":4},);
 
+
+    // 这里开始写我的屋子 ----------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // 屋子逻辑结束 ----------------
+
+    k.visCubeLen = insts.length - 1;
+
     // 其余 9990 个扔到很远的地方
     for (let i = 0; i < 9990; i++) {
         insts.push({
@@ -31,27 +51,17 @@ export default function(ccgxkObj) {
     }
     
     k.visCubeLen = 9;  // build 插件必要的！
-    for (let i = 0; i < insts.length; i++) {
-        const c = insts[i];
-        k.addTABox({
-            DPZ: 4,
-            X: c.x, Y: c.y, Z: c.z,
-            width: c.w,
-            depth: c.d,
-            height: c.h,
-            rX: c.rx, rY: c.ry, rZ: c.rz,
-            background: '#ba1818',
-            mass: 0,
-            isInvisible: true,  // 只被探测，不可见
-        });
-    }
 
-    k.W.cube({  // 渲染实例化
-        n: 'wsk_0',
-        t: marble,  // 大理石
-        instances: insts, // 实例属性的数组
-        mix: 0.7,
+    // 写入档案（基于 万数块 系统）
+    const idx = ccgxkObj.dataProc.process({
+        data: insts,
+        name: 'build_lab',
+        type: 1,
     });
 
-    k.wBuildInstName = 'wsk_0';
+    const rootArgs = k.indexToArgs.get(idx);  // 头索引 元数据
+    if (!rootArgs) { return }
+    const dataName = rootArgs.dataName;
+    k.wBuildInstName = 'sk_' + idx + '_' + dataName;  // 建造器就操作这个
+
 }

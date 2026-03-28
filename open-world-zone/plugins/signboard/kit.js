@@ -49,7 +49,7 @@ export default function(ccgxkObj) {
 
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillStyle = kit.libRed;
+            ctx.fillStyle = '#000';
 
             // 逐行居中绘制
             for (const line of lines) {
