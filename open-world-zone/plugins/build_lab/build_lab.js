@@ -3,28 +3,16 @@
  * ========
  * 
  */
+
+import mydata from './data.js';
+
 export default function(ccgxkObj) {
-    console.log('导入自己的 方块 插件成功');
 
     const insts = [];
 
-    // 9 个正常摆放（3×3 阵列）
-    for (let row = 0; row < 3; row++) {
-        for (let col = 0; col < 3; col++) {
-            insts.push({
-                x: col * 2, y: 1, z: row * 2 + 10,
-                w: 1, d: 1, h: 1,
-                rx: 0, ry: 0, rz: 0,
-            });
-        }
-    }
-
-    insts.push({"x":4,"z":4,"y":4},);
-
-
     // 这里开始写我的屋子 ----------------
-
-
+    
+    insts.push(...mydata());  // 导入我的数据
 
 
 
@@ -39,7 +27,10 @@ export default function(ccgxkObj) {
 
     // 屋子逻辑结束 ----------------
 
+    console.log(insts);
+
     k.visCubeLen = insts.length - 1;
+
 
     // 其余 9990 个扔到很远的地方
     for (let i = 0; i < 9990; i++) {
@@ -49,8 +40,6 @@ export default function(ccgxkObj) {
             rx: 0, ry: 0, rz: 0,
         });
     }
-    
-    k.visCubeLen = 9;  // build 插件必要的！
 
     // 写入档案（基于 万数块 系统）
     const idx = ccgxkObj.dataProc.process({

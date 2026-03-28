@@ -57,7 +57,7 @@ export default function(ccgxkObj){
         duong : function(i){  // 度翁
             return Math.sin(i/100 + 20 * Math.sin(i/4000)) * Math.exp(-i/1000);
         },
-        
+
     }
     ccgxkObj.sound = sound;
 }

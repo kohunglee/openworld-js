@@ -145,7 +145,7 @@ export default function(ccgxkObj) {
             d :         { dir:  1, type: 'sideways' },
             a :         { dir: -1, type: 'sideways' },
             q :         { dir: -1, type: 'vertical' },  // ← 新增
-            e :         { dir:  1, type: 'vertical' },  // ← 新增
+            r :         { dir:  1, type: 'vertical' },  // ← 新增
         },
     };
 

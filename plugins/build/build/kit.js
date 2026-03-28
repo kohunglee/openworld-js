@@ -40,14 +40,14 @@ export default function(ccgxkObj) {
 
         // 音效映射关系
         musicMap : {  // 映射关系
-            'closeEdi' : 'coin0',
-            'openEdi'  : 'coin0',
-            'closePoint'   : 'wood',
-            'openPoint'    : 'wood',
-            'bassSet'      : 'duong',
-            'frozen'       : 'alien',
-            'unfrozen'     : 'unfrozen',
-            'addCube0'     : 'ting',
+            // 'closeEdi' : 'coin0',
+            // 'openEdi'  : 'coin0',
+            // 'closePoint'   : 'wood',
+            // 'openPoint'    : 'wood',
+            // 'bassSet'      : 'duong',
+            // 'frozen'       : 'alien',
+            // 'unfrozen'     : 'unfrozen',
+            // 'addCube0'     : 'ting',
             'copyCube'     : 'lock',
         },
 
@@ -56,8 +56,9 @@ export default function(ccgxkObj) {
             const G = ccgxkObj.centerDot.init;
             const obj = ccgxkObj;
             const list = obj.sound;
-            if(G?.musicMap[myevent]){
-                // obj.audio(list[G.musicMap[myevent]]);  // 先关闭
+            const soundName = G?.musicMap[myevent];
+            if (soundName && list[soundName]) {
+                obj.audio(list[soundName]);
             }
         },
 
