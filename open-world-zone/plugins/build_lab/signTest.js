@@ -68,6 +68,29 @@ const drawSmartText = (ctx, width, height, text) => {
     }
 };
 
+// --- 渲染插件库 ---
+const RenderPlugins = {
+    // 格式一：自适应文字 (你之前的逻辑)
+    text: (ctx, w, h, data) => {
+        const content = signContentMap.get(data.id) || data.t;
+        drawSmartText(ctx, w, h, content); // 调用之前写好的排版函数
+    },
+
+    // 格式二：自定义 Canvas 程序 (执行一段函数)
+    canvas: (ctx, w, h, data, _this) => {
+        // 假设 data.draw 是一个预定义的绘图函数名
+        const customDraw = CustomCanvasLib[data.drawName]; 
+        if (customDraw) customDraw(ctx, w, h, data, _this);
+    },
+
+    // 格式三：纯图片
+    image: (ctx, w, h, data) => {
+        const img = new Image();
+        img.src = data.imgUrl; // 数据中自带图片地址
+        img.onload = () => ctx.drawImage(img, 0, 0, w, h);
+    }
+};
+
 // 入口
 export default function(instData, ccgxkObj) {
     ccgxkObj.errExpRatio = 200;
@@ -75,11 +98,14 @@ export default function(instData, ccgxkObj) {
     // 挂载 HOOK
     ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this) {
         const { index, id } = drawItem;
+        console.log(index, id, drawItem.t);
         const textContent = signContentMap.get(id) || drawItem.t; // 兼容从 data.js 传来的 t 属性
         if (textContent && textContent !== 'errorTexture_diy') {
+            
             drawSmartText(ctx, width, height, textContent);  // 执行智能排版绘制
             ccgxkObj.W.next['T' + index].hidden = false;
             _this.indexToArgs.get(index).isInvisible = false;
+            
         } else {
             ctx.fillStyle = THEME.bgWarn; // 未命中，绘制红色警告块
             ctx.fillRect(0, 0, width, height);
