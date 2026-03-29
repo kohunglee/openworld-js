@@ -1,112 +1,99 @@
 /**
- * 测试一下哈
- * 
- * 怎么弄那个纹理，研究一下
- * 
+ * 文本画板 测试 模块 
  */
 
-export default function(instData, ccgxkObj) {
 
-    let kit = {};
-    if(true){
-        // 初始化工具函数
-        kit = {
+const THEME = {
+    bgWhite: '#ffffff',
+    bgWarn: '#ff0000',
+    textDark: '#2c3e50',
+    fontFamily: '"Microsoft YaHei", sans-serif',
+    paddingRatio: 0.1 // 内边距占宽度的比例 (10%)
+};
 
-            // 统一几个主要配色
-            libRed : '#e27b7bff',  // 主题色 红色
-            libWhite : '#d8e1d8ff',  // 主题色 白色
+const signContentMap = new Map([
+    ['testSign1', '野狗不需要墓碑，奔跑到腐烂即可。'],
+    ['testSign2', '这是一段测试文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口。利用人类天生强大的空间记忆能力，把抽象信息绑在具体地点上。这是一段测试文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口。利用人类天生强大的空间记忆能力，把抽象信息绑在具体地点上。唯一入口。利用人类天生强大的空间记忆能力，把抽象信息绑在具体地点上。'],
+    ['welcome_board', '欢迎来到数字禅修空间。在这里，你可以慢慢逛，慢生活。']
+]);
 
-            // 方向标
-            dirSign : (ctx, width, height, text) => {
-                const wp = width / 100;
-                const hp = height / 100;
-                const padding = 10 * wp; // 内边距
+// 渲染器
+const drawSmartText = (ctx, width, height, text) => {  
 
-                ctx.fillStyle = '#ffffff';  //+ 背景
-                ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = THEME.bgWhite; //+ 绘制背景
+    ctx.fillRect(0, 0, width, height);
+    const padding = width * THEME.paddingRatio;
+    const maxWidth = width - padding * 2;
+    const maxHeight = height - padding * 2;
+    let fontSize = Math.max(16, height * 0.15); //+ 初始字体设置
+    let lineHeight = fontSize * 1.4;
+    ctx.fillStyle = THEME.textDark;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
 
-                // 每20个字符换行
-                const charsPerLine = 20;
-                const lines = [];
-                for (let i = 0; i < text.length; i += charsPerLine) {
-                    lines.push(text.slice(i, i + charsPerLine));
-                }
+    let lines = [];
+    let isFit = false;
+    
+    while (!isFit && fontSize >= 12) { //+ 字体缩放与换行算法
+        ctx.font = `600 ${fontSize}px ${THEME.fontFamily}`;
+        lines = [];
+        let currentLine = '';
 
-                // 根据行数自适应字体大小
-                const lineCount = lines.length;
-                let fontSize = lineCount <= 1 ? 50 * hp : Math.max(16, (50 * hp) / lineCount);
-                fontSize = 10;
-                const lineHeight = fontSize * 1.2;
-                const maxWidth = width - padding * 2;
-
-                // 确保每行文字不超宽，必要时缩小字体
-                ctx.font = `900 ${fontSize}px "Microsoft YaHei", sans-serif`;
-                for (const line of lines) {
-                    let textWidth = ctx.measureText(line).width;
-                    while (textWidth > maxWidth && fontSize > 16) {
-                        fontSize *= 0.9;
-                        ctx.font = `900 ${fontSize}px "Microsoft YaHei", sans-serif`;
-                        textWidth = ctx.measureText(line).width;
-                    }
-                }
-
-                // 计算整体高度，让所有行垂直居中
-                const totalHeight = lineCount * lineHeight;
-                let startY = (height - totalHeight) / 2 + lineHeight / 2;
-
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = '#000';
-
-                // 逐行居中绘制
-                for (const line of lines) {
-                    ctx.fillText(line, 50 * wp, startY);
-                    startY += lineHeight;
-                }
-            },
+        for (let i = 0; i < text.length; i++) { // 逐字测量，实现精准换行
+            const char = text[i];
+            const testLine = currentLine + char;
+            const metrics = ctx.measureText(testLine);
             
-        }
-
-        // 用于钩子使用的函数 (使用 Map 存储，适合大量数据)
-        kit.signFunc = new Map();
-
-        kit.signFunc.set('testSign1', (ctx, width, height, drawItem, _this) => {
-            kit.dirSign(ctx, width, height, '野狗不需要墓碑，奔跑到腐烂即可。');
-        });
-    }
-
-    // 挂载 hook
-    if(true){
-        ccgxkObj.errExpRatio = 100;  // 调节绘制分辨率(以 100 为基准，越大越清晰)
-        ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this){
-            const index = drawItem.index;
-            const id = drawItem.id;
-            console.log(id);  // 临时输出使用
-            if(kit.signFunc.has(id)){
-                kit.signFunc.get(id)(ctx, width, height, drawItem, _this);
-                ccgxkObj.W.next['T' + index].hidden = false;
-                _this.indexToArgs.get(index).isInvisible = false;
+            if (metrics.width > maxWidth && i > 0) {
+                lines.push(currentLine);
+                currentLine = char;
             } else {
-                ctx.fillStyle = '#ff0000ff';  //+ 警告背景，警告未设置背景绘制函数
-                ctx.fillRect(0, 0, width, height);
-                if(false){  // 如果要发布，则这个要 false 掉，这是未填充内容的板块
-                    ccgxkObj.W.next['T' + index].hidden = false;
-                    _this.indexToArgs.get(index).isInvisible = false;
-                }
+                currentLine = testLine;
             }
-        })
+        }
+        lines.push(currentLine); // 推入最后一行
+        if (lines.length * lineHeight > maxHeight) { // 检查总高度是否超出画布
+            fontSize -= 2; // 缩小字体重试
+            lineHeight = fontSize * 1.4;
+        } else {
+            isFit = true; // 找到了合适的尺寸
+        }
     }
 
+    const totalTextHeight = lines.length * lineHeight; //+ 执行最终绘制 (垂直居中)
+    let startY = (height - totalTextHeight) / 2 + (lineHeight / 2);
+    for (const line of lines) {
+        ctx.fillText(line, width / 2, startY);
+        startY += lineHeight;
+    }
+};
 
+// 入口
+export default function(instData, ccgxkObj) {
+    ccgxkObj.errExpRatio = 200;
 
-    ccgxkObj.dataProc.process({  //+ 显示 arrC 信息板
-        data: instData,
-        name: 'build_lab_signBoard',
-        type: 2,
-        texture: paper02,
-        model: 'plane',
-        mixValue: 0.8,
-        invisible: false, noIns: true,  // 纹理专用
+    // 挂载 HOOK
+    ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this) {
+        const { index, id } = drawItem;
+        const textContent = signContentMap.get(id) || drawItem.t; // 兼容从 data.js 传来的 t 属性
+        if (textContent && textContent !== 'errorTexture_diy') {
+            drawSmartText(ctx, width, height, textContent);  // 执行智能排版绘制
+            ccgxkObj.W.next['T' + index].hidden = false;
+            _this.indexToArgs.get(index).isInvisible = false;
+        } else {
+            ctx.fillStyle = THEME.bgWarn; // 未命中，绘制红色警告块
+            ctx.fillRect(0, 0, width, height);
+        }
     });
 
+    // 将这些画板实例送入档案系统
+    ccgxkObj.dataProc.process({
+        data: instData,
+        name: 'build_lab_signBoard',
+        type: 2,           // 存入百数块区域
+        model: 'plane',    // 使用平面模型作为墙上的画板
+        mixValue: 0.8,
+        invisible: false,  // 必须可见
+        noIns: true,       // 使用独立纹理，不走实例化渲染
+    });
 }
