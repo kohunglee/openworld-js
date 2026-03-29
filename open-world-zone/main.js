@@ -24,6 +24,8 @@ import dataProc from './plugins/dataProc/dataProc.js';  // 数据处理，万数
 dataProc(k);
 import mvp from './plugins/mvp/mvp.js';  // 主角
 mvp(k);
+import symoffset from './plugins/symoffset/symoffset.js';  // 对称阵列工具
+symoffset(k);
 import build_lab from './plugins/build_lab/build_lab.js';  // 建造器使用的容器
 build_lab(k);
 import somecube from './plugins/somecube/somecube.js';  // 几个实验块儿
@@ -32,6 +34,7 @@ import normalevent from './plugins/normalevent/normalevent.js';  // 常用的事
 normalevent(k);
 import tab from './plugins/tab/tab.js';  // tab 侧边框里的内容
 tab(k);
+
 // import signboard from './plugins/signboard/signboard.js';  // 指示牌测试
 // signboard(k);
 
