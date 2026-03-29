@@ -13,7 +13,7 @@ const COLORS = {
 const INDICES = {  // 不同物体的索引
     floor: [4, 6, 0, 2, 3, 7, 19, 17, 22, 21, 18, 20, 44, 43, 42, 45, 39, 40, 38, 37, 35, 36, 102],
     decorations: [49, 48, 47],
-    signBoard: [107, 108],
+    signBoard: [107, 108, 109, 110, 111],
 };
 
 export default function(ccgxkObj) {
@@ -47,13 +47,16 @@ export default function(ccgxkObj) {
         });
 
         const arrC = [];  //+ 提取信息板属性到 arrC
+        let sign_index = 1;
         INDICES.signBoard.forEach(i => {
             if (insts[i]) {
                 insts[i].dz = 3;
+                insts[i].t = 'testSign' + (sign_index++);
                 arrC.push({ ...insts[i] });
                 insts[i] = { "del": 1 };
             }
         });
+        // console.log(arrC);
         signTest(arrC, ccgxkObj);
     }
 
