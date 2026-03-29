@@ -12,9 +12,17 @@ const THEME = {
 };
 
 const signContentMap = new Map([
-    ['testSign1', '野狗不需要墓碑，奔跑到腐烂即可。'],
-    ['testSign2', '这是一段测试文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口。利用人类天生强大的空间记忆能力，把抽象信息绑在具体地点上。这是一段测试文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口。利用人类天生强大的空间记忆能力，把抽象信息绑在具体地点上。唯一入口。利用人类天生强大的空间记忆能力，把抽象信息绑在具体地点上。'],
-    ['testSign3', '欢迎来到数字禅修空间。在这里，你可以慢慢逛，慢生活。']
+  // 模式1：自适应文字
+  ['testSign1', { mode: 'text', t: '野狗不需要墓碑，奔跑到腐烂即可。' }],
+  ['testSign2', { mode: 'text', t: '这是一段测试文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口。' }],
+  ['nouse', { mode: 'text', t: '欢迎来到数字禅修空间。在这里，你可以慢慢逛，慢生活。' }],
+  
+  // 模式2：自定义 Canvas 程序 (指定具体的绘图函数名)
+  ['testSign3', { mode: 'canvas', drawName: 'drawCircle' }],
+  ['testSign5', { mode: 'canvas', drawName: 'drawCross' }],
+  
+  // 模式3：纯图片 (建议用支持跨域的图床或者本地相对路径)
+  ['testSign4', { mode: 'image', imgUrl: 'https://i.mji.rip/2026/03/29/922312a08e4c5b2ada1d53a700e06d04.jpeg' }] 
 ]);
 
 // 渲染器
@@ -68,27 +76,23 @@ const drawSmartText = (ctx, width, height, text) => {
     }
 };
 
-// --- 渲染插件库 ---
-const RenderPlugins = {
-    // 格式一：自适应文字 (你之前的逻辑)
-    text: (ctx, w, h, data) => {
-        const content = signContentMap.get(data.id) || data.t;
-        drawSmartText(ctx, w, h, content); // 调用之前写好的排版函数
-    },
-
-    // 格式二：自定义 Canvas 程序 (执行一段函数)
-    canvas: (ctx, w, h, data, _this) => {
-        // 假设 data.draw 是一个预定义的绘图函数名
-        const customDraw = CustomCanvasLib[data.drawName]; 
-        if (customDraw) customDraw(ctx, w, h, data, _this);
-    },
-
-    // 格式三：纯图片
-    image: (ctx, w, h, data) => {
-        const img = new Image();
-        img.src = data.imgUrl; // 数据中自带图片地址
-        img.onload = () => ctx.drawImage(img, 0, 0, w, h);
-    }
+const CustomCanvasLib = { // 几个 canvas 示例
+  
+  drawCircle: (ctx, w, h) => { // 画一个红色的居中圆
+    ctx.fillStyle = '#b9e73c'; // 红色
+    ctx.beginPath();
+    ctx.arc(w / 2, h / 2, Math.min(w, h) * 0.3, 0, Math.PI * 2);
+    ctx.fill();
+  },
+  
+  drawCross: (ctx, w, h) => { // 画一个蓝色的叉叉
+    ctx.strokeStyle = '#3498db'; // 蓝色
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.moveTo(w * 0.2, h * 0.2); ctx.lineTo(w * 0.8, h * 0.8);
+    ctx.moveTo(w * 0.8, h * 0.2); ctx.lineTo(w * 0.2, h * 0.8);
+    ctx.stroke();
+  }
 };
 
 // 入口
@@ -99,10 +103,69 @@ export default function(instData, ccgxkObj) {
     ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this) {
         const { index, id } = drawItem;
         console.log(index, id, drawItem.t);
-        const textContent = signContentMap.get(id) || drawItem.t; // 兼容从 data.js 传来的 t 属性
-        if (textContent && textContent !== 'errorTexture_diy') {
+        const textInfo = signContentMap.get(id);
+        if (textInfo) {
             
-            drawSmartText(ctx, width, height, textContent);  // 执行智能排版绘制
+        
+            const type = textInfo.mode;
+
+            if(type === 'text') {
+                drawSmartText(ctx, width, height, textInfo.t);  // 执行智能排版绘制
+            }
+
+            if(type === 'canvas') {
+                ctx.fillStyle = THEME.bgWhite;
+                ctx.fillRect(0, 0, width, height);
+                const drawFunc = CustomCanvasLib[textInfo.drawName];
+                if (drawFunc) { drawFunc(ctx, width, height) }
+            }
+
+            if (type === 'image') {
+                // 1. 同步阶段：给画布画个 Loading，让引擎立刻拿到一个占位纹理，防止黑屏报错
+                drawSmartText(ctx, width, height, 'Loading...');
+
+                // 2. 给这张图生成一个独一无二的新 ID，防止引擎复用之前的 ctx 缓存
+                const uniqueImgId = 'dyn_img_' + index + '_' + id;
+
+                // 检查页面里是不是已经建过这个标签了（防止多面板加载同一张图时重复创建 DOM）
+                let imgEl = document.getElementById(uniqueImgId);
+                
+                if (!imgEl) {
+                    // 动态创建 <img> 标签并挂载到网页上
+                    imgEl = document.createElement('img');
+                    imgEl.id = uniqueImgId;
+                    imgEl.crossOrigin = 'anonymous'; // 保持跨域
+                    imgEl.style.display = 'none';    // 隐藏起来，别让用户在网页上看到
+                    document.body.appendChild(imgEl); // 【关键】必须挂载到 DOM，引擎才能通过 ID 找到它
+                    
+                    imgEl.onload = () => {
+                        // 原图加载完成后，传入这个全新的 DOM ID 更新面板
+                        console.log('idx: ' + index);
+                        ccgxkObj.W.plane({
+                            n: 'T' + index,
+                            t: imgEl  // 直接传入 DOM 元素的 ID
+                        });
+                    };
+                    
+                    imgEl.onerror = () => {
+                        console.error("图片加载失败:", textInfo.imgUrl);
+                    };
+                    
+                    imgEl.src = textInfo.imgUrl;
+                } else {
+                    // 如果 DOM 已经存在，且图片已经加载完毕，直接用
+                    if (imgEl.complete) {
+                        ccgxkObj.W.plane({
+                            n: 'T' + index,
+                            t: uniqueImgId
+                        });
+                    }
+                }
+            }
+
+
+
+            
             ccgxkObj.W.next['T' + index].hidden = false;
             _this.indexToArgs.get(index).isInvisible = false;
 
