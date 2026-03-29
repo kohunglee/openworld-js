@@ -43,4 +43,27 @@ export default function(ccgxkObj) {
         document.addEventListener('keydown', keyHandler);
     });
 
+    // 定时事件
+    setInterval(
+        () => {
+            // 保证人物不掉地面
+            if(true){
+                if(ccgxkObj.mainVPlayer.body.position.y < 0){
+                    ccgxkObj.mainVPlayer.body.position.y = 50;
+                }
+            }
+
+            // 防止在 F 冻结模式，碰障碍物后失重移动
+            if(true){
+                const mvpBody = ccgxkObj.mainVPlayer.body;
+                if(mvpBody.mass === 0){
+                    mvpBody.velocity.set(0, 0, 0);  // 设置线速度为0
+                    mvpBody.angularVelocity.set(0, 0, 0);  // 设置角速度为0
+                    mvpBody.force.set(0, 0, 0);  // 清除所有作用力
+                    mvpBody.torque.set(0, 0, 0);  // 清除所有扭矩
+                }
+            }
+        }
+    , 100);
+
 }
