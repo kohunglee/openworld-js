@@ -14,7 +14,7 @@ const THEME = {
 const signContentMap = new Map([
     ['testSign1', '野狗不需要墓碑，奔跑到腐烂即可。'],
     ['testSign2', '这是一段测试文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口。利用人类天生强大的空间记忆能力，把抽象信息绑在具体地点上。这是一段测试文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口。利用人类天生强大的空间记忆能力，把抽象信息绑在具体地点上。唯一入口。利用人类天生强大的空间记忆能力，把抽象信息绑在具体地点上。'],
-    ['welcome_board', '欢迎来到数字禅修空间。在这里，你可以慢慢逛，慢生活。']
+    ['testSign3', '欢迎来到数字禅修空间。在这里，你可以慢慢逛，慢生活。']
 ]);
 
 // 渲染器
@@ -105,7 +105,7 @@ export default function(instData, ccgxkObj) {
             drawSmartText(ctx, width, height, textContent);  // 执行智能排版绘制
             ccgxkObj.W.next['T' + index].hidden = false;
             _this.indexToArgs.get(index).isInvisible = false;
-            
+
         } else {
             ctx.fillStyle = THEME.bgWarn; // 未命中，绘制红色警告块
             ctx.fillRect(0, 0, width, height);
