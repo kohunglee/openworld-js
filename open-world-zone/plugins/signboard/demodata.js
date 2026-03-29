@@ -14,7 +14,8 @@ export default async function(ccgxkObj, kitInstance, signFunc) {
 
     // 生成板子 (与CSV数量一致)
     const data = [];
-    const totalBoards = csvData.length;
+    // const totalBoards = csvData.length;
+    const totalBoards = 10;
     const startX = -40;
     const spacing = 16;
     const y = 9;
@@ -47,7 +48,7 @@ export default async function(ccgxkObj, kitInstance, signFunc) {
     ccgxkObj.dataProc.process({
         data: data,
         name: 'site-signs',
-        type: 1,
+        type: 2,
         model : 'billboard',
         invisible: false, noIns: true,  // 纹理专用
     });
