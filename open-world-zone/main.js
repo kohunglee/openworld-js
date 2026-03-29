@@ -54,5 +54,8 @@ document.body.appendChild(stats.dom);
 requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};
 script.src='./assest/fps.js';document.head.appendChild(script);})()
 
+// 其他
+k.centerDot.setCamView(2);  // 设置摄像机视角位置为第 2 类型
+
 
 

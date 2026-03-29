@@ -113,12 +113,12 @@ export default function (ccgxkObj) {
         },
 
         // 渲染实例化
-        renderInst: function (texture, model) {
+        renderInst: function (texture, model, mixValue) {
             ccgxkObj.W[model]({
                 n: 'sk_' + dataProc.wskIdx + '_' + dataProc.dataName,
                 t: texture,
                 instances: dataProc.myCubeInstances,
-                mix: 0.7,
+                mix: mixValue,
             });
         },
 
@@ -130,9 +130,10 @@ export default function (ccgxkObj) {
         // type: 1=万数块(0-90w), 2=百数块(63w-99w), 3=单数块(99w-100w)
         // noIns: 是否不渲染实例化，也就是仅仅写入档案，物理档案
         // invisible: 是否不可见，默认不可见（只在 实例化 里可看到）
+        // mix: 纹理和颜色的混合度
         process: function ({ 
             data, offset, texture, name = 'untitle', 
-            type = 1, noIns = false, model = 'cube', invisible = true } = {}) 
+            type = 1, noIns = false, model = 'cube', invisible = true, mixValue = 0.7 } = {}) 
         {
             texture = texture || window.marble;
 
@@ -151,7 +152,7 @@ export default function (ccgxkObj) {
 
             dataProc.fullInst(data, offset);  // 填充容器
             dataProc.addPhysical(data, dataProc.myCubeInstances, invisible, model);  // 添加物理体
-            if (!noIns) { dataProc.renderInst(texture, model) };  // 渲染
+            if (!noIns) { dataProc.renderInst(texture, model, mixValue) };  // 渲染
 
             const wskID = dataProc.wskIdx;
 
