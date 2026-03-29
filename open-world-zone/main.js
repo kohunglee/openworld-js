@@ -42,7 +42,7 @@ tab(k);
 const gX = 0, gY = -2.5, gZ = 0;
 const gW = 2500, gD = 2500, gH = 6;
 k.addPhy({ name:'ground-phy', X:gX, Y:gY, Z:gZ, width:gW, depth:gD, height:gH });  // 物理体
-k.W.cube({ n:'ground', x:gX, y:gY, z:gZ, w:gW, d:gD, h:gH, t:marble, b: '#96A48B', mix: 0.6, tile:[100, 100] });  // 渲染体
+k.W.cube({ n:'ground', x:gX, y:gY, z:gZ, w:gW, d:gD, h:gH, t:marble, b: '#ceffa8', mix: 0.6, tile:[100, 100] });  // 渲染体
 
 // 添加主角
 const lastPos = k?.lastPos || {x:21 + Math.random() * 10, y:5.00, z:15 + Math.random() * 10, rX:0, rY:0, rZ:0};

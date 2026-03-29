@@ -1,141 +1,69 @@
-/**
- * 供【建造器】使用的 实验块儿
- * ========
- * 
- */
-
 import mydata from './data.js';
 
+
+const IS_FULL_STATE = 1; // 1: 完整发布状态, 0: 基础编辑状态
+
+const COLORS = {
+    FLOOR: '#ECECEA',  // A
+    BASE: '#C1CBD7',   // B
+    DECO: '#C5B8A5'    // C
+};
+
+const INDICES = {  // 不同物体的索引
+    floor: [4, 6, 0, 2, 3, 7, 19, 17, 22, 21, 18, 20, 44, 43, 42, 45, 39, 40, 38, 37, 35, 36, 102],
+    decorations: [49, 48, 91, 92, 47]
+};
+
 export default function(ccgxkObj) {
+    const insts = [...mydata()];  // 导入数据
 
-    const insts = [];
+    // 处理
+    if (IS_FULL_STATE) {
+        ['textureGetCubeData'].forEach(id => document.getElementById(id)?.remove());  // 防止误点
+        const symer = new ccgxkObj.SymOffset(insts, ccgxkObj);  // 初始化对称工具
 
-    // 这里开始写我的屋子 ----------------
-    
-    insts.push(...mydata());  // 导入我的数据
+        insts.forEach(item => item.b = COLORS.BASE);  //+ 涂装颜色
+        INDICES.floor.forEach(i => insts[i] && (insts[i].b = COLORS.FLOOR));
+        INDICES.decorations.forEach(i => insts[i] && (insts[i].b = COLORS.DECO));
 
-    // 更进一步操作
-    if(true){
-        ['textureGetCubeData'].map(  // 防止误点，隐藏掉 下载数据 按钮
-            i=>document.getElementById(i)?.remove()
-        )
-        // logicFunc(insts);  // 挂载对称阵列工具
-        
-        // const stage001 = offset([ 93 ], -1, 8, 'x', -0.5, 'y');
+        symer.offset([93], -0.9, 8, 'x', -0.48, 'y');  // 阵列台阶
 
-        const symer = new ccgxkObj.SymOffset(insts); 
-        const stage001 = symer.offset([ 93 ], -1, 8, 'x', -0.5, 'y');
+        const arrB = [];  //+ 提取地板坐标
+        INDICES.floor.forEach(i => {
+            if (insts[i]) {
+                arrB.push({ ...insts[i] });
+                insts[i] = { "del": 1 };
+            }
+        });
+
+        ccgxkObj.dataProc.process({
+            data: arrB,
+            name: 'build_lab_stage',
+            type: 2,
+            texture: paper02,
+            mixValue: 0.8,
+        });
     }
 
-    // 屋子逻辑结束 ----------------
-
     k.visCubeLen = insts.length - 1;
-
-
-    // 其余 9990 个扔到很远的地方
     for (let i = 0; i < 9990; i++) {
         insts.push({
-            x: 999999999, y: 999999999, z: 999999999,
+            x: 1e9, y: 1e9, z: 1e9,
             w: 0.001, d: 0.001, h: 0.001,
             rx: 0, ry: 0, rz: 0,
         });
     }
 
-    // 写入档案（基于 万数块 系统）
     const idx = ccgxkObj.dataProc.process({
         data: insts,
         name: 'build_lab',
         type: 1,
-        texture: paper,
-        mixValue: 0.1,
+        texture: marble,
+        mixValue: 0.8,
     });
 
-    const rootArgs = k.indexToArgs.get(idx);  // 头索引 元数据
-    if (!rootArgs) { return }
-    const dataName = rootArgs.dataName;
-    k.wBuildInstName = 'sk_' + idx + '_' + dataName;  // 建造器就操作这个
+    const rootArgs = k.indexToArgs.get(idx);  //+ 设置建造器
+    if (rootArgs) {
+        k.wBuildInstName = `sk_${idx}_${rootArgs.dataName}`;
+    }
 }
-
-
-
-// /**
-//  * 逻辑建造工具（临时在此，先不优化）
-//  * ----------
-//  * 定义建造时的 偏移阵列、镜像 逻辑函数
-//  */
-// function logicFunc(myData){  // 
-//     globalThis.symopera = (items, axes={}) => {  // 对称操作
-//         if(k.notSymOff) return 0;
-//         var orig_data = myData[items];
-//         var agent = {...orig_data};
-//         for (const axis of ["x", "y", "z"]) {
-//             if (axes[axis] !== undefined) {
-//                 agent[axis] -= (orig_data[axis] - axes[axis]) * 2;
-//                 const rot = (axis === 'z') ? 'x' : 'z';
-//                 if(agent['r' + rot]){
-//                     agent['r' + rot] = - orig_data['r' + rot];
-//                 }
-//             }
-//         }
-//         return myData.push(agent);
-//     }
-
-//     globalThis.offsetopera = (items, distance, times = 0, axes = 'x', distance2, axes2, distance3, axes3) => {  // 偏移操作
-//         if(k.notSymOff) return 0;
-//         var orig_data = myData[items];
-//         var agent = {...orig_data};
-//         for (const axis of ["x", "y", "z"]) {
-//             if (axes === axis) {
-//                 agent[axis] -= distance * times;
-//             }
-//         }
-//         if(distance2) {
-//             for (const axis of ["x", "y", "z"]) {
-//                 if (axes2 === axis) {
-//                     agent[axis] -= distance2 * times;
-//                 }
-//             }
-//         }
-//         if(distance3) {
-//             for (const axis of ["x", "y", "z"]) {
-//                 if (axes3 === axis) {
-//                     agent[axis] -= distance3 * times;
-//                 }
-//             }
-//         }
-//         return myData.push(agent);
-//     }
-    
-//     globalThis.symo = (items, axes = {}) => {  // 对称数组内的物体
-//         const addInfo = [];
-//         for (const it of items) {
-//             if(it === -1) continue;
-//             if (Array.isArray(it)) {
-//                 for (let n = it[0]; n <= it[1]; n++) {
-//                     addInfo.push(symopera(n, axes) - 1); 
-//                 }
-//             } else {
-//                 addInfo.push(symopera(it, axes) - 1);
-//             }
-//         }
-//         return addInfo;
-//     }
-    
-//     globalThis.offset = (items, distance, times, axes, distance2, axes2, distance3, axes3) => {  // 偏移数组内的物体
-//         const addInfo = [];
-//         for (let index = 1; index < times; index++) {  // 偏移
-//             for (const it of items) {
-//                 if(it === -1) continue;
-//                 if (Array.isArray(it)) {
-//                     for (let n = it[0]; n <= it[1]; n++) {
-//                         addInfo.push(offsetopera(n, distance, index, axes, distance2, axes2, distance3, axes3) - 1);
-//                     }
-//                 } else {
-//                     addInfo.push(offsetopera(it, distance, index, axes, distance2, axes2, distance3, axes3) - 1);
-//                 }
-//             }
-//         }
-//         return addInfo;
-//     }
-// }
-

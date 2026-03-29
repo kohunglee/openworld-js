@@ -34,6 +34,7 @@ export default function(ccgxkObj) {
 
     window.addEventListener("keydown", e => {
         if (e.key === "Tab") {
+            return  // 暂时关闭
             e.preventDefault(); // 阻止 Tab 切换焦点的默认行为
             const isHidden = modal.classList.contains("zindex-1");
             if (isHidden) {
@@ -62,6 +63,29 @@ export default function(ccgxkObj) {
 
     $("goOPOS").addEventListener("click", () => teleportTo(7.6, 10, 16.5, 0));
     $("goHall").addEventListener("click", () => teleportTo(31, 10, -31, 90));
+
+
+    /**
+     * 紧急修复地面缺失 bug
+     */
+    $("fixError").addEventListener("click", () => {
+        // 1. 强制重置位置 (回到安全点)
+        k.mainVPlayer.body.position.set(0, 100, 0); 
+
+        // 2. 归零速度 (非常重要，否则下一帧继续炸)
+        k.mainVPlayer.body.velocity.set(0, 0, 0);
+        k.mainVPlayer.body.angularVelocity.set(0, 0, 0);
+        k.mainVPlayer.body.force.set(0, 0, 0);
+        k.mainVPlayer.body.torque.set(0, 0, 0);
+
+        // 3. 修复旋转
+        k.mainVPlayer.body.quaternion.set(0, 0, 0, 1);
+
+        // 4. 重新添加地面
+        const gX = 0, gY = -2.5, gZ = 0;
+        const gW = 2500, gD = 2500, gH = 6;
+        k.addPhy({ name:'ground-phy', X:gX, Y:gY, Z:gZ, width:gW, depth:gD, height:gH });  // 物理体
+    });
 }
 
 const htmlCode = `
@@ -116,6 +140,7 @@ const htmlCode = `
             <button id="goHall">到大厅</button>
             <button id="displayPadInPC">显示/隐藏 移动端控件</button>
             <button id="tabView">切换视角(V)</button>
+            <button id="fixError">修NaN</button>
         <hr>
     </div>
     
