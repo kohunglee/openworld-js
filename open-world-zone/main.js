@@ -35,8 +35,8 @@ normalevent(k);
 import tab from './plugins/tab/tab.js';  // tab 侧边框里的内容
 tab(k);
 
-import signboard from './plugins/signboard/signboard.js';  // 指示牌测试
-signboard(k);
+// import signboard from './plugins/signboard/signboard.js';  // 指示牌测试
+// signboard(k);
 
 // 添加地面
 const gX = 0, gY = -2.5, gZ = 0;

@@ -1,4 +1,5 @@
 import mydata from './data.js';
+import signTest from './signTest.js';
 
 
 const IS_FULL_STATE = 1; // 1: 完整发布状态, 0: 基础编辑状态
@@ -53,16 +54,7 @@ export default function(ccgxkObj) {
                 insts[i] = { "del": 1 };
             }
         });
-
-        ccgxkObj.dataProc.process({  //+ 显示 arrC 信息板
-            data: arrC,
-            name: 'build_lab_signBoard',
-            type: 2,
-            texture: paper02,
-            model: 'plane',
-            mixValue: 0.8,
-            invisible: false, noIns: true,  // 纹理专用
-        });
+        signTest(arrC, ccgxkObj);
     }
 
     k.visCubeLen = insts.length - 1;  //+ 建造器相关

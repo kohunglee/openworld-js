@@ -5,7 +5,6 @@
  */
 export default function(ccgxkObj, signFunc) {
     ccgxkObj.errExpRatio = 50;  // 调节绘制分辨率(以 100 为基准，越大越清晰)
-
     ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this){
         const index = drawItem.index;
         const id = drawItem.id;
