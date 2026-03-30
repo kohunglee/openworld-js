@@ -1,8 +1,8 @@
 /**
  * 文本画板 测试 模块
  */
-import signsData from './signsData.js';
-import CustomCanvasLib from './CustomCanvasLib.js';
+import signsData from './server/signsData.js';
+import CustomCanvasLib from './server/CustomCanvasLib.js';
 
 const THEME = {
     bgWhite: '#ffffff',
@@ -226,7 +226,6 @@ const setSignBoard = (instData, ccgxkObj) => {
     } catch(e) {
         console.log('[SSE] 连接失败（开发服务器未启动？）');
     }
-
 }
 
 // 入口
