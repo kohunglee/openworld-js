@@ -118,8 +118,7 @@ const drawSmartText = (ctx, width, height, text) => {
     }
 };
 
-// 入口
-export default function(instData, ccgxkObj) {
+const setSignBoard = (instData, ccgxkObj) => {
     ccgxkObj.errExpRatio = 200;
 
     // 挂载 HOOK
@@ -227,4 +226,10 @@ export default function(instData, ccgxkObj) {
     } catch(e) {
         console.log('[SSE] 连接失败（开发服务器未启动？）');
     }
+
+}
+
+// 入口
+export default function(ccgxkObj) {
+    ccgxkObj.signTest = setSignBoard;
 }

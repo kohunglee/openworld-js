@@ -26,6 +26,9 @@ import mvp from './plugins/mvp/mvp.js';  // 主角
 mvp(k);
 import symoffset from './plugins/symoffset/symoffset.js';  // 对称阵列工具
 symoffset(k);
+import signBoard_lab from './plugins/signboard_lab/signTest.js';  // 测试测试测试
+// k.signTest = signBoard_lab;
+signBoard_lab(k);
 import build_lab from './plugins/build_lab/build_lab.js';  // 建造器使用的容器
 build_lab(k);
 import somecube from './plugins/somecube/somecube.js';  // 几个实验块儿
@@ -37,6 +40,8 @@ tab(k);
 
 // import signboard from './plugins/signboard/signboard.js';  // 指示牌测试
 // signboard(k);
+
+
 
 // 添加地面
 const gX = 0, gY = -2.5, gZ = 0;
