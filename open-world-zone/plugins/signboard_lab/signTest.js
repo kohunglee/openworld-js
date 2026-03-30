@@ -4,7 +4,7 @@
 import signsData from './server/signsData.js';
 import CustomCanvasLib from './server/CustomCanvasLib.js';
 
-const THEME = {
+const THEME = {  // 主题
     bgWhite: '#ffffff',
     bgWarn: '#ff0000',
     textDark: '#2c3e50',
@@ -12,8 +12,7 @@ const THEME = {
     paddingRatio: 0.1 // 内边距占宽度的比例 (10%)
 };
 
-// 从 signsData.js 构建内容映射
-const signContentMap = new Map();
+const signContentMap = new Map();  //+ 从 signsData.js 提取数据
 signsData.boards.forEach(board => {
   if (board.mode === 'text') {
     signContentMap.set(board.id, { mode: 'text', t: board.content });
@@ -176,10 +175,6 @@ const setSignBoard = (instData, ccgxkObj) => {
                     }
                 }
             }
-
-
-
-            
             ccgxkObj.W.next['T' + index].hidden = false;
             _this.indexToArgs.get(index).isInvisible = false;
 
