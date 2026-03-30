@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>信息板管理 - build_lab</title>
+  <script src="css/tailwind.min.js"></script>
+</head>
+<body class="min-h-screen bg-gray-100 text-gray-800 py-10 px-4">
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-2xl font-bold text-center mb-2">信息板管理</h1>
+    <p class="text-center text-gray-500 text-sm mb-8">编辑 → 保存 → 刷新 3D 页面看效果</p>
+
+    <div id="boards" class="space-y-4">
+      <div class="bg-white rounded-xl p-10 text-center text-gray-400 shadow-sm border border-gray-200">
+        加载中...
+      </div>
+    </div>
+
+    <div class="flex justify-center gap-3 mt-8">
+      <button onclick="loadData()" class="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow transition hover:-translate-y-0.5 active:translate-y-0">
+        重新加载
+      </button>
+      <button onclick="saveData()" id="saveBtn" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow transition hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+        保存到文件
+      </button>
+    </div>
+
+    <div id="status" class="hidden mt-5 p-3 rounded-lg text-center text-sm"></div>
+
+    <div class="mt-8 p-4 bg-white rounded-lg border border-gray-200 text-center text-gray-500 text-sm">
+      <strong>使用说明：</strong><br>
+      1. 启动服务器：<code class="bg-gray-100 px-1.5 py-0.5 rounded text-amber-600">python3 server.py</code><br>
+      2. 编辑上面的内容，点击「保存到文件」<br>
+      3. 刷新 3D 页面即可看到更新
+    </div>
+  </div>
+
+  <script>
+    const API_URL = '/api/signs';
+    let boardsData = [];
+
+    async function loadData() {
+      showStatus('加载中...', 'bg-blue-50 text-blue-700 border border-blue-200');
+      try {
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error('请求失败');
+        const data = await res.json();
+        boardsData = data.boards || [];
+        render();
+        showStatus('数据加载成功', 'bg-green-50 text-green-700 border border-green-200');
+        setTimeout(() => hideStatus(), 2000);
+      } catch (e) {
+        showStatus('❌ 加载失败: ' + e.message, 'bg-red-50 text-red-700 border border-red-200');
+      }
+    }
+
+    function render() {
+      const container = document.getElementById('boards');
+      if (boardsData.length === 0) {
+        container.innerHTML = '<div class="bg-white rounded-xl p-6 text-gray-400 shadow-sm border border-gray-200">暂无数据</div>';
+        return;
+      }
+      container.innerHTML = boardsData.map((board, i) => {
+        const mode = board.mode || 'text';
+        const modeLabel = mode === 'text' ? '文字' : '图片';
+        const modeClass = mode === 'text' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700';
+
+        let editorHtml = '';
+        if (mode === 'text') {
+          editorHtml = `
+            <textarea
+              class="w-full min-h-[100px] p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-800 resize-y focus:outline-none focus:border-blue-400 focus:bg-white transition"
+              oninput="updateBoard(${i}, this.value)"
+              placeholder="输入文字内容..."
+            >${escapeHtml(board.content || '')}</textarea>
+          `;
+        } else if (mode === 'image') {
+          editorHtml = `
+            <div class="flex gap-3">
+              <input
+                type="text"
+                class="flex-1 p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-800 text-sm focus:outline-none focus:border-blue-400 focus:bg-white transition"
+                value="${escapeHtml(board.content || '')}"
+                oninput="updateBoard(${i}, this.value); this.nextElementSibling.src = this.value"
+                placeholder="输入图片URL..."
+              />
+              <img
+                class="w-[120px] h-[80px] rounded-lg bg-gray-200 object-cover border border-gray-200"
+                src="${escapeHtml(board.content || '')}"
+                onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 80%22><text x=%2260%22 y=%2245%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2212%22>预览失败</text></svg>'"
+              />
+            </div>
+          `;
+        }
+
+        return `
+          <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
+            <label class="block mb-3 font-semibold text-blue-600">
+              ${board.name || board.id}
+              <span class="font-normal text-gray-400">(${board.id})</span>
+              <span class="ml-2 px-2 py-0.5 rounded text-xs font-medium ${modeClass}">${modeLabel}</span>
+            </label>
+            ${editorHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateBoard(index, value) {
+      boardsData[index].content = value;
+    }
+
+    async function saveData() {
+      const btn = document.getElementById('saveBtn');
+      btn.disabled = true;
+      btn.textContent = '保存中...';
+
+      try {
+        const payload = { version: 1, boards: boardsData };
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error('保存失败');
+        const result = await res.json();
+        showStatus('OK ' + result.message + ' — 现在去刷新 3D 页面吧！', 'bg-green-50 text-green-700 border border-green-200');
+      } catch (e) {
+        showStatus('保存失败: ' + e.message, 'bg-red-50 text-red-700 border border-red-200');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '💾 保存到文件';
+      }
+    }
+
+    function showStatus(msg, classes) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = 'mt-5 p-3 rounded-lg text-center text-sm ' + classes;
+    }
+
+    function hideStatus() {
+      document.getElementById('status').className = 'hidden mt-5 p-3 rounded-lg text-center text-sm';
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    loadData();
+  </script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 /**
- * 文本画板 测试 模块 
+ * 文本画板 测试 模块
  */
-
+import signsData from './signsData.js';
 
 const THEME = {
     bgWhite: '#ffffff',
@@ -11,19 +11,17 @@ const THEME = {
     paddingRatio: 0.1 // 内边距占宽度的比例 (10%)
 };
 
-const signContentMap = new Map([
-  // 模式1：自适应文字
-  ['testSign1', { mode: 'text', t: '野狗不需要墓碑，奔跑到腐烂即可。' }],
-  ['testSign2', { mode: 'text', t: '这是一段测试文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口。' }],
-  ['nouse', { mode: 'text', t: '欢迎来到数字禅修空间。在这里，你可以慢慢逛，慢生活。' }],
-  
-  // 模式2：自定义 Canvas 程序 (指定具体的绘图函数名)
-  ['testSign3', { mode: 'canvas', drawName: 'drawCircle' }],
-  ['testSign5', { mode: 'canvas', drawName: 'drawCross' }],
-  
-  // 模式3：纯图片 (建议用支持跨域的图床或者本地相对路径)
-  ['testSign4', { mode: 'image', imgUrl: 'https://i.mji.rip/2026/03/29/922312a08e4c5b2ada1d53a700e06d04.jpeg' }] 
-]);
+// 从 signsData.js 构建内容映射
+const signContentMap = new Map();
+signsData.boards.forEach(board => {
+  if (board.mode === 'text') {
+    signContentMap.set(board.id, { mode: 'text', t: board.content });
+  } else if (board.mode === 'image') {
+    signContentMap.set(board.id, { mode: 'image', imgUrl: board.content });
+  } else if (board.mode === 'canvas') {
+    signContentMap.set(board.id, { mode: 'canvas', drawName: board.content });
+  }
+});
 
 // 渲染器
 const drawSmartText = (ctx, width, height, text) => {  
