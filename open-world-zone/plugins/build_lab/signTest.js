@@ -24,6 +24,37 @@ signsData.boards.forEach(board => {
   }
 });
 
+// 支持【热更新纹理】的业务逻辑
+let _ccgxkObj = null;  // 待引用
+let _textureModule = null;  // 待引用的 hook 里的 _this
+const signIndexMap = new Map();  // 将 id 和 标识牌 id 对应起来
+window.updateSign = function(boardId, content, mode = 'text') {  // 临时全局 updateSign 函数用作测试
+    const info = signIndexMap.get(boardId);
+    if (!info) { console.error(`[updateSign] 找不到标识牌: ${boardId}`); return; }
+    if (!_textureModule) { console.error('[updateSign] 引擎未就绪'); return; }
+
+    const { index } = info;
+    const nID = 'T' + index;
+
+    if (mode === 'text') {  //+ 更新各种数据源
+        signContentMap.set(boardId, { mode: 'text', t: content });
+    } else if (mode === 'image') {
+        signContentMap.set(boardId, { mode: 'image', imgUrl: content });
+    } else if (mode === 'canvas') {
+        signContentMap.set(boardId, { mode: 'canvas', drawName: content });
+    }
+
+    _textureModule.textureMap.delete(boardId); //+ 清纹理缓存
+    window[nID] = undefined;
+
+    
+    _ccgxkObj.W.plane({ n: nID, t: boardId }); //+ 触发重绘
+    _ccgxkObj.indexToArgs.get(index).texture = boardId;
+    _ccgxkObj.currentlyActiveIndices.delete(index);
+
+    console.log(`[updateSign] ✅ ${boardId} 已更新`);
+};
+
 // 渲染器
 const drawSmartText = (ctx, width, height, text) => {  
 
@@ -82,7 +113,12 @@ export default function(instData, ccgxkObj) {
     // 挂载 HOOK
     ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this) {
         const { index, id } = drawItem;
-        console.log(index, id, drawItem.t);
+
+        // 保存引擎引用（首次触发时）
+        if (!_ccgxkObj) { _ccgxkObj = ccgxkObj };
+        if (!_textureModule) { _textureModule = _this };
+        signIndexMap.set(id, { index });
+
         const textInfo = signContentMap.get(id);
         if (textInfo) {
             
@@ -101,39 +137,26 @@ export default function(instData, ccgxkObj) {
             }
 
             if (type === 'image') {
-                // 1. 同步阶段：给画布画个 Loading，让引擎立刻拿到一个占位纹理，防止黑屏报错
                 drawSmartText(ctx, width, height, 'Loading...');
-
-                // 2. 给这张图生成一个独一无二的新 ID，防止引擎复用之前的 ctx 缓存
                 const uniqueImgId = 'dyn_img_' + index + '_' + id;
-
-                // 检查页面里是不是已经建过这个标签了（防止多面板加载同一张图时重复创建 DOM）
                 let imgEl = document.getElementById(uniqueImgId);
-                
                 if (!imgEl) {
-                    // 动态创建 <img> 标签并挂载到网页上
                     imgEl = document.createElement('img');
                     imgEl.id = uniqueImgId;
                     imgEl.crossOrigin = 'anonymous'; // 保持跨域
                     imgEl.style.display = 'none';    // 隐藏起来，别让用户在网页上看到
                     document.body.appendChild(imgEl); // 【关键】必须挂载到 DOM，引擎才能通过 ID 找到它
-                    
                     imgEl.onload = () => {
-                        // 原图加载完成后，传入这个全新的 DOM ID 更新面板
-                        console.log('idx: ' + index);
                         ccgxkObj.W.plane({
                             n: 'T' + index,
                             t: imgEl  // 直接传入 DOM 元素的 ID
                         });
                     };
-                    
                     imgEl.onerror = () => {
                         console.error("图片加载失败:", textInfo.imgUrl);
                     };
-                    
                     imgEl.src = textInfo.imgUrl;
                 } else {
-                    // 如果 DOM 已经存在，且图片已经加载完毕，直接用
                     if (imgEl.complete) {
                         ccgxkObj.W.plane({
                             n: 'T' + index,
