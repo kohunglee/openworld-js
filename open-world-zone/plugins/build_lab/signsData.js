@@ -15,7 +15,7 @@ export default {
       "id": "testSign2",
       "name": "右侧墙面",
       "mode": "text",
-      "content": "这是一文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口啊啊啊。"
+      "content": "这是一文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口666。"
     },
     {
       "id": "nouse",
@@ -39,7 +39,7 @@ export default {
       "id": "testSign4",
       "name": "装饰画",
       "mode": "image",
-      "content": "https://hmy.rawlab.win/logo.png"
+      "content": "https://i.mji.rip/2026/03/29/922312a08e4c5b2ada1d53a700e06d04.jpeg"
     }
   ]
 };

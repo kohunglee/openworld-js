@@ -36,10 +36,12 @@ window.updateSign = function(boardId, content, mode = 'text') {  // 临时全局
     const { index } = info;
     const nID = 'T' + index;
 
+    const random = (Math.random() * 1e7) | 0;
+
     if (mode === 'text') {  //+ 更新各种数据源
         signContentMap.set(boardId, { mode: 'text', t: content });
     } else if (mode === 'image') {
-        signContentMap.set(boardId, { mode: 'image', imgUrl: content });
+        signContentMap.set(boardId + random, { mode: 'image', imgUrl: content });
     } else if (mode === 'canvas') {
         signContentMap.set(boardId, { mode: 'canvas', drawName: content });
     }
@@ -53,8 +55,13 @@ window.updateSign = function(boardId, content, mode = 'text') {  // 临时全局
         document.getElementById(uniqueImgId)?.remove();
     }
 
-    _ccgxkObj.W.plane({ n: nID, t: boardId }); //+ 触发重绘
-    _ccgxkObj.indexToArgs.get(index).texture = boardId;
+    _ccgxkObj.W.plane({ n: nID, t: boardId + random }); //+ 触发重绘
+    if (mode === 'image') {
+        _ccgxkObj.indexToArgs.get(index).texture = boardId + random;
+    } else {
+        _ccgxkObj.indexToArgs.get(index).texture = boardId;
+    }
+    console.log(boardId);
     _ccgxkObj.currentlyActiveIndices.delete(index);
 
     console.log(`[updateSign] ✅ ${boardId} 已更新`);
