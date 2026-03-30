@@ -24,7 +24,9 @@ export default function(ccgxkObj) {
         ['textureGetCubeData'].forEach(id => document.getElementById(id)?.remove());  // 防止误点
         const symer = new ccgxkObj.SymOffset(insts, ccgxkObj);  // 初始化对称工具
 
-        insts.forEach(item => item.b = COLORS.BASE);  //+ 涂装颜色
+        insts.forEach(item => { //+ 涂装颜色
+            if (!item.b) item.b = COLORS.BASE;
+        });
         INDICES.floor.forEach(i => insts[i] && (insts[i].b = COLORS.FLOOR));
         INDICES.decorations.forEach(i => insts[i] && (insts[i].b = COLORS.DECO));
 
