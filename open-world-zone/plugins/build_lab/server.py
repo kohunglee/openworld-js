@@ -9,6 +9,8 @@ import http.server
 import json
 import os
 import re
+import time
+import threading
 import urllib.parse
 from pathlib import Path
 
@@ -16,6 +18,27 @@ PORT = 8899
 BASE_DIR = Path(__file__).parent
 SIGNS_FILE = BASE_DIR / "signsData.js"
 CANVAS_LIB_FILE = BASE_DIR / "CustomCanvasLib.js"
+
+# SSE 客户端列表
+sse_clients = []
+sse_lock = threading.Lock()
+
+
+def broadcast_sse(data):
+    """向所有 SSE 客户端广播数据"""
+    msg = f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
+    with sse_lock:
+        disconnected = []
+        for client in sse_clients:
+            try:
+                client.wfile.write(msg.encode("utf-8"))
+                client.wfile.flush()
+            except:
+                disconnected.append(client)
+        for c in disconnected:
+            sse_clients.remove(c)
+    if sse_clients:
+        print(f"📢 SSE 广播给 {len(sse_clients)} 个客户端")
 
 
 class BuildLabHandler(http.server.SimpleHTTPRequestHandler):
@@ -25,6 +48,8 @@ class BuildLabHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/api/signs":
             self.handle_get_signs()
+        elif self.path == "/api/signs/stream":
+            self.handle_sse_stream()
         elif self.path == "/api/canvas-lib":
             self.handle_get_canvas_lib()
         else:
@@ -91,8 +116,39 @@ export default """
             print(f"✅ 已保存到 {SIGNS_FILE}")
 
             self.send_json({"success": True, "message": "保存成功"})
+
+            # 广播给所有 SSE 客户端
+            broadcast_sse(data)
         except Exception as e:
             self.send_error(500, str(e))
+
+    def handle_sse_stream(self):
+        """SSE 端点：实时推送标识牌变更"""
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream")
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Connection", "keep-alive")
+        self.end_headers()
+
+        self.wfile.write(b": connected\n\n")
+        self.wfile.flush()
+
+        sse_clients.append(self)
+        print(f"🔗 SSE 客户端已连接 (当前 {len(sse_clients)} 个)")
+
+        # 心跳保活，断开时自动清理
+        try:
+            while True:
+                time.sleep(15)
+                self.wfile.write(b": heartbeat\n\n")
+                self.wfile.flush()
+        except:
+            pass
+        finally:
+            if self in sse_clients:
+                sse_clients.remove(self)
+            print(f"🔌 SSE 客户端已断开 (当前 {len(sse_clients)} 个)")
 
     def send_json(self, data):
         self.send_response(200)
@@ -310,6 +366,7 @@ if __name__ == "__main__":
 ║   build_lab 本地开发服务器                 ║
 ╠════════════════════════════════════════════╣
 ║   管理页面: http://localhost:{PORT}/admin.html     ║
+║   SSE:      http://localhost:{PORT}/api/signs/stream ║
 ║   API:                                    ║
 ║     GET/POST  /api/signs                  ║
 ║     GET/POST  /api/canvas-lib             ║
@@ -318,7 +375,7 @@ if __name__ == "__main__":
 ║   按 Ctrl+C 停止服务器                      ║
 ╚════════════════════════════════════════════╝
 """)
-    server = http.server.HTTPServer(("", PORT), BuildLabHandler)
+    server = http.server.ThreadingHTTPServer(("", PORT), BuildLabHandler)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

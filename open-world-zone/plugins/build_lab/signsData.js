@@ -9,13 +9,13 @@ export default {
       "id": "testSign1",
       "name": "左侧墙面",
       "mode": "text",
-      "content": "野狗不需要墓碑，奔跑到腐烂即可。啊啊啊！"
+      "content": "野狗不需要墓碑，奔跑到腐烂即可。啊啊啊！333789"
     },
     {
       "id": "testSign2",
       "name": "右侧墙面",
       "mode": "text",
-      "content": "这是一段测试文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口啊啊啊。"
+      "content": "这是一文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口啊啊啊。"
     },
     {
       "id": "nouse",
@@ -27,7 +27,7 @@ export default {
       "id": "testSign3",
       "name": "装饰圆",
       "mode": "canvas",
-      "content": "japanxx"
+      "content": "drawCross"
     },
     {
       "id": "testSign5",

@@ -188,4 +188,23 @@ export default function(instData, ccgxkObj) {
         invisible: false,  // 必须可见
         noIns: true,       // 使用独立纹理，不走实例化渲染
     });
+
+    // SSE 监听：admin 保存时自动热更新
+    try {
+        const es = new EventSource('http://localhost:8899/api/signs/stream');
+        es.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            if (data.boards) {
+                data.boards.forEach(board => {
+                    if (signIndexMap.has(board.id)) {
+                        window.updateSign(board.id, board.content, board.mode);
+                    }
+                });
+            }
+        };
+        es.onerror = () => console.log('[SSE] 连接断开，自动重连中...');
+        console.log('[SSE] 已连接 http://localhost:8899');
+    } catch(e) {
+        console.log('[SSE] 连接失败（开发服务器未启动？）');
+    }
 }
