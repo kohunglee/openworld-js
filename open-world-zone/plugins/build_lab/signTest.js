@@ -47,7 +47,12 @@ window.updateSign = function(boardId, content, mode = 'text') {  // 临时全局
     _textureModule.textureMap.delete(boardId); //+ 清纹理缓存
     window[nID] = undefined;
 
-    
+    // image 模式：移除旧 img DOM，让 hook 重建新的
+    if (mode === 'image') {
+        const uniqueImgId = 'dyn_img_' + index + '_' + boardId;
+        document.getElementById(uniqueImgId)?.remove();
+    }
+
     _ccgxkObj.W.plane({ n: nID, t: boardId }); //+ 触发重绘
     _ccgxkObj.indexToArgs.get(index).texture = boardId;
     _ccgxkObj.currentlyActiveIndices.delete(index);
@@ -196,7 +201,15 @@ export default function(instData, ccgxkObj) {
             const data = JSON.parse(e.data);
             if (data.boards) {
                 data.boards.forEach(board => {
-                    if (signIndexMap.has(board.id)) {
+                    if (!signIndexMap.has(board.id)) return;
+                    const cur = signContentMap.get(board.id);
+                    if (!cur) return;
+                    // 只更新内容真正变化的
+                    const changed = cur.mode !== board.mode
+                        || (board.mode === 'text' && cur.t !== board.content)
+                        || (board.mode === 'image' && cur.imgUrl !== board.content)
+                        || (board.mode === 'canvas' && cur.drawName !== board.content);
+                    if (changed) {
                         window.updateSign(board.id, board.content, board.mode);
                     }
                 });

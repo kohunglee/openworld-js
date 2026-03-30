@@ -9,7 +9,7 @@ export default {
       "id": "testSign1",
       "name": "左侧墙面",
       "mode": "text",
-      "content": "野狗不需要墓碑，奔跑到腐烂即可。啊啊啊！333789"
+      "content": "野狗不需要墓碑，奔跑到腐烂即可。啊啊啊！123"
     },
     {
       "id": "testSign2",
@@ -27,19 +27,19 @@ export default {
       "id": "testSign3",
       "name": "装饰圆",
       "mode": "canvas",
-      "content": "drawCross"
+      "content": "japanxx"
     },
     {
       "id": "testSign5",
       "name": "装饰叉",
       "mode": "canvas",
-      "content": "drawCircle"
+      "content": "japanxx"
     },
     {
       "id": "testSign4",
       "name": "装饰画",
       "mode": "image",
-      "content": "https://i.mji.rip/2026/03/29/922312a08e4c5b2ada1d53a700e06d04.jpeg"
+      "content": "https://hmy.rawlab.win/logo.png"
     }
   ]
 };
