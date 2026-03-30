@@ -3,3 +3,4 @@
 /test-tool-ignor-please-dont-delete
 /hugo
 .vscode
+/__pycache__

@@ -1,6 +1,4 @@
 import mydata from './data.js';
-// import signTest from './signTest.js';
-
 
 const IS_FULL_STATE = 1; // 1: 完整发布状态, 0: 基础编辑状态
 
@@ -58,8 +56,6 @@ export default function(ccgxkObj) {
                 insts[i] = { "del": 1 };
             }
         });
-        // console.log(arrC);
-        // signTest(arrC, ccgxkObj);
         ccgxkObj.signTest(arrC, ccgxkObj);
     }
 
