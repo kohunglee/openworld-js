@@ -2,6 +2,7 @@
  * 文本画板 测试 模块
  */
 import signsData from './signsData.js';
+import CustomCanvasLib from './CustomCanvasLib.js';
 
 const THEME = {
     bgWhite: '#ffffff',
@@ -72,25 +73,6 @@ const drawSmartText = (ctx, width, height, text) => {
         ctx.fillText(line, width / 2, startY);
         startY += lineHeight;
     }
-};
-
-const CustomCanvasLib = { // 几个 canvas 示例
-  
-  drawCircle: (ctx, w, h) => { // 画一个红色的居中圆
-    ctx.fillStyle = '#b9e73c'; // 红色
-    ctx.beginPath();
-    ctx.arc(w / 2, h / 2, Math.min(w, h) * 0.3, 0, Math.PI * 2);
-    ctx.fill();
-  },
-  
-  drawCross: (ctx, w, h) => { // 画一个蓝色的叉叉
-    ctx.strokeStyle = '#3498db'; // 蓝色
-    ctx.lineWidth = 10;
-    ctx.beginPath();
-    ctx.moveTo(w * 0.2, h * 0.2); ctx.lineTo(w * 0.8, h * 0.8);
-    ctx.moveTo(w * 0.8, h * 0.2); ctx.lineTo(w * 0.2, h * 0.8);
-    ctx.stroke();
-  }
 };
 
 // 入口

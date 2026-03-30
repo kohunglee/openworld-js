@@ -15,7 +15,7 @@ export default {
       "id": "testSign2",
       "name": "右侧墙面",
       "mode": "text",
-      "content": "这是一段测试文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口。"
+      "content": "这是一段测试文本。三维空间适合做长期结构化知识的栖息地，而不是每一条碎片笔记的唯一入口啊啊啊。"
     },
     {
       "id": "nouse",
@@ -27,13 +27,13 @@ export default {
       "id": "testSign3",
       "name": "装饰圆",
       "mode": "canvas",
-      "content": "drawCircle"
+      "content": "japanxx"
     },
     {
       "id": "testSign5",
       "name": "装饰叉",
       "mode": "canvas",
-      "content": "drawCross"
+      "content": "drawCircle"
     },
     {
       "id": "testSign4",
