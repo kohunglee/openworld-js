@@ -4,5 +4,9 @@
   "type": "module",
   "scripts": {
     "start": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.8.0",
+    "sql.js": "^1.12.0"
   }
 }
