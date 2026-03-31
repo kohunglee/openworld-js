@@ -4,3 +4,5 @@ node_modules
 /hugo
 .vscode
 /__pycache__
+signboard.db-wal
+signboard.db-shm
