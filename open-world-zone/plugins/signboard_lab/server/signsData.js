@@ -15,7 +15,7 @@ export default {
       "id": "testSign2",
       "name": "右侧墙面",
       "mode": "text",
-      "content": "床前明月光疑是地上霜"
+      "content": "床前明月光疑是地上霜，举狗望狗月，低狗"
     },
     {
       "id": "nouse",
@@ -27,19 +27,19 @@ export default {
       "id": "testSign3",
       "name": "装饰圆",
       "mode": "canvas",
-      "content": "japanxx"
+      "content": "drawCross"
     },
     {
       "id": "testSign5",
       "name": "装饰叉",
       "mode": "canvas",
-      "content": "japanxx"
+      "content": "drawCircle"
     },
     {
       "id": "testSign4",
       "name": "装饰画",
       "mode": "image",
-      "content": "https://picx.zhimg.com/50/v2-1bba3df5b8b7a10af4d32b4125acdcba.jpg"
+      "content": "https://picx.zhimg.com/v2-366b88d294fe2d8151d8bfa409e5f4d5.jpg"
     }
   ]
 };

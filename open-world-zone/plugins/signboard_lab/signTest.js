@@ -169,9 +169,6 @@ const setSignBoard = (instData, ccgxkObj) => {
             _this.indexToArgs.get(index).isInvisible = false;
 
         } else {
-            // ctx.fillStyle = THEME.bgWarn; // 未命中，绘制红色警告块
-            // ctx.fillRect(0, 0, width, height);
-            
             drawSmartText(ctx, width, height, '本画框编号' + id);  // 执行智能排版绘制
         }
     });
