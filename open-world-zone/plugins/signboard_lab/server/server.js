@@ -1,71 +1,42 @@
 #!/usr/bin/env node
 /**
- * signboard_lab 本地开发服务器 (Node.js 版)
+ * signboard_lab 纯 API 服务器 (Node.js 版)
  * 用法: node server.js
- * 然后访问: http://localhost:8899/admin.html
  *
- * 零 npm 依赖，纯 Node.js 原生模块
+ * 注意：静态文件由主项目的 HTTP 服务器提供
+ * admin.html 访问地址: http://localhost:8089/plugins/signboard_lab/server/admin.html
  */
 
 import http from 'http';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 import { handleGetSigns, handleSaveSigns } from './api/signs.js';
 import { handleGetCanvasLib, handleSaveCanvasLib, handleAddCanvasFunc, handleDeleteCanvasFunc } from './api/canvas.js';
 import { handleSseStream } from './sse.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = 8899;
 
-// ── 静态文件 MIME 类型 ──
-
-const MIME_TYPES = {
-    '.html': 'text/html; charset=utf-8',
-    '.js':   'application/javascript; charset=utf-8',
-    '.mjs':  'application/javascript; charset=utf-8',
-    '.css':  'text/css; charset=utf-8',
-    '.json': 'application/json; charset=utf-8',
-    '.png':  'image/png',
-    '.jpg':  'image/jpeg',
-    '.gif':  'image/gif',
-    '.svg':  'image/svg+xml',
-    '.ico':  'image/x-icon',
-};
-
-function serveStatic(urlPath, res) {
-    const filePath = path.join(__dirname, urlPath === '/' ? '/admin.html' : urlPath);
-
-    // 防止路径穿越
-    if (!filePath.startsWith(__dirname)) {
-        res.writeHead(403);
-        res.end('Forbidden');
-        return;
-    }
-
-    const ext = path.extname(filePath);
-    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-
-    fs.readFile(filePath, (err, data) => {
-        if (err) {
-            res.writeHead(404);
-            res.end('Not Found');
-        } else {
-            res.writeHead(200, { 'Content-Type': contentType });
-            res.end(data);
-        }
+// CORS 预检响应
+function handlePreflight(req, res) {
+    res.writeHead(204, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Max-Age': '86400',
     });
+    res.end();
 }
-
-// ── 路由分发 ──
 
 const server = http.createServer((req, res) => {
     const url = new URL(req.url, `http://localhost:${PORT}`);
     const { pathname } = url;
     const method = req.method;
 
-    // API 路由
+    // CORS 预检请求（浏览器发 POST 前会先发 OPTIONS）
+    if (method === 'OPTIONS') {
+        return handlePreflight(req, res);
+    }
+
+    // 只处理 API 路由
     if (method === 'GET' && pathname === '/api/signs') {
         console.log(`📡 GET /api/signs`);
         handleGetSigns(req, res);
@@ -88,22 +59,24 @@ const server = http.createServer((req, res) => {
         console.log(`📡 DELETE /api/canvas-lib/${funcName}`);
         handleDeleteCanvasFunc(req, res, decodeURIComponent(funcName));
     } else {
-        // 静态文件
-        serveStatic(pathname, res);
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Not Found' }));
     }
 });
-
-// ── 启动 ──
 
 server.listen(PORT, () => {
     console.log(`
 ╔════════════════════════════════════════════╗
-║   signboard_lab 开发服务器 (Node.js)       ║
+║   signboard_lab 纯 API 服务器 (Node.js)     ║
 ╠════════════════════════════════════════════╣
-║   管理页面: http://localhost:${PORT}/admin.html     ║
-║   SSE:      http://localhost:${PORT}/api/signs/stream ║
-║   API:                                    ║
+║   API 地址: http://localhost:${PORT}              ║
+║   管理页面: 由主项目 HTTP 服务器提供         ║
+║     → http://localhost:8089/plugins/       ║
+║       signboard_lab/server/admin.html      ║
+║                                          ║
+║   API 端点:                               ║
 ║     GET/POST  /api/signs                  ║
+║     GET       /api/signs/stream (SSE)     ║
 ║     GET/POST  /api/canvas-lib             ║
 ║     POST      /api/canvas-lib/add         ║
 ║     DELETE    /api/canvas-lib/<name>      ║

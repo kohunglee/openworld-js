@@ -9,7 +9,7 @@ export default {
       "id": "testSign1",
       "name": "左侧墙面",
       "mode": "text",
-      "content": "野狗不需要墓碑，奔跑到腐烂即可"
+      "content": "野狗不需要墓碑，奔跑到腐烂即可！"
     },
     {
       "id": "testSign2",

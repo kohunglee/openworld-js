@@ -1,5 +1,7 @@
-const API_SIGNS = '/api/signs';
-const API_CANVAS = '/api/canvas-lib';
+// API 服务器地址（Node.js 独立 API 服务）
+const API_BASE = 'http://localhost:8899';
+const API_SIGNS = API_BASE + '/api/signs';
+const API_CANVAS = API_BASE + '/api/canvas-lib';
 let boardsData = [];
 let canvasFuncs = {};
 let selectedFunc = null;
