@@ -4,7 +4,7 @@
  */
 
 import { THEME } from './config.js';
-import CustomCanvasLib from './server/CustomCanvasLib.js';
+import { getCanvasFunction } from './store.js';
 
 /**
  * 智能文本渲染器
@@ -65,13 +65,26 @@ export function drawSmartText(ctx, width, height, text) {
 }
 
 /**
- * Canvas 模式渲染器
+ * Canvas 自定义函数 渲染器
+ * 从 store 获取编译后的函数并执行
  */
 export function drawCanvasMode(ctx, width, height, drawName) {
     ctx.fillStyle = THEME.bgWhite;
     ctx.fillRect(0, 0, width, height);
-    const drawFunc = CustomCanvasLib[drawName];
+
+    const drawFunc = getCanvasFunction(drawName);
     if (drawFunc) {
-        drawFunc(ctx, width, height);
+        try {
+            drawFunc(ctx, width, height);
+        } catch (e) {
+            console.error(`[Renderer] 函数 ${drawName} 执行失败:`, e);
+        }
+    } else {
+        // 函数不存在，显示占位符
+        ctx.fillStyle = THEME.textDark;
+        ctx.font = `14px ${THEME.fontFamily}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`函数 "${drawName}" 不存在`, width / 2, height / 2);
     }
 }
