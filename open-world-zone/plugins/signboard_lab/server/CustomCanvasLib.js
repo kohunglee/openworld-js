@@ -24,7 +24,7 @@ ctx.beginPath();
 ctx.arc(w / 2, h / 2, Math.min(w, h) * 0.3, 0, Math.PI * 2);
 ctx.fill();
   },
-          japanxx: (ctx, w, h) => {
+            japanxx: (ctx, w, h) => {
 ctx.fillStyle = '#fff'; // 背景色
 ctx.fillRect(0, 0, w, h);
 ctx.strokeStyle = '#1e3a8a'; // 波浪颜色 (Tailwind blue-900)
