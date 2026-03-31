@@ -21,7 +21,6 @@ function parseCanvasLib() {
     const content = fs.readFileSync(CANVAS_LIB_FILE, 'utf-8');
     const match = content.trim().match(/export\s+default\s*(\{[\s\S]*\});?\s*$/);
     if (!match) throw new Error('无法解析 CustomCanvasLib.js');
-
     const objStr = match[1];
     const funcs = {};
     const pattern = /(\w+)\s*:\s*(?:function\s*)?\([^)]*\)\s*=>?\s*\{/g;
@@ -59,7 +58,6 @@ function findFuncRange(content, funcName) {
 }
 
 // ── GET /api/canvas-lib ──
-
 export function handleGetCanvasLib(req, res) {
     try {
         const funcs = parseCanvasLib();
@@ -71,7 +69,6 @@ export function handleGetCanvasLib(req, res) {
 }
 
 // ── POST /api/canvas-lib （更新函数）──
-
 export function handleSaveCanvasLib(req, res) {
     readBody(req, body => {
         try {
@@ -105,7 +102,6 @@ export function handleSaveCanvasLib(req, res) {
 }
 
 // ── POST /api/canvas-lib/add （新增函数）──
-
 export function handleAddCanvasFunc(req, res) {
     readBody(req, body => {
         try {
@@ -153,7 +149,6 @@ export function handleAddCanvasFunc(req, res) {
 }
 
 // ── DELETE /api/canvas-lib/<name> （删除函数）──
-
 export function handleDeleteCanvasFunc(req, res, funcName) {
     try {
         if (!funcName) {
