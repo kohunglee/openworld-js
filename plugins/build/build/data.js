@@ -58,8 +58,7 @@ export default function(ccgxkObj) {
                     if ((i - rangeA) % 5 === 0) {
                         lines.push(`\n\n/* ——— ${i} ——— */`);  // 构建带注释的 JSON 文本
                     }
-                    const isLast = (i === rangeB - 1);
-                    lines.push('  ' + JSON.stringify(cubeDATA[i]) + (isLast ? '' : ','));
+                    lines.push('  ' + JSON.stringify(cubeDATA[i]) + ',');
                 }
                 lines.push('\n\n]');
                 const textContent = lines.join('\n');

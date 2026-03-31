@@ -31,12 +31,9 @@ window.updateSign = function(boardId, content, mode = 'text') {  // 临时全局
     const info = signIndexMap.get(boardId);
     if (!info) { console.error(`[updateSign] 找不到标识牌: ${boardId}`); return; }
     if (!_textureModule) { console.error('[updateSign] 引擎未就绪'); return; }
-
     const { index } = info;
     const nID = 'T' + index;
-
     const random = (Math.random() * 1e7) | 0;
-
     if (mode === 'text') {  //+ 更新各种数据源
         signContentMap.set(boardId, { mode: 'text', t: content });
     } else if (mode === 'image') {
@@ -44,16 +41,12 @@ window.updateSign = function(boardId, content, mode = 'text') {  // 临时全局
     } else if (mode === 'canvas') {
         signContentMap.set(boardId, { mode: 'canvas', drawName: content });
     }
-
     _textureModule.textureMap.delete(boardId); //+ 清纹理缓存
     window[nID] = undefined;
-
-    // image 模式：移除旧 img DOM，让 hook 重建新的
-    if (mode === 'image') {
+    if (mode === 'image') { // image 模式：移除旧 img DOM，让 hook 重建新的
         const uniqueImgId = 'dyn_img_' + index + '_' + boardId;
         document.getElementById(uniqueImgId)?.remove();
     }
-
     _ccgxkObj.W.plane({ n: nID, t: boardId + random }); //+ 触发重绘
     if (mode === 'image') {
         _ccgxkObj.indexToArgs.get(index).texture = boardId + random;
@@ -62,7 +55,6 @@ window.updateSign = function(boardId, content, mode = 'text') {  // 临时全局
     }
     console.log(boardId);
     _ccgxkObj.currentlyActiveIndices.delete(index);
-
     console.log(`[updateSign] ✅ ${boardId} 已更新`);
 };
 
@@ -87,12 +79,10 @@ const drawSmartText = (ctx, width, height, text) => {
         ctx.font = `600 ${fontSize}px ${THEME.fontFamily}`;
         lines = [];
         let currentLine = '';
-
         for (let i = 0; i < text.length; i++) { // 逐字测量，实现精准换行
             const char = text[i];
             const testLine = currentLine + char;
             const metrics = ctx.measureText(testLine);
-            
             if (metrics.width > maxWidth && i > 0) {
                 lines.push(currentLine);
                 currentLine = char;
@@ -108,7 +98,6 @@ const drawSmartText = (ctx, width, height, text) => {
             isFit = true; // 找到了合适的尺寸
         }
     }
-
     const totalTextHeight = lines.length * lineHeight; //+ 执行最终绘制 (垂直居中)
     let startY = (height - totalTextHeight) / 2 + (lineHeight / 2);
     for (const line of lines) {
@@ -163,6 +152,7 @@ const setSignBoard = (instData, ccgxkObj) => {
                         });
                     };
                     imgEl.onerror = () => {
+                        drawSmartText(ctx, width, height, 'img error');  // 执行智能排版绘制
                         console.error("图片加载失败:", textInfo.imgUrl);
                     };
                     imgEl.src = textInfo.imgUrl;
@@ -179,8 +169,10 @@ const setSignBoard = (instData, ccgxkObj) => {
             _this.indexToArgs.get(index).isInvisible = false;
 
         } else {
-            ctx.fillStyle = THEME.bgWarn; // 未命中，绘制红色警告块
-            ctx.fillRect(0, 0, width, height);
+            // ctx.fillStyle = THEME.bgWarn; // 未命中，绘制红色警告块
+            // ctx.fillRect(0, 0, width, height);
+            
+            drawSmartText(ctx, width, height, '本画框编号' + id);  // 执行智能排版绘制
         }
     });
 
