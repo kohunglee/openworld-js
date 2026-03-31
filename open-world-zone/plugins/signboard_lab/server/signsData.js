@@ -39,7 +39,7 @@ export default {
       "id": "testSign4",
       "name": "装饰画",
       "mode": "image",
-      "content": "https://i.mji.rip/2026/03/29/922312a08e4c5b2ada1d53a700e06d04.jpeg"
+      "content": "https://picx.zhimg.com/50/v2-1bba3df5b8b7a10af4d32b4125acdcba.jpg"
     }
   ]
 };
