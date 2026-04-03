@@ -59,6 +59,7 @@ const setSignBoard = async (instData, ccgxkObj) => {
 
     // 挂载纹理 HOOK
     ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this) {
+        console.log('123');
         const { index, id } = drawItem;
 
         // 供热更新模块使用
