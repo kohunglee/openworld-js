@@ -1,10 +1,11 @@
 /**
  * Signs 信息板数据 API
- * GET  /api/signs        - 读取信息板数据
- * POST /api/signs        - 保存信息板数据
+ * GET  /api/signs          - 读取全部信息板数据
+ * POST /api/signs          - 批量保存（admin.html 用）
+ * PATCH /api/signs/:id     - 单条更新（signPanel 用）
  */
 
-import { getAllBoards, replaceAllBoards } from '../db/index.js';
+import { getAllBoards, replaceAllBoards, upsertBoard } from '../db/index.js';
 import { sendJson, readBody } from '../helpers.js';
 import { broadcast } from '../sse.js';
 
@@ -30,7 +31,7 @@ export function handleGetSigns(req, res) {
   }
 }
 
-// ── POST /api/signs ──
+// ── POST /api/signs (批量) ──
 
 export function handleSaveSigns(req, res) {
   readBody(req, body => {
@@ -51,6 +52,32 @@ export function handleSaveSigns(req, res) {
 
       // SSE 广播
       broadcast(data);
+    } catch (e) {
+      sendJson(res, { error: e.message }, 500);
+    }
+  });
+}
+
+// ── PATCH /api/signs/:id (单条) ──
+
+export function handleUpdateOneBoard(req, res, id) {
+  readBody(req, body => {
+    try {
+      const data = JSON.parse(body);
+      const board = {
+        id: id,
+        name: data.name || id,
+        mode: data.mode || 'text',
+        content: data.content || ''
+      };
+
+      upsertBoard(board);
+      console.log(`✅ 已更新信息板: ${id}`);
+
+      sendJson(res, { success: true, message: '更新成功' });
+
+      // SSE 广播单条变化（格式与全量一致，hotUpdate handler 能直接处理）
+      broadcast({ boards: [board] });
     } catch (e) {
       sendJson(res, { error: e.message }, 500);
     }

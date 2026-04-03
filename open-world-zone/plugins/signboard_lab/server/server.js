@@ -9,7 +9,7 @@
 
 import http from 'http';
 import { initDatabase } from './db/index.js';
-import { handleGetSigns, handleSaveSigns } from './api/signs.js';
+import { handleGetSigns, handleSaveSigns, handleUpdateOneBoard } from './api/signs.js';
 import { handleGetCanvasLib, handleSaveCanvasLib, handleAddCanvasFunc, handleDeleteCanvasFunc } from './api/canvas.js';
 import { handleSseStream } from './sse.js';
 
@@ -19,7 +19,7 @@ const PORT = 8899;
 function handlePreflight(req, res) {
     res.writeHead(204, {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Max-Age': '86400',
     });
@@ -46,6 +46,10 @@ function createServer() {
         } else if (method === 'POST' && pathname === '/api/signs') {
             console.log('📡 POST /api/signs');
             handleSaveSigns(req, res);
+        } else if (method === 'PATCH' && pathname.startsWith('/api/signs/')) {
+            const boardId = decodeURIComponent(pathname.slice('/api/signs/'.length));
+            console.log(`📡 PATCH /api/signs/${boardId}`);
+            handleUpdateOneBoard(req, res, boardId);
         } else if (method === 'POST' && pathname === '/api/canvas-lib/add') {
             console.log('📡 POST /api/canvas-lib/add');
             handleAddCanvasFunc(req, res);

@@ -360,7 +360,6 @@ export default function(ccgxkObj) {
 
             const newText = textarea.value;
 
-            // UI 状态
             if (status) {
                 status.textContent = '保存中...';
                 status.className = 'sign-panel-status saving';
@@ -368,41 +367,13 @@ export default function(ccgxkObj) {
             if (saveBtn) saveBtn.disabled = true;
 
             try {
-                // 先从 API 获取完整 boards 数据，修改当前 board 的 content，再整体保存回去
-                const res = await fetch(`${API_BASE}/api/signs`);
-                if (!res.ok) throw new Error('读取数据失败');
-                const data = await res.json();
-                const boards = data.boards || [];
-
-                // 找到当前 board 并更新 content
-                let found = false;
-                for (const board of boards) {
-                    if (board.id === g.currentBoardId) {
-                        board.content = newText;
-                        board.mode = 'text';
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    boards.push({
-                        id: g.currentBoardId,
-                        name: g.currentBoardId,
-                        mode: 'text',
-                        content: newText
-                    });
-                }
-
-                // 保存回服务器
-                const saveRes = await fetch(`${API_BASE}/api/signs`, {
-                    method: 'POST',
+                // 单条 PATCH 更新，不碰 signContentMap，让 SSE 回环触发画布刷新
+                const res = await fetch(`${API_BASE}/api/signs/${encodeURIComponent(g.currentBoardId)}`, {
+                    method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ version: 1, boards })
+                    body: JSON.stringify({ mode: 'text', content: newText })
                 });
-                if (!saveRes.ok) throw new Error('保存失败');
-
-                // 不碰 signContentMap，让 SSE 回环来触发 updateSign 刷新画布
-                // （与 admin.html 行为一致）
+                if (!res.ok) throw new Error('保存失败');
 
                 if (status) {
                     status.textContent = '已保存';
