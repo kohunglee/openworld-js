@@ -21,6 +21,12 @@ import signPanel from './signPanel.js';
 function handleImageMode(index, id, imgUrl, ccgxkObj) {
     const uniqueImgId = 'dyn_img_' + index + '_' + id;
     let imgEl = document.getElementById(uniqueImgId);
+
+    // h 固定为 1，w 根据图片比例自适应
+    const calcAspectScale = (imgW, imgH) => {
+        return { w: imgW / imgH * 2, h: 2 };
+    };
+
     if (!imgEl) {
         imgEl = document.createElement('img');
         imgEl.id = uniqueImgId;
@@ -28,7 +34,7 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
         imgEl.style.display = 'none';
         document.body.appendChild(imgEl);
         imgEl.onload = () => {
-            // 关键：把加载好的图片存入 textureMap，LOD 恢复时引擎直接命中缓存，显示真实图片
+            const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight);
             const textureModule = getTextureModule();
             if (textureModule) {
                 textureModule.textureMap.set(id, imgEl);
@@ -36,6 +42,7 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
             ccgxkObj.W.plane({
                 n: 'T' + index,
                 t: imgEl,
+                w, h,  // 通过 w, h 调整比例
                 ns: 1,
             });
         };
@@ -45,7 +52,7 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
         imgEl.src = imgUrl;
     } else {
         if (imgEl.complete) {
-            // 同样确保 textureMap 里是真实图片
+            const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight);
             const textureModule = getTextureModule();
             if (textureModule) {
                 textureModule.textureMap.set(id, imgEl);
@@ -53,6 +60,7 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
             ccgxkObj.W.plane({
                 n: 'T' + index,
                 t: imgEl,
+                w, h,
                 ns: 1,
             });
         }
