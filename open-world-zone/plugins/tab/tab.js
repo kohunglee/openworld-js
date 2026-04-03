@@ -34,7 +34,8 @@ export default function(ccgxkObj) {
 
     window.addEventListener("keydown", e => {
         if (e.key === "Tab") {
-            return  // 暂时关闭
+            if(document.getElementById('signPanelModal')&&!document.getElementById('signPanelModal').hidden)return;
+            if(document.getElementById('myHUDModal')&&!document.getElementById('myHUDModal').hidden)return;
             e.preventDefault(); // 阻止 Tab 切换焦点的默认行为
             const isHidden = modal.classList.contains("zindex-1");
             if (isHidden) {
