@@ -62,8 +62,7 @@ export default function(ccgxkObj) {
                     flex-direction: column;
                 }
                 .sign-panel-header {
-                    background-color: rgba(60, 60, 60, 0.9);
-                    color: #fff;
+                    color: #000000;
                     padding: 8px 14px;
                     cursor: move;
                     display: flex;
@@ -72,7 +71,7 @@ export default function(ccgxkObj) {
                     user-select: none;
                 }
                 .sign-panel-title { font-size: 13px; font-weight: bold; }
-                .sign-panel-title-id { font-size: 11px; color: #bbb; margin-left: 8px; font-weight: normal; }
+                .sign-panel-title-id { font-size: 11px; color: #363636; margin-left: 8px; font-weight: normal; }
                 .sign-panel-close {
                     background: transparent; border: none; color: #ddd;
                     font-size: 18px; cursor: pointer; padding: 0 5px; line-height: 1;
