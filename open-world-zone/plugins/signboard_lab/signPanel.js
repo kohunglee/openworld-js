@@ -439,7 +439,7 @@ export default function(ccgxkObj) {
                 });
                 if (!res.ok) throw new Error('保存失败');
 
-                if (status) { status.textContent = '已保存'; status.className = 'sign-panel-status saved'; }
+                if (status) { status.textContent = '已保存'; status.className = 'sign-panel-status saved'; g.hidePanel()}
             } catch (e) {
                 console.error('[signPanel] 保存失败:', e);
                 alert('保存失败: ' + e.message + '\n你的内容还在，不会丢失。');
