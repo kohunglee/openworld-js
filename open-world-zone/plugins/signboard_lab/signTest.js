@@ -10,7 +10,7 @@
  *   signPanel.js   - 编辑面板（可拖动 HUD 窗口）
  */
 
-import { initData, signContentMap, signIndexMap, setCcgxkObj, setTextureModule } from './store.js';
+import { initData, signContentMap, signIndexMap, setCcgxkObj, setTextureModule, getTextureModule } from './store.js';
 import { drawSmartText, drawCanvasMode } from './renderer.js';
 import { initSSE } from './hotUpdate.js';
 import signPanel from './signPanel.js';
@@ -28,10 +28,15 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
         imgEl.style.display = 'none';
         document.body.appendChild(imgEl);
         imgEl.onload = () => {
+            // 关键：把加载好的图片存入 textureMap，LOD 恢复时引擎直接命中缓存，显示真实图片
+            const textureModule = getTextureModule();
+            if (textureModule) {
+                textureModule.textureMap.set(id, imgEl);
+            }
             ccgxkObj.W.plane({
                 n: 'T' + index,
                 t: imgEl,
-                ns: 1,  // 先这个吧，可能会覆盖，但是图尽量不被光照影响会更好
+                ns: 1,
             });
         };
         imgEl.onerror = () => {
@@ -40,9 +45,15 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
         imgEl.src = imgUrl;
     } else {
         if (imgEl.complete) {
+            // 同样确保 textureMap 里是真实图片
+            const textureModule = getTextureModule();
+            if (textureModule) {
+                textureModule.textureMap.set(id, imgEl);
+            }
             ccgxkObj.W.plane({
                 n: 'T' + index,
-                t: uniqueImgId
+                t: imgEl,
+                ns: 1,
             });
         }
     }
@@ -59,7 +70,6 @@ const setSignBoard = async (instData, ccgxkObj) => {
 
     // 挂载纹理 HOOK
     ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this) {
-        console.log('123');
         const { index, id } = drawItem;
 
         // 供热更新模块使用
