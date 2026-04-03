@@ -66,4 +66,41 @@ export default function(ccgxkObj) {
         }
     , 100);
 
+
+    // 2 模式下，跳跃冻结
+    if(ccgxkObj.mode === 2){
+        document.addEventListener('keydown', (event) => {
+            const key = event.key.toLowerCase();
+            const mvpBody = ccgxkObj?.mainVPlayer?.body;
+
+            // 没有物理体就直接退出
+            if (!mvpBody) return;
+
+            // ==================== E 键：只负责解冻 ====================
+            if (key === 'e') {
+                // 只有当前是冻结状态，才执行解冻
+                if (mvpBody.mass === 0) {
+                mvpBody.mass = 50;
+                }
+            }
+
+            // ==================== F 键：只负责冻结 ====================
+            if (key === 'f') {
+                // 如果已经冻结 → 按 F 也可以解冻（你要求的：解冻时 E/F 都能用）
+                if (mvpBody.mass === 0) {
+                mvpBody.mass = 50;
+                } 
+                // 如果没冻结 → 按 F 才执行冻结
+                else {
+                mvpBody.mass = 0;
+                mvpBody.velocity.set(0, 0, 0);
+                mvpBody.angularVelocity.set(0, 0, 0);
+                mvpBody.force.set(0, 0, 0);
+                mvpBody.torque.set(0, 0, 0);
+                }
+            }
+        });
+    }
+    
+
 }

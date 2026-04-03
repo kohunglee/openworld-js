@@ -2,7 +2,7 @@
  * 
  */
 
-export const IS_FULL_STATE = +new URLSearchParams(location.search).get('isBuild');; // 1: 完整发布状态, 0: 基础编辑状态
+// export const IS_FULL_STATE = +new URLSearchParams(location.search).get('isBuild'); // 1: 完整发布状态, 0: 基础编辑状态
 
 export const COLORS = {
     FLOOR: '#ECECEA',  // A
