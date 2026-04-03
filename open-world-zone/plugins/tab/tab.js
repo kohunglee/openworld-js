@@ -65,6 +65,29 @@ export default function(ccgxkObj) {
     $("goOPOS").addEventListener("click", () => teleportTo(7.6, 10, 16.5, 0));
     $("goHall").addEventListener("click", () => teleportTo(31, 10, -31, 90));
 
+    // ========================
+    // FOV 滑杆控制
+    // ========================
+    const fovSlider = $("fovSlider");
+    const fovValue = $("fovValue");
+    const DEFAULT_FOV = 60;
+
+    function setFov(fov) {
+        fovSlider.value = fov;
+        fovValue.textContent = fov + "°";
+        k.W.camera({ fov });
+    }
+
+    if (fovSlider && fovValue) {
+        fovSlider.addEventListener("input", (e) => {
+            const fov = parseInt(e.target.value);
+            fovValue.textContent = fov + "°";
+            k.W.camera({ fov });
+        });
+    }
+
+    $("fovReset")?.addEventListener("click", () => setFov(DEFAULT_FOV));
+
 
     /**
      * 紧急修复地面缺失 bug
@@ -142,6 +165,17 @@ const htmlCode = `
             <button id="displayPadInPC">显示/隐藏 移动端控件</button>
             <button id="tabView">切换视角(V)</button>
             <button id="fixError">修NaN</button>
+        <hr>
+    </div>
+
+    <div>
+        <h3>画面设置</h3>
+        <div style="display:flex;align-items:center;gap:10px;margin:8px 0">
+            <label>FOV:</label>
+            <input type="range" id="fovSlider" min="1" max="120" value="60" step="1" style="flex:1">
+            <span id="fovValue" style="min-width:35px;text-align:right">60°</span>
+            <button id="fovReset" style="padding:2px 8px;font-size:12px">还原</button>
+        </div>
         <hr>
     </div>
     

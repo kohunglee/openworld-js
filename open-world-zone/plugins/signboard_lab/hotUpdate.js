@@ -4,7 +4,7 @@
  */
 
 import { API_BASE } from './config.js';
-import { signContentMap, signIndexMap, getCcgxkObj, getTextureModule } from './store.js';
+import { signContentMap, signIndexMap, setCcgxkObj, setTextureModule, getCcgxkObj, getTextureModule } from './store.js';
 
 // ── 全局热更新函数 ──
 window.updateSign = function(boardId, content, mode = 'text') {
@@ -16,29 +16,40 @@ window.updateSign = function(boardId, content, mode = 'text') {
     const { index } = info;
     const nID = 'T' + index;
     const random = ((Math.random() * 1e7) | 0);
-    if (mode === 'text') { // 更新数据源
+
+    // 更新数据源
+    // 策略：存储在 boardId 下（面板读取），同时存储在 boardId+random 下（hook 查找）
+    if (mode === 'text') {
         signContentMap.set(boardId, { mode: 'text', t: content });
     } else if (mode === 'image') {
-        signContentMap.set(boardId + random, { mode: 'image', imgUrl: content });
+        signContentMap.set(boardId, { mode: 'image', imgUrl: content });          // 面板读取
+        signContentMap.set(boardId + random, { mode: 'image', imgUrl: content }); // hook 查找
     } else if (mode === 'canvas') {
         signContentMap.set(boardId, { mode: 'canvas', drawName: content });
     }
-    if (textureModule) { // 清纹理缓存
+
+    // 清除缓存（多重保险）
+    if (textureModule) {
         textureModule.textureMap.delete(boardId);
+        textureModule.textureMap.delete(boardId + random); // 保险
     }
     window[nID] = undefined;
-    if (mode === 'image') { // image 模式：移除旧 img DOM
+
+    if (mode === 'image') {
+        // image 模式：移除旧 img DOM，用 random 后缀对抗浏览器图片缓存
         const uniqueImgId = 'dyn_img_' + index + '_' + boardId;
         document.getElementById(uniqueImgId)?.remove();
-    }
-    ccgxkObj.W.plane({ n: nID, t: boardId + random }); // 触发重绘
-    if (mode === 'image') {
+
+        // 更新纹理（用 random 后缀强制刷新）
+        ccgxkObj.W.plane({ n: nID, t: boardId + random });
         ccgxkObj.indexToArgs.get(index).texture = boardId + random;
     } else {
+        ccgxkObj.W.plane({ n: nID, t: boardId });
         ccgxkObj.indexToArgs.get(index).texture = boardId;
     }
+
     ccgxkObj.currentlyActiveIndices.delete(index);
-    console.log(`[updateSign] ✅ ${boardId} 已更新`);
+    console.log(`[updateSign] ✅ ${boardId} 已更新 (mode: ${mode})`);
 };
 
 // ── SSE 客户端 ──
@@ -53,7 +64,7 @@ export function initSSE() {
                     if (!signIndexMap.has(board.id)) return;
                     const cur = signContentMap.get(board.id);
                     if (!cur) return;
-                    const changed = cur.mode !== board.mode // 只更新内容真正变化的
+                    const changed = cur.mode !== board.mode
                         || (board.mode === 'text' && cur.t !== board.content)
                         || (board.mode === 'image' && cur.imgUrl !== board.content)
                         || (board.mode === 'canvas' && cur.drawName !== board.content);
