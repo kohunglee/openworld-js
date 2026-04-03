@@ -28,7 +28,8 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
         imgEl.onload = () => {
             ccgxkObj.W.plane({
                 n: 'T' + index,
-                t: imgEl
+                t: imgEl,
+                ns: 1,  // 先这个吧，可能会覆盖，但是图尽量不被光照影响会更好
             });
         };
         imgEl.onerror = () => {

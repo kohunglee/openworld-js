@@ -7,14 +7,14 @@
  */
 
 import mydata from './data.js';
-import { IS_FULL_STATE } from './constants.js';
+// import { IS_FULL_STATE } from './constants.js';
 import { processFullState } from './full_state.js';
 
 export default function(ccgxkObj) {
     const insts = [...mydata()];  // 导入数据
 
     // 处理
-    if (IS_FULL_STATE) {
+    if (ccgxkObj.mode > 0) {
         processFullState(insts, ccgxkObj);
     }
 

@@ -2,6 +2,7 @@
 import k from '../../src/openworld.js';
 globalThis.k = k;
 k.initWorld('openworldCanv', true);
+k.mode = +new URLSearchParams(location.search).get('mode');  // 展示模式，自用
 
 // 导入公共插件模块
 import xmap from '@plugins/xmap.js';
@@ -17,7 +18,7 @@ centerDot(k);       // 开启中心点取物
 import testSampleAni from '@plugins/testSampleAni.js';
 testSampleAni(k);   // 简单的人物动画实现
 import build from '@plugins/build/build.js';
-build(k);           // 建造器
+if (k.mode < 2) { build(k) } // 建造器
 
 // 导入私有的插件模块
 import dataProc from './plugins/dataProc/dataProc.js';  // 数据处理，万数块 系统
@@ -26,8 +27,7 @@ import mvp from './plugins/mvp/mvp.js';  // 主角
 mvp(k);
 import symoffset from './plugins/symoffset/symoffset.js';  // 对称阵列工具
 symoffset(k);
-import signBoard_lab from './plugins/signboard_lab/signTest.js';  // 测试测试测试
-// k.signTest = signBoard_lab;
+import signBoard_lab from './plugins/signboard_lab/signTest.js';  // 纹理研究测试工具
 signBoard_lab(k);
 import build_lab from './plugins/build_lab/build_lab.js';  // 建造器使用的容器
 build_lab(k);
