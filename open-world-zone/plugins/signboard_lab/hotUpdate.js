@@ -63,14 +63,15 @@ export function initSSE() {
                 data.boards.forEach(board => {
                     if (!signIndexMap.has(board.id)) return;
                     const cur = signContentMap.get(board.id);
-                    if (!cur) return;
-                    const changed = cur.mode !== board.mode
-                        || (board.mode === 'text' && cur.t !== board.content)
-                        || (board.mode === 'image' && cur.imgUrl !== board.content)
-                        || (board.mode === 'canvas' && cur.drawName !== board.content);
-                    if (changed) {
-                        window.updateSign(board.id, board.content, board.mode);
+                    // cur 为空说明是新板子，直接更新；否则检查是否有变化
+                    if (cur) {
+                        const changed = cur.mode !== board.mode
+                            || (board.mode === 'text' && cur.t !== board.content)
+                            || (board.mode === 'image' && cur.imgUrl !== board.content)
+                            || (board.mode === 'canvas' && cur.drawName !== board.content);
+                        if (!changed) return;
                     }
+                    window.updateSign(board.id, board.content, board.mode);
                 });
             }
         };
