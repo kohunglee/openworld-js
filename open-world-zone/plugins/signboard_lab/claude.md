@@ -2,134 +2,75 @@
 
 ## 项目概述
 
-这是一个用于在三维世界中编辑信息板/画板内容的插件系统。目标是实现：点击三维空间中的画板，弹出可拖动的 HUD 编辑窗口，实时修改文字内容、切换模式（文本/自定义Canvas/图片），并保存到数据库。
+在三维世界中编辑信息板/画板内容的插件系统。点击画板 → 弹出 HUD 编辑窗口 → 编辑文字/图片 → SSE 实时刷新画布。
 
 ## 目录结构
 
 ```
 signboard_lab/
-├── signTest.js       # 入口文件，Hook 注册，热点事件处理
-├── signPanel.js      # 编辑面板 UI（可拖动 HUD 窗口）★ 新创建
-├── config.js         # 主题/常量配置
-├── store.js          # 数据存储（API 加载 + Canvas 函数编译）
-├── renderer.js       # 渲染器（文本、Canvas 绘制）
-├── hotUpdate.js      # 热更新（updateSign + SSE）
-├── server/           # 辅助服务器（已有 admin.html 编辑器）
-│   ├── admin.html    # 网页版编辑器（旧版）
-│   ├── api/          # API 接口
-│   └── sse.js        # SSE 实时推送
-```
-
-## 关键依赖
-
-### 中心点插件 (centerDot_clean.js)
-位置：`/Users/kehongli/studio/openworld-js/plugins/centerDot_clean.js`
-
-功能：
-- 在屏幕中心显示双圈光标，用于拾取三维物体
-- 通过颜色编码识别物体 index
-- 提供 `hot_action` 钩子事件，点击热点时触发
-
-使用方式：
-```js
-ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){
-    // 热点被点击时的处理
-});
-```
-
-### 建造师插件参考
-位置：`/Users/kehongli/studio/openworld-js/plugins/centerDot/build/`
-
-重要文件：
-- `init.js` - 入口，展示如何初始化面板
-- `event.js` - 鼠标锁定/解锁逻辑 (`unlockPointer`, `lockPointer`)
-- `panel/pEvent.js` - `quitPanel` 退出面板逻辑
-
-关键交互模式：
-```js
-// 显示面板：解锁鼠标 + 暂停绘制
-unlockPointer();
-ccgxkObj.drawPointPause = true;
-
-// 关闭面板：恢复绘制 + 锁定鼠标
-ccgxkObj.drawPointPause = false;
-lockPointer();
+├── signTest.js       # 入口文件，Hook 注册，热点事件处理，图片模式处理
+├── signPanel.js      # 编辑面板 UI（可拖动 HUD 窗口，text/image 模式）
+├── config.js         # 主题/常量配置，API_BASE
+├── store.js          # 数据存储（signContentMap, signIndexMap, API 加载）
+├── renderer.js       # 渲染器（文本自动换行 + Canvas 绘制）
+├── hotUpdate.js      # 热更新（updateSign + SSE 客户端）
+├── server/
+│   ├── server.js     # API 服务器入口 (Node.js + SQLite, port 8899)
+│   ├── db/index.js   # SQLite 数据库（boards + canvas_functions 表）
+│   ├── api/signs.js  # Signs API：GET/POST 全量 + PATCH 单条更新
+│   ├── api/canvas.js # Canvas 函数库 API
+│   ├── sse.js        # SSE 实时推送
+│   ├── helpers.js    # 共享工具（sendJson / readBody）
+│   ├── admin.html    # 网页版编辑器（旧版，批量编辑用）
+│   └── js/main.js    # admin.html 的 JS
 ```
 
 ## 当前进度
 
 ### 已完成
-1. ✅ 创建 `signPanel.js` - 可拖动的白色 HUD 窗口
-2. ✅ 添加关闭按钮（右上角 ×）
-3. ✅ 实现拖动功能（拖动标题栏移动）
-4. ✅ 添加鼠标锁定/解锁交互逻辑
-5. ✅ 修改 `signTest.js` 导入并使用 signPanel
+1. ✅ signPanel.js - 500×400 可拖动 HUD 面板，白色 75% 透明背景
+2. ✅ 文字编辑模式 - textarea 编辑，Ctrl/Cmd+S 或按钮保存
+3. ✅ 图片编辑模式 - URL 输入框 + 实时预览
+4. ✅ 模式切换 - 文字/图片 按钮切换，自动检测已有模式
+5. ✅ 保存流程 - PATCH 单条更新 API → SSE 广播 → 3D 画布实时刷新
+6. ✅ 新板子支持 - 数据库里没有的板子，编辑保存后也能实时更新
+7. ✅ 文本换行 - textarea 中的 `\n` 正确渲染为画布换行
+8. ✅ 保存后自动关闭面板
+9. ✅ 服务器连不通时 alert 提示，内容不丢失
+10. ✅ FOV 滑杆 - 在 Tab 面板中可调节 FOV（1-120°，默认70°，可还原）
 
-### 当前状态
-点击热点画板 → 弹出编辑面板 → 可拖动 → 可关闭 → 自动恢复鼠标锁定
+### 关键架构决策
 
-面板目前是一个白板，显示热点 index，尚未添加编辑功能。
+**API 设计**：
+- `PATCH /api/signs/:id` - 单条更新（signPanel 用，5亿条数据也扛得住）
+- `POST /api/signs` - 批量替换（admin.html 用）
+- SSE 广播格式：`{ boards: [单条board] }`，只传变化的那条
 
-## 下一步计划
+**signContentMap 存储策略（image 模式）**：
+- 同时存储到 `boardId`（面板读取）和 `boardId + random`（errorTexture_diy hook 查找）
+- `random` 后缀用于对抗 Chrome 纹理缓存
+- text/canvas 模式只用 `boardId`
 
-### 阶段二：添加编辑功能
-1. 在面板中添加文本输入框
-2. 实现文本实时更新到画板纹理
-3. 添加保存按钮，保存到数据库
+**SSE 更新检测**：
+- `cur` 为空（新板子）→ 直接调用 updateSign
+- `cur` 存在 → 检查 mode/content 是否变化，变化才更新
+- signPanel.save() 不碰 signContentMap，完全让 SSE 回环触发刷新
 
-### 阶段三：模式切换
-1. 添加三个模式切换按钮：文本模式 / Canvas模式 / 图片模式
-2. 文本模式：显示文本输入框
-3. Canvas模式：显示 Canvas 函数选择器
-4. 图片模式：显示图片 URL 输入框
+## 核心数据流
 
-### 阶段四：数据持久化
-1. 连接现有 API (`server/api/signs.js`)
-2. 实现保存/加载功能
-
-## 核心代码片段
-
-### signPanel.js 结构
-```js
-export default function(ccgxkObj) {
-    const g = {
-        htmlCode: `...`,        // 面板 HTML + CSS
-        initHTML() {},          // 初始化到页面
-        bindEvents() {},        // 绑定关闭按钮等
-        initDrag() {},          // 拖动功能
-        unlockPointer() {},     // 解锁鼠标
-        lockPointer() {},       // 锁定鼠标
-        showPanel(hotIndex) {}, // 显示面板（解锁+暂停绘制）
-        hidePanel() {},         // 隐藏面板（恢复+锁定）
-    };
-
-    ccgxkObj.signPanel = {
-        show: g.showPanel,
-        hide: g.hidePanel,
-        toggle: g.togglePanel,
-        init: g.initHTML
-    };
-}
 ```
-
-### signTest.js 入口
-```js
-import signPanel from './signPanel.js';
-
-export default function(ccgxkObj) {
-    ccgxkObj.signTest = setSignBoard;
-    signPanel(ccgxkObj);  // 初始化面板
-
-    ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){
-        const hotIndex = ccgxkObj.hotPoint;
-        ccgxkObj.signPanel.show(hotIndex);  // 显示编辑面板
-    });
-}
+用户编辑 → signPanel.save()
+  → PATCH /api/signs/:id (单条)
+  → 服务器 upsertBoard() + SSE broadcast({boards:[单条]})
+  → hotUpdate SSE handler → updateSign()
+    → signContentMap 更新
+    → texture 缓存清除
+    → W.plane() 触发重绘
+  → errorTexture_diy hook → 渲染新内容
 ```
 
 ## 数据结构
 
-画板数据存储在 `signContentMap` (Map 类型)：
 ```js
 signContentMap.set(id, {
     mode: 'text' | 'canvas' | 'image',
@@ -137,19 +78,17 @@ signContentMap.set(id, {
     drawName: '函数名',      // Canvas模式
     imgUrl: '图片URL'        // 图片模式
 });
-```
 
-索引映射 `signIndexMap`：
-```js
 signIndexMap.set(id, { index });  // id → 物体 index
 ```
 
 ## 注意事项
 
-1. 修改文件后需要测试热点点击流程
-2. 面板样式参考 `kit.js` 的模态框风格
-3. 鼠标锁定交互必须正确，否则用户无法正常操作
+1. `random` 后缀是对抗 Chrome 纹理缓存的老办法，不要动它
+2. signContentMap 的 key 必须考虑面板读取和 hook 查找两个场景
+3. 鼠标锁定交互必须正确：显示面板 unlockPointer + drawPointPause=true，关闭反之
 4. 本项目由 `build_lab` 引入，测试需在完整环境中运行
+5. 服务器端口 8899，API_BASE 在 config.js 中配置
 
 ---
 

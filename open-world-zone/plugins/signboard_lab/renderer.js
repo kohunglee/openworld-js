@@ -35,6 +35,11 @@ export function drawSmartText(ctx, width, height, text) {
 
         for (let i = 0; i < text.length; i++) {
             const char = text[i];
+            if (char === '\n') {
+                lines.push(currentLine);
+                currentLine = '';
+                continue;
+            }
             const testLine = currentLine + char;
             const metrics = ctx.measureText(testLine);
             if (metrics.width > maxWidth && i > 0) {
