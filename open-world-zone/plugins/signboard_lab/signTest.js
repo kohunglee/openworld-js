@@ -7,11 +7,13 @@
  *   renderer.js    - 渲染器（文本、Canvas）
  *   hotUpdate.js   - 热更新（updateSign + SSE）
  *   signTest.js    - 入口（Hook 注册 + 图片模式处理）
+ *   signPanel.js   - 编辑面板（可拖动 HUD 窗口）
  */
 
 import { initData, signContentMap, signIndexMap, setCcgxkObj, setTextureModule } from './store.js';
 import { drawSmartText, drawCanvasMode } from './renderer.js';
 import { initSSE } from './hotUpdate.js';
+import signPanel from './signPanel.js';
 
 /**
  * 图片模式处理器
@@ -103,4 +105,14 @@ const setSignBoard = async (instData, ccgxkObj) => {
 
 export default function(ccgxkObj) {
     ccgxkObj.signTest = setSignBoard;
+
+    // 初始化编辑面板
+    signPanel(ccgxkObj);
+
+    ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){  // 热点事件
+        if(ccgxkObj.mode !== 2){return 0}
+        const hotIndex = ccgxkObj.hotPoint;
+        ccgxkObj.signPanel.show(hotIndex);  // 显示编辑面板
+    });
+
 }
