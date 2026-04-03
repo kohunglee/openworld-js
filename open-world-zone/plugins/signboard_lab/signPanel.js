@@ -5,6 +5,7 @@
  */
 
 import { signContentMap, signIndexMap } from './store.js';
+import { API_BASE } from './config.js';
 
 export default function(ccgxkObj) {
     const g = {
@@ -16,6 +17,12 @@ export default function(ccgxkObj) {
 
         // 当前选中的热点 index
         currentHotIndex: -1,
+
+        // 当前画板 ID
+        currentBoardId: null,
+
+        // 快捷键监听器引用（用于卸载）
+        _keyHandler: null,
 
         // 解锁鼠标
         unlockPointer() {
@@ -44,7 +51,6 @@ export default function(ccgxkObj) {
         // 面板 HTML 内容
         htmlCode: `
             <style>
-                /* 信息板编辑面板背景层 - 点击可关闭 */
                 .sign-panel-backdrop {
                     position: fixed;
                     top: 0;
@@ -54,27 +60,25 @@ export default function(ccgxkObj) {
                     z-index: 999;
                     cursor: pointer;
                 }
-                /* 信息板编辑面板 */
                 .sign-panel-modal {
                     position: fixed;
                     z-index: 1000;
                 }
                 .sign-panel-box {
-                    width: 400px;
-                    max-height: 80vh;
-                    background-color: rgba(255, 255, 255, 0.85);
-                    backdrop-filter: blur(4px);
-                    border-radius: 8px;
-                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                    width: 500px;
+                    height: 400px;
+                    background-color: rgba(255, 255, 255, 0.75);
+                    backdrop-filter: blur(6px);
+                    border-radius: 10px;
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
                     overflow: hidden;
                     display: flex;
                     flex-direction: column;
                 }
-                /* 面板头部 - 可拖动 */
                 .sign-panel-header {
                     background-color: rgba(60, 60, 60, 0.9);
                     color: #fff;
-                    padding: 10px 15px;
+                    padding: 8px 14px;
                     cursor: move;
                     display: flex;
                     justify-content: space-between;
@@ -82,13 +86,19 @@ export default function(ccgxkObj) {
                     user-select: none;
                 }
                 .sign-panel-title {
-                    font-size: 14px;
+                    font-size: 13px;
                     font-weight: bold;
+                }
+                .sign-panel-title-id {
+                    font-size: 11px;
+                    color: #bbb;
+                    margin-left: 8px;
+                    font-weight: normal;
                 }
                 .sign-panel-close {
                     background: transparent;
                     border: none;
-                    color: #fff;
+                    color: #ddd;
                     font-size: 18px;
                     cursor: pointer;
                     padding: 0 5px;
@@ -97,51 +107,84 @@ export default function(ccgxkObj) {
                 .sign-panel-close:hover {
                     color: #ff6b6b;
                 }
-                /* 面板内容区 */
                 .sign-panel-content {
-                    padding: 15px;
-                    overflow-y: auto;
+                    padding: 12px 14px;
                     flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                }
+                .sign-panel-textarea {
+                    flex: 1;
+                    width: 100%;
+                    resize: none;
+                    background: #fafafa;
+                    border: 1px solid #ddd;
+                    border-radius: 6px;
                     color: #333;
+                    font-size: 14px;
+                    font-family: 'Microsoft YaHei', sans-serif;
+                    padding: 10px 12px;
+                    line-height: 1.6;
+                    outline: none;
+                    box-sizing: border-box;
                 }
-                /* 信息区块 */
-                .sign-info-section {
-                    margin-bottom: 12px;
-                    border-bottom: 1px solid rgba(0,0,0,0.1);
-                    padding-bottom: 10px;
+                .sign-panel-textarea:focus {
+                    border-color: #4a9eff;
+                    background: #fff;
                 }
-                .sign-info-section:last-child {
-                    border-bottom: none;
-                    margin-bottom: 0;
+                .sign-panel-footer {
+                    padding: 10px 14px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-top: 1px solid #eee;
                 }
-                .sign-info-label {
-                    font-size: 12px;
-                    color: #666;
-                    font-weight: bold;
-                    margin-bottom: 4px;
+                .sign-panel-status {
+                    font-size: 11px;
+                    color: #999;
                 }
-                .sign-info-data {
-                    font-size: 12px;
-                    font-family: 'Monaco', 'Menlo', monospace;
-                    white-space: pre-wrap;
-                    word-break: break-all;
-                    background: rgba(0,0,0,0.05);
-                    padding: 8px;
-                    border-radius: 4px;
-                    line-height: 1.5;
-                    max-height: 150px;
-                    overflow-y: auto;
+                .sign-panel-status.saving { color: #f0ad4e; }
+                .sign-panel-status.saved { color: #5cb85c; }
+                .sign-panel-status.error { color: #d9534f; }
+                .sign-save-btn {
+                    padding: 6px 20px;
+                    background: #4a9eff;
+                    color: #fff;
+                    border: none;
+                    border-radius: 5px;
+                    font-size: 13px;
+                    cursor: pointer;
+                    transition: background 0.2s;
+                }
+                .sign-save-btn:hover { background: #3a8eef; }
+                .sign-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+                .sign-save-hint {
+                    font-size: 10px;
+                    color: #aaa;
+                    margin-left: 8px;
                 }
             </style>
             <div id="signPanelBackdrop" class="sign-panel-backdrop" hidden></div>
             <div id="signPanelModal" class="sign-panel-modal" hidden>
                 <div class="sign-panel-box" id="signPanelBox">
                     <div class="sign-panel-header" id="signPanelHeader">
-                        <span class="sign-panel-title">信息板编辑</span>
+                        <span>
+                            <span class="sign-panel-title">信息板编辑</span>
+                            <span class="sign-panel-title-id" id="signPanelBoardId"></span>
+                        </span>
                         <button class="sign-panel-close" id="signPanelClose">&times;</button>
                     </div>
-                    <div class="sign-panel-content" id="signPanelContent">
-                        <!-- 动态填充热点信息 -->
+                    <div class="sign-panel-content">
+                        <textarea class="sign-panel-textarea" id="signPanelTextarea"
+                            placeholder="输入画板文字内容..."></textarea>
+                    </div>
+                    <div class="sign-panel-footer">
+                        <span class="sign-panel-status" id="signPanelStatus"></span>
+                        <div>
+                            <button class="sign-save-btn" id="signPanelSave">保存</button>
+                            <span class="sign-save-hint">Ctrl/Cmd+S</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -176,6 +219,24 @@ export default function(ccgxkObj) {
                 });
             }
 
+            // 保存按钮
+            const saveBtn = document.getElementById('signPanelSave');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => {
+                    g.saveText();
+                });
+            }
+
+            // Ctrl/Cmd + S 快捷键
+            g._keyHandler = (e) => {
+                if (!g.isPanelVisible) return;
+                if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+                    e.preventDefault();
+                    g.saveText();
+                }
+            };
+            document.addEventListener('keydown', g._keyHandler);
+
             // 拖动功能
             g.initDrag();
         },
@@ -193,11 +254,9 @@ export default function(ccgxkObj) {
             header.addEventListener('mousedown', (e) => {
                 isDragging = true;
                 const rect = modal.getBoundingClientRect();
-                // 先固定当前位置为像素值，移除 transform
                 modal.style.left = rect.left + 'px';
                 modal.style.top = rect.top + 'px';
                 modal.style.transform = 'none';
-                // 计算鼠标在面板内的偏移
                 offsetX = e.clientX - rect.left;
                 offsetY = e.clientY - rect.top;
                 e.preventDefault();
@@ -214,11 +273,20 @@ export default function(ccgxkObj) {
             });
         },
 
+        // 通过 hotIndex 反查画板 ID
+        findBoardId(hotIndex) {
+            for (const [id, data] of signIndexMap.entries()) {
+                if (data.index === hotIndex) {
+                    return id;
+                }
+            }
+            return null;
+        },
+
         // 显示面板
         showPanel(hotIndex) {
             let modal = document.getElementById('signPanelModal');
             let backdrop = document.getElementById('signPanelBackdrop');
-            const contentDiv = document.getElementById('signPanelContent');
 
             if (!modal || !backdrop) {
                 g.initHTML();
@@ -227,10 +295,34 @@ export default function(ccgxkObj) {
 
             g.currentHotIndex = hotIndex;
 
-            // 收集热点信息并渲染
-            const infoHtml = g.collectHotInfo(hotIndex);
-            if (contentDiv) {
-                contentDiv.innerHTML = infoHtml;
+            // 查找画板 ID
+            const boardId = g.findBoardId(hotIndex);
+            g.currentBoardId = boardId;
+
+            // 更新标题中的 ID 显示
+            const idSpan = document.getElementById('signPanelBoardId');
+            if (idSpan) {
+                idSpan.textContent = boardId ? `#${boardId}` : '(未注册画板)';
+            }
+
+            // 填充文字内容
+            const textarea = document.getElementById('signPanelTextarea');
+            if (textarea) {
+                let textContent = '';
+                if (boardId) {
+                    const info = signContentMap.get(boardId);
+                    if (info && info.mode === 'text') {
+                        textContent = info.t || '';
+                    }
+                }
+                textarea.value = textContent;
+            }
+
+            // 清空状态
+            const status = document.getElementById('signPanelStatus');
+            if (status) {
+                status.textContent = '';
+                status.className = 'sign-panel-status';
             }
 
             // 重置位置到屏幕中心
@@ -245,119 +337,146 @@ export default function(ccgxkObj) {
             backdrop.hidden = false;
             modal.hidden = false;
             g.isPanelVisible = true;
+
+            // 聚焦文本域
+            if (textarea) {
+                textarea.focus();
+            }
         },
 
-        // 收集热点信息，生成 HTML
+        // 保存文字到数据库
+        async saveText() {
+            const textarea = document.getElementById('signPanelTextarea');
+            const status = document.getElementById('signPanelStatus');
+            const saveBtn = document.getElementById('signPanelSave');
+
+            if (!textarea || !g.currentBoardId) {
+                if (status) {
+                    status.textContent = '无画板 ID，无法保存';
+                    status.className = 'sign-panel-status error';
+                }
+                return;
+            }
+
+            const newText = textarea.value;
+
+            // UI 状态
+            if (status) {
+                status.textContent = '保存中...';
+                status.className = 'sign-panel-status saving';
+            }
+            if (saveBtn) saveBtn.disabled = true;
+
+            try {
+                // 先从 API 获取完整 boards 数据，修改当前 board 的 content，再整体保存回去
+                const res = await fetch(`${API_BASE}/api/signs`);
+                if (!res.ok) throw new Error('读取数据失败');
+                const data = await res.json();
+                const boards = data.boards || [];
+
+                // 找到当前 board 并更新 content
+                let found = false;
+                for (const board of boards) {
+                    if (board.id === g.currentBoardId) {
+                        board.content = newText;
+                        board.mode = 'text';
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    boards.push({
+                        id: g.currentBoardId,
+                        name: g.currentBoardId,
+                        mode: 'text',
+                        content: newText
+                    });
+                }
+
+                // 保存回服务器
+                const saveRes = await fetch(`${API_BASE}/api/signs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ version: 1, boards })
+                });
+                if (!saveRes.ok) throw new Error('保存失败');
+
+                // 不碰 signContentMap，让 SSE 回环来触发 updateSign 刷新画布
+                // （与 admin.html 行为一致）
+
+                if (status) {
+                    status.textContent = '已保存';
+                    status.className = 'sign-panel-status saved';
+                }
+            } catch (e) {
+                console.error('[signPanel] 保存失败:', e);
+                alert('保存失败: ' + e.message + '\n你的文字还在文本框里，不会丢失。');
+                if (status) {
+                    status.textContent = '保存失败';
+                    status.className = 'sign-panel-status error';
+                }
+            } finally {
+                if (saveBtn) saveBtn.disabled = false;
+            }
+        },
+
+        // 收集热点信息（保留，备用）
         collectHotInfo(hotIndex) {
             const sections = [];
+            sections.push({ label: '热点 Index', data: hotIndex });
 
-            // 1. 基础热点信息
-            sections.push({
-                label: '热点 Index',
-                data: hotIndex
-            });
-
-            // 2. indexToArgs（openworld 档案）
             const args = ccgxkObj.indexToArgs.get(hotIndex);
             if (args) {
-                // 过滤掉不需要显示的字段
                 const filteredArgs = {};
                 for (const [key, value] of Object.entries(args)) {
                     if (typeof value !== 'function' && key !== 'deleteFunc') {
                         filteredArgs[key] = value;
                     }
                 }
-                sections.push({
-                    label: 'Openworld 档案',
-                    data: g.formatJSON(filteredArgs)
-                });
+                sections.push({ label: 'Openworld 档案', data: g.formatJSON(filteredArgs) });
             }
 
-            // 3. W 引擎信息
             const wNode = ccgxkObj.W.next['T' + hotIndex];
             if (wNode) {
-                const wInfo = {
-                    name: wNode.name || ('T' + hotIndex),
-                    hidden: wNode.hidden,
-                    // 其他可能的属性
-                };
-                // 尝试获取更多 W 信息
+                const wInfo = { name: wNode.name || ('T' + hotIndex), hidden: wNode.hidden };
                 if (wNode.position) wInfo.position = wNode.position;
                 if (wNode.rotation) wInfo.rotation = wNode.rotation;
                 if (wNode.scale) wInfo.scale = wNode.scale;
-                sections.push({
-                    label: 'W 引擎对象',
-                    data: g.formatJSON(wInfo)
-                });
+                sections.push({ label: 'W 引擎对象', data: g.formatJSON(wInfo) });
             }
 
-            // 4. 画板内容信息（从 signIndexMap 反向查找 id）
-            let boardId = null;
-            for (const [id, data] of signIndexMap.entries()) {
-                if (data.index === hotIndex) {
-                    boardId = id;
-                    break;
-                }
-            }
-
+            let boardId = g.findBoardId(hotIndex);
             if (boardId) {
-                sections.push({
-                    label: '画板 ID',
-                    data: boardId
-                });
-
+                sections.push({ label: '画板 ID', data: boardId });
                 const content = signContentMap.get(boardId);
                 if (content) {
-                    sections.push({
-                        label: '画板内容',
-                        data: g.formatJSON(content)
-                    });
+                    sections.push({ label: '画板内容', data: g.formatJSON(content) });
                 }
             }
 
-            // 5. 物理属性（从 TA 数组读取）
             const p_offset = hotIndex * 8;
             if (ccgxkObj.positionsStatus && hotIndex >= 0) {
-                const posInfo = {
+                sections.push({ label: '位置/状态', data: g.formatJSON({
                     x: ccgxkObj.positionsStatus[p_offset],
                     y: ccgxkObj.positionsStatus[p_offset + 1],
                     z: ccgxkObj.positionsStatus[p_offset + 2],
-                    qx: ccgxkObj.positionsStatus[p_offset + 3],
-                    qy: ccgxkObj.positionsStatus[p_offset + 4],
-                    qz: ccgxkObj.positionsStatus[p_offset + 5],
-                    qw: ccgxkObj.positionsStatus[p_offset + 6],
                     status: ccgxkObj.positionsStatus[p_offset + 7]
-                };
-                sections.push({
-                    label: '位置/状态',
-                    data: g.formatJSON(posInfo)
-                });
+                })});
             }
-
             if (ccgxkObj.physicsProps && hotIndex >= 0) {
-                const physInfo = {
+                sections.push({ label: '尺寸/物理', data: g.formatJSON({
                     mass: ccgxkObj.physicsProps[p_offset],
                     width: ccgxkObj.physicsProps[p_offset + 1],
                     height: ccgxkObj.physicsProps[p_offset + 2],
                     depth: ccgxkObj.physicsProps[p_offset + 3],
                     DPZ: ccgxkObj.physicsProps[p_offset + 4]
-                };
-                sections.push({
-                    label: '尺寸/物理',
-                    data: g.formatJSON(physInfo)
-                });
+                })});
             }
 
-            // 渲染成 HTML
-            return sections.map(s => `
-                <div class="sign-info-section">
-                    <div class="sign-info-label">${s.label}</div>
-                    <div class="sign-info-data">${s.data}</div>
-                </div>
-            `).join('');
+            return sections.map(s => `<div style="margin-bottom:10px"><div style="font-size:12px;color:#888;font-weight:bold">${s.label}</div><pre style="font-size:11px;background:rgba(0,0,0,0.3);padding:6px;border-radius:4px;overflow:auto;max-height:120px;color:#ccc;margin:4px 0">${s.data}</pre></div>`).join('');
         },
 
-        // 格式化 JSON 为文本（更省 token）
+        // 格式化 JSON 为文本
         formatJSON(obj) {
             try {
                 return JSON.stringify(obj, null, 2);
@@ -370,14 +489,11 @@ export default function(ccgxkObj) {
         hidePanel() {
             const modal = document.getElementById('signPanelModal');
             const backdrop = document.getElementById('signPanelBackdrop');
-            if (modal) {
-                modal.hidden = true;
-            }
-            if (backdrop) {
-                backdrop.hidden = true;
-            }
+            if (modal) modal.hidden = true;
+            if (backdrop) backdrop.hidden = true;
             g.isPanelVisible = false;
             g.currentHotIndex = -1;
+            g.currentBoardId = null;
 
             // 恢复绘制 + 重新锁定鼠标
             ccgxkObj.drawPointPause = false;
