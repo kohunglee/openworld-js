@@ -73,15 +73,13 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
 const setSignBoard = async (instData, ccgxkObj) => {
     ccgxkObj.errExpRatio = 200;
 
-    // 先从 API 加载数据
-    await initData();
+    await initData(); // 先从 API 加载数据
 
     // 挂载纹理 HOOK
     ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this) {
         const { index, id } = drawItem;
 
-        // 供热更新模块使用
-        setCcgxkObj(ccgxkObj);
+        setCcgxkObj(ccgxkObj); //+ 供热更新模块使用
         setTextureModule(_this);
         signIndexMap.set(id, { index });
 
@@ -124,14 +122,10 @@ const setSignBoard = async (instData, ccgxkObj) => {
 
 export default function(ccgxkObj) {
     ccgxkObj.signTest = setSignBoard;
-
-    // 初始化编辑面板
-    signPanel(ccgxkObj);
-
-    ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){  // 热点事件
+    signPanel(ccgxkObj); // 初始化编辑面板
+    ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){ // 热点事件
         if(ccgxkObj.mode !== 2){return 0}
         const hotIndex = ccgxkObj.hotPoint;
         ccgxkObj.signPanel.show(hotIndex);  // 显示编辑面板
     });
-
 }
