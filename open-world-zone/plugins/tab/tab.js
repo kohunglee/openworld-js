@@ -4,6 +4,7 @@
  * 功能是，控制右上角的侧边栏
  */
 import { initServerConfig } from './serverConfig.js';
+import { initModeSwitch } from './modeSwitch.js';
 
 export default function(ccgxkObj) {
     // console.log('导入 侧边栏 插件成功');
@@ -97,6 +98,11 @@ export default function(ccgxkObj) {
         console.log('[serverConfig] 服务器地址已更新:', newAddress);
     });
 
+    // ========================
+    // 模式切换
+    // ========================
+    initModeSwitch($, ccgxkObj);
+
 
     /**
      * 紧急修复地面缺失 bug
@@ -174,6 +180,17 @@ const htmlCode = `
             <button id="displayPadInPC">显示/隐藏 移动端控件</button>
             <button id="tabView">切换视角(V)</button>
             <button id="fixError">修NaN</button>
+        <hr>
+    </div>
+
+    <div>
+        <h3>模式切换</h3>
+        <div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap">
+            <button id="modeBtn0" style="padding:8px 16px;background:#3498db;color:#fff;border-radius:4px">编辑模式</button>
+            <button id="modeBtn1" style="padding:8px 16px;background:#27ae60;color:#fff;border-radius:4px">展示模式</button>
+            <button id="modeBtn2" style="padding:8px 16px;background:#9b59b6;color:#fff;border-radius:4px">文字编辑</button>
+        </div>
+        <div style="font-size:12px;color:#888">点击切换模式（会刷新页面）</div>
         <hr>
     </div>
 
