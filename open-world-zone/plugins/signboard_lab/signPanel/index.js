@@ -138,14 +138,19 @@ export default function createSignPanel(ccgxkObj) {
             setTextareaValue('');
         }
 
-        // 切换模式
-        switchMode(detectedMode);
+        // 切换模式（不聚焦，等面板显示后再聚焦）
+        state.mode = detectedMode;
+        updateModeButtons(detectedMode);
+        updateContentArea(detectedMode);
 
         // 清空状态
         updateStatus('');
 
         // 显示面板
         showModal();
+
+        // 面板显示后聚焦输入框
+        focusInput(detectedMode);
 
         // 解锁鼠标
         unlockPointer();
