@@ -3,7 +3,7 @@
  * 从 API 加载数据，支持热更新
  */
 
-import { API_BASE } from './config.js';
+import { getApiBase } from './config.js';
 
 // ── 内容映射 ──
 
@@ -35,8 +35,8 @@ export async function initData() {
         try {
             // 并行加载 boards 和 canvas functions
             const [boardsRes, canvasRes] = await Promise.all([
-                fetch(`${API_BASE}/api/signs`),
-                fetch(`${API_BASE}/api/canvas-lib`)
+                fetch(`${getApiBase()}/api/signs`),
+                fetch(`${getApiBase()}/api/canvas-lib`)
             ]);
 
             // 处理 boards

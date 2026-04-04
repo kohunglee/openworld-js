@@ -3,7 +3,7 @@
  * updateSign + SSE 实时监听
  */
 
-import { API_BASE } from './config.js';
+import { getApiBase } from './config.js';
 import { signContentMap, signIndexMap, setCcgxkObj, setTextureModule, getCcgxkObj, getTextureModule } from './store.js';
 
 // ── 全局热更新函数 ──
@@ -56,7 +56,8 @@ window.updateSign = function(boardId, content, mode = 'text') {
 
 export function initSSE() {
     try {
-        const es = new EventSource(`${API_BASE}/api/signs/stream`);
+        const apiBase = getApiBase();
+        const es = new EventSource(`${apiBase}/api/signs/stream`);
         es.onmessage = function(e) {
             const data = JSON.parse(e.data);
             if (data.boards) {
@@ -76,7 +77,7 @@ export function initSSE() {
             }
         };
         es.onerror = () => console.log('[SSE] 连接断开，自动重连中...');
-        console.log(`[SSE] 已连接 ${API_BASE}`);
+        console.log(`[SSE] 已连接 ${apiBase}`);
     } catch (e) {
         console.log('[SSE] 连接失败（开发服务器未启动？）');
     }
