@@ -9,7 +9,7 @@
 
 import http from 'http';
 import { initDatabase, closeDatabase } from './db/index.js';
-import { handleGetSigns, handleSaveSigns, handleUpdateOneBoard } from './api/signs.js';
+import { handleGetSigns, handleSaveSigns, handleUpdateOneBoard, handleGetSignsBatch } from './api/signs.js';
 import { handleGetCanvasLib, handleSaveCanvasLib, handleAddCanvasFunc, handleDeleteCanvasFunc } from './api/canvas.js';
 import { handleSseStream, closeAllClients } from './sse.js';
 
@@ -38,7 +38,10 @@ function createServer() {
         if (method === 'GET' && pathname === '/api/signs') {
             console.log('📡 GET /api/signs');
             handleGetSigns(req, res);
-        } else if (method === 'GET' && pathname === '/api/signs/stream') {
+        } else if (method === 'POST' && pathname === '/api/signs/batch') {
+            console.log('📡 POST /api/signs/batch');
+            handleGetSignsBatch(req, res);
+        } else if (method === 'POST' && pathname === '/api/signs') {
             handleSseStream(req, res);
         } else if (method === 'GET' && pathname === '/api/canvas-lib') {
             console.log('📡 GET /api/canvas-lib');

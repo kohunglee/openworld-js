@@ -2,10 +2,11 @@
  * Signs 信息板数据 API
  * GET  /api/signs          - 读取全部信息板数据
  * POST /api/signs          - 批量保存（admin.html 用）
+ * POST /api/signs/batch    - 批量获取（懒加载用）
  * PATCH /api/signs/:id     - 单条更新（signPanel 用）
  */
 
-import { getAllBoards, replaceAllBoards, upsertBoard } from '../db/index.js';
+import { getAllBoards, replaceAllBoards, upsertBoard, getBoardsByIds } from '../db/index.js';
 import { sendJson, readBody } from '../helpers.js';
 import { broadcast } from '../sse.js';
 
@@ -29,6 +30,26 @@ export function handleGetSigns(req, res) {
     console.error('❌ 读取数据库错误:', e);
     sendJson(res, { error: e.message }, 500);
   }
+}
+
+// ── POST /api/signs/batch (批量获取) ──
+
+export function handleGetSignsBatch(req, res) {
+  readBody(req, body => {
+    try {
+      const { ids } = JSON.parse(body);
+      if (!Array.isArray(ids) || ids.length === 0) {
+        sendJson(res, { boards: [] });
+        return;
+      }
+
+      const boards = getBoardsByIds(ids);
+      sendJson(res, { boards });
+    } catch (e) {
+      console.error('❌ 批量获取错误:', e);
+      sendJson(res, { error: e.message }, 500);
+    }
+  });
 }
 
 // ── POST /api/signs (批量) ──

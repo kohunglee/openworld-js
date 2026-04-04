@@ -10,7 +10,7 @@
  *   signPanel.js   - 编辑面板（可拖动 HUD 窗口）
  */
 
-import { initData, signContentMap, signIndexMap, setCcgxkObj, setTextureModule, getTextureModule } from './store.js';
+import { initData, signContentMap, signIndexMap, lazyLoadSign, setCcgxkObj, setTextureModule, getTextureModule } from './store.js';
 import { drawSmartText, drawCanvasMode } from './renderer.js';
 import { initSSE } from './hotUpdate.js';
 import signPanel from './signPanel.js';
@@ -101,7 +101,9 @@ const setSignBoard = async (instData, ccgxkObj) => {
             _this.indexToArgs.get(index).isInvisible = false;
 
         } else {
-            drawSmartText(ctx, width, height, '本画框编号 ' + id);
+            // 没有数据 → 触发懒加载
+            lazyLoadSign(id);
+            // drawSmartText(ctx, width, height, 'Loading...');
         }
     });
 
