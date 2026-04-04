@@ -72,6 +72,13 @@ export function getAllBoards() {
   return stmt.all();
 }
 
+export function getBoardsByIds(ids) {
+  if (!ids || ids.length === 0) return [];
+  const placeholders = ids.map(() => '?').join(',');
+  const stmt = db.prepare(`SELECT * FROM boards WHERE id IN (${placeholders})`);
+  return stmt.all(...ids);
+}
+
 export function upsertBoard(board) {
   const stmt = db.prepare(`
     INSERT INTO boards (id, name, mode, content) VALUES (@id, @name, @mode, @content)
