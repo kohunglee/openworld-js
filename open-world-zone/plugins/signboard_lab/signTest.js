@@ -71,7 +71,7 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
  * 设置信息板系统
  */
 const setSignBoard = async (instData, ccgxkObj) => {
-    ccgxkObj.errExpRatio = 250;
+    ccgxkObj.errExpRatio = 200;
 
     // 先从 API 加载数据
     await initData();
