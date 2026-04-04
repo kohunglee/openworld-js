@@ -18,10 +18,11 @@ const DEFAULT_ADDRESS = '127.0.0.1:8899';
 
 /**
  * 获取 API 基础 URL（动态从 localStorage 读取）
+ * 手动配置完整地址（含协议）
  */
 export function getApiBase() {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return 'http://' + (stored || DEFAULT_ADDRESS);
+    return stored || 'http://' + DEFAULT_ADDRESS;
 }
 
 // 向后兼容：导出 API_BASE（首次加载时的值）
