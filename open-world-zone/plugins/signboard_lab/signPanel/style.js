@@ -163,7 +163,7 @@ export const styleCode = `
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 12px;
     color: rgba(30, 30, 30, 0.9);
-    font-size: 14px;
+    font-size: 18px;
     font-family: 'Microsoft YaHei', sans-serif;
     padding: 12px 14px;
     line-height: 1.65;

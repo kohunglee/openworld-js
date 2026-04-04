@@ -5,7 +5,7 @@
  */
 
 import { signContentMap, signIndexMap } from '../store.js';
-import { API_BASE } from '../config.js';
+import { getApiBase } from '../config.js';
 import {
     initDOM, bindEvents, initDrag,
     updateModeButtons, updateContentArea, updateImagePreview,
@@ -201,7 +201,7 @@ export default function createSignPanel(ccgxkObj) {
         updateSaveButton(true);
 
         try {
-            const res = await fetch(`${API_BASE}/api/signs/${encodeURIComponent(state.boardId)}`, {
+            const res = await fetch(`${getApiBase()}/api/signs/${encodeURIComponent(state.boardId)}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ mode, content })

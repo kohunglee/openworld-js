@@ -3,6 +3,8 @@
  * ========
  * 功能是，控制右上角的侧边栏
  */
+import { initServerConfig } from './serverConfig.js';
+
 export default function(ccgxkObj) {
     // console.log('导入 侧边栏 插件成功');
 
@@ -87,6 +89,13 @@ export default function(ccgxkObj) {
     }
 
     $("fovReset")?.addEventListener("click", () => setFov(DEFAULT_FOV));
+
+    // ========================
+    // 服务器地址配置
+    // ========================
+    initServerConfig($, (newAddress) => {
+        console.log('[serverConfig] 服务器地址已更新:', newAddress);
+    });
 
 
     /**
@@ -178,7 +187,22 @@ const htmlCode = `
         </div>
         <hr>
     </div>
-    
+
+    <div>
+        <h3>服务器设置</h3>
+        <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
+            <label style="white-space:nowrap">地址:</label>
+            <input type="text" id="serverAddressInput" placeholder="127.0.0.1:8899"
+                style="flex:1;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:14px">
+            <button id="serverAddressSave" style="padding:4px 12px;font-size:13px">保存</button>
+            <button id="serverAddressReset" style="padding:4px 12px;font-size:13px">默认</button>
+        </div>
+        <div style="font-size:12px;color:#888;margin-bottom:8px">
+            信息板 API 服务器地址，修改后立即生效
+        </div>
+        <hr>
+    </div>
+
     <div id="wskStudio"></div><!-- 万数块临时测试使用 -->
 
     <div> <button id="closeBtn02">关闭</button> </div>

@@ -1,6 +1,6 @@
 /**
  * 信息板配置
- * 
+ *
  * 定义一些全局变量
  */
 
@@ -12,4 +12,17 @@ export const THEME = {
     paddingRatio: 0.1  // 内边距占宽度的比例 (10%)
 };
 
-export const API_BASE = 'http://localhost:8899';
+// 服务器地址存储 key
+const STORAGE_KEY = 'signboard_server_address';
+const DEFAULT_ADDRESS = '127.0.0.1:8899';
+
+/**
+ * 获取 API 基础 URL（动态从 localStorage 读取）
+ */
+export function getApiBase() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return 'http://' + (stored || DEFAULT_ADDRESS);
+}
+
+// 向后兼容：导出 API_BASE（首次加载时的值）
+export const API_BASE = getApiBase();
