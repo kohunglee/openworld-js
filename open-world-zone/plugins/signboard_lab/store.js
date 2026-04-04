@@ -47,7 +47,7 @@ export async function initData() {
             }
             console.log('[Store] 信息板数据将按需懒加载');
         } catch (e) {
-            console.error('[Store] 初始化失败:', e);
+            // 静默处理，后续 SSE 连接成功后会自动恢复
         }
     })();
 

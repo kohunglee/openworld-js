@@ -38,14 +38,11 @@ function createServer() {
         if (method === 'GET' && pathname === '/api/signs') {
             console.log('📡 GET /api/signs');
             handleGetSigns(req, res);
+        } else if (method === 'GET' && pathname === '/api/signs/stream') {
+            handleSseStream(req, res);
         } else if (method === 'POST' && pathname === '/api/signs/batch') {
             console.log('📡 POST /api/signs/batch');
             handleGetSignsBatch(req, res);
-        } else if (method === 'POST' && pathname === '/api/signs') {
-            handleSseStream(req, res);
-        } else if (method === 'GET' && pathname === '/api/canvas-lib') {
-            console.log('📡 GET /api/canvas-lib');
-            handleGetCanvasLib(req, res);
         } else if (method === 'POST' && pathname === '/api/signs') {
             console.log('📡 POST /api/signs');
             handleSaveSigns(req, res);
@@ -76,7 +73,7 @@ function main() {
     initDatabase();
 
     const server = createServer();
-    server.listen(PORT, () => {
+    server.listen(PORT, '0.0.0.0', () => {
         console.log(`
 ╔════════════════════════════════════════════╗
 ║   signboard_lab API 服务器 (Node.js+SQLite) ║
