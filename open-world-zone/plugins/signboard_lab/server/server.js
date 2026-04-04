@@ -8,10 +8,10 @@
  */
 
 import http from 'http';
-import { initDatabase } from './db/index.js';
+import { initDatabase, closeDatabase } from './db/index.js';
 import { handleGetSigns, handleSaveSigns, handleUpdateOneBoard } from './api/signs.js';
 import { handleGetCanvasLib, handleSaveCanvasLib, handleAddCanvasFunc, handleDeleteCanvasFunc } from './api/canvas.js';
-import { handleSseStream } from './sse.js';
+import { handleSseStream, closeAllClients } from './sse.js';
 
 const PORT = 8899;
 
@@ -96,6 +96,20 @@ function main() {
 ╚════════════════════════════════════════════╝
 `);
     });
+
+    // 优雅关闭
+    const shutdown = () => {
+        console.log('\n[Server] 正在关闭...');
+        closeAllClients();  // 先断开 SSE 长连接
+        server.close(() => {
+            closeDatabase();
+            console.log('[Server] 已安全停止');
+            process.exit(0);
+        });
+    };
+
+    process.on('SIGINT', shutdown);   // Ctrl+C
+    process.on('SIGTERM', shutdown);  // kill 命令
 }
 
 try {
