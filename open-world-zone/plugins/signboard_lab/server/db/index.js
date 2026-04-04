@@ -115,3 +115,27 @@ export function deleteCanvasFunction(name) {
 // ── 导出数据库实例 ──
 
 export function getDb() { return db; }
+
+// ── 优雅关闭：checkpoint + 清理 WAL 文件 ──
+
+export function closeDatabase() {
+  if (!db) return;
+
+  console.log('[DB] 正在执行 checkpoint...');
+
+  // TRUNCATE 模式：将 WAL 数据写入主库，然后清空 WAL
+  db.pragma('wal_checkpoint(TRUNCATE)');
+
+  // 关闭数据库连接
+  db.close();
+  db = null;
+
+  // 删除 WAL 相关文件（checkpoint 后这些文件已无用了）
+  const shmPath = DB_PATH + '-shm';
+  const walPath = DB_PATH + '-wal';
+
+  try { fs.unlinkSync(shmPath); console.log('[DB] 已删除', shmPath); } catch (e) { /* 忽略 */ }
+  try { fs.unlinkSync(walPath); console.log('[DB] 已删除', walPath); } catch (e) { /* 忽略 */ }
+
+  console.log('[DB] 数据库已安全关闭');
+}

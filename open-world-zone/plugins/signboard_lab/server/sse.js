@@ -48,3 +48,14 @@ export function broadcast(data) {
         console.log(`📢 SSE 广播给 ${clients.size} 个客户端`);
     }
 }
+
+// 关闭所有 SSE 连接
+export function closeAllClients() {
+    for (const client of clients) {
+        try {
+            client.end();
+        } catch { /* 忽略 */ }
+    }
+    clients.clear();
+    console.log('[SSE] 已关闭所有客户端连接');
+}
