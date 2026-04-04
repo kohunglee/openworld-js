@@ -203,6 +203,7 @@ const htmlCode = `
         <hr>
     </div>
 
+    <h3>万数块情况</h3>
     <div id="wskStudio"></div><!-- 万数块临时测试使用 -->
 
     <div> <button id="closeBtn02">关闭</button> </div>

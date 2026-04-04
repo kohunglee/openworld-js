@@ -80,7 +80,7 @@ export default function (ccgxkObj) {
                     DPZ: data[index]?.dz ?? 4,
                     isPhysical: (data[index]?.st) ? false : true,  // 是否有物理属性
                     mass: 0,
-                    background: '#ffffff00',  // 调试时的高亮颜色（无用）
+                    background: '#4800ff',  // 调试时的高亮颜色（无用）
                     mixValue: 0,  // 直接设成 0 吧，供纹理使用
                     customIdx: dataProc.wskIdx + index,  // 按照计算的索引
                     isShadow: false,

@@ -103,7 +103,7 @@ const setSignBoard = async (instData, ccgxkObj) => {
         } else {
             // 没有数据 → 触发懒加载
             lazyLoadSign(id);
-            // drawSmartText(ctx, width, height, 'Loading...');
+            drawSmartText(ctx, width, height, 'Loading...');
         }
     });
 

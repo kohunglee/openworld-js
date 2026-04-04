@@ -52,12 +52,29 @@ window.updateSign = function(boardId, content, mode = 'text') {
     console.log(`[updateSign] ✅ ${boardId} 已更新 (mode: ${mode})`);
 };
 
-// ── SSE 客户端 ──
+// ── SSE 客户端（带自动重连）──
+
+let es = null;
+let reconnectTimer = null;
 
 export function initSSE() {
+    if (es) {
+        es.close();
+        es = null;
+    }
+    if (reconnectTimer) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+    }
+
     try {
         const apiBase = getApiBase();
-        const es = new EventSource(`${apiBase}/api/signs/stream`);
+        es = new EventSource(`${apiBase}/api/signs/stream`);
+
+        es.onopen = () => {
+            console.log(`[SSE] 已连接 ${apiBase}`);
+        };
+
         es.onmessage = function(e) {
             const data = JSON.parse(e.data);
             if (data.boards) {
@@ -76,9 +93,15 @@ export function initSSE() {
                 });
             }
         };
-        es.onerror = () => console.log('[SSE] 连接断开，自动重连中...');
-        console.log(`[SSE] 已连接 ${apiBase}`);
+
+        es.onerror = () => {
+            console.log('[SSE] 连接断开，3秒后重连...');
+            es.close();
+            es = null;
+            reconnectTimer = setTimeout(initSSE, 3000);
+        };
     } catch (e) {
         console.log('[SSE] 连接失败（开发服务器未启动？）');
+        reconnectTimer = setTimeout(initSSE, 5000);
     }
 }
