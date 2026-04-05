@@ -70,7 +70,7 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
 /**
  * 设置信息板系统
  */
-const setSignBoard = async (instData, ccgxkObj) => {
+const setSignBoard = async (instData, ccgxkObj, offsetValue = {x:0}) => {
     ccgxkObj.errExpRatio = 200;
 
     await initData(); // 先从 API 加载数据
@@ -113,6 +113,7 @@ const setSignBoard = async (instData, ccgxkObj) => {
         mixValue: 0.8,
         invisible: false,
         noIns: true,
+        offset: offsetValue,
     });
 
     initSSE();
