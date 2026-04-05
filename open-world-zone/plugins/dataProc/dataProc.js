@@ -40,7 +40,7 @@ export default function (ccgxkObj) {
 
         // 读取数据，预处理
         readData: function (data, offset) {
-            if (dataProc.cubeIndex >= dataProc.totalCube) { return -1 }// 超出容量（如 300 个），不再处理
+            if (dataProc.cubeIndex >= dataProc.totalCube) { return -1 } // 超出容量（如 300 个），不再处理
             if (data.del) {  // 处理已被标记 删除 的数据，按照【空模型】处理
                 data = {
                     x: 999999999, y: 999999999, z: 999999999,

@@ -47,7 +47,7 @@ window.updateSign = function(boardId, content, mode = 'text') {
     }
 
     ccgxkObj.currentlyActiveIndices.delete(index);
-    console.log(`[updateSign] ✅ ${boardId} 已更新 (mode: ${mode})`);
+    // console.log(`[updateSign] ✅ ${boardId} 已更新 (mode: ${mode})`);
 };
 
 // ── SSE 客户端（带自动重连）──

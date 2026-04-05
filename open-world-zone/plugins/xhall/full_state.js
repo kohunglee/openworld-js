@@ -2,7 +2,7 @@
  * 详细的建造内容
  */
 
-import { COLORS, INDICES } from './constants.js';
+import { COLORS, INDICES, OFFSET } from './constants.js';
 
 export function processFullState(insts, ccgxkObj) {
     ['textureGetCubeData'].forEach(id => document.getElementById(id)?.remove());  // 防止误点
@@ -30,6 +30,7 @@ export function processFullState(insts, ccgxkObj) {
         type: 2,
         texture: paper02,
         mixValue: 0.8,
+        offset: OFFSET,
     });
 
     const arrC = [];  //+ 提取信息板属性到 arrC
@@ -37,10 +38,10 @@ export function processFullState(insts, ccgxkObj) {
     INDICES.signBoard.forEach(i => {
         if (insts[i]) {
             insts[i].dz ??= 3;
-            insts[i].t = 'lab' + (sign_index++);
+            insts[i].t = 'testSign' + (sign_index++);
             arrC.push({ ...insts[i] });
             insts[i] = { "del": 1 };
         }
     });
-    ccgxkObj.signTest(arrC, ccgxkObj);
+    ccgxkObj.signTest(arrC, ccgxkObj, OFFSET);
 }

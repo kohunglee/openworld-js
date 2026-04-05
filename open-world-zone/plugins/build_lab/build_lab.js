@@ -15,7 +15,7 @@ export default function(ccgxkObj) {
 
     // 处理
     if (ccgxkObj.mode > 0) {
-        processFullState(insts, ccgxkObj);
+        // processFullState(insts, ccgxkObj);
     }
 
     k.visCubeLen = insts.length - 1;  //+ 建造器相关
