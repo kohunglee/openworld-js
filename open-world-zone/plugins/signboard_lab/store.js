@@ -10,10 +10,6 @@ import { getApiBase } from './config.js';
 export const signContentMap = new Map();   // id → { mode, t/imgUrl/drawName }
 export const signIndexMap = new Map();     // id → { index }
 
-// ── Canvas 函数库 ──
-
-export const canvasFunctions = new Map();  // name → code
-
 // ── 引擎引用（需 getter/setter）──
 
 let _ccgxkObj = null;
@@ -32,23 +28,7 @@ export async function initData() {
     if (initPromise) return initPromise;
 
     initPromise = (async () => {
-        try {
-            // 只加载 canvas functions（boards 改为懒加载）
-            const canvasRes = await fetch(`${getApiBase()}/api/canvas-lib`);
-
-            if (canvasRes.ok) {
-                const data = await canvasRes.json();
-                if (data.functions) {
-                    for (const [name, code] of Object.entries(data.functions)) {
-                        canvasFunctions.set(name, code);
-                    }
-                    console.log(`[Store] 已加载 ${canvasFunctions.size} 个 Canvas 函数`);
-                }
-            }
-            console.log('[Store] 信息板数据将按需懒加载');
-        } catch (e) {
-            // 静默处理，后续 SSE 连接成功后会自动恢复
-        }
+        console.log('[Store] 信息板数据将按需懒加载');
     })();
 
     return initPromise;
@@ -108,8 +88,6 @@ async function doBatchFetch() {
                     signContentMap.set(board.id, { mode: 'text', t: board.content });
                 } else if (board.mode === 'image') {
                     signContentMap.set(board.id, { mode: 'image', imgUrl: board.content });
-                } else if (board.mode === 'canvas') {
-                    signContentMap.set(board.id, { mode: 'canvas', drawName: board.content });
                 }
 
                 // 触发重绘
@@ -136,15 +114,3 @@ async function doBatchFetch() {
     }
 }
 
-// ── 获取 Canvas 函数（编译后的）──
-
-export function getCanvasFunction(name) {
-    const code = canvasFunctions.get(name);
-    if (!code) return null;
-    try {
-        return new Function('ctx', 'w', 'h', code);
-    } catch (e) {
-        console.error(`[Store] 函数 ${name} 编译失败:`, e);
-        return null;
-    }
-}

@@ -101,6 +101,6 @@ signIndexMap.set(id, { index });  // id → 物体 index
 
 2026年04月04日
 
-
+我的 server 服务器已经部署到云上了，修改会很棘手。若非非常必要，千万不要修改 /open-world-zone/plugins/signboard_lab/server 里面的内容！！ 且一点要提出申请。
 
 ------
