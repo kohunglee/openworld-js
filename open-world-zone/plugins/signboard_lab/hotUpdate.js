@@ -4,7 +4,7 @@
  */
 
 import { getApiBase } from './config.js';
-import { signContentMap, signIndexMap, setCcgxkObj, setTextureModule, getCcgxkObj, getTextureModule } from './store.js';
+import { signContentMap, signIndexMap, getCcgxkObj, getTextureModule } from './store.js';
 
 // ── 全局热更新函数 ──
 window.updateSign = function(boardId, content, mode = 'text') {
@@ -24,8 +24,6 @@ window.updateSign = function(boardId, content, mode = 'text') {
     } else if (mode === 'image') {
         signContentMap.set(boardId, { mode: 'image', imgUrl: content });          // 面板读取
         signContentMap.set(boardId + random, { mode: 'image', imgUrl: content }); // hook 查找
-    } else if (mode === 'canvas') {
-        signContentMap.set(boardId, { mode: 'canvas', drawName: content });
     }
 
     // 清除缓存（多重保险）
@@ -85,8 +83,7 @@ export function initSSE() {
                     if (cur) {
                         const changed = cur.mode !== board.mode
                             || (board.mode === 'text' && cur.t !== board.content)
-                            || (board.mode === 'image' && cur.imgUrl !== board.content)
-                            || (board.mode === 'canvas' && cur.drawName !== board.content);
+                            || (board.mode === 'image' && cur.imgUrl !== board.content);
                         if (!changed) return;
                     }
                     window.updateSign(board.id, board.content, board.mode);

@@ -186,9 +186,9 @@ const htmlCode = `
     <div>
         <h3>模式切换</h3>
         <div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap">
-            <button id="modeBtn0" style="padding:8px 16px;background:#3498db;color:#fff;border-radius:4px">编辑模式</button>
-            <button id="modeBtn1" style="padding:8px 16px;background:#27ae60;color:#fff;border-radius:4px">展示模式</button>
-            <button id="modeBtn2" style="padding:8px 16px;background:#9b59b6;color:#fff;border-radius:4px">文字编辑</button>
+            <button id="modeBtn0" style="padding:8px 16px;background:#3498db;color:#fff;border-radius:4px;cursor:pointer;">编辑模式</button>
+            <button id="modeBtn1" style="padding:8px 16px;background:#27ae60;color:#fff;border-radius:4px;cursor:pointer;">展示模式</button>
+            <button id="modeBtn2" style="padding:8px 16px;background:#9b59b6;color:#fff;border-radius:4px;cursor:pointer;">文字编辑</button>
         </div>
         <div style="font-size:12px;color:#888">点击切换模式（会刷新页面）</div>
         <hr>

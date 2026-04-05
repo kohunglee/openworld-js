@@ -11,7 +11,7 @@
  */
 
 import { initData, signContentMap, signIndexMap, lazyLoadSign, setCcgxkObj, setTextureModule, getTextureModule } from './store.js';
-import { drawSmartText, drawCanvasMode } from './renderer.js';
+import { drawSmartText } from './renderer.js';
 import { initSSE } from './hotUpdate.js';
 import signPanel from './signPanel.js';
 
@@ -90,10 +90,8 @@ const setSignBoard = async (instData, ccgxkObj) => {
 
             if (mode === 'text') {
                 drawSmartText(ctx, width, height, info.t);
-            } else if (mode === 'canvas') {
-                drawCanvasMode(ctx, width, height, info.drawName);
             } else if (mode === 'image') {
-                drawSmartText(ctx, width, height, 'Loading...');
+                drawSmartText(ctx, width, height, 'handleImageMode...');
                 handleImageMode(index, id, info.imgUrl, ccgxkObj);
             }
 
@@ -103,7 +101,7 @@ const setSignBoard = async (instData, ccgxkObj) => {
         } else {
             // 没有数据 → 触发懒加载
             lazyLoadSign(id);
-            drawSmartText(ctx, width, height, 'Loading...');
+            drawSmartText(ctx, width, height, 'lazyLoadSign...');
         }
     });
 
