@@ -12,22 +12,13 @@ import { getApiBase } from './config.js';
 const styleCode = `
 #signHotInfoToggle {
     position: fixed;
+    z-index: 1;
+    left: 75px;
     top: 50px;
-    left: 60px;
-    background: rgba(255, 255, 255, 0.85);
-    border: 1px solid rgba(200, 200, 200, 0.6);
-    border-radius: 6px;
-    padding: 4px 10px;
-    font-size: 12px;
+    min-width: 44px;
+    background: #ffffff00;
+    color: #ffffff;
     cursor: pointer;
-    color: #555;
-    z-index: 100;
-    transition: all 0.2s;
-}
-
-#signHotInfoToggle:hover {
-    background: rgba(255, 255, 255, 0.95);
-    border-color: rgba(100, 160, 255, 0.6);
 }
 
 #signHotInfoToggle:active {
@@ -36,28 +27,14 @@ const styleCode = `
 
 .sign-hot-info {
     position: fixed;
-    top: 75px;
+    top: 90px;
     left: 10px;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(200, 200, 200, 0.5);
-    border-radius: 8px;
     padding: 8px 12px;
     min-width: 180px;
     max-width: 300px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 12px;
-    color: #333;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     z-index: 100;
-}
-
-.sign-hot-info-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid rgba(200, 200, 200, 0.5);
+    backdrop-filter: blur(8px);
+    background: #ffffffb5;
 }
 
 .sign-hot-info-title {
@@ -91,32 +68,20 @@ const styleCode = `
 .sign-hot-info-remark {
     background: rgba(255, 250, 220, 0.8);
     padding: 6px 8px;
-    border-radius: 4px;
-    margin-top: 6px;
-    white-space: pre-wrap;
-    max-height: 100px;
-    overflow-y: auto;
 }
 `;
 
 // HTML 模板
 const htmlTemplate = `
-<button id="signHotInfoToggle" style="display: none;">📋 画板信息</button>
+<button id="signHotInfoToggle" style="display: none;">折叠</button>
 <div id="signHotInfo" class="sign-hot-info" style="display: none;">
-    <div class="sign-hot-info-header">
-        <span class="sign-hot-info-title" id="signHotInfoTitle">画板信息</span>
-    </div>
     <div class="sign-hot-info-body" id="signHotInfoBody">
         <div class="sign-hot-info-row">
-            <span class="sign-hot-info-label">ID: </span>
+            <span class="sign-hot-info-label"></span>
             <span class="sign-hot-info-value" id="signHotInfoId">-</span>
         </div>
         <div class="sign-hot-info-row">
-            <span class="sign-hot-info-label">类型: </span>
-            <span class="sign-hot-info-value" id="signHotInfoMode">-</span>
-        </div>
-        <div class="sign-hot-info-row">
-            <span class="sign-hot-info-label">更新: </span>
+            <span class="sign-hot-info-label"></span>
             <span class="sign-hot-info-value" id="signHotInfoDate">-</span>
         </div>
         <div class="sign-hot-info-remark" id="signHotInfoRemark" style="display: none;"></div>
@@ -155,10 +120,8 @@ function findBoardIdByIndex(hotIndex) {
 function updateHotInfo(hotIndex) {
     const container = document.getElementById('signHotInfo');
     const idSpan = document.getElementById('signHotInfoId');
-    const modeSpan = document.getElementById('signHotInfoMode');
     const dateSpan = document.getElementById('signHotInfoDate');
     const remarkDiv = document.getElementById('signHotInfoRemark');
-    const titleSpan = document.getElementById('signHotInfoTitle');
     const bodyDiv = document.getElementById('signHotInfoBody');
 
     if (hotIndex < 0) {
@@ -185,25 +148,20 @@ function updateHotInfo(hotIndex) {
     // 显示容器（如果展开）
     container.style.display = isExpanded ? 'block' : 'none';
 
-    // 更新标题
-    titleSpan.textContent = `画板: ${boardId}`;
-
     // 更新 ID
     idSpan.textContent = boardId;
-
-    // 更新类型
-    const modeText = info.mode === 'text' ? '文字' : info.mode === 'image' ? '图片' : info.mode;
-    modeSpan.textContent = modeText;
 
     // 更新日期（从 boardsData 获取）
     const boardData = boardsData.find(b => b.id === boardId);
     if (boardData && boardData.updated_at) {
         const date = new Date(boardData.updated_at);
         dateSpan.textContent = date.toLocaleString('zh-CN', {
-            month: '2-digit',
-            day: '2-digit',
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            second: '2-digit'
         });
     } else {
         dateSpan.textContent = '-';
@@ -255,14 +213,10 @@ export function initHotInfo(ccgxkObj) {
     const container = document.getElementById('signHotInfo');
     const bodyDiv = document.getElementById('signHotInfoBody');
 
-    // 点击按钮：解锁鼠标 + 切换展开状态
+    // 点击按钮：切换展开状态
     toggleBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-
-        // 解锁鼠标（和 Panel 完全一致）
-        unlockPointer();
-        ccgxkObjRef.drawPointPause = true;
 
         // 切换展开状态
         isExpanded = !isExpanded;
@@ -275,13 +229,6 @@ export function initHotInfo(ccgxkObj) {
         }
     });
 
-    // 点击信息框也能解锁鼠标
-    container.addEventListener('mousedown', () => {
-        unlockPointer();
-        if (ccgxkObjRef) {
-            ccgxkObjRef.drawPointPause = true;
-        }
-    });
 
     // 初始加载画板数据
     loadBoardsData();
@@ -306,6 +253,11 @@ export function initHotInfo(ccgxkObj) {
             }
         }
     }, 100);
+
+    ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){ // 热点事件
+        if(ccgxkObj.mode !== 1){return 0}
+        unlockPointer();
+    });
 
     // SSE 更新时重新加载数据
     const originalUpdateSign = window.updateSign;
