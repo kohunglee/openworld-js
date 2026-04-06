@@ -12,7 +12,8 @@ import {
     updateStatus, updateSaveButton,
     setTextareaValue, setImageUrl, setBoardIdDisplay,
     focusInput, showModal, hideModal,
-    getTextareaValue, getImageUrl
+    getTextareaValue, getImageUrl,
+    setRemarkValue, getRemarkValue, initRemarkState, toggleRemarkExpanded, setRemarkExpanded
 } from './dom.js';
 
 /**
@@ -85,10 +86,12 @@ export default function createSignPanel(ccgxkObj) {
             onClose: hide,
             onSave: save,
             onSwitchMode: switchMode,
-            onImageInput: updateImagePreview
+            onImageInput: updateImagePreview,
+            onToggleRemark: toggleRemarkExpanded
         });
 
         initDrag();
+        initRemarkState();
 
         // Ctrl/Cmd + S 快捷键
         state.keyHandler = (e) => {
@@ -131,11 +134,16 @@ export default function createSignPanel(ccgxkObj) {
                     setImageUrl(info.imgUrl || '');
                     updateImagePreview(info.imgUrl || '');
                 }
+                // 加载备注
+                const extra = info.extra || {};
+                setRemarkValue(extra.remark || '');
             } else {
                 setTextareaValue('');
+                setRemarkValue('');
             }
         } else {
             setTextareaValue('');
+            setRemarkValue('');
         }
 
         // 切换模式（不聚焦，等面板显示后再聚焦）
@@ -196,6 +204,12 @@ export default function createSignPanel(ccgxkObj) {
 
         const mode = state.mode;
         const content = mode === 'text' ? getTextareaValue() : getImageUrl();
+        const remark = getRemarkValue();
+
+        // 构建 extra 对象
+        const info = signContentMap.get(state.boardId);
+        const extra = info?.extra || {};
+        extra.remark = remark;
 
         updateStatus('保存中...', 'saving');
         updateSaveButton(true);
@@ -204,7 +218,7 @@ export default function createSignPanel(ccgxkObj) {
             const res = await fetch(`${getApiBase()}/api/signs/${encodeURIComponent(state.boardId)}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mode, content })
+                body: JSON.stringify({ mode, content, extra })
             });
 
             if (!res.ok) throw new Error('保存失败');

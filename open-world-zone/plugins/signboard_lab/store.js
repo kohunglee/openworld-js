@@ -85,9 +85,9 @@ async function doBatchFetch() {
         if (data.boards) {
             for (const board of data.boards) {
                 if (board.mode === 'text') {
-                    signContentMap.set(board.id, { mode: 'text', t: board.content });
+                    signContentMap.set(board.id, { mode: 'text', t: board.content, extra: board.extra });
                 } else if (board.mode === 'image') {
-                    signContentMap.set(board.id, { mode: 'image', imgUrl: board.content });
+                    signContentMap.set(board.id, { mode: 'image', imgUrl: board.content, extra: board.extra });
                 }
 
                 // 触发重绘

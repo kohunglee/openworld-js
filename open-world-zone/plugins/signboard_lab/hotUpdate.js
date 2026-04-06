@@ -7,7 +7,7 @@ import { getApiBase } from './config.js';
 import { signContentMap, signIndexMap, getCcgxkObj, getTextureModule } from './store.js';
 
 // ── 全局热更新函数 ──
-window.updateSign = function(boardId, content, mode = 'text') {
+window.updateSign = function(boardId, content, mode = 'text', extra = {}) {
     const ccgxkObj = getCcgxkObj();
     const textureModule = getTextureModule();
     const info = signIndexMap.get(boardId);
@@ -20,10 +20,10 @@ window.updateSign = function(boardId, content, mode = 'text') {
     // 更新数据源
     // 策略：存储在 boardId 下（面板读取），同时存储在 boardId+random 下（hook 查找）
     if (mode === 'text') {
-        signContentMap.set(boardId, { mode: 'text', t: content });
+        signContentMap.set(boardId, { mode: 'text', t: content, extra });
     } else if (mode === 'image') {
-        signContentMap.set(boardId, { mode: 'image', imgUrl: content });          // 面板读取
-        signContentMap.set(boardId + random, { mode: 'image', imgUrl: content }); // hook 查找
+        signContentMap.set(boardId, { mode: 'image', imgUrl: content, extra });          // 面板读取
+        signContentMap.set(boardId + random, { mode: 'image', imgUrl: content, extra }); // hook 查找
     }
 
     // 清除缓存（多重保险）
@@ -86,7 +86,7 @@ export function initSSE() {
                             || (board.mode === 'image' && cur.imgUrl !== board.content);
                         if (!changed) return;
                     }
-                    window.updateSign(board.id, board.content, board.mode);
+                    window.updateSign(board.id, board.content, board.mode, board.extra || {});
                 });
             }
         };

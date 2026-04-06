@@ -22,7 +22,8 @@ export function handleGetSigns(req, res) {
         id: b.id,
         name: b.name,
         mode: b.mode,
-        content: b.content
+        content: b.content,
+        extra: b.extra ? JSON.parse(b.extra) : {}
       }))
     };
     sendJson(res, data);
@@ -44,7 +45,12 @@ export function handleGetSignsBatch(req, res) {
       }
 
       const boards = getBoardsByIds(ids);
-      sendJson(res, { boards });
+      sendJson(res, {
+        boards: boards.map(b => ({
+          ...b,
+          extra: b.extra ? JSON.parse(b.extra) : {}
+        }))
+      });
     } catch (e) {
       console.error('❌ 批量获取错误:', e);
       sendJson(res, { error: e.message }, 500);
@@ -65,7 +71,8 @@ export function handleSaveSigns(req, res) {
         id: b.id,
         name: b.name,
         mode: b.mode,
-        content: b.content
+        content: b.content,
+        extra: b.extra || {}
       })));
 
       console.log(`✅ 已保存 ${boards.length} 个信息板到数据库`);
@@ -89,7 +96,8 @@ export function handleUpdateOneBoard(req, res, id) {
         id: id,
         name: data.name || id,
         mode: data.mode || 'text',
-        content: data.content || ''
+        content: data.content || '',
+        extra: data.extra || {}
       };
 
       upsertBoard(board);
@@ -98,7 +106,7 @@ export function handleUpdateOneBoard(req, res, id) {
       sendJson(res, { success: true, message: '更新成功' });
 
       // SSE 广播单条变化（格式与全量一致，hotUpdate handler 能直接处理）
-      broadcast({ boards: [board] });
+      broadcast({ boards: [{ ...board, extra: board.extra }] });
     } catch (e) {
       sendJson(res, { error: e.message }, 500);
     }

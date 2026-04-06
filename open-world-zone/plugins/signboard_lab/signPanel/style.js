@@ -309,4 +309,76 @@ export const styleCode = `
     color: rgba(100, 100, 100, 0.5);
     margin-left: 10px;
 }
+
+/* 备注区域 */
+.sign-remark-section {
+    margin-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    padding-top: 10px;
+}
+
+.sign-remark-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 4px 0;
+    user-select: none;
+}
+
+.sign-remark-header:hover {
+    opacity: 0.8;
+}
+
+.sign-remark-title {
+    font-size: 12px;
+    color: rgba(60, 60, 60, 0.7);
+    font-weight: 500;
+}
+
+.sign-remark-toggle {
+    font-size: 10px;
+    color: rgba(100, 100, 100, 0.6);
+    transition: transform 0.2s ease;
+}
+
+.sign-remark-toggle.expanded {
+    transform: rotate(180deg);
+}
+
+.sign-remark-body {
+    display: none;
+    margin-top: 8px;
+}
+
+.sign-remark-body.expanded {
+    display: block;
+}
+
+.sign-remark-textarea {
+    width: 100%;
+    height: 80px;
+    resize: none;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 10px;
+    color: rgba(50, 50, 50, 0.85);
+    font-size: 12px;
+    font-family: 'Microsoft YaHei', sans-serif;
+    padding: 10px 12px;
+    line-height: 1.5;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.sign-remark-textarea::placeholder {
+    color: rgba(100, 100, 100, 0.45);
+    font-style: italic;
+}
+
+.sign-remark-textarea:focus {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: rgba(100, 160, 255, 0.5);
+}
 `;
