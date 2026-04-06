@@ -8,7 +8,17 @@ export default function(ccgxkObj) {
     const myevent = {
         keyEvent : (e, ccgxkObj) => {
             if(document.getElementById('signPanelModal')&&!document.getElementById('signPanelModal').hidden)return;
-            if(document.getElementById('myHUDModal')&&!document.getElementById('myHUDModal').hidden)return;
+
+            // myHUDModal 显示时，小键盘 * 键触发复制按钮
+            const myHUDModal = document.getElementById('myHUDModal');
+            if(myHUDModal && !myHUDModal.hidden) {
+                if (e.key === '*') {
+                    const copyBtn = document.getElementById('textureCopyCubes');
+                    if (copyBtn) copyBtn.click();
+                }
+                return;
+            }
+
             const key = e.key.toLowerCase();
 
             if(key === 'e' || key === ' ') {  // 在冻结物体情况下，按 e 键或空格键，可以解除冻结
@@ -93,6 +103,20 @@ export default function(ccgxkObj) {
             }
         });
     }
-    
+
+
+    // 模式 0：停留超过 10 秒，离开页面时提示
+    if (ccgxkObj.mode === 0) {
+        const enterTime = Date.now();
+
+        window.addEventListener('beforeunload', (e) => {
+            const elapsed = (Date.now() - enterTime) / 1000;
+            if (elapsed > 10) {
+                e.preventDefault();
+                e.returnValue = '数据尚未保存，确定要离开吗？';
+                return e.returnValue;
+            }
+        });
+    }
 
 }
