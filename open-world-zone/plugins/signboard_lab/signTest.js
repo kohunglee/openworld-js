@@ -46,6 +46,9 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
                 w, h,  // 通过 w, h 调整比例
                 ns: 1,
             });
+            const p_offset = index * 8;  //+ 档案也更新一下
+            ccgxkObj.physicsProps[p_offset + 1] = w;
+            ccgxkObj.physicsProps[p_offset + 2] = h;
         };
         imgEl.onerror = () => {
             console.error("图片加载失败:", imgUrl);
@@ -64,6 +67,9 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
                 w, h,
                 ns: 1,
             });
+            const p_offset = index * 8;  //+ 档案也更新一下
+            ccgxkObj.physicsProps[p_offset + 1] = 100;
+            ccgxkObj.physicsProps[p_offset + 2] = h;
         }
     }
 }
