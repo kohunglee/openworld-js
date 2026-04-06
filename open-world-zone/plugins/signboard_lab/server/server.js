@@ -10,7 +10,6 @@
 import http from 'http';
 import { initDatabase, closeDatabase } from './db/index.js';
 import { handleGetSigns, handleSaveSigns, handleUpdateOneBoard, handleGetSignsBatch } from './api/signs.js';
-import { handleGetCanvasLib, handleSaveCanvasLib, handleAddCanvasFunc, handleDeleteCanvasFunc } from './api/canvas.js';
 import { handleSseStream, closeAllClients } from './sse.js';
 
 const PORT = 8899;
@@ -50,16 +49,6 @@ function createServer() {
             const boardId = decodeURIComponent(pathname.slice('/api/signs/'.length));
             console.log(`📡 PATCH /api/signs/${boardId}`);
             handleUpdateOneBoard(req, res, boardId);
-        } else if (method === 'POST' && pathname === '/api/canvas-lib/add') {
-            console.log('📡 POST /api/canvas-lib/add');
-            handleAddCanvasFunc(req, res);
-        } else if (method === 'POST' && pathname === '/api/canvas-lib') {
-            console.log('📡 POST /api/canvas-lib');
-            handleSaveCanvasLib(req, res);
-        } else if (method === 'DELETE' && pathname.startsWith('/api/canvas-lib/')) {
-            const funcName = pathname.slice('/api/canvas-lib/'.length);
-            console.log(`📡 DELETE /api/canvas-lib/${funcName}`);
-            handleDeleteCanvasFunc(req, res, decodeURIComponent(funcName));
         } else {
             res.writeHead(404, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Not Found' }));
@@ -87,10 +76,9 @@ function main() {
 ║                                          ║
 ║   API 端点:                               ║
 ║     GET/POST  /api/signs                  ║
+║     POST     /api/signs/batch             ║
 ║     GET       /api/signs/stream (SSE)     ║
-║     GET/POST  /api/canvas-lib             ║
-║     POST      /api/canvas-lib/add         ║
-║     DELETE    /api/canvas-lib/<name>      ║
+║     PATCH    /api/signs/<id>              ║
 ║                                          ║
 ║   Ctrl+C 停止                              ║
 ╚════════════════════════════════════════════╝

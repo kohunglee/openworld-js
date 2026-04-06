@@ -1,9 +1,9 @@
 /**
  * SQLite 数据库模块（使用 better-sqlite3 原生绑定）
- * 篡管理信息板和 Canvas 函数的持久化存储
+ * 管理信息板的持久化存储
  *
  * 优势：和 TablePlus 等外部工具共享同一个 SQLite 引擎，
- *       外部修改后 API 篡即读取到最新数据，无需重启服务器
+ *       外部修改后 API 即读取到最新数据，无需重启服务器
  */
 
 import Database from 'better-sqlite3';
@@ -36,15 +36,6 @@ export function initDatabase() {
     )
   `);
 
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS canvas_functions (
-      name TEXT PRIMARY KEY,
-      code TEXT NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-
   // 更新时间触发器
   db.exec(`
     CREATE TRIGGER IF NOT EXISTS boards_updated_at
@@ -54,13 +45,24 @@ export function initDatabase() {
       END;
   `);
 
-  db.exec(`
-    CREATE TRIGGER IF NOT EXISTS canvas_functions_updated_at
-      AFTER UPDATE ON canvas_functions
-      BEGIN
-        UPDATE canvas_functions SET updated_at = CURRENT_TIMESTAMP WHERE name = NEW.name;
-      END;
-  `);
+  // ── 迁移：添加 extra 字段（如果不存在）──
+  try {
+    const columns = db.prepare("PRAGMA table_info(boards)").all();
+    const hasExtra = columns.some(col => col.name === 'extra');
+    if (!hasExtra) {
+      db.exec(`ALTER TABLE boards ADD COLUMN extra TEXT DEFAULT '{}'`);
+      console.log('[DB] 已添加 extra 字段');
+    }
+  } catch (e) {
+    console.warn('[DB] extra 字段迁移警告:', e.message);
+  }
+
+  // ── 迁移：删除 canvas_functions 表（如果存在）──
+  try {
+    db.exec(`DROP TABLE IF EXISTS canvas_functions`);
+  } catch (e) {
+    // 忽略
+  }
 
   console.log('[DB] 数据库已初始化 (WAL 模式)');
 }
@@ -81,42 +83,35 @@ export function getBoardsByIds(ids) {
 
 export function upsertBoard(board) {
   const stmt = db.prepare(`
-    INSERT INTO boards (id, name, mode, content) VALUES (@id, @name, @mode, @content)
-    ON CONFLICT(id) DO UPDATE SET name=@name, mode=@mode, content=@content
+    INSERT INTO boards (id, name, mode, content, extra) VALUES (@id, @name, @mode, @content, @extra)
+    ON CONFLICT(id) DO UPDATE SET name=@name, mode=@mode, content=@content, extra=@extra
   `);
-  stmt.run(board);
+  stmt.run({
+    id: board.id,
+    name: board.name,
+    mode: board.mode,
+    content: board.content,
+    extra: typeof board.extra === 'string' ? board.extra : JSON.stringify(board.extra || {})
+  });
 }
 
 export function replaceAllBoards(boards) {
   const run = db.transaction(() => {
     db.prepare('DELETE FROM boards').run();
-    const stmt = db.prepare('INSERT INTO boards (id, name, mode, content) VALUES (@id, @name, @mode, @content)');
-    for (const b of boards) stmt.run(b);
+    const stmt = db.prepare('INSERT INTO boards (id, name, mode, content, extra) VALUES (@id, @name, @mode, @content, @extra)');
+    for (const b of boards) stmt.run({
+      id: b.id,
+      name: b.name,
+      mode: b.mode,
+      content: b.content,
+      extra: b.extra || '{}'
+    });
   });
   run();
 }
 
 export function deleteBoard(id) {
   db.prepare('DELETE FROM boards WHERE id = ?').run(id);
-}
-
-// ── canvas_functions CRUD ──
-
-export function getAllCanvasFunctions() {
-  const stmt = db.prepare('SELECT * FROM canvas_functions ORDER BY name');
-  return stmt.all();
-}
-
-export function upsertCanvasFunction(name, code) {
-  const stmt = db.prepare(`
-    INSERT INTO canvas_functions (name, code) VALUES (?, ?)
-    ON CONFLICT(name) DO UPDATE SET code=?
-  `);
-  stmt.run(name, code, code);
-}
-
-export function deleteCanvasFunction(name) {
-  db.prepare('DELETE FROM canvas_functions WHERE name = ?').run(name);
 }
 
 // ── 导出数据库实例 ──

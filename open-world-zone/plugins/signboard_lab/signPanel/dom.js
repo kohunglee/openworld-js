@@ -32,6 +32,15 @@ const htmlTemplate = `
                     <span class="placeholder">图片预览</span>
                 </div>
             </div>
+            <div class="sign-remark-section" id="signRemarkSection">
+                <div class="sign-remark-header" id="signRemarkHeader">
+                    <span class="sign-remark-title">备注（不显示在画布）</span>
+                    <span class="sign-remark-toggle" id="signRemarkToggle">▼</span>
+                </div>
+                <div class="sign-remark-body" id="signRemarkBody">
+                    <textarea class="sign-remark-textarea" id="signRemarkTextarea"></textarea>
+                </div>
+            </div>
         </div>
         <div class="sign-panel-footer">
             <span class="sign-panel-status" id="signPanelStatus"></span>
@@ -66,7 +75,7 @@ export function initDOM() {
  * @param {Object} handlers - 事件处理器
  */
 export function bindEvents(handlers) {
-    const { onClose, onSave, onSwitchMode, onImageInput } = handlers;
+    const { onClose, onSave, onSwitchMode, onImageInput, onToggleRemark } = handlers;
 
     document.getElementById('signPanelClose')?.addEventListener('click', onClose);
     document.getElementById('signPanelBackdrop')?.addEventListener('click', onClose);
@@ -79,6 +88,9 @@ export function bindEvents(handlers) {
     if (imgUrlInput) {
         imgUrlInput.addEventListener('input', () => onImageInput(imgUrlInput.value));
     }
+
+    // 备注区域点击事件
+    document.getElementById('signRemarkHeader')?.addEventListener('click', onToggleRemark);
 }
 
 /**
@@ -249,4 +261,67 @@ export function getTextareaValue() {
 export function getImageUrl() {
     const input = document.getElementById('signImageUrl');
     return input ? input.value : '';
+}
+
+// ── 备注区域相关 ──
+
+const REMARK_COOKIE_KEY = 'signPanel_remarkExpanded';
+
+/**
+ * 获取 cookie 中的备注展开状态
+ */
+export function getRemarkExpandedFromCookie() {
+    const match = document.cookie.match(new RegExp('(^| )' + REMARK_COOKIE_KEY + '=([^;]+)'));
+    return match ? match[2] === 'true' : false;
+}
+
+/**
+ * 设置 cookie 中的备注展开状态
+ */
+export function setRemarkExpandedToCookie(expanded) {
+    document.cookie = `${REMARK_COOKIE_KEY}=${expanded};path=/;max-age=31536000`;
+}
+
+/**
+ * 设置备注区域展开状态
+ */
+export function setRemarkExpanded(expanded) {
+    const body = document.getElementById('signRemarkBody');
+    const toggle = document.getElementById('signRemarkToggle');
+    if (body) body.classList.toggle('expanded', expanded);
+    if (toggle) toggle.classList.toggle('expanded', expanded);
+    setRemarkExpandedToCookie(expanded);
+}
+
+/**
+ * 切换备注区域展开状态
+ */
+export function toggleRemarkExpanded() {
+    const body = document.getElementById('signRemarkBody');
+    const isExpanded = body?.classList.contains('expanded');
+    setRemarkExpanded(!isExpanded);
+}
+
+/**
+ * 设置备注内容
+ */
+export function setRemarkValue(value) {
+    const textarea = document.getElementById('signRemarkTextarea');
+    if (textarea) textarea.value = value || '';
+}
+
+/**
+ * 获取备注内容
+ */
+export function getRemarkValue() {
+    const textarea = document.getElementById('signRemarkTextarea');
+    return textarea ? textarea.value : '';
+}
+
+/**
+ * 初始化备注区域状态（根据 cookie）
+ */
+export function initRemarkState() {
+    const expanded = getRemarkExpandedFromCookie();
+    setRemarkExpanded(expanded);
 }
