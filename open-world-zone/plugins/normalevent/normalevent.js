@@ -67,7 +67,7 @@ export default function(ccgxkObj) {
 
 
     // 2 模式下，跳跃冻结
-    if(ccgxkObj.mode === 2){
+    if([1, 2].includes(ccgxkObj.mode)){
         document.addEventListener('keydown', (event) => {
             const key = event.key.toLowerCase();
             const mvpBody = ccgxkObj?.mainVPlayer?.body;

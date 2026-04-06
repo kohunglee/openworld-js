@@ -42,14 +42,6 @@ const styleCode = `
     color: #555;
 }
 
-.sign-hot-info-body {
-    display: block;
-}
-
-.sign-hot-info-body.collapsed {
-    display: none;
-}
-
 .sign-hot-info-row {
     margin: 4px 0;
     line-height: 1.5;
@@ -122,7 +114,6 @@ function updateHotInfo(hotIndex) {
     const idSpan = document.getElementById('signHotInfoId');
     const dateSpan = document.getElementById('signHotInfoDate');
     const remarkDiv = document.getElementById('signHotInfoRemark');
-    const bodyDiv = document.getElementById('signHotInfoBody');
 
     if (hotIndex < 0) {
         container.style.display = 'none';
@@ -211,19 +202,16 @@ export function initHotInfo(ccgxkObj) {
 
     const toggleBtn = document.getElementById('signHotInfoToggle');
     const container = document.getElementById('signHotInfo');
-    const bodyDiv = document.getElementById('signHotInfoBody');
 
     // 点击按钮：切换展开状态
     toggleBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
 
-        // 切换展开状态
         isExpanded = !isExpanded;
-        bodyDiv.classList.toggle('collapsed', !isExpanded);
-        container.style.display = 'block';
+        toggleBtn.textContent = isExpanded ? '折叠' : '展开';
+        container.style.display = isExpanded ? 'block' : 'none';
 
-        // 如果展开，更新当前热点信息
         if (isExpanded && ccgxkObjRef) {
             updateHotInfo(ccgxkObjRef.hotPoint);
         }
@@ -254,7 +242,7 @@ export function initHotInfo(ccgxkObj) {
         }
     }, 100);
 
-    ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){ // 热点事件
+    ccgxkObj.hooks.on('hot_action', function(ccgxkObj){ // 热点事件
         if(ccgxkObj.mode !== 1){return 0}
         unlockPointer();
     });
