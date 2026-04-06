@@ -16,9 +16,12 @@ const styleCode = `
     left: 75px;
     top: 50px;
     min-width: 44px;
-    background: #ffffff00;
-    color: #ffffff;
+    border: 1px solid #d7d7d7;
+    color: #969191;
+    text-shadow: 0px -1px 8px #ffffff;
     cursor: pointer;
+    backdrop-filter: blur(8px);
+    background: #ffffffb5;
 }
 
 #signHotInfoToggle:active {
