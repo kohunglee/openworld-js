@@ -208,7 +208,11 @@ export default function createSignPanel(ccgxkObj) {
 
         // 构建 extra 对象
         const info = signContentMap.get(state.boardId);
-        const extra = info?.extra || {};
+        let extra = info?.extra || {};
+        // 确保 extra 是对象（数据库存的是字符串时需要 parse）
+        if (typeof extra === 'string') {
+            extra = JSON.parse(extra);
+        }
         extra.remark = remark;
 
         updateStatus('保存中...', 'saving');
