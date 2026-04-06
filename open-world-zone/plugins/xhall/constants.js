@@ -8,7 +8,7 @@ export const COLORS = {
     DECO: '#C5B8A5'    // C
 };
 
-export const OFFSET = {x:50};
+export const OFFSET = {x:90};
 
 export const INDICES = {  // 不同物体的索引
     floor: [4, 6, 0, 2, 3, 7, 19, 17, 22, 21, 18, 20, 44, 43, 42, 45, 39, 40, 38, 37, 35, 36, 102],

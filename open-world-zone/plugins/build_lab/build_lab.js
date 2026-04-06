@@ -33,6 +33,7 @@ export default function(ccgxkObj) {
         type: 1,
         texture: marble,
         mixValue: 0.8,
+        offset: {x:0},
     });
 
     const rootArgs = k.indexToArgs.get(idx);  //+ 设置建造器的操纵 W ID
