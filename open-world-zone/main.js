@@ -18,7 +18,7 @@ centerDot(k);       // 开启中心点取物
 import testSampleAni from '@plugins/testSampleAni.js';
 testSampleAni(k);   // 简单的人物动画实现
 import build from '@plugins/build/build.js';
-if (k.mode < 2) { build(k) } // 建造器
+if (k.mode === 0) { build(k) } // 建造器
 
 // 导入私有的插件模块
 import dataProc from './plugins/dataProc/dataProc.js';  // 数据处理，万数块 系统

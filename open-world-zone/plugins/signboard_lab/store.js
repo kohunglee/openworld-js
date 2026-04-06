@@ -92,7 +92,7 @@ async function doBatchFetch() {
 
                 // 触发重绘
                 if (typeof window.updateSign === 'function') {
-                    window.updateSign(board.id, board.content, board.mode);
+                    window.updateSign(board.id, board.content, board.mode, board.extra || {});
                 }
             }
             console.log(`[Store] 懒加载 ${data.boards.length} 个信息板`);

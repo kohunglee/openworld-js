@@ -14,6 +14,7 @@ import { initData, signContentMap, signIndexMap, lazyLoadSign, setCcgxkObj, setT
 import { drawSmartText } from './renderer.js';
 import { initSSE } from './hotUpdate.js';
 import signPanel from './signPanel.js';
+import { initHotInfo } from './hotInfo.js';
 
 /**
  * 图片模式处理器
@@ -124,6 +125,7 @@ const setSignBoard = async (instData, ccgxkObj, offsetValue = {x:0}) => {
 export default function(ccgxkObj) {
     ccgxkObj.signTest = setSignBoard;
     signPanel(ccgxkObj); // 初始化编辑面板
+    initHotInfo(ccgxkObj); // 初始化热点信息显示（mode=1 时）
     ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){ // 热点事件
         if(ccgxkObj.mode !== 2){return 0}
         const hotIndex = ccgxkObj.hotPoint;
