@@ -162,7 +162,9 @@ function updateHotInfo(hotIndex) {
     }
 
     // 更新备注
-    const remark = info.extra?.remark;
+    let extra = info.extra || {};
+    if (typeof extra === 'string') extra = JSON.parse(extra);
+    const remark = extra.remark;
     console.log('[HotInfo] remark:', remark);
     if (remark) {
         remarkDiv.textContent = remark;

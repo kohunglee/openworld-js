@@ -5,7 +5,7 @@
  */
 
 const STORAGE_KEY = 'signboard_server_address';
-const DEFAULT_ADDRESS = '127.0.0.1:8899';
+const DEFAULT_ADDRESS = 'http://127.0.0.1:8899';
 
 /**
  * 获取当前服务器地址
@@ -13,13 +13,6 @@ const DEFAULT_ADDRESS = '127.0.0.1:8899';
 export function getServerAddress() {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored || DEFAULT_ADDRESS;
-}
-
-/**
- * 获取完整 URL
- */
-export function getServerUrl() {
-    return 'http://' + getServerAddress();
 }
 
 /**
