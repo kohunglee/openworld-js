@@ -23,7 +23,8 @@ export function handleGetSigns(req, res) {
         name: b.name,
         mode: b.mode,
         content: b.content,
-        extra: b.extra ? JSON.parse(b.extra) : {}
+        extra: b.extra ? JSON.parse(b.extra) : {},
+        updated_at: b.updated_at
       }))
     };
     sendJson(res, data);
@@ -47,8 +48,12 @@ export function handleGetSignsBatch(req, res) {
       const boards = getBoardsByIds(ids);
       sendJson(res, {
         boards: boards.map(b => ({
-          ...b,
-          extra: b.extra ? JSON.parse(b.extra) : {}
+          id: b.id,
+          name: b.name,
+          mode: b.mode,
+          content: b.content,
+          extra: b.extra ? JSON.parse(b.extra) : {},
+          updated_at: b.updated_at
         }))
       });
     } catch (e) {

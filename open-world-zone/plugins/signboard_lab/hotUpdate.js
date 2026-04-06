@@ -83,7 +83,9 @@ export function initSSE() {
                     if (cur) {
                         const changed = cur.mode !== board.mode
                             || (board.mode === 'text' && cur.t !== board.content)
-                            || (board.mode === 'image' && cur.imgUrl !== board.content);
+                            || (board.mode === 'image' && cur.imgUrl !== board.content)
+                            // 也检查 extra 是否变化
+                            || JSON.stringify(cur.extra) !== JSON.stringify(board.extra);
                         if (!changed) return;
                     }
                     window.updateSign(board.id, board.content, board.mode, board.extra || {});
