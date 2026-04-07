@@ -64,6 +64,43 @@ const styleCode = `
     background: rgba(255, 250, 220, 0.8);
     padding: 6px 8px;
 }
+
+.sign-hot-info-view-original {
+    margin: 6px 0;
+    padding: 4px 0;
+}
+
+.sign-hot-info-view-original a {
+    color: #3b82f6;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 13px;
+}
+
+.sign-hot-info-view-original a:hover {
+    color: #1d4ed8;
+}
+
+/* 全屏图片遮罩层 */
+#signHotInfoOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 99999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+#signHotInfoOverlay img {
+    max-width: 90%;
+    max-height: 90%;
+    cursor: pointer;
+    object-fit: contain;
+}
 `;
 
 // HTML 模板
@@ -79,8 +116,14 @@ const htmlTemplate = `
             <span class="sign-hot-info-label"></span>
             <span class="sign-hot-info-value" id="signHotInfoDate">-</span>
         </div>
+        <div class="sign-hot-info-view-original" id="signHotInfoViewOriginal" style="display: none;">
+            <a>[查看原图]</a>
+        </div>
         <div class="sign-hot-info-remark" id="signHotInfoRemark" style="display: none;"></div>
     </div>
+</div>
+<div id="signHotInfoOverlay">
+    <img id="signHotInfoOverlayImg" src="" alt="原图" />
 </div>
 `;
 
@@ -117,6 +160,7 @@ function updateHotInfo(hotIndex) {
     const idSpan = document.getElementById('signHotInfoId');
     const dateSpan = document.getElementById('signHotInfoDate');
     const remarkDiv = document.getElementById('signHotInfoRemark');
+    const viewOriginalDiv = document.getElementById('signHotInfoViewOriginal');
 
     if (hotIndex < 0) {
         container.style.display = 'none';
@@ -159,6 +203,16 @@ function updateHotInfo(hotIndex) {
         });
     } else {
         dateSpan.textContent = '-';
+    }
+
+    // 检测是否是图片模式，显示查看原图链接
+    if (info.mode === 'image' && info.imgUrl) {
+        viewOriginalDiv.style.display = 'block';
+        // 存储当前图片URL到链接元素上
+        viewOriginalDiv.dataset.imgUrl = info.imgUrl;
+    } else {
+        viewOriginalDiv.style.display = 'none';
+        viewOriginalDiv.dataset.imgUrl = '';
     }
 
     // 更新备注
@@ -222,6 +276,48 @@ export function initHotInfo(ccgxkObj) {
         }
     });
 
+    // 查看原图链接点击事件
+    const viewOriginalDiv = document.getElementById('signHotInfoViewOriginal');
+    const overlay = document.getElementById('signHotInfoOverlay');
+    const overlayImg = document.getElementById('signHotInfoOverlayImg');
+
+    viewOriginalDiv.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const imgUrl = viewOriginalDiv.dataset.imgUrl;
+        if (imgUrl) {
+            overlayImg.src = imgUrl;
+            overlay.style.display = 'flex';
+        }
+    });
+
+    // 左键点击全屏图片关闭（click 事件默认只响应左键）
+    overlayImg.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        overlay.style.display = 'none';
+        overlayImg.src = '';
+    });
+
+    // 右键保留浏览器默认行为（显示菜单，可新窗口打开等）
+    // 不阻止 contextmenu 事件，让浏览器处理右键菜单
+
+    // 点击遮罩层背景也关闭
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            overlay.style.display = 'none';
+            overlayImg.src = '';
+        }
+    });
+
+    // ESC 键关闭
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.style.display === 'flex') {
+            overlay.style.display = 'none';
+            overlayImg.src = '';
+        }
+    });
 
     // 初始加载画板数据
     loadBoardsData();
