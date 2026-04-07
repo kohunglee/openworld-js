@@ -14,8 +14,11 @@ export default function(ccgxkObj) {
     const insts = [...mydata()];  // 导入数据
 
     // 处理
-    if (ccgxkObj.mode > 0) {
-        // processFullState(insts, ccgxkObj);
+    // if (ccgxkObj.mode > 0) {
+        processFullState(insts, ccgxkObj);
+    // }
+    for(let i = 0; i < insts.length; i++){  //（临时，方便建造）远程可选取
+        insts[i].dz = 3;
     }
 
     k.visCubeLen = insts.length - 1;  //+ 建造器相关
@@ -32,7 +35,7 @@ export default function(ccgxkObj) {
         name: 'build_lab',
         type: 1,
         texture: marble,
-        mixValue: 0.8,
+        mixValue: 0.5,  
         offset: {x:0},
     });
 
