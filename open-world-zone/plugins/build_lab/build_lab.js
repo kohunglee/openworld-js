@@ -13,10 +13,9 @@ import { processFullState } from './full_state.js';
 export default function(ccgxkObj) {
     const insts = [...mydata()];  // 导入数据
 
-    // 处理
-    // if (ccgxkObj.mode > 0) {
-        processFullState(insts, ccgxkObj);
-    // }
+    
+    processFullState(insts, ccgxkObj);  // 处理
+    
     for(let i = 0; i < insts.length; i++){  //（临时，方便建造）远程可选取
         insts[i].dz = 3;
     }
