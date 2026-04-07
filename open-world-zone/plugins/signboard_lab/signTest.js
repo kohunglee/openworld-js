@@ -56,6 +56,7 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
         imgEl.src = imgUrl;
     } else {
         if (imgEl.complete) {
+            // 图片已加载完成 → 直接更新纹理
             const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight);
             const textureModule = getTextureModule();
             if (textureModule) {
@@ -70,6 +71,24 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
             const p_offset = index * 8;  //+ 档案也更新一下
             ccgxkObj.physicsProps[p_offset + 1] = 100;
             ccgxkObj.physicsProps[p_offset + 2] = h;
+        } else {
+            // 图片正在加载中 → 等待加载完成后更新纹理
+            imgEl.onload = () => {
+                const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight);
+                const textureModule = getTextureModule();
+                if (textureModule) {
+                    textureModule.textureMap.set(id, imgEl);
+                }
+                ccgxkObj.W.plane({
+                    n: 'T' + index,
+                    t: imgEl,
+                    w, h,
+                    ns: 1,
+                });
+                const p_offset = index * 8;
+                ccgxkObj.physicsProps[p_offset + 1] = w;
+                ccgxkObj.physicsProps[p_offset + 2] = h;
+            };
         }
     }
 }
