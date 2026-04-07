@@ -2,8 +2,6 @@
  * 
  */
 
-// export const IS_FULL_STATE = +new URLSearchParams(location.search).get('isBuild'); // 1: 完整发布状态, 0: 基础编辑状态
-
 export const COLORS = {
     FLOOR: '#ECECEA',  // A
     BASE: '#C1CBD7',   // B
@@ -11,11 +9,34 @@ export const COLORS = {
 };
 
 export const INDICES = {  // 不同物体的索引
-    floor: [4, 6, 0, 2, 3, 7, 19, 17, 22, 21, 18, 20, 44, 43, 42, 45, 39, 40, 38, 37, 35, 36, 102],
-    decorations: [49, 48, 47],
-    signBoard: [107,108,109,110,111,112,113,114,
-                115,116,117,118,119,120,121,122,123,124,
-                125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,
-                146,147
-            ],
+    test: expandIndices([ [266, 284] ]),
+
+    floor1h: expandIndices([[0,53]]),  // 1 楼的地板
+    col1h: expandIndices([[54,70]]),  // 1 楼的柱子
+    exwall: expandIndices([[71,86],[238,240]]),  // 一楼外墙
+    stage1h: [262],
+    stage1hrail: [286],  // 一楼楼梯护栏
+
+    floor2h: expandIndices([[95,142],[87,94]]),  // 二楼的地板
+    exwall2h: expandIndices([[143,158],[250,252]]),  // 二楼的外墙
+    stage2h: [263,264],  // 二楼的台阶
+    rail2h: expandIndices([[227,237],[259,261]]),  // 二楼的栏杆
+    bookcase2h: [247,248,249],
+    stage2hrail: [288],
+
+    floor3h: expandIndices([[159,207],[244,246]]),  // 三楼的地板
+    rail3h: [255,258],
+    inwall3h: expandIndices([ [266, 284] ]),  // 三楼的内墙
 };
+
+/**
+ * 展开索引数组，支持用 [start, end] 表示连续范围
+ * 例如: [45, 39, [5, 18], 40] => [45, 39, 5, 6, 7, ..., 18, 40]
+ */
+function expandIndices(arr) {
+    return arr.flatMap(item =>
+        Array.isArray(item)
+            ? Array.from({ length: item[1] - item[0] + 1 }, (_, i) => item[0] + i)
+            : item
+    );
+}
