@@ -64,6 +64,7 @@ const styleCode = `
 .sign-hot-info-remark {
     background: rgba(255, 250, 220, 0.8);
     padding: 6px 8px;
+    white-space: pre-line;
 }
 
 .sign-hot-info-view-original {
