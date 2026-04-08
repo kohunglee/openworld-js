@@ -7,7 +7,7 @@ import { COLORS, D } from './constants.js';
 export function processFullState(insts, ccgxkObj) {
     
     let isok = false;if(ccgxkObj.mode !== 0){isok = true}
-    // isok = true;
+    isok = true;
 
 
     // 装修（数据破坏型）
@@ -68,14 +68,20 @@ export function processFullState(insts, ccgxkObj) {
             D.inwall3h.push( ...temp, ...D.inXWall3h002 );
         }
 
+        // 三楼画板的阵列
+        if(true) {
+            D.house1H3.push( ...symer.offset(D.house1H3, 5, 5, 'x') );
+        }
+
         // 前三层的一些对称
         if(true){
             D.stage1hrail.push(...symer.symo(D.stage1hrail, {z:5.539}));  // 对称楼梯护栏
             D.inwall3h.push( ...symer.symo(D.inwall3h, {z:5.539}) );  // 对称三楼的建筑
+            D.house1H3.push( ...symer.symo(D.house1H3, {z:5.539}) );  // 对称三楼的左侧的画板
         }
 
         // 二楼三楼向上的阵列
-        if(true){
+        if(false){
             const floorValue = 4;  // 总层数
 
             D.exwall2h.push( ...symer.offset([...D.exwall2h,], -5, floorValue - 1, 'y') );  // 二楼外墙
@@ -98,15 +104,18 @@ export function processFullState(insts, ccgxkObj) {
         ['textureGetCubeData'].forEach(id => document.getElementById(id)?.remove());  // 防止误点
         const arrC = [];  //+ 提取信息板属性到 arrC
         let sign_index = 1;
-        D.board1.forEach(i => {
+
+        D.house1H3.forEach(i => {
             if (insts[i]) {
-                insts[i].dz ??= 3;
-                insts[i].t = 'lab' + (sign_index++);
+                insts[i].dz ??= 4;
+                insts[i].st = 1;
+                insts[i].t = 'house1H3-' + (sign_index++);
                 arrC.push({ ...insts[i] });
                 insts[i] = { "del": 1 };
             }
         });
-        ccgxkObj.signTest(arrC, ccgxkObj);
+        ccgxkObj.signTest(arrC, ccgxkObj, {x:0}, 1);
+        
     }
 
 
