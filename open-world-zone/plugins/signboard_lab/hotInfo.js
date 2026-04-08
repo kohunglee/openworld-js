@@ -58,6 +58,7 @@ const styleCode = `
 .sign-hot-info-value {
     color: #333;
     word-break: break-all;
+    font-family: monospace;
 }
 
 .sign-hot-info-remark {
