@@ -89,6 +89,7 @@ signIndexMap.set(id, { index });  // id → 物体 index
 3. 鼠标锁定交互必须正确：显示面板 unlockPointer + drawPointPause=true，关闭反之
 4. 本项目由 `build_lab` 引入，测试需在完整环境中运行
 5. 服务器端口 8899，API_BASE 在 config.js 中配置
+6. 如果有需要更新的，或修改的，请及时更新这个 claude.md ，也就是本文件！！！（重中之重）
 
 ---
 
