@@ -232,7 +232,13 @@ function updateHotInfo(hotIndex) {
     const remark = extra.remark;
     console.log('[HotInfo] remark:', remark);
     if (remark) {
-        remarkDiv.textContent = remark;
+        // 检测是否是 HTML 格式（以 < 开头且包含 >）
+        const isHtml = /^\s*</.test(remark) && remark.includes('>');
+        if (isHtml) {
+            remarkDiv.innerHTML = remark;
+        } else {
+            remarkDiv.textContent = remark;
+        }
         remarkDiv.style.display = 'block';
     } else {
         remarkDiv.style.display = 'none';

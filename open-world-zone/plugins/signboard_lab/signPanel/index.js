@@ -245,4 +245,10 @@ export default function createSignPanel(ccgxkObj) {
         toggle,
         init
     };
+
+    // 启用全局 tab 友好
+    var ae = document.createElement('script');  // 所有的 textarea 都 tab 友好
+    ae.src = './assest/areaeditor.js';
+    ae.onload = function() { new AreaEditor('textarea'); console.log('yes'); };
+    document.head.appendChild(ae);
 }

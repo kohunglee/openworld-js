@@ -34,6 +34,8 @@ export const D = {  // 不同物体的索引
 
     // 画板
     board1: expandIndices([[289, 307]]), // 一楼画板
+    house1H3: expandIndices([[327, 376]]), // 三楼第一个屋的画板
+
 };
 
 /**

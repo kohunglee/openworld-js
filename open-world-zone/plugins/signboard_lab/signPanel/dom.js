@@ -234,6 +234,8 @@ export function showModal() {
 
     if (backdrop) backdrop.hidden = false;
     if (modal) modal.hidden = false;
+
+    globalThis.temp_isAreaEditor ??= new AreaEditor('textarea');  // 只执行一次
 }
 
 /**
