@@ -72,7 +72,7 @@ export function processFullState(insts, ccgxkObj) {
     if(true){
         symer.offset([
             ...D.exwall2h,  // 二楼外墙
-        ], -5, 2, 'y');  // 把二楼的墙，阵列上去
+        ], -5, 8, 'y');  // 把二楼的墙，阵列上去
 
         symer.offset([
             ...D.exwall2h,  // 二楼外墙
@@ -81,7 +81,7 @@ export function processFullState(insts, ccgxkObj) {
             ...D.stage002of2h,D.stage2h[1],  // 二楼楼梯02
             D.stage1hrail[1],D.stage1hrail[3],  // 台阶护栏
             ...D.rail3h,  // 小护栏
-        ], -5, 2, 'y');  // 把二楼的墙，阵列上去
+        ], -5, 8, 'y');  // 把二楼的墙，阵列上去
     }
 
     return 0;
