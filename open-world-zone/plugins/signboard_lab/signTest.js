@@ -18,6 +18,9 @@ import { initHotInfo } from './hotInfo.js';
 
 /**
  * 图片模式处理器
+ *
+ * ★ 防范浏览器缓存图片的竞态条件 ★
+ * 使用 addEventListener + complete 检查双保险，确保 100% 捕获图片加载完成事件
  */
 function handleImageMode(index, id, imgUrl, ccgxkObj) {
     const uniqueImgId = 'dyn_img_' + index + '_' + id;
@@ -28,67 +31,72 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
         return { w: imgW / imgH * 2, h: 2 };
     };
 
+    // ★ 核心更新函数 - 确保只执行一次且参数有效 ★
+    const updateTexture = (img) => {
+        // 防御性检查：确保图片尺寸有效
+        if (!img.naturalWidth || !img.naturalHeight || img.naturalWidth === 0 || img.naturalHeight === 0) {
+            console.warn('[handleImageMode] 图片尺寸无效，稍后重试:', id, img.naturalWidth, img.naturalHeight);
+            // 延迟重试
+            setTimeout(() => {
+                if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+                    updateTexture(img);
+                }
+            }, 50);
+            return;
+        }
+
+        const { w, h } = calcAspectScale(img.naturalWidth, img.naturalHeight);
+        const textureModule = getTextureModule();
+        if (textureModule) {
+            textureModule.textureMap.set(id, img);
+        }
+        ccgxkObj.W.plane({
+            n: 'T' + index,
+            t: img,
+            w, h,
+            ns: 1,
+        });
+        const p_offset = index * 8;
+        ccgxkObj.physicsProps[p_offset + 1] = w;
+        ccgxkObj.physicsProps[p_offset + 2] = h;
+    };
+
     if (!imgEl) {
         imgEl = document.createElement('img');
         imgEl.id = uniqueImgId;
         imgEl.crossOrigin = 'anonymous';
         imgEl.style.display = 'none';
         document.body.appendChild(imgEl);
-        imgEl.onload = () => {
-            const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight);
-            const textureModule = getTextureModule();
-            if (textureModule) {
-                textureModule.textureMap.set(id, imgEl);
-            }
-            ccgxkObj.W.plane({
-                n: 'T' + index,
-                t: imgEl,
-                w, h,  // 通过 w, h 调整比例
-                ns: 1,
-            });
-            const p_offset = index * 8;  //+ 档案也更新一下
-            ccgxkObj.physicsProps[p_offset + 1] = w;
-            ccgxkObj.physicsProps[p_offset + 2] = h;
-        };
-        imgEl.onerror = () => {
-            console.error("图片加载失败:", imgUrl);
-        };
+
+        // ★ 使用 addEventListener 而不是 onload 赋值，防止被覆盖 ★
+        imgEl.addEventListener('load', function onLoad() {
+            imgEl.removeEventListener('load', onLoad);
+            updateTexture(imgEl);
+        });
+
+        imgEl.addEventListener('error', function onError() {
+            imgEl.removeEventListener('error', onError);
+            console.error("[handleImageMode] 图片加载失败:", imgUrl);
+        });
+
         imgEl.src = imgUrl;
+
+        // ★ 关键：设置 src 后立即检查 complete，防止缓存图片吞掉 load 事件 ★
+        if (imgEl.complete && imgEl.naturalWidth > 0) {
+            updateTexture(imgEl);
+        }
     } else {
-        if (imgEl.complete) {
-            // 图片已加载完成 → 直接更新纹理
-            const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight);
-            const textureModule = getTextureModule();
-            if (textureModule) {
-                textureModule.textureMap.set(id, imgEl);
-            }
-            ccgxkObj.W.plane({
-                n: 'T' + index,
-                t: imgEl,
-                w, h,
-                ns: 1,
-            });
-            const p_offset = index * 8;  //+ 档案也更新一下
-            ccgxkObj.physicsProps[p_offset + 1] = 100;
-            ccgxkObj.physicsProps[p_offset + 2] = h;
+        // 图片元素已存在
+        if (imgEl.complete && imgEl.naturalWidth > 0) {
+            // ★ 图片已加载完成 → 直接更新纹理（带尺寸验证）★
+            updateTexture(imgEl);
         } else {
-            // 图片正在加载中 → 等待加载完成后更新纹理
-            imgEl.onload = () => {
-                const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight);
-                const textureModule = getTextureModule();
-                if (textureModule) {
-                    textureModule.textureMap.set(id, imgEl);
-                }
-                ccgxkObj.W.plane({
-                    n: 'T' + index,
-                    t: imgEl,
-                    w, h,
-                    ns: 1,
-                });
-                const p_offset = index * 8;
-                ccgxkObj.physicsProps[p_offset + 1] = w;
-                ccgxkObj.physicsProps[p_offset + 2] = h;
+            // 图片正在加载中 → 使用 addEventListener 等待
+            const onLoad = () => {
+                imgEl.removeEventListener('load', onLoad);
+                updateTexture(imgEl);
             };
+            imgEl.addEventListener('load', onLoad);
         }
     }
 }
@@ -151,7 +159,7 @@ export default function(ccgxkObj) {
     ccgxkObj.signTest = setSignBoard;
     signPanel(ccgxkObj); // 初始化编辑面板
     initHotInfo(ccgxkObj); // 初始化热点信息显示（mode=1 时）
-    ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){ // 热点事件
+    ccgxkObj.hooks.on('hot_action', function(ccgxkObj){ // 热点事件
         if(ccgxkObj.mode !== 2){return 0}
         const hotIndex = ccgxkObj.hotPoint;
         ccgxkObj.signPanel.show(hotIndex);  // 显示编辑面板

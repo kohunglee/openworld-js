@@ -7,7 +7,6 @@
  */
 
 import mydata from './data.js';
-// import { IS_FULL_STATE } from './constants.js';
 import { processFullState } from './full_state.js';
 
 export default function(ccgxkObj) {
