@@ -96,7 +96,7 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
 /**
  * 设置信息板系统
  */
-const setSignBoard = async (instData, ccgxkObj, offsetValue = {x:0}) => {
+const setSignBoard = async (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2) => {
     ccgxkObj.errExpRatio = 200;
 
     await initData(); // 先从 API 加载数据
@@ -134,7 +134,7 @@ const setSignBoard = async (instData, ccgxkObj, offsetValue = {x:0}) => {
     ccgxkObj.dataProc.process({
         data: instData,
         name: 'build_lab_signBoard',
-        type: 2,
+        type: wskType,  // 默认为 2
         model: 'plane',
         mixValue: 0.8,
         invisible: false,

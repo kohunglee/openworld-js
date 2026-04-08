@@ -77,9 +77,6 @@ const W = {
           out vec4 c;
           void main() {
             vec2 final_uv = v_uv.xy;  //+ 新增纹理面修正逻辑，修复纹理面翻转问题
-            if (!gl_FrontFacing) {
-              final_uv.x = 1.0 - final_uv.x;
-            }
             c = mix(texture(sampler, final_uv * tiling), v_col, o[3]);
             if(o[1] > 0.){
               c = vec4(
