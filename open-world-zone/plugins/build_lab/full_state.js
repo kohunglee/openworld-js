@@ -6,8 +6,9 @@ import { COLORS, D } from './constants.js';
 
 export function processFullState(insts, ccgxkObj) {
     
-    let isok = false;
+    let isok = false;if(ccgxkObj.mode !== 0){isok = true}
     isok = true;
+
 
     // 装修（数据破坏型）
     if(isok){

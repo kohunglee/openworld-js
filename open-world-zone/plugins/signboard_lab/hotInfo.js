@@ -73,7 +73,6 @@ const styleCode = `
 }
 
 .sign-hot-info-view-original a {
-    color: #3b82f6;
     cursor: pointer;
     text-decoration: underline;
     font-size: 13px;
@@ -120,6 +119,9 @@ const htmlTemplate = `
         </div>
         <div class="sign-hot-info-view-original" id="signHotInfoViewOriginal" style="display: none;">
             <a>[查看原图]</a>
+        </div>
+        <div class="sign-hot-info-view-original" id="signHotInfoCopyText" style="display: none;">
+            <a>[复制原文]</a>
         </div>
         <div class="sign-hot-info-remark" id="signHotInfoRemark" style="display: none;"></div>
     </div>
@@ -208,12 +210,19 @@ function updateHotInfo(hotIndex) {
     }
 
     // 检测是否是图片模式，显示查看原图链接
+    const copyTextDiv = document.getElementById('signHotInfoCopyText');
     if (info.mode === 'image' && info.imgUrl) {
         viewOriginalDiv.style.display = 'block';
+        copyTextDiv.style.display = 'none';
         // 存储当前图片URL到链接元素上
         viewOriginalDiv.dataset.imgUrl = info.imgUrl;
+    } else if (info.mode === 'text' && info.t) {
+        viewOriginalDiv.style.display = 'none';
+        copyTextDiv.style.display = 'block';
+        copyTextDiv.dataset.text = info.t;
     } else {
         viewOriginalDiv.style.display = 'none';
+        copyTextDiv.style.display = 'none';
         viewOriginalDiv.dataset.imgUrl = '';
     }
 
@@ -291,6 +300,29 @@ export function initHotInfo(ccgxkObj) {
         if (imgUrl) {
             overlayImg.src = imgUrl;
             overlay.style.display = 'flex';
+        }
+    });
+
+    // 复制原文链接点击事件
+    const copyTextDiv = document.getElementById('signHotInfoCopyText');
+    copyTextDiv.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const text = copyTextDiv.dataset.text;
+        if (text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                // 显示复制成功提示
+                const linkEl = copyTextDiv.querySelector('a');
+                const originalText = linkEl.textContent;
+                linkEl.textContent = '[已复制]';
+                setTimeout(() => {
+                    linkEl.textContent = originalText;
+                }, 1500);
+            } catch (err) {
+                console.error('[HotInfo] 复制失败:', err);
+            }
         }
     });
 
