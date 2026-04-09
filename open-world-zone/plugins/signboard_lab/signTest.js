@@ -119,15 +119,17 @@ const setSignBoard = async (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2
             } else if (mode === 'image') {
                 drawSmartText(ctx, width, height, 'handleImageMode...');
                 handleImageMode(index, id, info.imgUrl, ccgxkObj);
+            } else if (mode === 'empty') {
+                drawSmartText(ctx, width, height, id);
             }
 
             ccgxkObj.W.next['T' + index].hidden = false;
             _this.indexToArgs.get(index).isInvisible = false;
 
         } else {
-            // 没有数据 → 触发懒加载
+            // 没有数据 → 触发懒加载，先显示 ID
             lazyLoadSign(id);
-            drawSmartText(ctx, width, height, 'lazyLoadSign...');
+            drawSmartText(ctx, width, height, id + '...');
         }
     });
 

@@ -88,6 +88,9 @@ async function doBatchFetch() {
                     signContentMap.set(board.id, { mode: 'text', t: board.content, extra: board.extra });
                 } else if (board.mode === 'image') {
                     signContentMap.set(board.id, { mode: 'image', imgUrl: board.content, extra: board.extra });
+                } else if (board.mode === 'empty' || !board.mode) {
+                    // 没有内容 → 标记为空
+                    signContentMap.set(board.id, { mode: 'empty' });
                 }
 
                 // 触发重绘
@@ -96,6 +99,16 @@ async function doBatchFetch() {
                 }
             }
             console.log(`[Store] 懒加载 ${data.boards.length} 个信息板`);
+        }
+
+        // 处理请求了但没有返回数据的 ID（服务器没有这些板子）
+        for (const id of ids) {
+            if (!signContentMap.has(id)) {
+                signContentMap.set(id, { mode: 'empty' });
+                if (typeof window.updateSign === 'function') {
+                    window.updateSign(id, id, 'text', {});
+                }
+            }
         }
     } catch (e) {
         console.error('[Store] 批量获取失败:', e);

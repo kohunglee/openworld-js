@@ -110,6 +110,11 @@ export function processFullState(insts, ccgxkObj) {
             if (insts[i]) {
                 insts[i].dz ??= 4;
                 insts[i].st = 1;
+
+                if( +(insts[i].z).toFixed(3) === -11.982){  // 弄一下西墙的画板
+                    insts[i].z = -11.732;
+                }
+
                 insts[i].t = 'house1H3-' + (sign_index++);
                 arrC.push({ ...insts[i] });
                 insts[i] = { "del": 1 };
