@@ -16,30 +16,30 @@ import { initSSE } from './hotUpdate.js';
 import signPanel from './signPanel.js';
 import { initHotInfo } from './hotInfo.js';
 
+// 计算出 画板 应该有的宽度（高度）
+const calcAspectScale = (imgW, imgH, canvasH) => {
+    return { w: imgW / imgH * canvasH, h: canvasH };
+};
+
+// 把 图 放进 画板 内
+const applyImage = (imgEl, ccgxkObj, index, id) => {
+    const p_offset = index * 8;
+    const canvasH = ccgxkObj.physicsProps[p_offset + 2] || 1;
+    const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight, canvasH);
+    const textureModule = getTextureModule();
+    if (textureModule) textureModule.textureMap.set(id, imgEl);
+    ccgxkObj.W.plane({ n: 'T' + index, t: imgEl, w, h, ns: 1 });
+    ccgxkObj.physicsProps[p_offset + 1] = w;
+    ccgxkObj.physicsProps[p_offset + 2] = h;
+};
+
 /**
- * 图片模式处理器
+ * 图片 画板 处理器
  */
 function handleImageMode(index, id, imgUrl, ccgxkObj) {
-    const uniqueImgId = 'dyn_img_' + index + '_' + id;
-    let imgEl = document.getElementById(uniqueImgId);
-
-    // 保持画布原有高度，宽度按图片比例自适应
-    const calcAspectScale = (imgW, imgH, canvasH) => {
-        return { w: imgW / imgH * canvasH, h: canvasH };
-    };
-
-    const applyImage = (imgEl, ccgxkObj, index, id) => {
-        const p_offset = index * 8;
-        const canvasH = ccgxkObj.physicsProps[p_offset + 2] || 1;
-        const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight, canvasH);
-        const textureModule = getTextureModule();
-        if (textureModule) textureModule.textureMap.set(id, imgEl);
-        ccgxkObj.W.plane({ n: 'T' + index, t: imgEl, w, h, ns: 1 });
-        ccgxkObj.physicsProps[p_offset + 1] = w;
-        ccgxkObj.physicsProps[p_offset + 2] = h;
-    };
-
-    if (!imgEl) {
+    const uniqueImgId = 'dyn_img_' + index + '_' + id;  // 画板ID
+    let imgEl = document.getElementById(uniqueImgId);   // 看看有没有图
+    if (!imgEl) {  // 首次加载图
         imgEl = document.createElement('img');
         imgEl.id = uniqueImgId;
         imgEl.crossOrigin = 'anonymous';
@@ -48,9 +48,9 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
         imgEl.onload = () => applyImage(imgEl, ccgxkObj, index, id);
         imgEl.onerror = () => console.error("图片加载失败:", imgUrl);
         imgEl.src = imgUrl;
-    } else if (imgEl.complete) {
+    } else if (imgEl.complete) {  // 内存已经有图片了
         applyImage(imgEl, ccgxkObj, index, id);
-    } else {
+    } else {  // 图片加载中... 等待
         imgEl.onload = () => applyImage(imgEl, ccgxkObj, index, id);
     }
 }
@@ -59,8 +59,7 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
  * 设置信息板系统
  */
 const setSignBoard = async (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2) => {
-    ccgxkObj.errExpRatio = 200;
-
+    ccgxkObj.errExpRatio = 200;  // 图片的质量（以100为基准）
     await initData(); // 先从 API 加载数据
 
     // 挂载纹理 HOOK
@@ -112,7 +111,7 @@ const setSignBoard = async (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2
 // ── 导出入口 ──
 
 export default function(ccgxkObj) {
-    ccgxkObj.signTest = setSignBoard;
+    ccgxkObj.signTest = setSignBoard;  // 设置画板的业务逻辑
     signPanel(ccgxkObj); // 初始化编辑面板
     initHotInfo(ccgxkObj); // 初始化热点信息显示（mode=1 时）
     ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){ // 热点事件
