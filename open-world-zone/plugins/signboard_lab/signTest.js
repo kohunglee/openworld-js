@@ -23,9 +23,20 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
     const uniqueImgId = 'dyn_img_' + index + '_' + id;
     let imgEl = document.getElementById(uniqueImgId);
 
-    // h 固定为 1，w 根据图片比例自适应
-    const calcAspectScale = (imgW, imgH) => {
-        return { w: imgW / imgH * 2, h: 2 };
+    // 保持画布原有高度，宽度按图片比例自适应
+    const calcAspectScale = (imgW, imgH, canvasH) => {
+        return { w: imgW / imgH * canvasH, h: canvasH };
+    };
+
+    const applyImage = (imgEl, ccgxkObj, index, id) => {
+        const p_offset = index * 8;
+        const canvasH = ccgxkObj.physicsProps[p_offset + 2] || 1;
+        const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight, canvasH);
+        const textureModule = getTextureModule();
+        if (textureModule) textureModule.textureMap.set(id, imgEl);
+        ccgxkObj.W.plane({ n: 'T' + index, t: imgEl, w, h, ns: 1 });
+        ccgxkObj.physicsProps[p_offset + 1] = w;
+        ccgxkObj.physicsProps[p_offset + 2] = h;
     };
 
     if (!imgEl) {
@@ -34,65 +45,13 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
         imgEl.crossOrigin = 'anonymous';
         imgEl.style.display = 'none';
         document.body.appendChild(imgEl);
-        imgEl.onload = () => {
-            // console.log('001');
-            const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight);
-            const textureModule = getTextureModule();
-            if (textureModule) {
-                textureModule.textureMap.set(id, imgEl);
-            }
-            ccgxkObj.W.plane({
-                n: 'T' + index,
-                t: imgEl,
-                w, h,  // 通过 w, h 调整比例
-                ns: 1,
-            });
-            const p_offset = index * 8;  //+ 档案也更新一下
-            ccgxkObj.physicsProps[p_offset + 1] = w;
-            ccgxkObj.physicsProps[p_offset + 2] = h;
-        };
-        imgEl.onerror = () => {
-            console.error("图片加载失败:", imgUrl);
-        };
+        imgEl.onload = () => applyImage(imgEl, ccgxkObj, index, id);
+        imgEl.onerror = () => console.error("图片加载失败:", imgUrl);
         imgEl.src = imgUrl;
+    } else if (imgEl.complete) {
+        applyImage(imgEl, ccgxkObj, index, id);
     } else {
-        if (imgEl.complete) {
-            // 图片已加载完成 → 直接更新纹理
-            // console.log('002');
-            const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight);
-            const textureModule = getTextureModule();
-            if (textureModule) {
-                textureModule.textureMap.set(id, imgEl);
-            }
-            ccgxkObj.W.plane({
-                n: 'T' + index,
-                t: imgEl,
-                w, h,
-                ns: 1,
-            });
-            const p_offset = index * 8;  //+ 档案也更新一下
-            ccgxkObj.physicsProps[p_offset + 1] = 100;
-            ccgxkObj.physicsProps[p_offset + 2] = h;
-        } else {
-            // 图片正在加载中 → 等待加载完成后更新纹理
-            imgEl.onload = () => {
-                // console.log('003');
-                const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight);
-                const textureModule = getTextureModule();
-                if (textureModule) {
-                    textureModule.textureMap.set(id, imgEl);
-                }
-                ccgxkObj.W.plane({
-                    n: 'T' + index,
-                    t: imgEl,
-                    w, h,
-                    ns: 1,
-                });
-                const p_offset = index * 8;
-                ccgxkObj.physicsProps[p_offset + 1] = w;
-                ccgxkObj.physicsProps[p_offset + 2] = h;
-            };
-        }
+        imgEl.onload = () => applyImage(imgEl, ccgxkObj, index, id);
     }
 }
 
