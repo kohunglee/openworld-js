@@ -29,6 +29,22 @@ class SymOffset {
                     agent[axis] -= (orig[axis] - axes[axis]) * 2;
                     const rot = (axis === 'z') ? 'x' : 'z';
                     if (agent['r' + rot]) agent['r' + rot] = -orig['r' + rot];
+                    if(axis === 'z'){  // 尝试修复 bug（我不明白原理，我只是在根据现象硬修，请注意！!!）
+                        if( (agent['rx'] + agent['rz'] === 0) 
+                            && ( Math.abs(agent['rx']) === 180 && Math.abs(agent['rz']) === 180 )
+                        ) {
+                            agent['rx'] = 0;
+                            agent['rz'] = 0;
+                        } else {
+                            if( isNonZeroNumber(agent['rx']) || isNonZeroNumber(agent['rz']) ){
+
+                            } else {
+                                agent['rz'] = 180;
+                                agent['rx'] = 180;
+                            }
+                            
+                        }
+                    }
                 }
             });
             return this.data.push(agent) - 1; // 返回新生成的索引
@@ -81,4 +97,9 @@ class SymOffset {
 export default function(ccgxkObj) {
     // console.log(' SymOffset 插件加载成功');
     ccgxkObj.SymOffset = SymOffset;
+}
+
+function isNonZeroNumber(value) {
+  // 核心三个条件：是数字类型 + 不是NaN + 严格不等于0
+  return typeof value === 'number' && !isNaN(value) && value !== 0;
 }

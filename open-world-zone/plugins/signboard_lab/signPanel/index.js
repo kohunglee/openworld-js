@@ -249,6 +249,6 @@ export default function createSignPanel(ccgxkObj) {
     // 启用全局 tab 友好
     var ae = document.createElement('script');  // 所有的 textarea 都 tab 友好
     ae.src = './assest/areaeditor.js';
-    ae.onload = function() { new AreaEditor('textarea'); console.log('yes'); };
+    ae.onload = function() { new AreaEditor('textarea') };
     document.head.appendChild(ae);
 }

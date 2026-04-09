@@ -81,7 +81,7 @@ export function processFullState(insts, ccgxkObj) {
         }
 
         // 二楼三楼向上的阵列
-        if(false){
+        if(true){
             const floorValue = 4;  // 总层数
 
             D.exwall2h.push( ...symer.offset([...D.exwall2h,], -5, floorValue - 1, 'y') );  // 二楼外墙
@@ -95,6 +95,7 @@ export function processFullState(insts, ccgxkObj) {
 
             symer.offset([
                 ...D.inwall3h, ...D.rail3h, ...D.inXWall3h, ...D.inXWall3h002, // 二楼的建筑
+                // ...D.house1H3,  // 二楼的画板
             ], -5, floorValue - 2, 'y');  // 把二楼的墙，阵列上去
         }
     }
