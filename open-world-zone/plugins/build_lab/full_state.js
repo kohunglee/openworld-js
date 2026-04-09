@@ -7,7 +7,7 @@ import { COLORS, D } from './constants.js';
 export function processFullState(insts, ccgxkObj) {
     
     let isok = false;if(ccgxkObj.mode !== 0){isok = true}
-    isok = true;
+    // isok = true;
 
 
     // 装修（数据破坏型）
@@ -108,7 +108,7 @@ export function processFullState(insts, ccgxkObj) {
         const arrC = [];  //+ 提取信息板属性到 arrC
         let sign_index = 1;
 
-        console.log('一共有 ' + D.house1H3.length + ' 个画板');
+        console.log('楼上，一共有 ' + D.house1H3.length + ' 个画板');
 
         D.house1H3.forEach(i => {
             if (insts[i]) {
@@ -125,7 +125,18 @@ export function processFullState(insts, ccgxkObj) {
             }
         });
         ccgxkObj.signTest(arrC, ccgxkObj, {x:0}, 1);
-        
+
+        const arrD = [];  //+ 提取信息板属性到 arrC
+        D.board1h.forEach(i => {
+            if (insts[i]) {
+                insts[i].dz ??= 3;
+                insts[i].st = 1;
+                insts[i].t = 'board1h-' + (sign_index++);
+                arrD.push({ ...insts[i] });
+                insts[i] = { "del": 1 };
+            }
+        });
+        ccgxkObj.signTest(arrD, ccgxkObj, {x:0}, 1);
     }
 
 

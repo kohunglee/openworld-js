@@ -95,7 +95,12 @@ export default function(ccgxkObj) {
     // 角色速度控制
     // ========================
     document.querySelectorAll('input[name="speed"]').forEach(r => {
-        r.addEventListener("change", (e) => ccgxkObj.WALK_SPEED = 1 / e.target.value);
+        r.addEventListener("change", (e) => {
+            const val = e.target.value;
+            ccgxkObj.WALK_SPEED = 1 / val;
+            ccgxkObj.world.gravity.set(0, val == 50 ? -0.82 : -9.82, 0);
+            ccgxkObj.jumpYVel = val == 50 ? 0.5 : 5;
+        });
     });
 
     // ========================
