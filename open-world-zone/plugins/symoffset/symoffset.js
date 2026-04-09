@@ -23,27 +23,28 @@ class SymOffset {
             if (this.config.notSymOff) return 0;
             const orig = this.data[idx];
             const agent = { ...orig };
-
             ["x", "y", "z"].forEach(axis => {
                 if (axes[axis] !== undefined) {
                     agent[axis] -= (orig[axis] - axes[axis]) * 2;
                     const rot = (axis === 'z') ? 'x' : 'z';
                     if (agent['r' + rot]) agent['r' + rot] = -orig['r' + rot];
-                    if(axis === 'z'){  // 尝试修复 bug（我不明白原理，我只是在根据现象硬修，请注意！!!）
-                        if( (agent['rx'] + agent['rz'] === 0) 
-                            && ( Math.abs(agent['rx']) === 180 && Math.abs(agent['rz']) === 180 )
-                        ) {
-                            agent['rx'] = 0;
-                            agent['rz'] = 0;
-                        } else {
-                            if( isNonZeroNumber(agent['rx']) || isNonZeroNumber(agent['rz']) ){
-
+                    if(axis === 'z'  && agent['d'] === 0.001){  // ⚠️ 临时尝试修复 bug（我不明白原理，我只是在根据现象硬修，请注意！!!）
+                        const zzz = (agent['z']).toFixed(3);
+                        if( +zzz === -11.982 || +zzz === -4.652 ){
+                            if( (agent['rx'] + agent['rz'] === 0) 
+                                && ( Math.abs(agent['rx']) === 180 && Math.abs(agent['rz']) === 180 )
+                            ) {
+                                agent['rx'] = 0;
+                                agent['rz'] = 0;
                             } else {
-                                agent['rz'] = 180;
-                                agent['rx'] = 180;
+                                if( isNonZeroNumber(agent['rx']) || isNonZeroNumber(agent['rz']) ){
+                                } else {
+                                    agent['rz'] = 180;
+                                    agent['rx'] = 180;
+                                }
                             }
-                            
                         }
+                        
                     }
                 }
             });
