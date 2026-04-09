@@ -35,6 +35,7 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
         imgEl.style.display = 'none';
         document.body.appendChild(imgEl);
         imgEl.onload = () => {
+            // console.log('001');
             const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight);
             const textureModule = getTextureModule();
             if (textureModule) {
@@ -57,6 +58,7 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
     } else {
         if (imgEl.complete) {
             // 图片已加载完成 → 直接更新纹理
+            // console.log('002');
             const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight);
             const textureModule = getTextureModule();
             if (textureModule) {
@@ -74,6 +76,7 @@ function handleImageMode(index, id, imgUrl, ccgxkObj) {
         } else {
             // 图片正在加载中 → 等待加载完成后更新纹理
             imgEl.onload = () => {
+                // console.log('003');
                 const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight);
                 const textureModule = getTextureModule();
                 if (textureModule) {
@@ -117,7 +120,7 @@ const setSignBoard = async (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2
             if (mode === 'text') {
                 drawSmartText(ctx, width, height, info.t);
             } else if (mode === 'image') {
-                drawSmartText(ctx, width, height, 'handleImageMode...');
+                drawSmartText(ctx, width, height, 'Loading...');
                 handleImageMode(index, id, info.imgUrl, ccgxkObj);
             } else if (mode === 'empty') {
                 drawSmartText(ctx, width, height, id);
@@ -129,7 +132,7 @@ const setSignBoard = async (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2
         } else {
             // 没有数据 → 触发懒加载，先显示 ID
             lazyLoadSign(id);
-            drawSmartText(ctx, width, height, id + '...');
+            drawSmartText(ctx, width, height, id + '(...)');
         }
     });
 

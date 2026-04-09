@@ -92,6 +92,13 @@ export default function(ccgxkObj) {
     $("fovReset")?.addEventListener("click", () => setFov(DEFAULT_FOV));
 
     // ========================
+    // 角色速度控制
+    // ========================
+    document.querySelectorAll('input[name="speed"]').forEach(r => {
+        r.addEventListener("change", (e) => ccgxkObj.WALK_SPEED = 1 / e.target.value);
+    });
+
+    // ========================
     // 服务器地址配置
     // ========================
     initServerConfig($, (newAddress) => {
@@ -201,6 +208,15 @@ const htmlCode = `
             <input type="range" id="fovSlider" min="1" max="120" value="60" step="1" style="flex:1">
             <span id="fovValue" style="min-width:35px;text-align:right">60°</span>
             <button id="fovReset" style="padding:2px 8px;font-size:12px">还原</button>
+        </div>
+        <hr>
+    </div>
+
+    <div>
+        <h3>角色速度</h3>
+        <div style="display:flex;gap:16px;margin:8px 0">
+            <label><input type="radio" name="speed" value="50"> 慢</label>
+            <label><input type="radio" name="speed" value="8" checked> 正常</label>
         </div>
         <hr>
     </div>

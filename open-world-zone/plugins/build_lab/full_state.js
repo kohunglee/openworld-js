@@ -13,7 +13,7 @@ export function processFullState(insts, ccgxkObj) {
     // 装修（数据破坏型）
     if(isok){
         ['textureGetCubeData'].forEach(id => document.getElementById(id)?.remove());  // 防止误点
-        const symer = new ccgxkObj.SymOffset(insts, ccgxkObj);  // 初始化对称工具
+        const symoff = new ccgxkObj.SymOffset(insts, ccgxkObj);  // 初始化对称工具
 
         insts.forEach(item => { //+ 全部涂装颜色
             if (!item.b) item.b = "#ff0000";
@@ -55,48 +55,50 @@ export function processFullState(insts, ccgxkObj) {
         
         // 一楼二楼台阶的阵列
         if(true){
-            symer.offset(D.stage1h, 0.94, 16, 'x', 0.3, 'y');  // 阵列 1 楼台阶
-            D.stage001of2h = symer.offset([D.stage2h[0]], 0.7, 16, 'z', 0.3, 'y');  // 阵列 2 楼台阶 1
-            D.stage002of2h = symer.offset([D.stage2h[1]], -0.7, 16, 'z', 0.3, 'y');  // 阵列 2 楼台阶 2
+            symoff.offset(D.stage1h, 0.94, 16, 'x', 0.3, 'y');  // 阵列 1 楼台阶
+            D.stage001of2h = symoff.offset([D.stage2h[0]], 0.7, 16, 'z', 0.3, 'y');  // 阵列 2 楼台阶 1
+            D.stage002of2h = symoff.offset([D.stage2h[1]], -0.7, 16, 'z', 0.3, 'y');  // 阵列 2 楼台阶 2
         }
 
         // 三楼内墙的阵列逻辑
         if(true){
-            D.inwall3h.push(...symer.offset(D.inXWall3h, 10.1, 2, 'x'));  
-            D.inwall3h.push(...symer.offset(D.inXWall3h, 15.05, 2, 'x'));
-            const temp = symer.offset(D.inXWall3h002, 5, 5, 'x');
+            D.inwall3h.push(...symoff.offset(D.inXWall3h, 10.1, 2, 'x'));  
+            D.inwall3h.push(...symoff.offset(D.inXWall3h, 15.05, 2, 'x'));
+            const temp = symoff.offset(D.inXWall3h002, 5, 5, 'x');
             D.inwall3h.push( ...temp, ...D.inXWall3h002 );
         }
 
         // 三楼画板的阵列
         if(true) {
-            D.house1H3.push( ...symer.offset(D.house1H3, 5, 5, 'x') );
+            D.house1H3.push( ...symoff.offset(D.house1H3, 5, 5, 'x') );
         }
 
         // 前三层的一些对称
         if(true){
-            D.stage1hrail.push(...symer.symo(D.stage1hrail, {z:5.539}));  // 对称楼梯护栏
-            D.inwall3h.push( ...symer.symo(D.inwall3h, {z:5.539}) );  // 对称三楼的建筑
-            D.house1H3.push( ...symer.symo(D.house1H3, {z:5.539}) );  // 对称三楼的左侧的画板
+            D.stage1hrail.push(...symoff.symo(D.stage1hrail, {z:5.539}));  // 对称楼梯护栏
+            D.inwall3h.push( ...symoff.symo(D.inwall3h, {z:5.539}) );  // 对称三楼的建筑
+            D.house1H3.push( ...symoff.symo(D.house1H3, {z:5.539}) );  // 对称三楼的左侧的画板
         }
 
         // 二楼三楼向上的阵列
         if(true){
-            const floorValue = 4;  // 总层数
+            const floorValue = 5;  // 总层数
 
-            D.exwall2h.push( ...symer.offset([...D.exwall2h,], -5, floorValue - 1, 'y') );  // 二楼外墙
+            D.exwall2h.push( ...symoff.offset([...D.exwall2h,], -5, floorValue - 1, 'y') );  // 二楼外墙
 
-            symer.offset([
+            symoff.offset([
                 ...D.floor3h,   // 三楼的地板
                 ...D.stage001of2h,D.stage2h[0],  // 二楼楼梯01
                 ...D.stage002of2h,D.stage2h[1],  // 二楼楼梯02
                 D.stage1hrail[1],D.stage1hrail[3],  // 台阶护栏
             ], -5, floorValue - 1, 'y');  // 把二楼的墙，阵列上去
 
-            symer.offset([
+            symoff.offset([
                 ...D.inwall3h, ...D.rail3h, ...D.inXWall3h, ...D.inXWall3h002, // 二楼的建筑
                 // ...D.house1H3,  // 二楼的画板
             ], -5, floorValue - 2, 'y');  // 把二楼的墙，阵列上去
+
+            D.house1H3.push( ...symoff.offset(D.house1H3, -5, floorValue - 2, 'y') );
         }
     }
 
@@ -105,6 +107,8 @@ export function processFullState(insts, ccgxkObj) {
         ['textureGetCubeData'].forEach(id => document.getElementById(id)?.remove());  // 防止误点
         const arrC = [];  //+ 提取信息板属性到 arrC
         let sign_index = 1;
+
+        console.log('一共有 ' + D.house1H3.length + ' 个画板');
 
         D.house1H3.forEach(i => {
             if (insts[i]) {
@@ -158,7 +162,7 @@ export function processFullState(insts, ccgxkObj) {
         });
     }
 
-    symer.offset([93], -0.9, 8, 'x', -0.48, 'y');  // 阵列台阶
+    symoff.offset([93], -0.9, 8, 'x', -0.48, 'y');  // 阵列台阶
 
     
 
