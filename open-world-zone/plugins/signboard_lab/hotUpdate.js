@@ -15,12 +15,12 @@ window.updateSign = function(boardId, content, mode = 'text', extra = {}) {
     if (!ccgxkObj) { console.error('[updateSign] 引擎未就绪'); return; }
     const { index } = info;
     const nID = 'T' + index;
-    const random = ((Math.random() * 1e7) | 0);
+    const random = ((Math.random() * 1e7) | 0);  // 莫名其妙的 bug，需要用 random 后缀强制刷新
     if (mode === 'text') {
         signContentMap.set(boardId, { mode: 'text', t: content, extra });
     } else if (mode === 'image') {
         signContentMap.set(boardId, { mode: 'image', imgUrl: content, extra });          // 面板读取
-        signContentMap.set(boardId + random, { mode: 'image', imgUrl: content, extra }); // hook 查找
+        signContentMap.set(boardId + random, { mode: 'image', imgUrl: content, extra }); // hook 查找（保险）
     }
     if (textureModule) {  // 清除缓存（多重保险）
         textureModule.textureMap.delete(boardId);
@@ -30,13 +30,13 @@ window.updateSign = function(boardId, content, mode = 'text', extra = {}) {
     if (mode === 'image') {  // image 模式：移除旧 img DOM，用 random 后缀对抗浏览器图片缓存
         const uniqueImgId = 'dyn_img_' + index + '_' + boardId;
         document.getElementById(uniqueImgId)?.remove();
-        ccgxkObj.W.plane({ n: nID, t: boardId + random });  // 更新纹理（用 random 后缀强制刷新）
-        ccgxkObj.indexToArgs.get(index).texture = boardId + random;
+        ccgxkObj.W.plane({ n: nID, t: boardId + random });  // 更新纹理
+        ccgxkObj.indexToArgs.get(index).texture = boardId + random;  
     } else {
         ccgxkObj.W.plane({ n: nID, t: boardId });
         ccgxkObj.indexToArgs.get(index).texture = boardId;
     }
-    ccgxkObj.currentlyActiveIndices.delete(index);
+    ccgxkObj.currentlyActiveIndices.delete(index);  // 让引擎重新加载一次图片
 };
 
 // SSE 客户端（带自动重连）
@@ -51,7 +51,6 @@ export function initSSE() {
         clearTimeout(reconnectTimer);
         reconnectTimer = null;
     }
-
     try {
         const apiBase = getApiBase();
         es = new EventSource(`${apiBase}/api/signs/stream`);

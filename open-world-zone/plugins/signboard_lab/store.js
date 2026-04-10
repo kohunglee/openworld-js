@@ -1,7 +1,7 @@
 /**
- * 获取数据用的模块
+ * 获取数据
  * 
- * 请求了，懒加载了等等
+ * 请求了，懒加载（每 100 毫秒汇总一次，集中请求）了等等
  */
 
 import { getApiBase } from './config.js';
@@ -74,7 +74,7 @@ async function doBatchFetch() {
                 } else if (board.mode === 'empty' || !board.mode) {
                     signContentMap.set(board.id, { mode: 'empty' });  // 没有内容 → 标记为空
                 }
-                if (typeof window.updateSign === 'function') {  // 触发重绘（不懂，什么意思？）
+                if (typeof window.updateSign === 'function') {  // 重绘（如果存在重绘函数，也就是热更新函数）
                     window.updateSign(board.id, board.content, board.mode, board.extra || {});
                 }
             }
