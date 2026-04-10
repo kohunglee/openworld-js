@@ -139,8 +139,8 @@ export function initHotInfo(ccgxkObj) {
 
     // SSE 更新时重新加载数据
     const originalUpdateSign = window.updateSign;
-    window.updateSign = function(boardId, content, mode, extra) {
-        if (originalUpdateSign) originalUpdateSign(boardId, content, mode, extra);
+    window.updateSign = function(boardId, content, mode, extra, fromServer) {
+        if (originalUpdateSign) originalUpdateSign(boardId, content, mode, extra, fromServer);
         loadBoardsData();
     };
 }
