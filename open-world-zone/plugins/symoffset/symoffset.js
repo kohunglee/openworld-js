@@ -30,7 +30,7 @@ class SymOffset {
                     if (agent['r' + rot]) agent['r' + rot] = -orig['r' + rot];
                     if(axis === 'z'  && agent['d'] === 0.001){  // ⚠️ 临时尝试修复 bug（我不明白原理，我只是在根据现象硬修，请注意！!!）
                         const zzz = (agent['z']).toFixed(3);
-                        if( +zzz === -11.982 || +zzz === -4.652 ){
+                        if( +zzz === -11.982 || +zzz === -4.652 || +zzz === -4.447 ){
                             if( (agent['rx'] + agent['rz'] === 0) 
                                 && ( Math.abs(agent['rx']) === 180 && Math.abs(agent['rz']) === 180 )
                             ) {
