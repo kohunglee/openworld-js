@@ -14,11 +14,7 @@ export const THEME = {
 const STORAGE_KEY = 'signboard_server_address';
 const DEFAULT_ADDRESS = '127.0.0.1:8899';  // 默认地址
 
-/**
- * 获取 API 的基 URL
- * 
- * 动态从 localStorage 读取
- */
+// 获取 API 的 base URL
 export function getApiBase() {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored || 'http://' + DEFAULT_ADDRESS;
