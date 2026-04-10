@@ -181,8 +181,7 @@ function updateHotInfo(hotIndex) {
     const info = signContentMap.get(boardId);
     console.log('[HotInfo] boardId:', boardId, 'info:', info);
     if (!info) {
-        // 尝试懒加载
-        lazyLoadSign(boardId);
+        lazyLoadSign(boardId);  // 尝试懒加载
         container.style.display = 'none';
         return;
     }
@@ -214,8 +213,7 @@ function updateHotInfo(hotIndex) {
     if (info.mode === 'image' && info.imgUrl) {
         viewOriginalDiv.style.display = 'block';
         copyTextDiv.style.display = 'none';
-        // 存储当前图片URL到链接元素上
-        viewOriginalDiv.dataset.imgUrl = info.imgUrl;
+        viewOriginalDiv.dataset.imgUrl = info.imgUrl;  // 存储当前图片URL到链接元素上
     } else if (info.mode === 'text' && info.t) {
         viewOriginalDiv.style.display = 'none';
         copyTextDiv.style.display = 'block';
@@ -232,8 +230,7 @@ function updateHotInfo(hotIndex) {
     const remark = extra.remark;
     console.log('[HotInfo] remark:', remark);
     if (remark) {
-        // 检测是否是 HTML 格式（以 < 开头且包含 >）
-        const isHtml = /^\s*</.test(remark) && remark.includes('>');
+        const isHtml = /^\s*</.test(remark) && remark.includes('>');  // 检测是否是 HTML 格式（以 < 开头且包含 >）
         if (isHtml) {
             remarkDiv.innerHTML = remark;
         } else {
@@ -319,8 +316,7 @@ export function initHotInfo(ccgxkObj) {
         if (text) {
             try {
                 await navigator.clipboard.writeText(text);
-                // 显示复制成功提示
-                const linkEl = copyTextDiv.querySelector('a');
+                const linkEl = copyTextDiv.querySelector('a'); //+ 显示复制成功提示
                 const originalText = linkEl.textContent;
                 linkEl.textContent = '[已复制]';
                 setTimeout(() => {
@@ -339,9 +335,6 @@ export function initHotInfo(ccgxkObj) {
         overlay.style.display = 'none';
         overlayImg.src = '';
     });
-
-    // 右键保留浏览器默认行为（显示菜单，可新窗口打开等）
-    // 不阻止 contextmenu 事件，让浏览器处理右键菜单
 
     // 点击遮罩层背景也关闭
     overlay.addEventListener('click', (e) => {
