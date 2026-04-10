@@ -183,7 +183,7 @@ const htmlCode = `
 
 <div class="info-modal zindex-1" id="myinfoModal">
     
-    <div> <button id="closeBtn">关闭</button> </div>
+    <div> <button id="closeBtn">关闭(Tab)</button> </div>
 
     <div>
         <h3>快捷操作</h3>
@@ -220,8 +220,8 @@ const htmlCode = `
     <div>
         <h3>角色速度</h3>
         <div style="display:flex;gap:16px;margin:8px 0">
-            <label><input type="radio" name="speed" value="50"> 慢</label>
-            <label><input type="radio" name="speed" value="8" checked> 正常</label>
+            <label style="cursor:pointer"><input type="radio" name="speed" value="50"> 慢</label>
+            <label style="cursor:pointer"><input type="radio" name="speed" value="8" checked> 正常</label>
         </div>
         <hr>
     </div>
@@ -236,7 +236,7 @@ const htmlCode = `
             <button id="serverAddressReset" style="padding:4px 12px;font-size:13px">默认</button>
         </div>
         <div style="font-size:12px;color:#888;margin-bottom:8px">
-            信息板 API 服务器地址，修改后立即生效
+            信息板 API 服务器地址，修改后刷新页面才生效
         </div>
         <hr>
     </div>
@@ -244,6 +244,6 @@ const htmlCode = `
     <h3>万数块情况</h3>
     <div id="wskStudio"></div><!-- 万数块临时测试使用 -->
 
-    <div> <button id="closeBtn02">关闭</button> </div>
+    <div> <button id="closeBtn02">关闭(Tab)</button> </div>
 </div>
 `;
