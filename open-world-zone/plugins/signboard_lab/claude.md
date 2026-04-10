@@ -73,14 +73,38 @@ signboard_lab/
 
 ```js
 signContentMap.set(id, {
-    mode: 'text' | 'canvas' | 'image',
+    mode: 'text' | 'image' | 'empty' | 'pending',
     t: '文本内容',           // 文本模式
-    drawName: '函数名',      // Canvas模式
-    imgUrl: '图片URL'        // 图片模式
+    imgUrl: '图片URL',       // 图片模式
+    fromServer: boolean      // 是否来自服务器确认
 });
 
 signIndexMap.set(id, { index });  // id → 物体 index
 ```
+
+## Mode 隐藏逻辑（2026-04-11 优化）
+
+**引擎模式说明**：
+- `ccgxkObj.mode === 1`：只看模式（浏览者视角）
+- `ccgxkObj.mode === 2`：编辑模式（编辑者视角）
+
+**隐藏规则**：
+| 画板状态 | mode=1（只看） | mode=2（编辑） |
+|---------|---------------|---------------|
+| 有 text 内容 | 显示 | 显示 |
+| 有 image 内容 | 显示 | 显示 |
+| empty（服务器确认无数据） | **隐藏** | 显示 ID |
+| empty（非服务器确认） | 显示 | 显示 |
+| pending（懒加载中） | 隐藏 | 显示 "[懒]" |
+
+**性能优化**：
+- 隐藏的画板**跳过所有渲染流程**，不加载图片资源
+- `updateSign` 中检测 `shouldBeHidden`，直接 return 跳过纹理设置
+
+**核心技术点**：
+1. `fromServer` 标志：标记数据是否来自服务器确认，决定 empty 状态是否应该隐藏
+2. `computeShouldBeHidden()`：动态计算隐藏状态，响应 mode 切换
+3. LOD 兼容：每次 hook 都重新设置 `hidden` 和 `isInvisible`，确保 LOD 重载后状态正确
 
 ## 注意事项
 
@@ -93,12 +117,21 @@ signIndexMap.set(id, { index });  // id → 物体 index
 
 ---
 
-最后更新：2026-04-03
+最后更新：2026-04-10
 
 
 -----
 
 # 更新日志
+
+2026年04月10日
+
+**新增 Mode 隐藏逻辑**：
+- mode=1（只看模式）：服务器无数据的画板自动隐藏
+- mode=2（编辑模式）：所有画板正常显示，方便编辑
+- 核心：`fromServer` 标志 + `computeShouldBeHidden()` 动态计算
+
+------
 
 2026年04月04日
 
