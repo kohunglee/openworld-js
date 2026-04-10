@@ -131,7 +131,7 @@ export function processFullState(insts, ccgxkObj) {
             if (insts[i]) {
                 insts[i].dz ??= 3;
                 insts[i].st = 1;
-                insts[i].t = 'board1h-' + (sign_index++);
+                insts[i].t = 'board1h-temp-' + (sign_index++);
                 arrD.push({ ...insts[i] });
                 insts[i] = { "del": 1 };
             }

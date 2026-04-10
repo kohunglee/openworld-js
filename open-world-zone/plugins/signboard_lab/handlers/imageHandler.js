@@ -67,8 +67,7 @@ export function handleImageMode(index, id, imgUrl, ccgxkObj) {
     imgEl.style.display = 'none';
     document.body.appendChild(imgEl);
     imgEl.onload = () => {
-        // naturalWidth 为 0 可能是 SVG，尝试 fetch 处理
-        if (imgEl.naturalWidth === 0) {
+        if (imgEl.naturalWidth === 0) {  // naturalWidth 为 0 可能是 SVG，尝试 fetch 处理
             fetch(imgUrl).then(r => r.text()).then(text => {
                 if (/^\s*(<\?xml|<svg)/i.test(text)) {
                     handleSvg(text, uniqueImgId, ccgxkObj, index, id, imgUrl);
