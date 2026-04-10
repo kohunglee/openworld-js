@@ -1,24 +1,23 @@
 /**
- * 信息板配置
- *
- * 定义一些全局变量
+ * 配置（全局变量）
  */
 
 export const THEME = {
     bgWhite: '#ffffff',
     bgWarn: '#ff0000',
     textDark: '#2c3e50',
-    fontFamily: '"Microsoft YaHei", sans-serif',
-    paddingRatio: 0.1  // 内边距占宽度的比例 (10%)
+    fontFamily: 'monospace ,"Microsoft YaHei", sans-serif',
+    paddingRatio: 0.06  // 内边距占宽度的比例
 };
 
 // 服务器地址存储 key
 const STORAGE_KEY = 'signboard_server_address';
-const DEFAULT_ADDRESS = '127.0.0.1:8899';
+const DEFAULT_ADDRESS = '127.0.0.1:8899';  // 默认地址
 
 /**
- * 获取 API 基础 URL（动态从 localStorage 读取）
- * 手动配置完整地址（含协议）
+ * 获取 API 的基 URL
+ * 
+ * 动态从 localStorage 读取
  */
 export function getApiBase() {
     const stored = localStorage.getItem(STORAGE_KEY);

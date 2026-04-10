@@ -140,8 +140,7 @@ const setSignBoard = async (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2
     initSSE();
 };
 
-// ── 导出入口 ──
-
+// 入口
 export default function(ccgxkObj) {
     ccgxkObj.signTest = setSignBoard;  // 设置画板的业务逻辑
     signPanel(ccgxkObj); // 初始化编辑面板
