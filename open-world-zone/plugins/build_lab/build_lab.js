@@ -16,7 +16,7 @@ export default function(ccgxkObj) {
     processFullState(insts, ccgxkObj);  // 处理
     
     for(let i = 0; i < insts.length; i++){  //（临时，方便建造）远程可选取
-        // insts[i].dz = 3;
+        insts[i].dz = 3;
     }
 
     k.visCubeLen = insts.length - 1;  //+ 建造器相关
