@@ -22,3 +22,6 @@ export function getApiBase() {
 
 // 向后兼容：导出 API_BASE（首次加载时的值）
 export const API_BASE = getApiBase();
+
+// 生成图片元素的唯一 DOM ID
+export const makeImgId = (index, id) => `dyn_img_${index}_${id}`;

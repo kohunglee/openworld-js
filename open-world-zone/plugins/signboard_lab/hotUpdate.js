@@ -3,8 +3,8 @@
  * updateSign + SSE 实时监听
  */
 
-import { getApiBase } from './config.js';
-import { signContentMap, signIndexMap, getCcgxkObj, getTextureModule } from './store.js';
+import { getApiBase, makeImgId } from './config.js';
+import { signContentMap, signIndexMap, setSignContent, getCcgxkObj, getTextureModule } from './store.js';
 
 // 热更新函数（放到全局，方便调用）
 window.updateSign = function(boardId, content, mode = 'text', extra = {}) {
@@ -16,22 +16,22 @@ window.updateSign = function(boardId, content, mode = 'text', extra = {}) {
     const { index } = info;
     const nID = 'T' + index;
     const random = ((Math.random() * 1e7) | 0);  // 莫名其妙的 bug，需要用 random 后缀强制刷新
-    if (mode === 'text') {
-        signContentMap.set(boardId, { mode: 'text', t: content, extra });
-    } else if (mode === 'image') {
-        signContentMap.set(boardId, { mode: 'image', imgUrl: content, extra });          // 面板读取
+
+    setSignContent(boardId, mode, content, extra);
+    if (mode === 'image') {
         signContentMap.set(boardId + random, { mode: 'image', imgUrl: content, extra }); // hook 查找（保险）
     }
+
     if (textureModule) {  // 清除缓存（多重保险）
         textureModule.textureMap.delete(boardId);
         textureModule.textureMap.delete(boardId + random); // 保险
     }
     window[nID] = undefined;
     if (mode === 'image') {  // image 模式：移除旧 img DOM，用 random 后缀对抗浏览器图片缓存
-        const uniqueImgId = 'dyn_img_' + index + '_' + boardId;
+        const uniqueImgId = makeImgId(index, boardId);
         document.getElementById(uniqueImgId)?.remove();
         ccgxkObj.W.plane({ n: nID, t: boardId + random });  // 更新纹理
-        ccgxkObj.indexToArgs.get(index).texture = boardId + random;  
+        ccgxkObj.indexToArgs.get(index).texture = boardId + random;
     } else {
         ccgxkObj.W.plane({ n: nID, t: boardId });
         ccgxkObj.indexToArgs.get(index).texture = boardId;

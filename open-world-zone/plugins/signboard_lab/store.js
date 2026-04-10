@@ -19,14 +19,17 @@ export function setCcgxkObj(obj) { _ccgxkObj = obj; }
 export function getTextureModule() { return _textureModule; }
 export function setTextureModule(mod) { _textureModule = mod; }
 
-// 初始化
-let initPromise = null;
-export async function initData() {
-    if (initPromise) return initPromise;
-    initPromise = (async () => {
-        console.log('[Store] 初始化完成，现在数据将按需懒加载');
-    })();
-    return initPromise;
+/**
+ * 统一设置画板内容（避免重复的 set 逻辑）
+ */
+export function setSignContent(id, mode, content, extra = {}) {
+    if (mode === 'text') {
+        signContentMap.set(id, { mode: 'text', t: content, extra });
+    } else if (mode === 'image') {
+        signContentMap.set(id, { mode: 'image', imgUrl: content, extra });
+    } else {
+        signContentMap.set(id, { mode: 'empty' });
+    }
 }
 
 // 懒加载
@@ -67,14 +70,8 @@ async function doBatchFetch() {
         const data = await res.json();
         if (data.boards) {
             for (const board of data.boards) {
-                if (board.mode === 'text') {
-                    signContentMap.set(board.id, { mode: 'text', t: board.content, extra: board.extra });
-                } else if (board.mode === 'image') {
-                    signContentMap.set(board.id, { mode: 'image', imgUrl: board.content, extra: board.extra });
-                } else if (board.mode === 'empty' || !board.mode) {
-                    signContentMap.set(board.id, { mode: 'empty' });  // 没有内容 → 标记为空
-                }
-                if (typeof window.updateSign === 'function') {  // 重绘（如果存在重绘函数，也就是热更新函数）
+                setSignContent(board.id, board.mode, board.content, board.extra);
+                if (typeof window.updateSign === 'function') {
                     window.updateSign(board.id, board.content, board.mode, board.extra || {});
                 }
             }
@@ -82,7 +79,7 @@ async function doBatchFetch() {
         }
         for (const id of ids) {  // 未找到内容
             if (!signContentMap.has(id)) {
-                signContentMap.set(id, { mode: 'empty' });
+                setSignContent(id, 'empty');
                 if (typeof window.updateSign === 'function') {
                     window.updateSign(id, id, 'text', {});
                 }
