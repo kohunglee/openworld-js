@@ -1,9 +1,17 @@
 /**
  * 处理 mode === 'image' 的情况
- * 
+ *
  * 图片模式处理器
  */
+import { makeImgId } from '../config.js';
 import { getTextureModule } from '../store.js';
+
+// 获取画板物理信息
+const getCanvasInfo = (ccgxkObj, index) => {
+    const p_offset = index * 8;
+    const canvasH = ccgxkObj.physicsProps[p_offset + 2] || 1;
+    return { p_offset, canvasH };
+};
 
 // 计算画板应有的宽度（高度）
 const calcAspectScale = (imgW, imgH, canvasH) => {
@@ -12,8 +20,7 @@ const calcAspectScale = (imgW, imgH, canvasH) => {
 
 // 把图放进画板内
 const applyImage = (imgEl, ccgxkObj, index, id) => {
-    const p_offset = index * 8;
-    const canvasH = ccgxkObj.physicsProps[p_offset + 2] || 1;
+    const { p_offset, canvasH } = getCanvasInfo(ccgxkObj, index);
     const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight, canvasH);
     const textureModule = getTextureModule();
     if (textureModule) textureModule.textureMap.set(id, imgEl);
@@ -24,8 +31,7 @@ const applyImage = (imgEl, ccgxkObj, index, id) => {
 
 // 用引擎处理 SVG
 const handleSvg = (svgCode, uniqueImgId, ccgxkObj, index, id, imgUrl) => {
-    const p_offset = index * 8;
-    const canvasH = ccgxkObj.physicsProps[p_offset + 2] || 1;
+    const { canvasH } = getCanvasInfo(ccgxkObj, index);
     const ratio = ccgxkObj.errExpRatio || 200;
     const viewBoxMatch = svgCode.match(/viewBox=["']([^"']+)["']/i);
     const [, , vbW, vbH] = viewBoxMatch?.[1]?.split(/\s+/).map(Number) || [];
@@ -48,7 +54,7 @@ const handleSvg = (svgCode, uniqueImgId, ccgxkObj, index, id, imgUrl) => {
  * 入口
  */
 export function handleImageMode(index, id, imgUrl, ccgxkObj) {
-    const uniqueImgId = 'dyn_img_' + index + '_' + id;
+    const uniqueImgId = makeImgId(index, id);
     let imgEl = document.getElementById(uniqueImgId);
 
     if (imgEl?.complete) return applyImage(imgEl, ccgxkObj, index, id);

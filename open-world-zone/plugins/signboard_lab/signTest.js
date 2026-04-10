@@ -12,7 +12,7 @@
  *   imageHandler.js     - 图片模式处理
  */
 
-import { initData, signContentMap, signIndexMap, lazyLoadSign, setCcgxkObj, setTextureModule } from './store.js';
+import { signContentMap, signIndexMap, lazyLoadSign, setCcgxkObj, setTextureModule } from './store.js';
 import { drawSmartText } from './renderer.js';
 import { initSSE } from './hotUpdate.js';
 import { handleImageMode } from './handlers/imageHandler.js';
@@ -22,9 +22,8 @@ import { initHotInfo } from './hotinfo/hotinfo.js';
 /**
  * 设置信息板系统
  */
-const setSignBoard = async (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2) => {
+const setSignBoard = (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2) => {
     ccgxkObj.errExpRatio = 200;  // 图片的质量（以100为基准）
-    await initData(); // 先从 API 加载数据
 
     // 挂载纹理 HOOK
     ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this) {
