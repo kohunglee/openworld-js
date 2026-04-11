@@ -5,12 +5,13 @@
  */
 let lastTime = 0;
 function setVK() {
+    console.log('okokvk');
     const closeVKCheck = document.getElementById('closeVK');
     const now = Date.now();
 
     // 节流措施
     if(true){
-        if(closeVKCheck.checked) { return 0; }  // 不开启在线功能
+        // if(closeVKCheck.checked) { return 0; }  // 不开启在线功能
         if(typeof vkSocket !== 'undefined'){
             if(vkSocket.readyState === 0){ return 0; }  // 可能可以减少一些频繁调用（如频繁勾选那个选择框）
         }
@@ -20,7 +21,7 @@ function setVK() {
 
     k.rId = k?.rId || Math.floor(Math.random() * 10 ** 7); // 随机7位数字，作为 ID 标识
     const connectInfo = document.getElementById('isConneting');
-    connectInfo.innerText = '（连接中...）';
+    // connectInfo.innerText = '（连接中...）';
     const isTouch = matchMedia('(hover: none) and (pointer: coarse)').matches;  // 是否是移动设备
     const localTime = now.toLocaleString();
     
@@ -34,7 +35,7 @@ function setVK() {
 
     vkSocket.onopen = () => {  // 连接 wss
         console.log("连接 vkSocket 成功！");
-        connectInfo.innerText = '（已连接）';
+        // connectInfo.innerText = '（已连接）';
     };
 
     // 将位置信息发送到 wss
@@ -90,11 +91,11 @@ function setVK() {
         }
 
         const totalCount = k.frendMap.size + 1;
-        document.getElementById('onlineCount').innerText = totalCount;  // 总数
+        // document.getElementById('onlineCount').innerText = totalCount;  // 总数
         document.getElementById('shiftInfo').innerText = '当前人数: ' + totalCount + ' | ';
 
         const ul = document.getElementById('frendPosInfo');
-        ul.innerHTML = ''; // 清空旧内容
+        // ul.innerHTML = ''; // 清空旧内容
 
         const liMe = document.createElement('li');
         const mvp = k.mainVPlayer.body.position;
@@ -109,7 +110,7 @@ function setVK() {
         colorBox.style.background = numToColor(k.rId);
         liMe.appendChild(colorBox);
 
-        ul.appendChild(liMe);
+        // ul.appendChild(liMe);
 
         for (const [key, value] of k.frendMap) {
             const timeDiff = Date.now() - Number(value.time);
@@ -150,7 +151,7 @@ function setVK() {
             colorBox.style.background = updateData.b;
             li.appendChild(colorBox);
 
-            ul.appendChild(li);
+            // ul.appendChild(li);
         }
     }
     updateFrends();
@@ -188,6 +189,7 @@ function setVK() {
         n: 'frends',
         instances: arrIns,
     });
+    console.log('okokvk');
 
 
     // 接收事件
@@ -217,10 +219,10 @@ function setVK() {
             const isActive = !document.hidden && document.hasFocus();
             if (isActive) {  // 活动
                 k.donotUseSocket = false;
-                document.getElementById('isConneting').style.color = "unset";
+                // document.getElementById('isConneting').style.color = "unset";
             } else {  // 不在页面
                 k.donotUseSocket = true;
-                document.getElementById('isConneting').style.color = "grey";
+                // document.getElementById('isConneting').style.color = "grey";
             }
         }
         
