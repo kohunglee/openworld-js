@@ -81,6 +81,32 @@ export default function(ccgxkObj) {
             G.quitPanel(G);
         },
 
+        // 类预设 - 快速设置旋转和纵值
+        e_class1: ()=>{
+            const G = ccgxkObj.centerDot.init;
+            objDepth.value = 0.001;
+            objRotX.value = 180;
+            objRotZ.value = 180;
+            G.modelUpdate();
+        },
+        e_class2: ()=>{
+            const G = ccgxkObj.centerDot.init;
+            objDepth.value = 0.001;
+            objRotY.value = -90;
+            G.modelUpdate();
+        },
+        e_class3: ()=>{
+            const G = ccgxkObj.centerDot.init;
+            objDepth.value = 0.001;
+            G.modelUpdate();
+        },
+        e_class4: ()=>{
+            const G = ccgxkObj.centerDot.init;
+            objDepth.value = 0.001;
+            objRotY.value = 90;
+            G.modelUpdate();
+        },
+
         // 魔法数字的离开事件
         magicNumBlur : (e) => {
             if(!(e.key >= 0 && e.key <= 9)){
