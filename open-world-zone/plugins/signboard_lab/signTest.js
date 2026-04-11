@@ -9,23 +9,15 @@
  *   signTest.js         - 入口（Hook 注册 + 编排）
  *   signPanel.js        - 编辑面板（可拖动 HUD 窗口）
  *   handlers/
- *     imageHandler.js     - 图片模式处理
+ *   imageHandler.js     - 图片模式处理
  */
 
-import { signContentMap, signIndexMap, lazyLoadSign, setCcgxkObj, setTextureModule, setSignContent, computeShouldBeHidden } from './store.js';
+import { signContentMap, signIndexMap, lazyLoadSign, setCcgxkObj, setTextureModule } from './store.js';
 import { drawSmartText } from './renderer.js';
 import { initSSE } from './hotUpdate.js';
 import { handleImageMode } from './handlers/imageHandler.js';
 import signPanel from './signPanel/signTest.js';
 import { initHotInfo } from './hotinfo/hotinfo.js';
-
-/**
- * 设置画板的隐藏状态（统一入口，确保 LOD 后状态正确）
- */
-const setHiddenState = (ccgxkObj, _this, index, hidden) => {
-    ccgxkObj.W.next['T' + index].hidden = hidden;
-    _this.indexToArgs.get(index).isInvisible = hidden;
-};
 
 /**
  * 设置信息板系统
@@ -39,45 +31,22 @@ const setSignBoard = (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2) => {
         setCcgxkObj(ccgxkObj); //+3 供热更新模块使用
         setTextureModule(_this);
         signIndexMap.set(id, { index });
-
         const info = signContentMap.get(id);
-        const ccgxkMode = ccgxkObj.mode;  // 1=只看模式, 2=编辑模式
-
-        if (info && info.mode !== 'pending') {
-            // 有确定的数据，动态计算是否应该隐藏
-            const shouldBeHidden = computeShouldBeHidden(info, ccgxkMode);
-
-            if (shouldBeHidden) {
-                // 应该隐藏（mode=1 且服务器确认无数据）
-                setHiddenState(ccgxkObj, _this, index, true);
-            } else {
-                // 应该显示
-                setHiddenState(ccgxkObj, _this, index, false);
-                if (info.mode === 'text') {
-                    drawSmartText(ctx, width, height, info.t);
-                } else if (info.mode === 'image') {
-                    drawSmartText(ctx, width, height, 'Loading...');
-                    handleImageMode(index, id, info.imgUrl, ccgxkObj);
-                } else if (info.mode === 'empty') {
-                    // mode=2 时显示 ID，方便用户编辑
-                    drawSmartText(ctx, width, height, id);
-                }
+        if (info) {  // 引擎里已经有数据
+            const { mode } = info;
+            if (mode === 'text') {
+                drawSmartText(ctx, width, height, info.t);
+            } else if (mode === 'image') {
+                // drawSmartText(ctx, width, height, 'Loading...');
+                handleImageMode(index, id, info.imgUrl, ccgxkObj);
+            } else if (mode === 'empty') {
+                drawSmartText(ctx, width, height, id);
             }
-        } else {
-            // 还没数据或正在加载，触发懒加载
-            if (!info) {
-                // 设置 pending 状态，防止重复请求
-                setSignContent(id, 'pending', '', {}, false);
-            }
+            ccgxkObj.W.next['T' + index].hidden = false;
+            _this.indexToArgs.get(index).isInvisible = false;
+        } else {  // 还没数据，懒加载，去服务器那里获取
             lazyLoadSign(id);
-            // 懒加载期间，mode=1 时先隐藏，mode=2 时显示加载提示
-            // 使用 == 兼容字符串 '1' 和数字 1
-            if (ccgxkMode == 1) {
-                setHiddenState(ccgxkObj, _this, index, true);
-            } else {
-                setHiddenState(ccgxkObj, _this, index, false);
-                drawSmartText(ctx, width, height, id + '[懒]');
-            }
+            drawSmartText(ctx, width, height, id + '[懒]');
         }
     });
 
