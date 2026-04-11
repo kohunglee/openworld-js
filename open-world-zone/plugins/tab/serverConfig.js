@@ -5,7 +5,7 @@
  */
 
 const STORAGE_KEY = 'signboard_server_address';
-const DEFAULT_ADDRESS = 'http://127.0.0.1:8899';
+const DEFAULT_ADDRESS = 'https://selfdb.ccgxk.com';
 
 /**
  * 获取当前服务器地址
