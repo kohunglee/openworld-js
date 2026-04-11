@@ -66,6 +66,7 @@ script.src='./assest/fps.js';document.head.appendChild(script);})()
 
 // 其他
 k.centerDot.setCamView(2);  // 设置摄像机视角位置为第 2 类型
+setVK();  // 开启 VK
 
 
 

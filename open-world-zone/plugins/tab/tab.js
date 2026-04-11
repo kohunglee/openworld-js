@@ -196,6 +196,13 @@ const htmlCode = `
     </div>
 
     <div>
+        <h3>上一个项目的地址</h3>
+            <a href="https://ow.ccgxk.com/demo/house?logicadd=1" target="_blank">https://ow.ccgxk.com/demo/house?logicadd=1</a>
+        <hr>
+    </div>
+    
+
+    <div>
         <h3>模式切换</h3>
         <div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap">
             <button id="modeBtn0" style="padding:8px 16px;background:#3498db;color:#fff;border-radius:4px;cursor:pointer;">编辑模式</button>
