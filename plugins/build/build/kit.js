@@ -285,6 +285,11 @@ const htmlCode = `
                         &nbsp;&nbsp;
                         颜色:<input type="color" class="EdiArgsInput" id="objColor" name="objColor" value="#888888">
                         &nbsp;&nbsp;
+                        <br><br>
+                        <button class="texture-editorBtn" id="e_class1">类1</button>
+                        <button class="texture-editorBtn" id="e_class2">类2</button>
+                        <button class="texture-editorBtn" id="e_class3">类3</button>
+                        <button class="texture-editorBtn" id="e_class4">类4</button>
                     </div>
                 </details>
                 <hr>

@@ -115,6 +115,7 @@ export default function(ccgxkObj) {
     window.addEventListener('blur', () => { G.setInputsStep('0.1') });  // 窗口失去焦点时，增幅变为 0.1
 
     let e_presets = document.getElementById('e_presets'), e_round = document.getElementById('e_round'), e_zero = document.getElementById('e_zero'), e_delete = document.getElementById('e_delete');
+    let e_class1 = document.getElementById('e_class1'), e_class2 = document.getElementById('e_class2'), e_class3 = document.getElementById('e_class3'), e_class4 = document.getElementById('e_class4');
     let e_bassL = document.getElementById('e_bassL'), e_bassT = document.getElementById('e_bassT'), e_bassR = document.getElementById('e_bassR'), e_bassB = document.getElementById('e_bassB');
 
     let myHUDObjEditor = document.getElementById('myHUDObjEditor');  // 编辑面板
@@ -125,6 +126,12 @@ export default function(ccgxkObj) {
     e_round.addEventListener('click', G.e_round );  // 单击位置【归整】（四舍五入）
     e_zero.addEventListener('click', G.e_zero);  // 单击旋转【归零】按钮
     e_delete.addEventListener('click', G.e_delete);  // 单击【删除】按钮
+
+    // 类预设按钮
+    e_class1.addEventListener('click', G.e_class1);  // 类1: rx 180, rz 180
+    e_class2.addEventListener('click', G.e_class2);  // 类2: ry -90
+    e_class3.addEventListener('click', G.e_class3);  // 类3: 不修改旋转
+    e_class4.addEventListener('click', G.e_class4);  // 类4: ry 90
 
     // 基点 左上右下
     e_bassL.addEventListener('click', (e)=>{G.bassSet(e, 0)});
