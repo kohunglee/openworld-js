@@ -126,7 +126,8 @@ export function processFullState(insts, ccgxkObj) {
         });
         ccgxkObj.signTest(arrC, ccgxkObj, {x:0}, 1);
 
-        const arrD = [];  //+ 提取信息板属性到 arrC
+        const arrD = [];  //+ 提取信息板属性到 arrD
+        sign_index = 0;
         D.board1h.forEach(i => {
             if (insts[i]) {
                 insts[i].dz ??= 3;

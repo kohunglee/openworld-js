@@ -4,10 +4,10 @@
  */
 
 import { getApiBase, makeImgId } from './config.js';
-import { signContentMap, signIndexMap, setSignContent, getCcgxkObj, getTextureModule, computeShouldBeHidden } from './store.js';
+import { signContentMap, signIndexMap, setSignContent, getCcgxkObj, getTextureModule } from './store.js';
 
 // 热更新函数（放到全局，方便调用）
-window.updateSign = function(boardId, content, mode = 'text', extra = {}, fromServer = false) {
+window.updateSign = function(boardId, content, mode = 'text', extra = {}) {
     const ccgxkObj = getCcgxkObj();
     const textureModule = getTextureModule();
     const info = signIndexMap.get(boardId);
@@ -16,52 +16,21 @@ window.updateSign = function(boardId, content, mode = 'text', extra = {}, fromSe
     const { index } = info;
     const nID = 'T' + index;
     const random = ((Math.random() * 1e7) | 0);  // 莫名其妙的 bug，需要用 random 后缀强制刷新
-
-    // 使用 fromServer 参数设置内容
-    setSignContent(boardId, mode, content, extra, fromServer);
-
-    // 检查画板是否已被引擎创建（LOD 可能还没加载）
-    const nextObj = ccgxkObj.W?.next?.[nID];
-    const indexArgs = ccgxkObj.indexToArgs?.get(index);
-    if (!nextObj || !indexArgs) {
-        // 画板还没被 LOD 加载，数据已存入 signContentMap，等待 hook 时处理
-        return;
-    }
-
-    // 获取更新后的状态，检查是否应该隐藏
-    const updatedInfo = signContentMap.get(boardId);
-    const ccgxkMode = ccgxkObj.mode;
-    const shouldBeHidden = computeShouldBeHidden(updatedInfo, ccgxkMode);
-
-    if (shouldBeHidden) {
-        // 应该隐藏：直接设置隐藏状态，不触发渲染
-        nextObj.hidden = true;
-        indexArgs.isInvisible = true;
-        return;  // 关键：跳过后续渲染流程
-    }
-
-    // 需要渲染的情况
-    if (mode === 'image' && content) {
-        signContentMap.set(boardId + random, { mode: 'image', imgUrl: content, extra, fromServer: true }); // hook 查找（保险）
+    setSignContent(boardId, mode, content, extra);
+    if (mode === 'image') {
+        signContentMap.set(boardId + random, { mode: 'image', imgUrl: content, extra }); // hook 查找（保险）
     }
     if (textureModule) {  // 清除缓存（多重保险）
         textureModule.textureMap.delete(boardId);
         textureModule.textureMap.delete(boardId + random); // 保险
     }
     window[nID] = undefined;
-
-    // 确保显示状态
-    nextObj.hidden = false;
-    indexArgs.isInvisible = false;
-
-    if (mode === 'image' && content) {
-        // image 模式：移除旧 img DOM，用 random 后缀对抗浏览器图片缓存
+    if (mode === 'image') {  // image 模式：移除旧 img DOM，用 random 后缀对抗浏览器图片缓存
         const uniqueImgId = makeImgId(index, boardId);
         document.getElementById(uniqueImgId)?.remove();
-        indexArgs.texture = boardId + random;
-    } else {
-        // text 模式
-        indexArgs.texture = boardId;
+        ccgxkObj.indexToArgs.get(index).texture = boardId + random;
+    } else {  // text 模式
+        ccgxkObj.indexToArgs.get(index).texture = boardId;
     }
     ccgxkObj.currentlyActiveIndices.delete(index);  // 让引擎重新加载一次图片（注意，接下来就是走 hook 流程了）
 };
@@ -90,15 +59,14 @@ export function initSSE() {
                 data.boards.forEach(board => {
                     if (!signIndexMap.has(board.id)) return;
                     const cur = signContentMap.get(board.id);
-                    if (cur && cur.mode !== 'pending') {  // cur 为空或 pending 说明是新板子，直接更新；否则检查是否有变化
+                    if (cur) {  // cur 为空说明是新板子，直接更新；否则检查是否有变化
                         const changed = cur.mode !== board.mode
                             || (board.mode === 'text' && cur.t !== board.content)
                             || (board.mode === 'image' && cur.imgUrl !== board.content)
                             || JSON.stringify(cur.extra) !== JSON.stringify(board.extra);  // 也检查 extra 是否变化
                         if (!changed) return;
                     }
-                    // SSE 更新来自服务器，fromServer=true
-                    window.updateSign(board.id, board.content, board.mode, board.extra || {}, true);
+                    window.updateSign(board.id, board.content, board.mode, board.extra || {});
                 });
             }
         };
