@@ -137,10 +137,17 @@ export function initHotInfo(ccgxkObj) {
         unlockPointer();
     });
 
-    // SSE 更新时重新加载数据
+    // SSE 更新时只更新本地缓存的那一条（不再全量加载！）
     const originalUpdateSign = window.updateSign;
     window.updateSign = function(boardId, content, mode, extra) {
         if (originalUpdateSign) originalUpdateSign(boardId, content, mode, extra);
-        loadBoardsData();
+        // 只更新本地 boardsData 中对应 ID 的那条
+        const idx = boardsData.findIndex(b => b.id === boardId);
+        const newBoard = { id: boardId, content, mode, extra: extra || {} };
+        if (idx >= 0) {
+            boardsData[idx] = { ...boardsData[idx], ...newBoard };
+        } else {
+            boardsData.push(newBoard);
+        }
     };
 }

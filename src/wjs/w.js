@@ -1,6 +1,8 @@
 // WebGL框架
 // ===============
 import hooks from '../common/hooks.js';  // 引入 JS 钩子
+import vertexShader from './vertexShader.js';
+import fragmentShader from './fragmentShader.js';
 
 const W = {
   // 一些容器
@@ -32,68 +34,19 @@ const W = {
     W.lastReportTime = 0;   // 时间戳临时变量（用于确定一秒）
 
     var t;
+    // 顶点着色器
     W.gl.shaderSource(
-          // 默认顶点着色器
-          t = W.gl.createShader(35633),
-          `#version 300 es
-          precision lowp float;                        
-          in vec4 pos, col, uv, normal;                 // 普通模型的 位置、颜色、纹理坐标、法线...
-          in mat4 instanceModelMatrix;                  // 实例化模型的 模型
-          uniform mat4 pv, eye, m, im;                  // 矩阵：投影 * 视图、视线、模型、模型逆矩阵
-          uniform vec4 bb;                              // 广告牌：bb = [w, h, 1.0, 0.0]
-          out vec4 v_pos, v_col, v_uv, v_normal;
-          uniform bool isInstanced;              // 是不是实例化绘制
-          void main() {
-            mat4 currentModelMatrix;             // 当前的模型矩阵
-            if (isInstanced) {
-              currentModelMatrix = instanceModelMatrix;
-            } else {
-              currentModelMatrix = m;
-            }
-            gl_Position = pv * (                        // 设置顶点位置：p * v * v_pos
-              v_pos = bb.z > 0.                         
-              ? currentModelMatrix[3] + eye * (pos * bb) // 广告牌
-              : currentModelMatrix * pos               
-            );
-            v_col = col;
-            v_uv = uv;
-            v_normal = transpose(isInstanced ? inverse(currentModelMatrix) : im) * normal;  // 必要时使用实例矩阵
-          }`
-        );
+      t = W.gl.createShader(35633),
+      vertexShader
+    );
+    W.gl.compileShader(t);
+    W.gl.attachShader(W.program, t);
 
-        W.gl.compileShader(t);  // 编译
-        W.gl.attachShader(W.program, t);
-        
-        // 默认片段着色器
-        W.gl.shaderSource(
-          t = W.gl.createShader(35632),
-          `#version 300 es
-          precision lowp float;
-          in vec4 v_pos, v_col, v_uv, v_normal;
-          uniform vec3 light;
-          uniform vec2 tiling;
-          uniform vec4 o;
-          uniform sampler2D sampler;
-          out vec4 c;
-          void main() {
-            vec2 final_uv = v_uv.xy;  //+ 新增纹理面修正逻辑，修复纹理面翻转问题
-            if (!gl_FrontFacing) {
-              final_uv.x = 1.0 - final_uv.x;
-            }
-            c = mix(texture(sampler, final_uv * tiling), v_col, o[3]);
-            if(o[1] > 0.){
-              c = vec4(
-                c.rgb * (max(0., dot(light, -normalize(
-                  o[0] > 0.
-                  ? vec3(v_normal.xyz)
-                  : cross(dFdx(v_pos.xyz), dFdy(v_pos.xyz))
-                )))
-                + o[2]),
-                c.a
-              );
-            }
-          }`
-        );
+    // 片段着色器
+    W.gl.shaderSource(
+      t = W.gl.createShader(35632),
+      fragmentShader
+    );
         
         W.gl.compileShader(t); 
         W.gl.attachShader(W.program, t);

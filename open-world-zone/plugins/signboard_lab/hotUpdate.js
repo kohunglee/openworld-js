@@ -29,6 +29,7 @@ window.updateSign = function(boardId, content, mode = 'text', extra = {}) {
         const uniqueImgId = makeImgId(index, boardId);
         document.getElementById(uniqueImgId)?.remove();
         ccgxkObj.indexToArgs.get(index).texture = boardId + random;
+        ccgxkObj.indexToArgs.get(index).nS = 1;
     } else {  // text 模式
         ccgxkObj.indexToArgs.get(index).texture = boardId;
     }

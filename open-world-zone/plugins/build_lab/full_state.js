@@ -82,7 +82,7 @@ export function processFullState(insts, ccgxkObj) {
 
         // 二楼三楼向上的阵列
         if(true){
-            const floorValue = 5;  // 总层数
+            const floorValue = 10;  // 总层数
 
             D.exwall2h.push( ...symoff.offset([...D.exwall2h,], -5, floorValue - 1, 'y') );  // 二楼外墙
 

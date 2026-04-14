@@ -69,10 +69,37 @@ export function handleSaveSigns(req, res) {
   readBody(req, body => {
     try {
       const data = JSON.parse(body);
-      const boards = data.boards || [];
+      const newBoards = data.boards || [];
+
+      // 获取旧数据，用于对比差异
+      const oldBoards = getAllBoards();
+      const oldMap = new Map(oldBoards.map(b => [b.id, b]));
+
+      // 找出变化的 boards
+      const changedBoards = [];
+      for (const nb of newBoards) {
+        const ob = oldMap.get(nb.id);
+        const oldExtra = ob?.extra ? JSON.parse(ob.extra) : {};
+        const newExtra = nb.extra || {};
+
+        // 检测是否有变化（name, mode, content, extra 任一变化）
+        if (!ob ||
+            ob.name !== nb.name ||
+            ob.mode !== nb.mode ||
+            ob.content !== nb.content ||
+            JSON.stringify(oldExtra) !== JSON.stringify(newExtra)) {
+          changedBoards.push({
+            id: nb.id,
+            name: nb.name || nb.id,
+            mode: nb.mode || 'text',
+            content: nb.content || '',
+            extra: newExtra
+          });
+        }
+      }
 
       // 批量替换
-      replaceAllBoards(boards.map(b => ({
+      replaceAllBoards(newBoards.map(b => ({
         id: b.id,
         name: b.name,
         mode: b.mode,
@@ -80,11 +107,13 @@ export function handleSaveSigns(req, res) {
         extra: b.extra || {}
       })));
 
-      console.log(`✅ 已保存 ${boards.length} 个信息板到数据库`);
-      sendJson(res, { success: true, message: '保存成功' });
+      console.log(`✅ 已保存 ${newBoards.length} 个信息板到数据库，变化 ${changedBoards.length} 条`);
+      sendJson(res, { success: true, message: '保存成功', changed: changedBoards.length });
 
-      // SSE 广播
-      broadcast(data);
+      // SSE 只广播变化的 boards（不再广播全部！）
+      if (changedBoards.length > 0) {
+        broadcast({ boards: changedBoards });
+      }
     } catch (e) {
       sendJson(res, { error: e.message }, 500);
     }
