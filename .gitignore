@@ -8,3 +8,4 @@ signboard.db-wal
 signboard.db-shm
 # 数据库文件（含敏感信息）
 open-world-zone/plugins/signboard_lab/server/db/signboard.db
+open-world-zone/plugins/signboard_lab/server/db copy/

@@ -67,6 +67,11 @@ export default function(ccgxkObj) {
 
     $("goOPOS").addEventListener("click", () => teleportTo(7.6, 10, 16.5, 0));
     $("goHall").addEventListener("click", () => teleportTo(31, 10, -31, 90));
+    $("goH01").addEventListener("click", () => teleportTo(31, 2, 5.45, -90));
+    $("goH02").addEventListener("click", () => teleportTo(58, 6.6, 5.43, 90));
+    $("goH03").addEventListener("click", () => teleportTo(58, 11.5, 5.43, 90));
+    $("goH04").addEventListener("click", () => teleportTo(58, 16.6, 5.43, 90));
+    $("goH05").addEventListener("click", () => teleportTo(58, 21.6, 5.43, 90));
 
     // ========================
     // FOV 滑杆控制
@@ -141,6 +146,9 @@ export default function(ccgxkObj) {
 
 const htmlCode = `
 <style>
+    .info-modal button {
+        cursor: pointer;
+    }
     #someCtrl {
         position: fixed;
         top: 25px;
@@ -188,10 +196,13 @@ const htmlCode = `
     <div>
         <h3>快捷操作</h3>
             <button id="goOPOS">到原点</button>
-            <button id="goHall">到大厅</button>
-            <button id="displayPadInPC">显示/隐藏 移动端控件</button>
-            <button id="tabView">切换视角(V)</button>
-            <button id="fixError">修NaN</button>
+            <button id="goHall">到外面</button>
+            <button id="fixError">修NaN</button><br><br>
+            <button id="goH01">1</button>
+            <button id="goH02">2</button>
+            <button id="goH03">3</button>
+            <button id="goH04">4</button>
+            <button id="goH05">5</button>
         <hr>
     </div>
 

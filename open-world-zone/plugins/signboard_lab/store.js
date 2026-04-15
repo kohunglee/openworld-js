@@ -81,7 +81,7 @@ async function doBatchFetch() {
             if (!signContentMap.has(id)) {
                 setSignContent(id, 'empty');
                 if (typeof window.updateSign === 'function') {  // （调试）把无内容的，设置成 text，并显示 id
-                    window.updateSign(id, id, 'text', {});
+                    window.updateSign(id, '', 'text', {});
                 }
             }
         }

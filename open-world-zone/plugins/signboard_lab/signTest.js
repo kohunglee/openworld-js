@@ -46,7 +46,7 @@ const setSignBoard = (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2) => {
             _this.indexToArgs.get(index).isInvisible = false;
         } else {  // 还没数据，懒加载，去服务器那里获取
             lazyLoadSign(id);
-            drawSmartText(ctx, width, height, id + '[懒]');
+            drawSmartText(ctx, width, height, 'Loading...');
         }
     });
 
