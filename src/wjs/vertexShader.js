@@ -1,6 +1,6 @@
 // 顶点着色器
 export default `#version 300 es
-precision lowp float;
+precision highp float;
 in vec4 pos, col, uv, normal;                 // 普通模型的 位置、颜色、纹理坐标、法线...
 in mat4 instanceModelMatrix;                  // 实例化模型的 模型
 uniform mat4 pv, eye, m, im;                  // 矩阵：投影 * 视图、视线、模型、模型逆矩阵

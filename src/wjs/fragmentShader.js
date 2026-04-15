@@ -1,6 +1,6 @@
 // 片段着色器
 export default `#version 300 es
-precision lowp float;
+precision highp float;
 in vec4 v_pos, v_col, v_uv, v_normal;
 uniform vec3 light;
 uniform vec2 tiling;

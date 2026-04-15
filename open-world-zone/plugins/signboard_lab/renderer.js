@@ -40,7 +40,6 @@ export function drawSmartText(ctx, width, height, text) {
             const testLine = currentLine + char;
             const metrics = ctx.measureText(testLine);
             if (metrics.width > maxWidth && i > 0) {
-                
                 const nextChar = text[i]; // 检查下一个字符是否是不能在行首的标点
                 if (noLineStartPunctuation.includes(nextChar)) {
                     if (currentLine.length > 1) { // 但如果当前行只有一个字，就直接换行
