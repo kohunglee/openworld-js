@@ -23,7 +23,7 @@ import { initHotInfo } from './hotinfo/hotinfo.js';
  * 设置信息板系统
  */
 const setSignBoard = (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2) => {
-    ccgxkObj.errExpRatio = 200;  // 图片的质量（以100为基准）
+    ccgxkObj.errExpRatio = 100;  // 图片的质量（以100为基准）
 
     // 挂载纹理 HOOK
     ccgxkObj.hooks.on('errorTexture_diy', function(ctx, width, height, drawItem, _this) {

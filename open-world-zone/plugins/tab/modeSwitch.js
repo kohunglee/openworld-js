@@ -25,19 +25,32 @@ export function initModeSwitch($, ccgxkObj) {
 
     // 切换模式
     function switchMode(mode) {
-        // 模式1和2：直接修改 ccgxkObj.mode（不刷新页面）
-        if (mode === 1 || mode === 2) {
+        const currentMode = getCurrentMode();
+
+        // 模式1和2之间切换：直接修改 ccgxkObj.mode（不刷新页面，URL不变）
+        if ((currentMode === 1 || currentMode === 2) && (mode === 1 || mode === 2)) {
             ccgxkObj.mode = mode;
             updateButtonStates();
             updateModeDisplay();
-            console.log(`[ModeSwitch] 切换到模式${mode}，ccgxkObj.mode 已设为 ${ccgxkObj.mode}`);
+            console.log(`[ModeSwitch] 模式${currentMode}→${mode}，直接切换，URL不变`);
             return;
         }
-        // 模式0：通过URL参数切换（刷新页面）
-        ccgxkObj.mode = 0;
-        const url = new URL(window.location.href);
-        url.searchParams.delete('mode');
-        window.location.href = url.toString();
+
+        // 模式0 → 模式1/2：通过URL参数切换（刷新页面）
+        if (currentMode === 0 && (mode === 1 || mode === 2)) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('mode', mode);
+            window.location.href = url.toString();
+            return;
+        }
+
+        // 模式1/2 → 模式0：删除URL参数（刷新页面）
+        if ((currentMode === 1 || currentMode === 2) && mode === 0) {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('mode');
+            window.location.href = url.toString();
+            return;
+        }
     }
 
     // 实时显示当前模式（在页面上标注）
