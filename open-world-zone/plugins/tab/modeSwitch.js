@@ -23,6 +23,22 @@ export function initModeSwitch($, ccgxkObj) {
         return 0;
     }
 
+    // 隐藏侧边栏（与tab.js保持一致）
+    function hideTabSidebar() {
+        const modal = $('myinfoModal');
+        if (modal) {
+            modal.classList.add('zindex-1');
+        }
+    }
+
+    // 锁定鼠标（与tab.js保持一致）
+    function lockPointer() {
+        const element = document.getElementById("openworldCanv");
+        if (!element) return;
+        const request = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+        request && request.call(element);
+    }
+
     // 切换模式
     function switchMode(mode) {
         const currentMode = getCurrentMode();
@@ -32,6 +48,8 @@ export function initModeSwitch($, ccgxkObj) {
             ccgxkObj.mode = mode;
             updateButtonStates();
             updateModeDisplay();
+            hideTabSidebar(); // 隐藏侧边栏
+            // lockPointer(); // 锁定鼠标
             console.log(`[ModeSwitch] 模式${currentMode}→${mode}，直接切换，URL不变`);
             return;
         }

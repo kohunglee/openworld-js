@@ -78,6 +78,7 @@ export function processFullState(insts, ccgxkObj) {
             D.stage1hrail.push(...symoff.symo(D.stage1hrail, {z:5.539}));  // 对称楼梯护栏
             D.inwall3h.push( ...symoff.symo(D.inwall3h, {z:5.539}) );  // 对称三楼的建筑
             D.house1H3.push( ...symoff.symo(D.house1H3, {z:5.539}) );  // 对称三楼的左侧的画板
+            // D.floorSign.push( ...symoff.symo(D.floorSign, {z:7.639}) );
         }
 
         // 二楼三楼向上的阵列
@@ -94,18 +95,20 @@ export function processFullState(insts, ccgxkObj) {
             ], -5, floorValue - 1, 'y');  // 把二楼的墙，阵列上去
 
             symoff.offset([
-                ...D.inwall3h, ...D.rail3h, ...D.inXWall3h, ...D.inXWall3h002, // 二楼的建筑
+                ...D.inwall3h, ...D.rail3h, ...D.inXWall3h, ...D.inXWall3h002, // 三楼的建筑
                 // ...D.house1H3,  // 二楼的画板
+                // ...D.floorSign,  // 三楼的楼板告示
             ], -5, floorValue - 2, 'y');  // 把二楼的墙，阵列上去
 
             D.house1H3.push( ...symoff.offset(D.house1H3, -5, floorValue - 2, 'y') );
+            D.floorSign.push( ...symoff.offset(D.floorSign, -5, floorValue - 2, 'y') );
         }
     }
 
     // 写入画板（数据破坏型）
     if(isok) {
         ['textureGetCubeData'].forEach(id => document.getElementById(id)?.remove());  // 防止误点
-        const arrC = [];  //+ 提取信息板属性到 arrC
+        var arrC = [];  //+ 提取信息板属性到 arrC
         let sign_index = 1;
 
         console.log('楼上，一共有 ' + D.house1H3.length + ' 个画板');
@@ -126,7 +129,7 @@ export function processFullState(insts, ccgxkObj) {
         });
         ccgxkObj.signTest(arrC, ccgxkObj, {x:0}, 1);
 
-        const arrD = [];  //+ 提取信息板属性到 arrD
+        var arrD = [];
         sign_index = 0;
         D.board1h.forEach(i => {
             if (insts[i]) {
@@ -138,71 +141,22 @@ export function processFullState(insts, ccgxkObj) {
             }
         });
         ccgxkObj.signTest(arrD, ccgxkObj, {x:0}, 1);
+
+        var arr = [];
+        sign_index = 0;
+        D.floorSign.forEach(i => {
+            if (insts[i]) {
+                insts[i].dz ??= 2;
+                insts[i].st = 1;
+                insts[i].t = 'floorSign-' + (sign_index++);
+                arr.push({ ...insts[i] });
+                insts[i] = { "del": 1 };
+            }
+        });
+        ccgxkObj.signTest(arr, ccgxkObj, {x:0}, 1);
     }
 
 
 
     return 0;
-
-
-
-
-
-
-
-    // 提取外墙（先不搞，没必要）
-    if(false){
-        const tempArr = [];  //+ 提取地板属性到 arrB
-        D.exwall.forEach(i => {
-            if (insts[i]) {
-                tempArr.push({ ...insts[i] });
-                insts[i] = { "del": 1 };
-            }
-        });
-        D.exwall2h.forEach(i => {
-            if (insts[i]) {
-                tempArr.push({ ...insts[i] });
-                insts[i] = { "del": 1 };
-            }
-        });
-        ccgxkObj.dataProc.process({  //+ 显示 tempArr
-            data: tempArr,
-            name: 'out wall 1h',
-            type: 2,
-            texture: brick,
-            mixValue: 0.9,
-        });
-    }
-
-    symoff.offset([93], -0.9, 8, 'x', -0.48, 'y');  // 阵列台阶
-
-    
-
-    const arrB = [];  //+ 提取地板属性到 arrB
-    D.floor.forEach(i => {
-        if (insts[i]) {
-            arrB.push({ ...insts[i] });
-            insts[i] = { "del": 1 };
-        }
-    });
-
-    ccgxkObj.dataProc.process({  //+ 显示 arrB 地板
-        data: arrB,
-        name: 'build_lab_stage',
-        type: 2,
-        texture: paper02,
-        mixValue: 0.8,
-    });
-
-    const arrC = [];  //+ 提取信息板属性到 arrC
-    let sign_index = 1;
-    D.signBoard.forEach(i => {
-        if (insts[i]) {
-            insts[i].dz ??= 3;
-            insts[i].t = 'lab' + (sign_index++);
-            arrC.push({ ...insts[i] });
-            insts[i] = { "del": 1 };
-        }
-    });
-    ccgxkObj.signTest(arrC, ccgxkObj);
 }

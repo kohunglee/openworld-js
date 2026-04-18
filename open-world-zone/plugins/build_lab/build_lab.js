@@ -41,7 +41,7 @@ export default function(ccgxkObj) {
     if (rootArgs) {  k.wBuildInstName = `sk_${idx}_${rootArgs.dataName}`; }
 
     if(true){  // （临时）把 Y 的系统 DPZ 值改一下，能少加载一点就少一点吧
-        k.gridsizeY[2] = 5;
+        k.gridsizeY[2] = 7;
         k.gridsizeY[3] = 5;
     }
 }

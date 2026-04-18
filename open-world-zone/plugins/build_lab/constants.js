@@ -33,8 +33,9 @@ export const D = {  // 不同物体的索引
     inXWall3h002: [19],  // 第一个屋子的缺口
 
     // 画板
-    board1h: expandIndices([[289, 326],[377,397]]), // 一楼画板
+    board1h: expandIndices([[289, 326],[377,405]]), // 一楼画板
     house1H3: expandIndices([[327, 376]]), // 三楼第一个屋的画板
+    floorSign: [406,407],  // 楼层标识
 
 };
 

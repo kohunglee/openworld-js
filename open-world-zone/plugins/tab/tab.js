@@ -5,6 +5,7 @@
  */
 import { initServerConfig } from './serverConfig.js';
 import { initModeSwitch } from './modeSwitch.js';
+import { initPhonePanel } from './phonepanel.js';
 
 export default function(ccgxkObj) {
     // console.log('导入 侧边栏 插件成功');
@@ -120,6 +121,19 @@ export default function(ccgxkObj) {
     // ========================
     initModeSwitch($, ccgxkObj);
 
+    // ========================
+    // 移动端控制面板
+    // ========================
+    initPhonePanel($, ccgxkObj);
+
+    // PC 端显示/隐藏手机控制面板
+    $("togglePhonePanel")?.addEventListener("click", () => {
+        const panel = $("phonePanel");
+        if (panel) {
+            panel.classList.toggle("phone-panel-hidden");
+        }
+    });
+
 
     /**
      * 紧急修复地面缺失 bug
@@ -197,7 +211,8 @@ const htmlCode = `
         <h3>快捷操作</h3>
             <button id="goOPOS">到原点</button>
             <button id="goHall">到外面</button>
-            <button id="fixError">修NaN</button><br><br>
+            <button id="fixError">修NaN</button>
+            <button id="togglePhonePanel">手机面板</button><br><br>
             <button id="goH01">1</button>
             <button id="goH02">2</button>
             <button id="goH03">3</button>
