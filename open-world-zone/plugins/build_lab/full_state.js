@@ -155,8 +155,5 @@ export function processFullState(insts, ccgxkObj) {
         });
         ccgxkObj.signTest(arr, ccgxkObj, {x:0}, 1);
     }
-
-
-
     return 0;
 }

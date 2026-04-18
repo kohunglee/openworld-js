@@ -211,13 +211,21 @@ export function setBoardIdDisplay(text) {
 }
 
 /**
- * 聚焦输入框
+ * 聚焦输入框（光标定位到开端）
  */
 export function focusInput(mode) {
-    if (mode === 'text') {
-        document.getElementById('signPanelTextarea')?.focus();
-    } else {
-        document.getElementById('signImageUrl')?.focus();
+    const el = mode === 'text'
+        ? document.getElementById('signPanelTextarea')
+        : document.getElementById('signImageUrl');
+
+    if (!el) return;
+
+    el.focus();
+    // 显式设置光标到开端
+    el.setSelectionRange(0, 0);
+    // 确保 textarea 滚动到顶部
+    if (el.tagName === 'TEXTAREA') {
+        el.scrollTop = 0;
     }
 }
 
