@@ -108,6 +108,7 @@ export const styleCode = `
     padding: 10px 18px;
     display: flex;
     gap: 8px;
+    align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.25);
     position: relative;
     z-index: 1;
@@ -141,6 +142,16 @@ export const styleCode = `
     border-color: rgba(100, 160, 255, 0.6);
     box-shadow: 0 2px 12px rgba(70, 130, 230, 0.3);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.sign-mode-expand-btn {
+    margin-left: auto;
+    padding-inline: 14px;
+    font-size: 11px;
+}
+
+.sign-mode-expand-btn[hidden] {
+    display: none;
 }
 
 /* 内容区 */
@@ -180,6 +191,23 @@ export const styleCode = `
     background: rgba(255, 255, 255, 0.4);
     border-color: rgba(100, 160, 255, 0.6);
     box-shadow: 0 0 0 3px rgba(100, 160, 255, 0.15);
+}
+
+.sign-panel-modal.text-expand-mode {
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+.sign-panel-box.text-expand-mode .sign-panel-header {
+    cursor: default;
+}
+
+.sign-panel-box.text-expand-mode {
+    width: min(85vw, 1400px);
+    height: 85vh;
+    max-width: calc(100vw - 40px);
+    max-height: calc(100vh - 40px);
 }
 
 /* image 模式 */

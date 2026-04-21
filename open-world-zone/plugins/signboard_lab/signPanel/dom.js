@@ -21,6 +21,7 @@ const htmlTemplate = `
         <div class="sign-mode-bar">
             <button class="sign-mode-btn active" id="signModeText" data-mode="text">文字</button>
             <button class="sign-mode-btn" id="signModeImage" data-mode="image">图片</button>
+            <button class="sign-mode-btn sign-mode-expand-btn" id="signTextExpandToggle" type="button">全屏模式</button>
         </div>
         <div class="sign-panel-content">
             <textarea class="sign-panel-textarea" id="signPanelTextarea"
@@ -83,6 +84,7 @@ export function bindEvents(handlers) {
 
     document.getElementById('signModeText')?.addEventListener('click', () => onSwitchMode('text'));
     document.getElementById('signModeImage')?.addEventListener('click', () => onSwitchMode('image'));
+    document.getElementById('signTextExpandToggle')?.addEventListener('click', toggleTextExpand);
 
     const imgUrlInput = document.getElementById('signImageUrl');
     if (imgUrlInput) {
@@ -106,6 +108,7 @@ export function initDrag() {
     let offsetY = 0;
 
     header.addEventListener('mousedown', (e) => {
+        if (modal.classList.contains('text-expand-mode')) return;
         isDragging = true;
         const rect = modal.getBoundingClientRect();
         modal.style.left = rect.left + 'px';
@@ -145,6 +148,7 @@ export function updateModeButtons(mode) {
  * 更新内容区显示
  */
 export function updateContentArea(mode) {
+    syncTextExpandVisibility(mode);
     const textarea = document.getElementById('signPanelTextarea');
     const imageArea = document.getElementById('signImageArea');
 
@@ -211,7 +215,7 @@ export function setBoardIdDisplay(text) {
 }
 
 /**
- * 聚焦输入框（光标定位到开端）
+ * 聚焦输入框（光标定位到最后一个可见字符后，并滚动到该位置）
  */
 export function focusInput(mode) {
     const el = mode === 'text'
@@ -220,13 +224,15 @@ export function focusInput(mode) {
 
     if (!el) return;
 
+    // 找到最后一个非空白字符的位置
+    const trimmedLen = el.value.trimEnd().length;
+
+    // 先设置光标位置
+    el.setSelectionRange(trimmedLen, trimmedLen);
+
+    // 触发浏览器滚动到光标位置
+    el.blur();
     el.focus();
-    // 显式设置光标到开端
-    el.setSelectionRange(0, 0);
-    // 确保 textarea 滚动到顶部
-    if (el.tagName === 'TEXTAREA') {
-        el.scrollTop = 0;
-    }
 }
 
 /**
@@ -236,6 +242,7 @@ export function showModal() {
     const modal = document.getElementById('signPanelModal');
     const backdrop = document.getElementById('signPanelBackdrop');
 
+    exitTextExpand();
     modal.style.left = '50%';
     modal.style.top = '50%';
     modal.style.transform = 'translate(-50%, -50%)';
@@ -253,6 +260,7 @@ export function hideModal() {
     const modal = document.getElementById('signPanelModal');
     const backdrop = document.getElementById('signPanelBackdrop');
 
+    exitTextExpand();
     if (modal) modal.hidden = true;
     if (backdrop) backdrop.hidden = true;
 }
@@ -334,4 +342,38 @@ export function getRemarkValue() {
 export function initRemarkState() {
     const expanded = getRemarkExpandedFromCookie();
     setRemarkExpanded(expanded);
+}
+
+function toggleTextExpand() {
+    const modal = document.getElementById('signPanelModal');
+    const isExpanded = modal?.classList.contains('text-expand-mode');
+    setTextExpand(!isExpanded);
+}
+
+function exitTextExpand() {
+    setTextExpand(false);
+}
+
+function syncTextExpandVisibility(mode) {
+    const toggle = document.getElementById('signTextExpandToggle');
+    const isTextMode = mode === 'text';
+    if (toggle) toggle.hidden = !isTextMode;
+    if (!isTextMode) exitTextExpand();
+}
+
+function setTextExpand(expanded) {
+    const modal = document.getElementById('signPanelModal');
+    const box = document.getElementById('signPanelBox');
+    const toggle = document.getElementById('signTextExpandToggle');
+    if (!modal || !box || !toggle) return;
+
+    modal.classList.toggle('text-expand-mode', expanded);
+    box.classList.toggle('text-expand-mode', expanded);
+    toggle.textContent = expanded ? '恢复小屏' : '全屏模式';
+
+    if (expanded) {
+        modal.style.left = '50%';
+        modal.style.top = '50%';
+        modal.style.transform = 'translate(-50%, -50%)';
+    }
 }
