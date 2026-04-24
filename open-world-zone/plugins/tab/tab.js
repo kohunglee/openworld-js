@@ -64,6 +64,8 @@ export default function(ccgxkObj) {
         const p = k.mainVPlayer.body.position;
         p.x = x; p.y = y; p.z = z;
         if (turn !== null) k.keys.turnRight = turn;
+        // 传送后关闭面板并锁定鼠标
+        hideModal();
     }
 
     $("goOPOS").addEventListener("click", () => teleportTo(7.6, 10, 16.5, 0));
