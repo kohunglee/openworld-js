@@ -242,7 +242,6 @@ export function showModal() {
     const modal = document.getElementById('signPanelModal');
     const backdrop = document.getElementById('signPanelBackdrop');
 
-    exitTextExpand();
     modal.style.left = '50%';
     modal.style.top = '50%';
     modal.style.transform = 'translate(-50%, -50%)';
@@ -260,7 +259,8 @@ export function hideModal() {
     const modal = document.getElementById('signPanelModal');
     const backdrop = document.getElementById('signPanelBackdrop');
 
-    exitTextExpand();
+    // 关闭面板时仅收起当前视觉状态，不覆盖本次页面会话里的模式偏好。
+    exitTextExpand({ rememberPreference: false });
     if (modal) modal.hidden = true;
     if (backdrop) backdrop.hidden = true;
 }
@@ -344,28 +344,57 @@ export function initRemarkState() {
     setRemarkExpanded(expanded);
 }
 
+/**
+ * 切换文字模式下的小屏/全屏显示。
+ */
 function toggleTextExpand() {
     const modal = document.getElementById('signPanelModal');
     const isExpanded = modal?.classList.contains('text-expand-mode');
     setTextExpand(!isExpanded);
 }
 
-function exitTextExpand() {
-    setTextExpand(false);
+/**
+ * 记录本次页面会话里用户最后一次选择的文字面板尺寸偏好。
+ */
+let preferredTextExpanded = false;
+
+/**
+ * 退出文字全屏显示。
+ * @param {Object} options - 控制是否同时更新用户偏好
+ */
+function exitTextExpand(options) {
+    setTextExpand(false, options);
 }
 
+/**
+ * 根据当前编辑模式同步全屏按钮可见性，并在文字模式下恢复上次尺寸选择。
+ * @param {string} mode - 当前编辑模式
+ */
 function syncTextExpandVisibility(mode) {
     const toggle = document.getElementById('signTextExpandToggle');
     const isTextMode = mode === 'text';
     if (toggle) toggle.hidden = !isTextMode;
-    if (!isTextMode) exitTextExpand();
+    if (!isTextMode) {
+        exitTextExpand({ rememberPreference: false });
+        return;
+    }
+
+    setTextExpand(preferredTextExpanded, { rememberPreference: false });
 }
 
-function setTextExpand(expanded) {
+/**
+ * 设置文字模式面板的小屏/全屏状态。
+ * @param {boolean} expanded - 是否使用全屏模式
+ * @param {Object} options - 控制是否记住本次选择
+ */
+function setTextExpand(expanded, options = {}) {
+    const { rememberPreference = true } = options;
     const modal = document.getElementById('signPanelModal');
     const box = document.getElementById('signPanelBox');
     const toggle = document.getElementById('signTextExpandToggle');
     if (!modal || !box || !toggle) return;
+
+    if (rememberPreference) preferredTextExpanded = expanded;
 
     modal.classList.toggle('text-expand-mode', expanded);
     box.classList.toggle('text-expand-mode', expanded);
