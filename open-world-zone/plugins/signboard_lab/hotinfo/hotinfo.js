@@ -6,7 +6,7 @@
 
 import { getApiBase } from '../config.js';
 import { styleCode } from './style.js';
-import { htmlTemplate, unlockPointer, updateHotInfo } from './dom.js';
+import { htmlTemplate, unlockPointer, updateHotInfo, openTextModal, closeTextModal } from './dom.js';
 
 let lastHotIndex = -1;
 let isExpanded = true;
@@ -72,22 +72,37 @@ export function initHotInfo(ccgxkObj) {
         }
     });
 
-    // 复制原文
+    // 打开全文
     const copyTextDiv = document.getElementById('signHotInfoCopyText');
-    copyTextDiv.addEventListener('click', async (e) => {
+    copyTextDiv.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         const text = copyTextDiv.dataset.text;
         if (text) {
-            try {
-                await navigator.clipboard.writeText(text);
-                const linkEl = copyTextDiv.querySelector('a');
-                const originalText = linkEl.textContent;
-                linkEl.textContent = '[已复制]';
-                setTimeout(() => linkEl.textContent = originalText, 1500);
-            } catch (err) {
-                console.error('[HotInfo] 复制失败:', err);
-            }
+            openTextModal(text);
+        }
+    });
+
+    // 全文模态框关闭
+    const textModal = document.getElementById('signHotInfoTextModal');
+    const textModalBackdrop = document.getElementById('signHotInfoTextModalBackdrop');
+    const textModalCloseBtn = document.getElementById('signHotInfoTextModalClose');
+
+    textModalBackdrop.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeTextModal();
+    });
+
+    textModalCloseBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeTextModal();
+    });
+
+    textModal.addEventListener('click', (e) => {
+        if (e.target === textModal) {
+            closeTextModal();
         }
     });
 
@@ -110,6 +125,11 @@ export function initHotInfo(ccgxkObj) {
         if (e.key === 'Escape' && overlay.style.display === 'flex') {
             overlay.style.display = 'none';
             overlayImg.src = '';
+            return;
+        }
+
+        if (e.key === 'Escape' && textModal.style.display === 'flex') {
+            closeTextModal();
         }
     });
 
@@ -118,7 +138,7 @@ export function initHotInfo(ccgxkObj) {
 
     // 定期检查热点变化
     setInterval(() => {
-        if (ccgxkObj.mode !== 1) {
+        if (ccgxkObj.mode === 0) {
             toggleBtn.style.display = 'none';
             container.style.display = 'none';
             return;

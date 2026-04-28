@@ -21,13 +21,25 @@ export const htmlTemplate = `
             <a>[查看原图]</a>
         </div>
         <div class="sign-hot-info-view-original" id="signHotInfoCopyText" style="display: none;">
-            <a>[复制原文]</a>
+            <a>[打开全文]</a>
         </div>
         <div class="sign-hot-info-remark" id="signHotInfoRemark" style="display: none;"></div>
     </div>
 </div>
 <div id="signHotInfoOverlay">
     <img id="signHotInfoOverlayImg" src="" alt="原图" />
+</div>
+<div id="signHotInfoTextModal" style="display: none;">
+    <div class="sign-hot-info-text-modal-backdrop" id="signHotInfoTextModalBackdrop"></div>
+    <div class="sign-hot-info-text-modal-panel" role="dialog" aria-modal="true" aria-label="全文内容">
+        <div class="sign-hot-info-text-modal-header">
+            <span>全文</span>
+            <button type="button" id="signHotInfoTextModalClose">关闭</button>
+        </div>
+        <div class="sign-hot-info-text-modal-body">
+            <pre id="signHotInfoTextModalContent"></pre>
+        </div>
+    </div>
 </div>
 `;
 
@@ -116,4 +128,29 @@ export function updateHotInfo(hotIndex, boardsData, isExpanded) {
     } else {
         remarkDiv.style.display = 'none';
     }
+}
+
+/**
+ * 打开全文模态框。
+ * @param {string} text - 要展示的全文内容
+ */
+export function openTextModal(text) {
+    const modal = document.getElementById('signHotInfoTextModal');
+    const content = document.getElementById('signHotInfoTextModalContent');
+    if (!modal || !content) return;
+
+    content.textContent = text || '';
+    modal.style.display = 'flex';
+}
+
+/**
+ * 关闭全文模态框。
+ */
+export function closeTextModal() {
+    const modal = document.getElementById('signHotInfoTextModal');
+    const content = document.getElementById('signHotInfoTextModalContent');
+    if (!modal || !content) return;
+
+    modal.style.display = 'none';
+    content.textContent = '';
 }

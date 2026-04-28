@@ -95,4 +95,67 @@ export const styleCode = `
     cursor: pointer;
     object-fit: contain;
 }
+
+#signHotInfoTextModal {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.sign-hot-info-text-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.42);
+    backdrop-filter: blur(3px);
+}
+
+.sign-hot-info-text-modal-panel {
+    position: relative;
+    width: min(50vw, 900px);
+    height: min(50vh, 700px);
+    min-width: 320px;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    box-shadow: 0 24px 80px rgba(15, 23, 42, 0.2);
+}
+
+.sign-hot-info-text-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+    font-size: 14px;
+    color: #1f2937;
+}
+
+.sign-hot-info-text-modal-header button {
+    border: 1px solid rgba(148, 163, 184, 0.55);
+    background: #fff;
+    color: #334155;
+    cursor: pointer;
+    padding: 4px 10px;
+}
+
+.sign-hot-info-text-modal-body {
+    flex: 1;
+    overflow: auto;
+    padding: 16px;
+}
+
+.sign-hot-info-text-modal-body pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #111827;
+    user-select: text;
+}
 `;
