@@ -6,6 +6,7 @@
 import { initServerConfig } from './serverConfig.js';
 import { initModeSwitch } from './modeSwitch.js';
 import { initPhonePanel } from './phonepanel.js';
+import { initAutoW } from './autoW.js';
 
 export default function(ccgxkObj) {
     // console.log('导入 侧边栏 插件成功');
@@ -83,16 +84,19 @@ export default function(ccgxkObj) {
     const fovSlider = $("fovSlider");
     const fovValue = $("fovValue");
     const DEFAULT_FOV = 60;
+    const FOV_SLIDER_MAX = 120;
+    const sliderValueToFov = value => FOV_SLIDER_MAX + 1 - parseInt(value);
+    const fovToSliderValue = fov => FOV_SLIDER_MAX + 1 - fov;
 
     function setFov(fov) {
-        fovSlider.value = fov;
+        fovSlider.value = fovToSliderValue(fov);
         fovValue.textContent = fov + "°";
         k.W.camera({ fov });
     }
 
     if (fovSlider && fovValue) {
         fovSlider.addEventListener("input", (e) => {
-            const fov = parseInt(e.target.value);
+            const fov = sliderValueToFov(e.target.value);
             fovValue.textContent = fov + "°";
             k.W.camera({ fov });
         });
@@ -128,6 +132,11 @@ export default function(ccgxkObj) {
     // 移动端控制面板
     // ========================
     initPhonePanel($, ccgxkObj);
+
+    // ========================
+    // plane 自动裁剪
+    // ========================
+    initAutoW($, ccgxkObj);
 
     // PC 端显示/隐藏手机控制面板
     $("togglePhonePanel")?.addEventListener("click", () => {
@@ -247,7 +256,9 @@ const htmlCode = `
         <h3>画面设置</h3>
         <div style="display:flex;align-items:center;gap:10px;margin:8px 0">
             <label>FOV:</label>
-            <input type="range" id="fovSlider" min="1" max="120" value="60" step="1" style="flex:1">
+            <span style="font-size:12px;color:#666">120</span>
+            <input type="range" id="fovSlider" min="1" max="120" value="61" step="1" style="flex:1">
+            <span style="font-size:12px;color:#666">1</span>
             <span id="fovValue" style="min-width:35px;text-align:right">60°</span>
             <button id="fovReset" style="padding:2px 8px;font-size:12px">还原</button>
         </div>
@@ -274,6 +285,25 @@ const htmlCode = `
         </div>
         <div style="font-size:12px;color:#888;margin-bottom:8px">
             信息板 API 服务器地址，修改后刷新页面才生效
+        </div>
+        <hr>
+    </div>
+
+    <div>
+        <h3>plane 渲染数量</h3>
+        <div style="display:flex;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap">
+            <label style="white-space:nowrap">保留最近:</label>
+            <input type="number" id="autoWLimitInput" min="0" step="1"
+                style="width:100px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:14px">
+            <span>个 plane</span>
+            <button id="autoWLimitReset" style="padding:4px 12px;font-size:13px">恢复默认</button>
+            <button id="autoWLimitSave" style="padding:4px 12px;font-size:13px">保存</button>
+        </div>
+        <div id="autoWCurrentText" style="font-size:12px;color:#666;margin-bottom:6px">
+            当前的限制个数是 30
+        </div>
+        <div style="font-size:12px;color:#888;margin-bottom:8px">
+            每秒按与主角距离排序，只渲染最近的 plane，其余自动 hidden
         </div>
         <hr>
     </div>
