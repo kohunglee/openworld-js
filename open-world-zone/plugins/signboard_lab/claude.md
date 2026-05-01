@@ -85,7 +85,7 @@ signIndexMap.set(id, { index });  // id → 物体 index
 ## Mode 隐藏逻辑（2026-04-11 优化）
 
 **引擎模式说明**：
-- `ccgxkObj.mode === 1`：只看模式（浏览者视角）
+- `ccgxkObj.mode === 1`：预览模式（浏览者视角），可在 `[打开全文]` 的模态框中点击“编辑”直接唤起编辑面板
 - `ccgxkObj.mode === 2`：编辑模式（编辑者视角）
 
 **隐藏规则**：

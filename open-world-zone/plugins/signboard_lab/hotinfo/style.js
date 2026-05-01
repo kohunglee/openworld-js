@@ -135,6 +135,12 @@ export const styleCode = `
     color: #1f2937;
 }
 
+.sign-hot-info-text-modal-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .sign-hot-info-text-modal-header button {
     border: 1px solid rgba(148, 163, 184, 0.55);
     background: #fff;

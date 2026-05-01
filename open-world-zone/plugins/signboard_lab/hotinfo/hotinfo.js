@@ -10,10 +10,20 @@ import { styleCode } from './style.js';
 import { htmlTemplate, unlockPointer, updateHotInfo, openTextModal, closeTextModal, findBoardIdByIndex } from './dom.js';
 
 let lastHotIndex = -1;
-let isExpanded = true;
-let ccgxkObjRef = null;
-let boardsData = [];
+let isExpanded = true;      // 左侧热点信息面板是否展开
+let ccgxkObjRef = null;     // 缓存引擎实例，供事件回调复用
+let boardsData = [];        // API 返回的画板元数据缓存
 
+/**
+ * 只有在 mode=1 且 signPanel 已初始化时，全文模态框才显示“编辑”按钮。
+ */
+function canEditCurrentHot() {
+    return ccgxkObjRef?.mode === 1 && !!ccgxkObjRef?.signPanel && ccgxkObjRef.hotPoint >= 0;
+}
+
+/**
+ * 读取当前热点对应的纯文本内容，供“打开全文”模态框复用。
+ */
 function getCurrentHotText() {
     if (!ccgxkObjRef) return '';
     const boardId = findBoardIdByIndex(ccgxkObjRef.hotPoint);
@@ -22,7 +32,9 @@ function getCurrentHotText() {
     return info?.mode === 'text' ? (info.t || '') : '';
 }
 
-// 加载画板数据
+/**
+ * 拉取画板基础数据；这里只维护热点侧栏要用到的轻量元信息。
+ */
 async function loadBoardsData() {
     try {
         const res = await fetch(`${getApiBase()}/api/signs`);
@@ -81,21 +93,22 @@ export function initHotInfo(ccgxkObj) {
         }
     });
 
-    // 打开全文
+    // 打开全文。这里不直接读 dataset.text，而是每次按当前热点重新取值，避免内容过期。
     const copyTextDiv = document.getElementById('signHotInfoCopyText');
     copyTextDiv.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         const text = getCurrentHotText();
         if (text) {
-            openTextModal(text);
+            openTextModal(text, { allowEdit: canEditCurrentHot() });
         }
     });
 
-    // 全文模态框关闭
+    // 全文模态框关闭 / 编辑动作
     const textModal = document.getElementById('signHotInfoTextModal');
     const textModalBackdrop = document.getElementById('signHotInfoTextModalBackdrop');
     const textModalCloseBtn = document.getElementById('signHotInfoTextModalClose');
+    const textModalEditBtn = document.getElementById('signHotInfoTextModalEdit');
 
     textModalBackdrop.addEventListener('click', (e) => {
         e.preventDefault();
@@ -107,6 +120,14 @@ export function initHotInfo(ccgxkObj) {
         e.preventDefault();
         e.stopPropagation();
         closeTextModal();
+    });
+
+    textModalEditBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!canEditCurrentHot()) return;
+        const hotIndex = ccgxkObjRef.hotPoint;  // 保持全文模态框不关，只额外拉起编辑器
+        ccgxkObjRef.signPanel.show(hotIndex);
     });
 
     textModal.addEventListener('click', (e) => {
@@ -145,7 +166,7 @@ export function initHotInfo(ccgxkObj) {
     // 初始加载数据
     loadBoardsData();
 
-    // 定期检查热点变化
+    // 轮询热点变化。这里依赖 hotPoint 持续变化，因此 signPanel 关闭时必须恢复 drawPointPause。
     setInterval(() => {
         if (ccgxkObj.mode === 0) {
             toggleBtn.style.display = 'none';
@@ -160,13 +181,13 @@ export function initHotInfo(ccgxkObj) {
         }
     }, 100);
 
-    // 热点事件
+    // mode=1 下点击热点只需要解锁鼠标，不直接弹编辑器。
     ccgxkObj.hooks.on('hot_action', function(ccgxkObj) {
         if (ccgxkObj.mode !== 1) return 0;
         unlockPointer();
     });
 
-    // SSE 更新时只更新本地缓存的那一条（不再全量加载！）
+    // SSE 更新时只修补当前这条缓存，避免每次保存后重新全量拉取。
     const originalUpdateSign = window.updateSign;
     window.updateSign = function(boardId, content, mode, extra) {
         if (originalUpdateSign) originalUpdateSign(boardId, content, mode, extra);
@@ -188,8 +209,9 @@ export function initHotInfo(ccgxkObj) {
             updateHotInfo(ccgxkObjRef.hotPoint, boardsData, isExpanded);
         }
 
+        // 全文模态框开着时，保存后的新文本要立即反映到模态框里。
         if (textModal.style.display === 'flex' && mode === 'text') {
-            openTextModal(content || '');
+            openTextModal(content || '', { allowEdit: canEditCurrentHot() });
         }
     };
 }

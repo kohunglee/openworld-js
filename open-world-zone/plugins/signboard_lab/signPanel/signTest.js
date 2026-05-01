@@ -21,7 +21,7 @@ import {
  * @param {Object} ccgxkObj - OpenWorld 引擎对象
  */
 export default function createSignPanel(ccgxkObj) {
-    // 状态
+    // 面板会话状态；这里只管一次打开期间的 UI 状态，不持久化业务数据。
     const state = {
         initialized: false,
         visible: false,
@@ -50,8 +50,17 @@ export default function createSignPanel(ccgxkObj) {
 
         canvas.requestPointerLock = canvas.requestPointerLock ||
             canvas.mozRequestPointerLock ||
-            canvas.webkitRequestPointerLock;
+        canvas.webkitRequestPointerLock;
         canvas.requestPointerLock();
+    }
+
+    /**
+     * mode=1 下如果全文模态框还开着，就不要急着重新锁鼠标，
+     * 否则用户虽然还在看全文，却会被强行切回第一人称控制。
+     */
+    function shouldKeepPointerUnlocked() {
+        const textModal = document.getElementById('signHotInfoTextModal');
+        return ccgxkObj.mode === 1 && textModal?.style.display === 'flex';
     }
 
     /**
@@ -80,7 +89,7 @@ export default function createSignPanel(ccgxkObj) {
     function init() {
         if (state.initialized) return;
 
-        initDOM();
+        initDOM();  // 只注入一次 DOM，后续 show/hide 都复用同一套节点
 
         bindEvents({
             onClose: hide,
@@ -90,8 +99,8 @@ export default function createSignPanel(ccgxkObj) {
             onToggleRemark: toggleRemarkExpanded
         });
 
-        initDrag();
-        initRemarkState();
+        initDrag();         // 面板可拖动，避免挡住场景中心
+        initRemarkState();  // 备注区折叠状态走 cookie 记忆
 
         // Ctrl/Cmd + S 快捷键
         state.keyHandler = (e) => {
@@ -121,7 +130,7 @@ export default function createSignPanel(ccgxkObj) {
         // 显示画板 ID
         setBoardIdDisplay(state.boardId ? `#${state.boardId}` : '(未注册画板)');
 
-        // 填充内容
+        // 按当前热点回填内容。面板每次打开都重新读 store，避免显示上一次残留值。
         let detectedMode = 'text';
 
         if (state.boardId) {
@@ -134,7 +143,7 @@ export default function createSignPanel(ccgxkObj) {
                     setImageUrl(info.imgUrl || '');
                     updateImagePreview(info.imgUrl || '');
                 }
-                // 加载备注
+                // 备注不渲染到画板纹理里，但编辑时需要一起带出
                 const extra = info.extra || {};
                 setRemarkValue(extra.remark || '');
             } else {
@@ -160,7 +169,7 @@ export default function createSignPanel(ccgxkObj) {
         // 面板显示后聚焦输入框
         focusInput(detectedMode);
 
-        // 解锁鼠标
+        // 打开编辑器时暂停热点追踪，避免你编辑过程中 hotPoint 继续漂移。
         unlockPointer();
         ccgxkObj.drawPointPause = true;
 
@@ -177,8 +186,14 @@ export default function createSignPanel(ccgxkObj) {
         state.hotIndex = -1;
         state.boardId = null;
 
-        // 恢复鼠标锁定
+        // 不管是否重新锁鼠标，都必须恢复热点追踪；
+        // 否则 signHotInfo 会卡死在刚刚编辑的那块板子上。
         ccgxkObj.drawPointPause = false;
+
+        // 预览模式下如果全文模态框还在，就继续保持解锁，避免打断阅读。
+        if (shouldKeepPointerUnlocked()) return;
+
+        // 只有在全文模态框也已经不看了时，才恢复鼠标锁定。
         lockPointer();
     }
 
@@ -206,10 +221,10 @@ export default function createSignPanel(ccgxkObj) {
         const content = mode === 'text' ? getTextareaValue() : getImageUrl();
         const remark = getRemarkValue();
 
-        // 构建 extra 对象
+        // 构建 extra 对象，尽量保留其他扩展字段，只覆盖 remark。
         const info = signContentMap.get(state.boardId);
         let extra = info?.extra || {};
-        // 确保 extra 是对象（数据库存的是字符串时需要 parse）
+        // 确保 extra 是对象；历史数据里数据库可能存的是 JSON 字符串。
         if (typeof extra === 'string') {
             extra = JSON.parse(extra);
         }
@@ -228,7 +243,7 @@ export default function createSignPanel(ccgxkObj) {
             if (!res.ok) throw new Error('保存失败');
 
             updateStatus('已保存', 'saved');
-            hide();
+            hide();  // 保存成功后沿用统一收口逻辑，避免漏掉热点/鼠标状态恢复
         } catch (e) {
             console.error('[signPanel] 保存失败:', e);
             alert('保存失败: ' + e.message + '\n你的内容还在，不会丢失。');
@@ -238,7 +253,7 @@ export default function createSignPanel(ccgxkObj) {
         }
     }
 
-    // 暴露 API
+    // 暴露 API，供 mode=2 热点点击和 mode=1 全文模态框里的“编辑”按钮共用。
     ccgxkObj.signPanel = {
         show,
         hide,

@@ -9,14 +9,14 @@ export const styleCode = `
     position: fixed;
     top: 0; left: 0;
     width: 100vw; height: 100vh;
-    z-index: 999;
+    z-index: 100001;
     background: rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(2px);
 }
 
 .sign-panel-modal {
     position: fixed;
-    z-index: 1000;
+    z-index: 100002;
 }
 
 .sign-panel-box {
@@ -31,7 +31,6 @@ export const styleCode = `
     );
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.5);
     box-shadow:
         0 8px 32px rgba(0, 0, 0, 0.12),
@@ -54,7 +53,6 @@ export const styleCode = `
         rgba(255, 255, 255, 0.3) 0%,
         rgba(255, 255, 255, 0) 100%
     );
-    border-radius: 20px 20px 0 0;
     pointer-events: none;
 }
 
@@ -172,7 +170,6 @@ export const styleCode = `
     resize: none;
     background: rgba(255, 255, 255, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 12px;
     color: rgba(30, 30, 30, 0.9);
     font-size: 18px;
     font-family: 'Microsoft YaHei', sans-serif;

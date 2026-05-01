@@ -34,7 +34,10 @@ export const htmlTemplate = `
     <div class="sign-hot-info-text-modal-panel" role="dialog" aria-modal="true" aria-label="全文内容">
         <div class="sign-hot-info-text-modal-header">
             <span>全文</span>
-            <button type="button" id="signHotInfoTextModalClose">关闭</button>
+            <div class="sign-hot-info-text-modal-actions">
+                <button type="button" id="signHotInfoTextModalEdit" style="display: none;">编辑</button>
+                <button type="button" id="signHotInfoTextModalClose">关闭</button>
+            </div>
         </div>
         <div class="sign-hot-info-text-modal-body">
             <pre id="signHotInfoTextModalContent"></pre>
@@ -167,13 +170,18 @@ export function updateHotInfo(hotIndex, boardsData, isExpanded) {
 /**
  * 打开全文模态框。
  * @param {string} text - 要展示的全文内容
+ * @param {Object} options - 模态框展示选项
  */
-export function openTextModal(text) {
+export function openTextModal(text, options = {}) {
     const modal = document.getElementById('signHotInfoTextModal');
     const content = document.getElementById('signHotInfoTextModalContent');
+    const editBtn = document.getElementById('signHotInfoTextModalEdit');
     if (!modal || !content) return;
 
+    const { allowEdit = false } = options;
+
     renderTextWithLinks(content, text);
+    if (editBtn) editBtn.style.display = allowEdit ? '' : 'none';
     modal.style.display = 'flex';
 }
 
@@ -183,8 +191,10 @@ export function openTextModal(text) {
 export function closeTextModal() {
     const modal = document.getElementById('signHotInfoTextModal');
     const content = document.getElementById('signHotInfoTextModalContent');
+    const editBtn = document.getElementById('signHotInfoTextModalEdit');
     if (!modal || !content) return;
 
     modal.style.display = 'none';
+    if (editBtn) editBtn.style.display = 'none';
     content.replaceChildren();
 }
