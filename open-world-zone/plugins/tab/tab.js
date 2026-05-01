@@ -75,6 +75,7 @@ export default function(ccgxkObj) {
     $("goH03").addEventListener("click", () => teleportTo(58, 11.5, 5.43, 90));
     $("goH04").addEventListener("click", () => teleportTo(58, 16.6, 5.43, 90));
     $("goH05").addEventListener("click", () => teleportTo(58, 21.6, 5.43, 90));
+    $("goTSG").addEventListener("click", () => teleportTo(92.84, 3, 6.61, -90));
 
     // ========================
     // FOV 滑杆控制
@@ -220,6 +221,7 @@ const htmlCode = `
             <button id="goH03">3</button>
             <button id="goH04">4</button>
             <button id="goH05">5</button>
+            <button id="goTSG">TSG</button>
         <hr>
     </div>
 

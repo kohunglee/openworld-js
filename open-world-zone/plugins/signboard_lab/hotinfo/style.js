@@ -158,4 +158,13 @@ export const styleCode = `
     color: #111827;
     user-select: text;
 }
+
+.sign-hot-info-text-modal-body pre a {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.sign-hot-info-text-modal-body pre a:hover {
+    color: #1d4ed8;
+}
 `;

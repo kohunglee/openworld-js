@@ -43,6 +43,40 @@ export const htmlTemplate = `
 </div>
 `;
 
+const LINK_PATTERN = /(?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?::\d+)?(?:\/[^\s<]*)?/g;
+
+function normalizeLinkUrl(rawUrl) {
+    if (!rawUrl) return '';
+    return /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
+}
+
+function renderTextWithLinks(container, text) {
+    container.replaceChildren();
+
+    const sourceText = text || '';
+    let lastIndex = 0;
+
+    sourceText.replace(LINK_PATTERN, (match, offset) => {
+        if (offset > lastIndex) {
+            container.appendChild(document.createTextNode(sourceText.slice(lastIndex, offset)));
+        }
+
+        const link = document.createElement('a');
+        link.href = normalizeLinkUrl(match);
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = match;
+        container.appendChild(link);
+
+        lastIndex = offset + match.length;
+        return match;
+    });
+
+    if (lastIndex < sourceText.length) {
+        container.appendChild(document.createTextNode(sourceText.slice(lastIndex)));
+    }
+}
+
 // 解锁鼠标指针
 export function unlockPointer() {
     const exitLock = document.exitPointerLock ||
@@ -139,7 +173,7 @@ export function openTextModal(text) {
     const content = document.getElementById('signHotInfoTextModalContent');
     if (!modal || !content) return;
 
-    content.textContent = text || '';
+    renderTextWithLinks(content, text);
     modal.style.display = 'flex';
 }
 
@@ -152,5 +186,5 @@ export function closeTextModal() {
     if (!modal || !content) return;
 
     modal.style.display = 'none';
-    content.textContent = '';
+    content.replaceChildren();
 }

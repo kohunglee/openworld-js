@@ -5,13 +5,22 @@
  */
 
 import { getApiBase } from '../config.js';
+import { signContentMap } from '../store.js';
 import { styleCode } from './style.js';
-import { htmlTemplate, unlockPointer, updateHotInfo, openTextModal, closeTextModal } from './dom.js';
+import { htmlTemplate, unlockPointer, updateHotInfo, openTextModal, closeTextModal, findBoardIdByIndex } from './dom.js';
 
 let lastHotIndex = -1;
 let isExpanded = true;
 let ccgxkObjRef = null;
 let boardsData = [];
+
+function getCurrentHotText() {
+    if (!ccgxkObjRef) return '';
+    const boardId = findBoardIdByIndex(ccgxkObjRef.hotPoint);
+    if (!boardId) return '';
+    const info = signContentMap.get(boardId);
+    return info?.mode === 'text' ? (info.t || '') : '';
+}
 
 // 加载画板数据
 async function loadBoardsData() {
@@ -77,7 +86,7 @@ export function initHotInfo(ccgxkObj) {
     copyTextDiv.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const text = copyTextDiv.dataset.text;
+        const text = getCurrentHotText();
         if (text) {
             openTextModal(text);
         }
@@ -168,6 +177,19 @@ export function initHotInfo(ccgxkObj) {
             boardsData[idx] = { ...boardsData[idx], ...newBoard };
         } else {
             boardsData.push(newBoard);
+        }
+
+        if (!ccgxkObjRef) return;
+
+        const currentBoardId = findBoardIdByIndex(ccgxkObjRef.hotPoint);
+        if (currentBoardId !== boardId) return;
+
+        if (isExpanded) {
+            updateHotInfo(ccgxkObjRef.hotPoint, boardsData, isExpanded);
+        }
+
+        if (textModal.style.display === 'flex' && mode === 'text') {
+            openTextModal(content || '');
         }
     };
 }
