@@ -75,47 +75,24 @@ export const styleCode = `
     color: #1d4ed8;
 }
 
-/* 全屏图片遮罩层 */
-#signHotInfoOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 99999;
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
-
-#signHotInfoOverlay img {
-    max-width: 90%;
-    max-height: 90%;
-    cursor: pointer;
-    object-fit: contain;
-}
-
-#signHotInfoTextModal {
+#signHotInfoContentModal {
     position: fixed;
     inset: 0;
     z-index: 100000;
     display: none;
     align-items: center;
     justify-content: center;
-}
-
-.sign-hot-info-text-modal-backdrop {
+.sign-hot-info-content-modal-backdrop {
     position: absolute;
     inset: 0;
     background: rgba(15, 23, 42, 0.42);
     backdrop-filter: blur(3px);
 }
 
-.sign-hot-info-text-modal-panel {
+.sign-hot-info-content-modal-panel {
     position: relative;
-    width: min(50vw, 900px);
-    height: min(50vh, 700px);
+    width: min(72vw, 1100px);
+    height: min(78vh, 860px);
     min-width: 320px;
     min-height: 240px;
     display: flex;
@@ -125,7 +102,7 @@ export const styleCode = `
     box-shadow: 0 24px 80px rgba(15, 23, 42, 0.2);
 }
 
-.sign-hot-info-text-modal-header {
+.sign-hot-info-content-modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -141,7 +118,7 @@ export const styleCode = `
     gap: 8px;
 }
 
-.sign-hot-info-text-modal-header button {
+.sign-hot-info-content-modal-header button {
     border: 1px solid rgba(148, 163, 184, 0.55);
     background: #fff;
     color: #334155;
@@ -149,13 +126,19 @@ export const styleCode = `
     padding: 4px 10px;
 }
 
-.sign-hot-info-text-modal-body {
+.sign-hot-info-content-modal-body {
     flex: 1;
     overflow: auto;
     padding: 16px;
 }
 
-.sign-hot-info-text-modal-body pre {
+.sign-hot-info-content-modal-body:has(.sign-hot-info-content-modal-image-wrap:not([hidden])) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sign-hot-info-content-modal-body pre {
     margin: 0;
     white-space: pre-wrap;
     word-break: break-word;
@@ -165,12 +148,28 @@ export const styleCode = `
     user-select: text;
 }
 
-.sign-hot-info-text-modal-body pre a {
+.sign-hot-info-content-modal-body pre a {
     color: #2563eb;
     text-decoration: underline;
 }
 
-.sign-hot-info-text-modal-body pre a:hover {
+.sign-hot-info-content-modal-body pre a:hover {
     color: #1d4ed8;
+}
+
+.sign-hot-info-content-modal-image-wrap {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sign-hot-info-content-modal-image-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
 }
 `;

@@ -59,8 +59,8 @@ export default function createSignPanel(ccgxkObj) {
      * 否则用户虽然还在看全文，却会被强行切回第一人称控制。
      */
     function shouldKeepPointerUnlocked() {
-        const textModal = document.getElementById('signHotInfoTextModal');
-        return ccgxkObj.mode === 1 && textModal?.style.display === 'flex';
+        const contentModal = document.getElementById('signHotInfoContentModal');
+        return ccgxkObj.mode === 1 && contentModal?.style.display === 'flex';
     }
 
     /**

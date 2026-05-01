@@ -26,21 +26,21 @@ export const htmlTemplate = `
         <div class="sign-hot-info-remark" id="signHotInfoRemark" style="display: none;"></div>
     </div>
 </div>
-<div id="signHotInfoOverlay">
-    <img id="signHotInfoOverlayImg" src="" alt="原图" />
-</div>
-<div id="signHotInfoTextModal" style="display: none;">
-    <div class="sign-hot-info-text-modal-backdrop" id="signHotInfoTextModalBackdrop"></div>
-    <div class="sign-hot-info-text-modal-panel" role="dialog" aria-modal="true" aria-label="全文内容">
-        <div class="sign-hot-info-text-modal-header">
-            <span>全文</span>
+<div id="signHotInfoContentModal" style="display: none;">
+    <div class="sign-hot-info-content-modal-backdrop" id="signHotInfoContentModalBackdrop"></div>
+    <div class="sign-hot-info-content-modal-panel" role="dialog" aria-modal="true" aria-label="内容预览">
+        <div class="sign-hot-info-content-modal-header">
+            <span id="signHotInfoContentModalTitle">内容</span>
             <div class="sign-hot-info-text-modal-actions">
-                <button type="button" id="signHotInfoTextModalEdit" style="display: none;">编辑</button>
-                <button type="button" id="signHotInfoTextModalClose">关闭</button>
+                <button type="button" id="signHotInfoContentModalEdit" style="display: none;">编辑</button>
+                <button type="button" id="signHotInfoContentModalClose">关闭</button>
             </div>
         </div>
-        <div class="sign-hot-info-text-modal-body">
-            <pre id="signHotInfoTextModalContent"></pre>
+        <div class="sign-hot-info-content-modal-body">
+            <pre id="signHotInfoContentModalText"></pre>
+            <div class="sign-hot-info-content-modal-image-wrap" id="signHotInfoContentModalImageWrap" hidden>
+                <img id="signHotInfoContentModalImage" src="" alt="原图预览" />
+            </div>
         </div>
     </div>
 </div>
@@ -168,33 +168,59 @@ export function updateHotInfo(hotIndex, boardsData, isExpanded) {
 }
 
 /**
- * 打开全文模态框。
- * @param {string} text - 要展示的全文内容
+ * 打开统一内容模态框，可承载文本或图片。
  * @param {Object} options - 模态框展示选项
  */
-export function openTextModal(text, options = {}) {
-    const modal = document.getElementById('signHotInfoTextModal');
-    const content = document.getElementById('signHotInfoTextModalContent');
-    const editBtn = document.getElementById('signHotInfoTextModalEdit');
-    if (!modal || !content) return;
+export function openContentModal(options = {}) {
+    const modal = document.getElementById('signHotInfoContentModal');
+    const title = document.getElementById('signHotInfoContentModalTitle');
+    const textEl = document.getElementById('signHotInfoContentModalText');
+    const imageWrap = document.getElementById('signHotInfoContentModalImageWrap');
+    const imageEl = document.getElementById('signHotInfoContentModalImage');
+    const editBtn = document.getElementById('signHotInfoContentModalEdit');
+    if (!modal || !title || !textEl || !imageWrap || !imageEl) return;
 
-    const { allowEdit = false } = options;
+    const {
+        type = 'text',
+        titleText = '内容',
+        text = '',
+        imageUrl = '',
+        allowEdit = false
+    } = options;
 
-    renderTextWithLinks(content, text);
+    title.textContent = titleText;
+    textEl.hidden = type !== 'text';
+    imageWrap.hidden = type !== 'image';
+
+    if (type === 'text') {
+        renderTextWithLinks(textEl, text);
+        imageEl.src = '';
+    } else {
+        textEl.replaceChildren();
+        imageEl.src = imageUrl || '';
+    }
+
     if (editBtn) editBtn.style.display = allowEdit ? '' : 'none';
     modal.style.display = 'flex';
 }
 
 /**
- * 关闭全文模态框。
+ * 关闭统一内容模态框，并清理上一次的展示内容。
  */
-export function closeTextModal() {
-    const modal = document.getElementById('signHotInfoTextModal');
-    const content = document.getElementById('signHotInfoTextModalContent');
-    const editBtn = document.getElementById('signHotInfoTextModalEdit');
-    if (!modal || !content) return;
+export function closeContentModal() {
+    const modal = document.getElementById('signHotInfoContentModal');
+    const title = document.getElementById('signHotInfoContentModalTitle');
+    const textEl = document.getElementById('signHotInfoContentModalText');
+    const imageWrap = document.getElementById('signHotInfoContentModalImageWrap');
+    const imageEl = document.getElementById('signHotInfoContentModalImage');
+    const editBtn = document.getElementById('signHotInfoContentModalEdit');
+    if (!modal || !title || !textEl || !imageWrap || !imageEl) return;
 
     modal.style.display = 'none';
+    title.textContent = '内容';
     if (editBtn) editBtn.style.display = 'none';
-    content.replaceChildren();
+    textEl.hidden = false;
+    textEl.replaceChildren();
+    imageWrap.hidden = true;
+    imageEl.src = '';
 }

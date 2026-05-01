@@ -7,29 +7,70 @@
 import { getApiBase } from '../config.js';
 import { signContentMap } from '../store.js';
 import { styleCode } from './style.js';
-import { htmlTemplate, unlockPointer, updateHotInfo, openTextModal, closeTextModal, findBoardIdByIndex } from './dom.js';
+import { htmlTemplate, unlockPointer, updateHotInfo, openContentModal, closeContentModal, findBoardIdByIndex } from './dom.js';
 
 let lastHotIndex = -1;
 let isExpanded = true;      // 左侧热点信息面板是否展开
 let ccgxkObjRef = null;     // 缓存引擎实例，供事件回调复用
 let boardsData = [];        // API 返回的画板元数据缓存
+let activeModalState = null; // 当前内容模态框锁定的板子，避免 hover 漂移后编辑错目标
 
 /**
- * 只有在 mode=1 且 signPanel 已初始化时，全文模态框才显示“编辑”按钮。
+ * 指定热点在 mode=1 下是否允许调起编辑器。
  */
-function canEditCurrentHot() {
-    return ccgxkObjRef?.mode === 1 && !!ccgxkObjRef?.signPanel && ccgxkObjRef.hotPoint >= 0;
+function canEditHot(hotIndex) {
+    return ccgxkObjRef?.mode === 1 && !!ccgxkObjRef?.signPanel && hotIndex >= 0;
 }
 
 /**
- * 读取当前热点对应的纯文本内容，供“打开全文”模态框复用。
+ * 读取当前热点的完整信息，供统一内容模态框与编辑入口复用。
  */
-function getCurrentHotText() {
-    if (!ccgxkObjRef) return '';
-    const boardId = findBoardIdByIndex(ccgxkObjRef.hotPoint);
-    if (!boardId) return '';
+function getCurrentHotPayload() {
+    if (!ccgxkObjRef) return null;
+    const hotIndex = ccgxkObjRef.hotPoint;
+    const boardId = findBoardIdByIndex(hotIndex);
+    if (!boardId) return null;
     const info = signContentMap.get(boardId);
-    return info?.mode === 'text' ? (info.t || '') : '';
+    if (!info) return null;
+    return { hotIndex, boardId, info };
+}
+
+/**
+ * 将指定画板内容渲染进统一模态框，并锁定当前查看目标。
+ */
+function openContentModalForBoard(payload) {
+    if (!payload) return;
+    const { hotIndex, boardId, info } = payload;
+    const allowEdit = canEditHot(hotIndex);
+
+    activeModalState = { hotIndex, boardId };
+
+    if (info.mode === 'image' && info.imgUrl) {
+        openContentModal({
+            type: 'image',
+            titleText: '原图',
+            imageUrl: info.imgUrl,
+            allowEdit
+        });
+        return;
+    }
+
+    if (info.mode === 'text' && info.t) {
+        openContentModal({
+            type: 'text',
+            titleText: '全文',
+            text: info.t,
+            allowEdit
+        });
+    }
+}
+
+/**
+ * 关闭统一内容模态框，并清掉当前锁定的板子上下文。
+ */
+function closeActiveContentModal() {
+    activeModalState = null;
+    closeContentModal();
 }
 
 /**
@@ -78,88 +119,57 @@ export function initHotInfo(ccgxkObj) {
         }
     });
 
-    // 查看原图
+    // 图片与文字都走统一内容模态框，只是渲染类型不同。
     const viewOriginalDiv = document.getElementById('signHotInfoViewOriginal');
-    const overlay = document.getElementById('signHotInfoOverlay');
-    const overlayImg = document.getElementById('signHotInfoOverlayImg');
 
     viewOriginalDiv.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const imgUrl = viewOriginalDiv.dataset.imgUrl;
-        if (imgUrl) {
-            overlayImg.src = imgUrl;
-            overlay.style.display = 'flex';
-        }
+        openContentModalForBoard(getCurrentHotPayload());
     });
 
-    // 打开全文。这里不直接读 dataset.text，而是每次按当前热点重新取值，避免内容过期。
+    // 打开全文。这里每次按当前热点重新取值，避免内容过期。
     const copyTextDiv = document.getElementById('signHotInfoCopyText');
     copyTextDiv.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const text = getCurrentHotText();
-        if (text) {
-            openTextModal(text, { allowEdit: canEditCurrentHot() });
-        }
+        openContentModalForBoard(getCurrentHotPayload());
     });
 
-    // 全文模态框关闭 / 编辑动作
-    const textModal = document.getElementById('signHotInfoTextModal');
-    const textModalBackdrop = document.getElementById('signHotInfoTextModalBackdrop');
-    const textModalCloseBtn = document.getElementById('signHotInfoTextModalClose');
-    const textModalEditBtn = document.getElementById('signHotInfoTextModalEdit');
+    // 统一内容模态框关闭 / 编辑动作
+    const contentModal = document.getElementById('signHotInfoContentModal');
+    const contentModalBackdrop = document.getElementById('signHotInfoContentModalBackdrop');
+    const contentModalCloseBtn = document.getElementById('signHotInfoContentModalClose');
+    const contentModalEditBtn = document.getElementById('signHotInfoContentModalEdit');
 
-    textModalBackdrop.addEventListener('click', (e) => {
+    contentModalBackdrop.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        closeTextModal();
+        closeActiveContentModal();
     });
 
-    textModalCloseBtn.addEventListener('click', (e) => {
+    contentModalCloseBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        closeTextModal();
+        closeActiveContentModal();
     });
 
-    textModalEditBtn?.addEventListener('click', (e) => {
+    contentModalEditBtn?.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (!canEditCurrentHot()) return;
-        const hotIndex = ccgxkObjRef.hotPoint;  // 保持全文模态框不关，只额外拉起编辑器
-        ccgxkObjRef.signPanel.show(hotIndex);
+        if (!activeModalState || !canEditHot(activeModalState.hotIndex)) return;
+        ccgxkObjRef.signPanel.show(activeModalState.hotIndex);  // 以模态框锁定的那块板子为准
     });
 
-    textModal.addEventListener('click', (e) => {
-        if (e.target === textModal) {
-            closeTextModal();
-        }
-    });
-
-    // 关闭全屏图片
-    overlayImg.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        overlay.style.display = 'none';
-        overlayImg.src = '';
-    });
-
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            overlay.style.display = 'none';
-            overlayImg.src = '';
+    contentModal.addEventListener('click', (e) => {
+        if (e.target === contentModal) {
+            closeActiveContentModal();
         }
     });
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && overlay.style.display === 'flex') {
-            overlay.style.display = 'none';
-            overlayImg.src = '';
-            return;
-        }
-
-        if (e.key === 'Escape' && textModal.style.display === 'flex') {
-            closeTextModal();
+        if (e.key === 'Escape' && contentModal.style.display === 'flex') {
+            closeActiveContentModal();
         }
     });
 
@@ -203,15 +213,19 @@ export function initHotInfo(ccgxkObj) {
         if (!ccgxkObjRef) return;
 
         const currentBoardId = findBoardIdByIndex(ccgxkObjRef.hotPoint);
-        if (currentBoardId !== boardId) return;
-
-        if (isExpanded) {
+        if (currentBoardId === boardId && isExpanded) {
             updateHotInfo(ccgxkObjRef.hotPoint, boardsData, isExpanded);
         }
 
-        // 全文模态框开着时，保存后的新文本要立即反映到模态框里。
-        if (textModal.style.display === 'flex' && mode === 'text') {
-            openTextModal(content || '', { allowEdit: canEditCurrentHot() });
+        // 只要当前模态框锁定的就是这块板子，就立即刷新预览；文字/图片切换也能同步切过去。
+        if (contentModal.style.display === 'flex' && activeModalState?.boardId === boardId) {
+            openContentModalForBoard({
+                hotIndex: activeModalState.hotIndex,
+                boardId,
+                info: mode === 'image'
+                    ? { mode, imgUrl: content || '', extra: extra || {} }
+                    : { mode, t: content || '', extra: extra || {} }
+            });
         }
     };
 }
