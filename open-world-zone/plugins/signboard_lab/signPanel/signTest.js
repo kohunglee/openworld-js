@@ -13,7 +13,8 @@ import {
     setTextareaValue, setImageUrl, setBoardIdDisplay,
     focusInput, showModal, hideModal,
     getTextareaValue, getImageUrl,
-    setRemarkValue, getRemarkValue, initRemarkState, toggleRemarkExpanded, setRemarkExpanded
+    setRemarkValue, getRemarkValue, initRemarkState, toggleRemarkExpanded, setRemarkExpanded,
+    getTextViewState, restoreTextViewState, getTextExpandedState, setPreferredTextExpanded
 } from './dom.js';
 
 /**
@@ -21,6 +22,9 @@ import {
  * @param {Object} ccgxkObj - OpenWorld 引擎对象
  */
 export default function createSignPanel(ccgxkObj) {
+    // 仅内存级记忆：按画板保存上次文本视图（刷新/关浏览器后自动失效）。
+    const boardEditViewMemory = new Map();
+
     // 面板会话状态；这里只管一次打开期间的 UI 状态，不持久化业务数据。
     const state = {
         initialized: false,
@@ -74,12 +78,51 @@ export default function createSignPanel(ccgxkObj) {
     }
 
     /**
+     * 将当前画板的文本视图状态写入内存（光标、滚动条、全屏/小屏）。
+     */
+    function rememberCurrentBoardEditView() {
+        if (!state.boardId) return;
+        const prev = boardEditViewMemory.get(state.boardId) || {};
+        const snapshot = { ...prev };
+
+        // 仅在文字模式下有光标/滚动语义，图片模式保留已有文本快照即可。
+        if (state.mode === 'text') {
+            snapshot.textExpanded = getTextExpandedState();
+            const textView = getTextViewState();
+            if (textView) snapshot.textView = textView;
+        }
+
+        boardEditViewMemory.set(state.boardId, snapshot);
+    }
+
+    /**
+     * 恢复指定画板的文本视图状态；无记忆时保持原有默认行为。
+     */
+    function restoreBoardTextView(boardId) {
+        if (!boardId) return false;
+        const snapshot = boardEditViewMemory.get(boardId);
+        if (!snapshot?.textView) return false;
+        restoreTextViewState(snapshot.textView);
+        return true;
+    }
+
+    /**
      * 切换编辑模式
      */
     function switchMode(mode) {
+        if (state.mode === 'text' && mode !== 'text') {
+            rememberCurrentBoardEditView(); // 切离文字前先记一份当前光标与滚动
+        }
+
         state.mode = mode;
+        const snapshot = state.boardId ? boardEditViewMemory.get(state.boardId) : null;
+        if (mode === 'text' && typeof snapshot?.textExpanded === 'boolean') {
+            setPreferredTextExpanded(snapshot.textExpanded);
+        }
         updateModeButtons(mode);
         updateContentArea(mode);
+
+        if (mode === 'text' && restoreBoardTextView(state.boardId)) return;
         focusInput(mode);
     }
 
@@ -157,6 +200,10 @@ export default function createSignPanel(ccgxkObj) {
 
         // 切换模式（不聚焦，等面板显示后再聚焦）
         state.mode = detectedMode;
+        const snapshot = state.boardId ? boardEditViewMemory.get(state.boardId) : null;
+        if (detectedMode === 'text' && typeof snapshot?.textExpanded === 'boolean') {
+            setPreferredTextExpanded(snapshot.textExpanded); // 先喂偏好，再刷新内容区，避免尺寸闪烁
+        }
         updateModeButtons(detectedMode);
         updateContentArea(detectedMode);
 
@@ -166,8 +213,10 @@ export default function createSignPanel(ccgxkObj) {
         // 显示面板
         showModal();
 
-        // 面板显示后聚焦输入框
-        focusInput(detectedMode);
+        // 面板显示后优先恢复本画板上次文本视图；没有历史时退回默认末尾光标。
+        if (!(detectedMode === 'text' && restoreBoardTextView(state.boardId))) {
+            focusInput(detectedMode);
+        }
 
         // 打开编辑器时暂停热点追踪，避免你编辑过程中 hotPoint 继续漂移。
         unlockPointer();
@@ -180,6 +229,7 @@ export default function createSignPanel(ccgxkObj) {
      * 隐藏面板
      */
     function hide() {
+        rememberCurrentBoardEditView(); // 先记忆，再执行 hideModal() 内部的视觉重置
         hideModal();
 
         state.visible = false;

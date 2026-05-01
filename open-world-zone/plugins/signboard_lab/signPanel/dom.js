@@ -236,6 +236,37 @@ export function focusInput(mode) {
 }
 
 /**
+ * 获取当前文本编辑视图状态（光标 + 滚动），供业务层按画板记忆。
+ */
+export function getTextViewState() {
+    const textarea = document.getElementById('signPanelTextarea');
+    if (!textarea) return null;
+    return {
+        selectionStart: textarea.selectionStart ?? 0,
+        selectionEnd: textarea.selectionEnd ?? 0,
+        scrollTop: textarea.scrollTop ?? 0,
+        scrollLeft: textarea.scrollLeft ?? 0
+    };
+}
+
+/**
+ * 恢复文本编辑视图状态（光标 + 滚动）；超界时自动夹紧。
+ */
+export function restoreTextViewState(viewState) {
+    const textarea = document.getElementById('signPanelTextarea');
+    if (!textarea || !viewState) return;
+
+    const maxPos = textarea.value.length;
+    const start = Math.max(0, Math.min(viewState.selectionStart ?? 0, maxPos));
+    const end = Math.max(start, Math.min(viewState.selectionEnd ?? start, maxPos));
+
+    textarea.focus();
+    textarea.setSelectionRange(start, end);
+    textarea.scrollTop = Math.max(0, viewState.scrollTop ?? 0);
+    textarea.scrollLeft = Math.max(0, viewState.scrollLeft ?? 0);
+}
+
+/**
  * 显示面板
  */
 export function showModal() {
@@ -405,4 +436,19 @@ function setTextExpand(expanded, options = {}) {
         modal.style.top = '50%';
         modal.style.transform = 'translate(-50%, -50%)';
     }
+}
+
+/**
+ * 读取当前文字全屏状态；面板关闭时回退到上次偏好值。
+ */
+export function getTextExpandedState() {
+    const modal = document.getElementById('signPanelModal');
+    return modal?.classList.contains('text-expand-mode') ?? preferredTextExpanded;
+}
+
+/**
+ * 覆盖本次会话中的文字全屏偏好，供按画板恢复。
+ */
+export function setPreferredTextExpanded(expanded) {
+    preferredTextExpanded = !!expanded;
 }

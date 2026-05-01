@@ -72,6 +72,8 @@ export default function(ccgxkObj) {
     ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){ // 热点事件
         if(ccgxkObj.mode !== 2){return 0}
         const hotIndex = ccgxkObj.hotPoint;
+        const hasRegisteredBoard = Array.from(signIndexMap.values()).some(item => item.index === hotIndex);
+        if (!hasRegisteredBoard) return 0;  // 未注册画板不弹编辑器，避免出现空 panel
         ccgxkObj.signPanel.show(hotIndex);  // 显示编辑面板
     });
 }
