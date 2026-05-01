@@ -160,9 +160,10 @@ export function updateHotInfo(hotIndex, boardsData, isExpanded) {
     if (remark) {
         const isHtml = /^\s*</.test(remark) && remark.includes('>');
         if (isHtml) remarkDiv.innerHTML = remark;
-        else remarkDiv.textContent = remark;
+        else renderTextWithLinks(remarkDiv, remark);  // 纯文本备注也自动把网址转成可点击链接
         remarkDiv.style.display = 'block';
     } else {
+        remarkDiv.replaceChildren();
         remarkDiv.style.display = 'none';
     }
 }
