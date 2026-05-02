@@ -77,7 +77,6 @@ function updatePlaneVisibility(ccgxkObj, limit) {
     const nextMap = ccgxkObj?.W?.next;
     if (!nextMap || typeof nextMap !== 'object') return 0;
 
-    console.time('[autoW] updatePlaneVisibility');
     const playerPos = getMainPlayerPosition(ccgxkObj);
     const planeList = Object.entries(nextMap)
         .filter(([, wObj]) => wObj?.type === 'plane')
@@ -100,7 +99,6 @@ function updatePlaneVisibility(ccgxkObj, limit) {
     planeList.forEach((item, index) => {
         ccgxkObj.W.plane({ n: item.name, hidden: index >= limit });
     });
-    console.timeEnd('[autoW] updatePlaneVisibility');
     return planeList.length;
 }
 

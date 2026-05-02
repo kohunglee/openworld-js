@@ -62,7 +62,15 @@ function openContentModalForBoard(payload) {
             text: info.t,
             allowEdit
         });
+        return;
     }
+
+    openContentModal({
+        type: 'text',
+        titleText: '内容',
+        text: '当前画板还没有图片或正文内容。',
+        allowEdit
+    });
 }
 
 /**
@@ -131,6 +139,13 @@ export function initHotInfo(ccgxkObj) {
     // 打开全文。这里每次按当前热点重新取值，避免内容过期。
     const copyTextDiv = document.getElementById('signHotInfoCopyText');
     copyTextDiv.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openContentModalForBoard(getCurrentHotPayload());
+    });
+
+    const viewEmptyDiv = document.getElementById('signHotInfoViewEmpty');
+    viewEmptyDiv.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         openContentModalForBoard(getCurrentHotPayload());

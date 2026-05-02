@@ -82,6 +82,16 @@ export const styleCode = `
     display: none;
     align-items: center;
     justify-content: center;
+}
+
+.sign-hot-info-content-modal-image-wrap[hidden] {
+    display: none !important;
+}
+
+.sign-hot-info-content-modal-body pre[hidden] {
+    display: none !important;
+}
+
 .sign-hot-info-content-modal-backdrop {
     position: absolute;
     inset: 0;

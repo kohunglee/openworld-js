@@ -23,6 +23,9 @@ export const htmlTemplate = `
         <div class="sign-hot-info-view-original" id="signHotInfoCopyText" style="display: none;">
             <a>[打开全文]</a>
         </div>
+        <div class="sign-hot-info-view-original" id="signHotInfoViewEmpty" style="display: none;">
+            <a>[查看]</a>
+        </div>
         <div class="sign-hot-info-remark" id="signHotInfoRemark" style="display: none;"></div>
     </div>
 </div>
@@ -39,7 +42,7 @@ export const htmlTemplate = `
         <div class="sign-hot-info-content-modal-body">
             <pre id="signHotInfoContentModalText"></pre>
             <div class="sign-hot-info-content-modal-image-wrap" id="signHotInfoContentModalImageWrap" hidden>
-                <img id="signHotInfoContentModalImage" src="" alt="原图预览" />
+                <img id="signHotInfoContentModalImage" alt="" />
             </div>
         </div>
     </div>
@@ -103,6 +106,7 @@ export function updateHotInfo(hotIndex, boardsData, isExpanded) {
     const dateSpan = document.getElementById('signHotInfoDate');
     const remarkDiv = document.getElementById('signHotInfoRemark');
     const viewOriginalDiv = document.getElementById('signHotInfoViewOriginal');
+    const viewEmptyDiv = document.getElementById('signHotInfoViewEmpty');
 
     if (hotIndex < 0) {
         container.style.display = 'none';
@@ -139,17 +143,22 @@ export function updateHotInfo(hotIndex, boardsData, isExpanded) {
 
     // 图片/文本模式
     const copyTextDiv = document.getElementById('signHotInfoCopyText');
+    const hasImageContent = info.mode === 'image' && !!info.imgUrl;
+    const hasTextContent = info.mode === 'text' && !!info.t;
     if (info.mode === 'image' && info.imgUrl) {
         viewOriginalDiv.style.display = 'block';
         copyTextDiv.style.display = 'none';
+        viewEmptyDiv.style.display = 'none';
         viewOriginalDiv.dataset.imgUrl = info.imgUrl;
     } else if (info.mode === 'text' && info.t) {
         viewOriginalDiv.style.display = 'none';
         copyTextDiv.style.display = 'block';
+        viewEmptyDiv.style.display = 'none';
         copyTextDiv.dataset.text = info.t;
     } else {
         viewOriginalDiv.style.display = 'none';
         copyTextDiv.style.display = 'none';
+        viewEmptyDiv.style.display = 'none';
         viewOriginalDiv.dataset.imgUrl = '';
     }
 
@@ -165,6 +174,11 @@ export function updateHotInfo(hotIndex, boardsData, isExpanded) {
     } else {
         remarkDiv.replaceChildren();
         remarkDiv.style.display = 'none';
+    }
+
+    // 空板子也给一个入口，避免必须先切编辑模式才能继续填写内容。
+    if (!hasImageContent && !hasTextContent && !remark) {
+        viewEmptyDiv.style.display = 'block';
     }
 }
 
@@ -195,9 +209,11 @@ export function openContentModal(options = {}) {
 
     if (type === 'text') {
         renderTextWithLinks(textEl, text);
-        imageEl.src = '';
+        imageEl.removeAttribute('src');
+        imageEl.alt = '';
     } else {
         textEl.replaceChildren();
+        imageEl.alt = '';
         imageEl.src = imageUrl || '';
     }
 
@@ -223,5 +239,6 @@ export function closeContentModal() {
     textEl.hidden = false;
     textEl.replaceChildren();
     imageWrap.hidden = true;
-    imageEl.src = '';
+    imageEl.removeAttribute('src');
+    imageEl.alt = '';
 }
