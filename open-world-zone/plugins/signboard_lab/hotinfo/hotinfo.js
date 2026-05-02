@@ -23,6 +23,13 @@ function canEditHot(hotIndex) {
 }
 
 /**
+ * 判断当前是否真的处于中心点探测态，避免关闭探测后残留热点信息框。
+ */
+function isHotDetecting(ccgxkObj) {
+    return ccgxkObj?.mode !== 0 && ccgxkObj?.centerDot?.status === 1;
+}
+
+/**
  * 读取当前热点的完整信息，供统一内容模态框与编辑入口复用。
  */
 function getCurrentHotPayload() {
@@ -127,8 +134,8 @@ export function initHotInfo(ccgxkObj) {
         e.stopPropagation();
         isExpanded = !isExpanded;
         toggleBtn.textContent = isExpanded ? '折叠' : '展开';
-        container.style.display = isExpanded ? 'block' : 'none';
-        if (isExpanded && ccgxkObjRef) {
+        container.style.display = isExpanded && isHotDetecting(ccgxkObjRef) ? 'block' : 'none';
+        if (isExpanded && isHotDetecting(ccgxkObjRef)) {
             updateHotInfo(ccgxkObjRef.hotPoint, boardsData, isExpanded);
         }
     });
@@ -210,9 +217,10 @@ export function initHotInfo(ccgxkObj) {
 
     // 轮询热点变化。这里依赖 hotPoint 持续变化，因此 signPanel 关闭时必须恢复 drawPointPause。
     setInterval(() => {
-        if (ccgxkObj.mode === 0) {
+        if (!isHotDetecting(ccgxkObj)) {
             toggleBtn.style.display = 'none';
             container.style.display = 'none';
+            lastHotIndex = -1;
             return;
         }
         toggleBtn.style.display = 'block';
@@ -227,6 +235,13 @@ export function initHotInfo(ccgxkObj) {
     ccgxkObj.hooks.on('hot_action', function(ccgxkObj) {
         if (ccgxkObj.mode !== 1) return 0;
         unlockPointer();
+    });
+
+    // 关闭中心点探测时立即收起，避免等下一次轮询才消失。
+    ccgxkObj.hooks.on('close_point', function() {
+        toggleBtn.style.display = 'none';
+        container.style.display = 'none';
+        lastHotIndex = -1;
     });
 
     // SSE 更新时只修补当前这条缓存，避免每次保存后重新全量拉取。
@@ -245,7 +260,7 @@ export function initHotInfo(ccgxkObj) {
         if (!ccgxkObjRef) return;
 
         const currentBoardId = findBoardIdByIndex(ccgxkObjRef.hotPoint);
-        if (currentBoardId === boardId && isExpanded) {
+        if (currentBoardId === boardId && isExpanded && isHotDetecting(ccgxkObjRef)) {
             updateHotInfo(ccgxkObjRef.hotPoint, boardsData, isExpanded);
         }
 

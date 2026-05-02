@@ -59,12 +59,12 @@ function normalizeLinkUrl(rawUrl) {
     return /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
 }
 
-// 格式化备注里的链接展示，保留真实 href，只压短用户能看到的文字。
-function formatLinkDisplay(link, rawUrl) {
+// 格式化链接展示；侧栏备注可压短，内容模态框保留完整文本方便复制。
+function formatLinkDisplay(link, rawUrl, shortenDisplay = true) {
     const fullUrl = rawUrl || link.getAttribute('href') || link.textContent || '';
     const displayUrl = fullUrl.replace(/^https?:\/\//i, '');
     link.title = fullUrl;
-    link.textContent = displayUrl.length > 10 ? `${displayUrl.slice(0, 10)}...` : displayUrl;
+    link.textContent = shortenDisplay && displayUrl.length > 10 ? `${displayUrl.slice(0, 10)}...` : displayUrl;
 }
 
 // 兼容备注里直接存 HTML 的情况，把已有 a 标签也统一压短。
@@ -74,10 +74,11 @@ function formatLinksInContainer(container) {
     });
 }
 
-function renderTextWithLinks(container, text) {
+function renderTextWithLinks(container, text, options = {}) {
     container.replaceChildren();
 
     const sourceText = text || '';
+    const { shortenDisplay = true } = options;
     let lastIndex = 0;
 
     sourceText.replace(LINK_PATTERN, (match, offset) => {
@@ -89,7 +90,7 @@ function renderTextWithLinks(container, text) {
         link.href = normalizeLinkUrl(match);
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
-        formatLinkDisplay(link, match);
+        formatLinkDisplay(link, match, shortenDisplay);
         container.appendChild(link);
 
         lastIndex = offset + match.length;
@@ -229,7 +230,7 @@ export function openContentModal(options = {}) {
     imageWrap.hidden = type !== 'image';
 
     if (type === 'text') {
-        renderTextWithLinks(textEl, text);
+        renderTextWithLinks(textEl, text, { shortenDisplay: false });
         imageEl.removeAttribute('src');
         imageEl.alt = '';
     } else {
