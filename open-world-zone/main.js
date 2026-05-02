@@ -1,5 +1,22 @@
 // 初始化
-import k from '../../src/openworld.js';
+import { setVK } from './vk.js';
+const fpsUrl = new URL('./assest/fps.js', import.meta.url).href;
+
+// 确保传统全局版 Cannon 先于 openworld 加载，兼容源码直开和 Vite 生产包。
+async function ensureCannon() {
+    if (globalThis.CANNON) return;
+
+    await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = '../cannon/cannon29kb.js';
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+}
+
+await ensureCannon();
+const { default: k } = await import('../src/openworld.js');
 globalThis.k = k;
 k.initWorld('openworldCanv', true);
 k.mode = +new URLSearchParams(location.search).get('mode');  // 展示模式，自用
@@ -57,16 +74,15 @@ k.keys.turnRight = lastPos.rY;
 k.mainVPlayer = k.addPhy({ name:'mainPlayer',t:marble,mix:0.3, X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z, size:1, mass:50, colliGroup:1 });
 k.W.cube({ n:'mainPlayer', b:'#FDF9EE' });  // 注意，主角的 n 一定要与物理体的 name 一致
 
-// fps
-(function(){var script=document.createElement('script');
-script.onload=function(){var stats=new Stats();
-document.body.appendChild(stats.dom);
-requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};
-script.src='./assest/fps.js';document.head.appendChild(script);})()
+// 左上角的 FPS 面板调试
+if (true) {
+    (function(){var script=document.createElement('script');
+    script.onload=function(){var stats=new Stats();
+    document.body.appendChild(stats.dom);
+    requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};
+    script.src=fpsUrl;document.head.appendChild(script);})()
+}
 
 // 其他
 k.centerDot.setCamView(2);  // 设置摄像机视角位置为第 2 类型
 setVK();  // 开启 VK
-
-
-

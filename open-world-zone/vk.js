@@ -3,17 +3,20 @@
  * VK 是多人在线的意思，因为之前是托管在 cloudflare 的 VK work 上，故此得名。
  * 
  */
+import { id2name } from './vktool.js';
+
 let lastTime = 0;
-function setVK() {
-    console.log('okokvk');
+export function setVK() {
+    const k = globalThis.k;  // Vite 模块里显式读取全局 openworld 实例
+    // console.log('okokvk');
     const closeVKCheck = document.getElementById('closeVK');
     const now = Date.now();
 
     // 节流措施
     if(true){
         // if(closeVKCheck.checked) { return 0; }  // 不开启在线功能
-        if(typeof vkSocket !== 'undefined'){
-            if(vkSocket.readyState === 0){ return 0; }  // 可能可以减少一些频繁调用（如频繁勾选那个选择框）
+        if(globalThis.vkSocket !== undefined){
+            if(globalThis.vkSocket.readyState === 0){ return 0; }  // 可能可以减少一些频繁调用（如频繁勾选那个选择框）
         }
         if (now - lastTime < 1000) return;  // 节流
         lastTime = now;
@@ -25,16 +28,17 @@ function setVK() {
     const isTouch = matchMedia('(hover: none) and (pointer: coarse)').matches;  // 是否是移动设备
     const localTime = now.toLocaleString();
     
-    console.log(`我的 ID: ${k.rId}  ` + localTime);
+    // console.log(`我的 ID: ${k.rId}  ` + localTime);
     const workerUrl = "wss://myshwsa.ccgxk.com/ws/";  // 新服务器
 
     k.frendMap = new Map(); // 用于存储好友的实例 ID 和对应的实例索引
     k.rIdSet = new Set();  // 用于储存已经有过的 id
     globalThis.vkSocket = new WebSocket(workerUrl);
+    const vkSocket = globalThis.vkSocket;  // 后续闭包统一使用本次连接
     const defaultPos = { x: 0, y: 0, z: 0, ry: 0 };
 
     vkSocket.onopen = () => {  // 连接 wss
-        console.log("连接 vkSocket 成功！");
+        // console.log("连接 vkSocket 成功！");
         // connectInfo.innerText = '（已连接）';
     };
 
@@ -120,7 +124,7 @@ function setVK() {
                 Object.assign(updateData, defaultPos);
                 const ip = (k.frendMap.get(key).ip) ? k.frendMap.get(key).ip : '';
                 k.frendMap.delete(key);
-                console.log(`frendMap 删除游客 ${key}（${id2name(key) + '' + ip}）- ${(new Date().toLocaleString('zh-CN', { hour12: false }))} ---------------`);
+                // console.log(`frendMap 删除游客 ${key}（${id2name(key) + '' + ip}）- ${(new Date().toLocaleString('zh-CN', { hour12: false }))} ---------------`);
             } else {
                 Object.assign(updateData, {
                     x: parseFloat(value.x),
@@ -157,7 +161,7 @@ function setVK() {
     updateFrends();
 
     vkSocket.onclose = () => {  // 断开 wss
-        console.log("vkSocket 已断开连接。");
+        // console.log("vkSocket 已断开连接。");
         reMod && clearInterval(reMod);
         k.frendMap = new Map();
         k.W.delete('frends');
@@ -168,7 +172,7 @@ function setVK() {
             z: 0,
             ry: 0,
         });
-        if(!closeVKCheck.checked) {
+        if(!closeVKCheck?.checked) {
             setTimeout(() => {
                 setVK();  // 断线重连
             }, 1000);
@@ -189,7 +193,7 @@ function setVK() {
         n: 'frends',
         instances: arrIns,
     });
-    console.log('okokvk');
+    // console.log('okokvk');
 
 
     // 接收事件
@@ -208,8 +212,8 @@ function setVK() {
             updateFrends();
 
         } catch (e) {
-            console.log(event.data);
-            console.error("无法解析收到的 JSON:");
+            // console.log(event.data);
+            // console.error("无法解析收到的 JSON:");
         }
     };
 

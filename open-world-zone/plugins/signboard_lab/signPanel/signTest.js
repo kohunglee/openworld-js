@@ -6,6 +6,7 @@
 
 import { signContentMap, signIndexMap } from '../store.js';
 import { getApiBase } from '../config.js';
+const areaEditorUrl = new URL('../../../assest/areaeditor.js', import.meta.url).href;
 import {
     initDOM, bindEvents, initDrag,
     updateModeButtons, updateContentArea, updateImagePreview,
@@ -313,7 +314,7 @@ export default function createSignPanel(ccgxkObj) {
 
     // 启用全局 tab 友好
     var ae = document.createElement('script');  // 所有的 textarea 都 tab 友好
-    ae.src = './assest/areaeditor.js';
+    ae.src = areaEditorUrl;
     ae.onload = function() { new AreaEditor('textarea') };
     document.head.appendChild(ae);
 }

@@ -6,7 +6,7 @@
 
 
 // ID 转换为 中文 名字
-const id2name = n => {
+export const id2name = n => {
     const dict = "明月星光云风雨花竹柳山海江河松林天地火雷电虹雪霜冰夜晨秋夏春冬清蓝白红紫金玉银珠珍珊彩音乐安平静远志梦心";
     let h = (n * 2654435761) >>> 0; // Knuth 哈希
     let name = "";
@@ -19,14 +19,14 @@ const id2name = n => {
 };
 
 // 设置 cookie
-function setCookie(name, value, days = 365) {
+export function setCookie(name, value, days = 365) {
   const date = new Date();
   date.setDate(date.getDate() + days);
   document.cookie = `${name}=${encodeURIComponent(value)}; expires=${date.toUTCString()}; path=/`;
 }
 
 // get cookie
-function getCookie(name) {
+export function getCookie(name) {
   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
   return match ? decodeURIComponent(match[2]) : null;
 }

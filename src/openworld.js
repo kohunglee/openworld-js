@@ -11,7 +11,7 @@ import addobj from './obj/addobj.js';
 import animate from './core/animate.js';
 
 // 插件
-import dynamicIns from '../../plugins/webgl/wjsDynamicIns.js';
+import dynamicIns from '../plugins/webgl/wjsDynamicIns.js';
 
 
 // 主对象
