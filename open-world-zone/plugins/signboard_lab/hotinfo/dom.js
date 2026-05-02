@@ -59,6 +59,21 @@ function normalizeLinkUrl(rawUrl) {
     return /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
 }
 
+// 格式化备注里的链接展示，保留真实 href，只压短用户能看到的文字。
+function formatLinkDisplay(link, rawUrl) {
+    const fullUrl = rawUrl || link.getAttribute('href') || link.textContent || '';
+    const displayUrl = fullUrl.replace(/^https?:\/\//i, '');
+    link.title = fullUrl;
+    link.textContent = displayUrl.length > 10 ? `${displayUrl.slice(0, 10)}...` : displayUrl;
+}
+
+// 兼容备注里直接存 HTML 的情况，把已有 a 标签也统一压短。
+function formatLinksInContainer(container) {
+    container.querySelectorAll('a').forEach(link => {
+        formatLinkDisplay(link, link.getAttribute('href') || link.textContent || '');
+    });
+}
+
 function renderTextWithLinks(container, text) {
     container.replaceChildren();
 
@@ -74,7 +89,7 @@ function renderTextWithLinks(container, text) {
         link.href = normalizeLinkUrl(match);
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
-        link.textContent = match;
+        formatLinkDisplay(link, match);
         container.appendChild(link);
 
         lastIndex = offset + match.length;
@@ -171,7 +186,10 @@ export function updateHotInfo(hotIndex, boardsData, isExpanded) {
     const remark = extra.remark;
     if (remark) {
         const isHtml = /^\s*</.test(remark) && remark.includes('>');
-        if (isHtml) remarkDiv.innerHTML = remark;
+        if (isHtml) {
+            remarkDiv.innerHTML = remark;
+            formatLinksInContainer(remarkDiv);
+        }
         else renderTextWithLinks(remarkDiv, remark);  // 纯文本备注也自动把网址转成可点击链接
         remarkDiv.style.display = 'block';
     } else {

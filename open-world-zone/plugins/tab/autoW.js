@@ -5,7 +5,7 @@
  */
 
 const STORAGE_KEY = 'tab_auto_w_plane_limit';
-const DEFAULT_LIMIT = 30;
+const DEFAULT_LIMIT = 90;
 const TICK_MS = 100;
 
 // 把外部传来的坐标/输入值兜底成有限数字，避免 NaN 搅乱排序

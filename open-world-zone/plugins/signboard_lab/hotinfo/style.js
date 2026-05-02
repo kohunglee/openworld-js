@@ -58,6 +58,16 @@ export const styleCode = `
     background: rgba(255, 250, 220, 0.8);
     padding: 6px 8px;
     white-space: pre-line;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    word-break: break-word;
+}
+
+.sign-hot-info-remark a {
+    display: inline-block;
+    max-width: 100%;
+    vertical-align: bottom;
 }
 
 .sign-hot-info-view-original {
