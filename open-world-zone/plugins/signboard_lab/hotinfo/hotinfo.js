@@ -81,6 +81,12 @@ function closeActiveContentModal() {
     closeContentModal();
 }
 
+function openEditorForCurrentHot() {
+    const payload = getCurrentHotPayload();
+    if (!payload || !canEditHot(payload.hotIndex)) return;
+    ccgxkObjRef.signPanel.show(payload.hotIndex);  // 左上角入口也直接复用原编辑器
+}
+
 /**
  * 拉取画板基础数据；这里只维护热点侧栏要用到的轻量元信息。
  */
@@ -149,6 +155,17 @@ export function initHotInfo(ccgxkObj) {
         e.preventDefault();
         e.stopPropagation();
         openContentModalForBoard(getCurrentHotPayload());
+    });
+
+    const editImageBtn = document.getElementById('signHotInfoEditImage');
+    const editTextBtn = document.getElementById('signHotInfoEditText');
+    const editEmptyBtn = document.getElementById('signHotInfoEditEmpty');
+    [editImageBtn, editTextBtn, editEmptyBtn].forEach((btn) => {
+        btn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openEditorForCurrentHot();
+        });
     });
 
     // 统一内容模态框关闭 / 编辑动作

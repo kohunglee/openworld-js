@@ -19,12 +19,15 @@ export const htmlTemplate = `
         </div>
         <div class="sign-hot-info-view-original" id="signHotInfoViewOriginal" style="display: none;">
             <a>[查看原图]</a>
+            <a id="signHotInfoEditImage">[编辑]</a>
         </div>
         <div class="sign-hot-info-view-original" id="signHotInfoCopyText" style="display: none;">
             <a>[打开全文]</a>
+            <a id="signHotInfoEditText">[编辑]</a>
         </div>
         <div class="sign-hot-info-view-original" id="signHotInfoViewEmpty" style="display: none;">
             <a>[查看]</a>
+            <a id="signHotInfoEditEmpty">[编辑]</a>
         </div>
         <div class="sign-hot-info-remark" id="signHotInfoRemark" style="display: none;"></div>
     </div>
