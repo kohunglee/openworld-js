@@ -64,10 +64,18 @@ function getWPosition(wObj) {
     };
 }
 
-// 核心逻辑：筛出 plane，按距离排序，再批量切 hidden
+// 从形如 T10038 的名字里提取索引，再去 indexToArgs 里拿 dpz 优先级
+function getPlaneDpz(ccgxkObj, name) {
+    const index = parseInt(String(name).replace(/^T/, ''), 10);
+    if (!Number.isFinite(index)) return Number.MAX_SAFE_INTEGER;
+    const dpz = ccgxkObj?.indexToArgs?.get(index)?.dpz;
+    return toFiniteNumber(dpz, Number.MAX_SAFE_INTEGER);
+}
+
+// 核心逻辑：先按 dpz 排序，再按距离排序，最后批量切 hidden
 function updatePlaneVisibility(ccgxkObj, limit) {
     const nextMap = ccgxkObj?.W?.next;
-    if (!nextMap || typeof nextMap !== 'object') return;
+    if (!nextMap || typeof nextMap !== 'object') return 0;
 
     console.time('[autoW] updatePlaneVisibility');
     const playerPos = getMainPlayerPosition(ccgxkObj);
@@ -80,15 +88,20 @@ function updatePlaneVisibility(ccgxkObj, limit) {
             const dz = pos.z - playerPos.z;
             return {
                 name,
+                dpz: getPlaneDpz(ccgxkObj, name),
                 distanceSq: dx * dx + dy * dy + dz * dz,
             };
         })
-        .sort((a, b) => a.distanceSq - b.distanceSq);
+        .sort((a, b) => {
+            if (a.dpz !== b.dpz) return a.dpz - b.dpz;
+            return a.distanceSq - b.distanceSq;
+        });
 
     planeList.forEach((item, index) => {
         ccgxkObj.W.plane({ n: item.name, hidden: index >= limit });
     });
     console.timeEnd('[autoW] updatePlaneVisibility');
+    return planeList.length;
 }
 
 /**
@@ -105,12 +118,11 @@ export function initAutoW($, ccgxkObj) {
     let currentLimit = getAutoWLimit();
 
     if (input) input.value = String(currentLimit);
-    if (currentText) currentText.textContent = '当前的限制个数是 ' + currentLimit;
 
     // 统一刷新当前文字和 plane 显隐，避免按钮逻辑重复
     const applyNow = () => {
-        if (currentText) currentText.textContent = '当前的限制个数是 ' + currentLimit;
-        updatePlaneVisibility(ccgxkObj, currentLimit);
+        const planeCount = updatePlaneVisibility(ccgxkObj, currentLimit);
+        if (currentText) currentText.textContent = '当前的限制个数是 ' + currentLimit + '，当前 plane 总数是 ' + planeCount;
     };
 
     if (saveBtn && input) {
@@ -132,7 +144,6 @@ export function initAutoW($, ccgxkObj) {
     applyNow();
     window.setInterval(() => {
         currentLimit = getAutoWLimit();
-        if (currentText) currentText.textContent = '当前的限制个数是 ' + currentLimit;
-        updatePlaneVisibility(ccgxkObj, currentLimit);
+        applyNow();
     }, TICK_MS);
 }
