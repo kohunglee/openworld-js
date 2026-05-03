@@ -144,7 +144,7 @@ export default function createSignPanel(ccgxkObj) {
         });
 
         initDrag();         // 面板可拖动，避免挡住场景中心
-        initRemarkState();  // 备注区折叠状态走 cookie 记忆
+        initRemarkState();  // 备注区默认折叠，展开状态不持久化
 
         // Ctrl/Cmd + S 快捷键
         state.keyHandler = (e) => {
@@ -207,6 +207,7 @@ export default function createSignPanel(ccgxkObj) {
         }
         updateModeButtons(detectedMode);
         updateContentArea(detectedMode);
+        setRemarkExpanded(false); // 每次打开都从折叠态开始，不记 cookie/本地状态
 
         // 清空状态
         updateStatus('');

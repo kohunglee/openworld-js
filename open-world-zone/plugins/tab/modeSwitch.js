@@ -71,29 +71,12 @@ export function initModeSwitch($, ccgxkObj) {
         }
     }
 
-    // 实时显示当前模式（在页面上标注）
+    // 实时显示当前模式（跟随 Tab 侧栏，不再固定挂在右上角）
     function updateModeDisplay() {
         const currentMode = getCurrentMode();
         const modeInfo = MODES.find(m => m.value === currentMode);
-
-        // 查找或创建模式显示区域
-        let displayEl = $('modeDisplay');
-        if (!displayEl) {
-            displayEl = document.createElement('div');
-            displayEl.id = 'modeDisplay';
-            displayEl.style.cssText = `
-                position: fixed;
-                top: -11px;
-                right: 10px;
-                padding: 8px 16px;
-                border-radius: 6px;
-                font-size: 14px;
-                font-weight: bold;
-                z-index: 10000;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            `;
-            document.body.appendChild(displayEl);
-        }
+        const displayEl = $('modeDisplay');
+        if (!displayEl) return;
 
         displayEl.style.backgroundColor = modeInfo.color;
         displayEl.style.color = '#fff';

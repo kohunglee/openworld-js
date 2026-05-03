@@ -314,23 +314,6 @@ export function getImageUrl() {
 
 // ── 备注区域相关 ──
 
-const REMARK_COOKIE_KEY = 'signPanel_remarkExpanded';
-
-/**
- * 获取 cookie 中的备注展开状态
- */
-export function getRemarkExpandedFromCookie() {
-    const match = document.cookie.match(new RegExp('(^| )' + REMARK_COOKIE_KEY + '=([^;]+)'));
-    return match ? match[2] === 'true' : false;
-}
-
-/**
- * 设置 cookie 中的备注展开状态
- */
-export function setRemarkExpandedToCookie(expanded) {
-    document.cookie = `${REMARK_COOKIE_KEY}=${expanded};path=/;max-age=31536000`;
-}
-
 /**
  * 设置备注区域展开状态
  */
@@ -339,7 +322,6 @@ export function setRemarkExpanded(expanded) {
     const toggle = document.getElementById('signRemarkToggle');
     if (body) body.classList.toggle('expanded', expanded);
     if (toggle) toggle.classList.toggle('expanded', expanded);
-    setRemarkExpandedToCookie(expanded);
 }
 
 /**
@@ -368,11 +350,10 @@ export function getRemarkValue() {
 }
 
 /**
- * 初始化备注区域状态（根据 cookie）
+ * 初始化备注区域状态；备注编辑器不记忆展开偏好，默认一直折叠。
  */
 export function initRemarkState() {
-    const expanded = getRemarkExpandedFromCookie();
-    setRemarkExpanded(expanded);
+    setRemarkExpanded(false);
 }
 
 /**
