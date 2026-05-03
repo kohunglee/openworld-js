@@ -389,6 +389,8 @@ END;
 
 - `signboard_lab/hotinfo/hotinfo.js` 的 `loadBoardsData()`
 
+- `tab/serverConfig.js` 的“重试连接”轻量检测；没有待加载画板时，会用这个接口确认服务器是否恢复。
+
 - `signboard_lab/server/js/main.js` 的 `loadData()`，也就是管理页。
 
   
@@ -474,6 +476,8 @@ END;
 1. 管理页全量编辑时先拉全量。
 
 2. 热点信息面板初始化时拉一份轻量元数据，用于左侧信息、全文/原图弹窗、后续本地局部修补。
+
+3. Tab 侧栏在用户手动点击“重试连接”且没有 pending 画板时，用它做一次连接检测。
 
   
 
@@ -611,7 +615,9 @@ Content-Type: application/json
 
 - 没查到的 ID 会被标记为空内容。
 
-- 请求失败时，客户端把失败 ID 放回队列，下次重试。
+- 请求失败时，客户端把失败 ID 放回 `pendingIds`，但会暂停自动重试，避免服务器关闭时 100ms 一次刷控制台。
+
+- 失败状态会通过 `signboard:server-status` 事件通知 Tab 侧栏。用户确认服务器恢复后，可以点击“重试连接”，由 `window.retrySignboardLazyLoad()` 继续加载这些 pending 画板。
 
   
 
@@ -961,6 +967,8 @@ Content-Type: application/json
 
 - HotInfo 面板里的“更新”按钮使用 `POST /api/signs/batch`，只请求当前热点对应的一个 boardId。
 
+- 这个入口在 DOM 中是 `<a id="signHotInfoRefresh">[更新]</a>`，跟 `[编辑]` 一类 HotInfo 操作保持同样的链接式风格；请求过程中用 `aria-disabled="true"` 防止重复点击。
+
 - 客户端拿到返回值后先和 `signContentMap` 比对；内容有变化才调用 `window.updateSign()`，无变化只修补 `boardsData` 里的更新时间等元信息。
 
 - 后续如果做“可见画板低频刷新”，也应该优先复用 `POST /api/signs/batch`，只刷新已注册、当前可见或距离用户近的画板。
@@ -1083,7 +1091,69 @@ const DEFAULT_ADDRESS = 'https://selfdb.ccgxk.com';
 
   
 
-### 3.2 signContentMap
+### 3.2 信息板服务器状态协议
+
+  
+
+文件：`signboard_lab/store.js`、`tab/serverConfig.js`
+
+  
+
+2026-05-03 之后，信息板客户端多了一层轻量状态协议，用来处理服务器关闭或网络不可达的情况。
+
+  
+
+核心对象：
+
+  
+
+```js
+
+window.signboardServerStatus = {
+    status: 'online' | 'offline' | 'connecting' | 'idle' | 'unknown',
+    apiBase: 'http://127.0.0.1:8899',
+    pending: 12,
+    time: 1777800000000,
+    message: 'Failed to fetch'
+}
+
+```
+
+  
+
+事件：
+
+  
+
+```js
+
+window.dispatchEvent(new CustomEvent('signboard:server-status', { detail: payload }));
+
+```
+
+  
+
+当前使用方式：
+
+  
+
+- `store.js` 的 `doBatchFetch()` 请求失败时，设置 `status: 'offline'`，并把失败 ID 留在 `pendingIds`。
+
+- 失败后 `isFetchPaused = true`，不会再自动 100ms 重试，避免控制台被 `net::ERR_CONNECTION_REFUSED` 刷屏。
+
+- `tab/serverConfig.js` 监听 `signboard:server-status`，只在 Tab 侧栏服务器设置区显示“已连接 / 未连接 / 正在连接”等状态，不再在右上角控制条显示徽标。
+
+- Tab 侧栏里的“重试连接”会调用 `window.retrySignboardLazyLoad()`；如果当前没有 pending 画板，则只用 `GET /api/signs` 做一次轻量连接检测。
+
+- `signPanel.save()`、HotInfo 初始化加载、HotInfo 手动刷新失败时，也会汇报同一套离线状态。
+
+  
+
+这个协议不是服务端 API，而是浏览器内的 UI 状态协议。它的重点是：服务器关着时不要偷偷高频重试，而是明确告诉用户，等用户决定再重试。
+
+  
+
+### 3.3 signContentMap
 
   
 
@@ -1129,7 +1199,7 @@ signContentMap.set(id, { mode: 'empty' });
 
   
 
-### 3.3 signIndexMap
+### 3.4 signIndexMap
 
   
 
@@ -1171,7 +1241,7 @@ signIndexMap.set(id, { index });
 
   
 
-### 3.4 window.updateSign
+### 3.5 window.updateSign
 
   
 
@@ -1205,7 +1275,7 @@ signIndexMap.set(id, { index });
 
   
 
-### 3.5 errorTexture_diy hook
+### 3.6 errorTexture_diy hook
 
   
 
@@ -1237,7 +1307,7 @@ signIndexMap.set(id, { index });
 
   
 
-### 3.6 drawSmartText
+### 3.7 drawSmartText
 
   
 
@@ -1271,7 +1341,7 @@ signIndexMap.set(id, { index });
 
   
 
-### 3.7 handleImageMode
+### 3.8 handleImageMode
 
   
 
@@ -1301,7 +1371,7 @@ signIndexMap.set(id, { index });
 
   
 
-### 3.8 signPanel 编辑面板
+### 3.9 signPanel 编辑面板
 
   
 
@@ -1361,7 +1431,7 @@ signIndexMap.set(id, { index });
 
   
 
-### 3.9 hotinfo 热点信息面板
+### 3.10 hotinfo 热点信息面板
 
   
 
@@ -1391,7 +1461,11 @@ signIndexMap.set(id, { index });
 
 - `window.updateSign()` 触发时修补本地 `boardsData`，并刷新当前热点信息或当前打开模态框。
 
-- 左侧“更新”按钮只请求当前热点画板，内容变化时再刷新纹理。
+- 左侧 `signHotInfoId` 右侧有 `<a id="signHotInfoRefresh">[更新]</a>`，只请求当前热点画板，内容变化时再刷新纹理。
+
+- `[更新]` 使用 a 标签，不使用 button，视觉上与 `[编辑]`、`[打开全文]`、`[查看原图]` 保持一致。请求中通过 `aria-disabled="true"` 防止重复点击。
+
+- 备注和全文里的链接识别支持两类：普通域名会补 `https://`；任意 `scheme://...` 会保留原协议，例如 `obsidian://open?...`、`chrome://settings/`、其他应用自定义协议。
 
   
 
@@ -1399,7 +1473,7 @@ signIndexMap.set(id, { index });
 
   
 
-### 3.10 admin.html 管理页
+### 3.11 admin.html 管理页
 
   
 
