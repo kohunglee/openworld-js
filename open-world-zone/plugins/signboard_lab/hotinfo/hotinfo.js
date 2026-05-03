@@ -5,7 +5,7 @@
  */
 
 import { getApiBase } from '../config.js';
-import { signContentMap } from '../store.js';
+import { reportSignboardServerStatus, signContentMap } from '../store.js';
 import { styleCode } from './style.js';
 import { htmlTemplate, unlockPointer, updateHotInfo, openContentModal, closeContentModal, findBoardIdByIndex } from './dom.js';
 
@@ -14,6 +14,7 @@ let isExpanded = true;      // 左侧热点信息面板是否展开
 let ccgxkObjRef = null;     // 缓存引擎实例，供事件回调复用
 let boardsData = [];        // API 返回的画板元数据缓存
 let activeModalState = null; // 当前内容模态框锁定的板子，避免 hover 漂移后编辑错目标
+let refreshStatusTimer = null; // 更新按钮的短状态提示计时器
 
 /**
  * 指定热点在 mode=1 下是否允许调起编辑器。
@@ -40,6 +41,113 @@ function getCurrentHotPayload() {
     const info = signContentMap.get(boardId);
     if (!info) return null;
     return { hotIndex, boardId, info };
+}
+
+/**
+ * 兼容数据库里 extra 可能是字符串的历史数据，统一成普通对象。
+ */
+function normalizeExtra(extra = {}) {
+    if (typeof extra !== 'string') return extra || {};
+    try {
+        return JSON.parse(extra) || {};
+    } catch {
+        return {};
+    }
+}
+
+/**
+ * 判断服务端返回的画板内容是否和本地缓存不同。
+ */
+function hasBoardContentChanged(board) {
+    const cur = signContentMap.get(board.id);
+    const extra = normalizeExtra(board.extra);
+    if (!cur) return true;
+    return cur.mode !== board.mode
+        || (board.mode === 'text' && cur.t !== board.content)
+        || (board.mode === 'image' && cur.imgUrl !== board.content)
+        || JSON.stringify(normalizeExtra(cur.extra)) !== JSON.stringify(extra);
+}
+
+/**
+ * 修补 HotInfo 使用的轻量元数据缓存。
+ */
+function upsertBoardMeta(board) {
+    const normalizedBoard = { ...board, extra: normalizeExtra(board.extra) };
+    const idx = boardsData.findIndex(b => b.id === normalizedBoard.id);
+    if (idx >= 0) {
+        boardsData[idx] = { ...boardsData[idx], ...normalizedBoard };
+    } else {
+        boardsData.push(normalizedBoard);
+    }
+}
+
+function setRefreshStatus(text, sticky = false) {
+    const statusEl = document.getElementById('signHotInfoRefreshStatus');
+    if (!statusEl) return;
+    statusEl.textContent = text || '';
+    if (refreshStatusTimer) clearTimeout(refreshStatusTimer);
+    if (text && !sticky) {
+        refreshStatusTimer = setTimeout(() => {
+            statusEl.textContent = '';
+            refreshStatusTimer = null;
+        }, 1600);
+    }
+}
+
+/**
+ * 只刷新当前热点对应的画板；未来可见画板低频刷新也可以复用同一批量接口。
+ */
+async function refreshCurrentBoard() {
+    if (!ccgxkObjRef) return;
+    const hotIndex = ccgxkObjRef.hotPoint;
+    const boardId = findBoardIdByIndex(hotIndex);
+    const refreshBtn = document.getElementById('signHotInfoRefresh');
+
+    if (!boardId) {
+        setRefreshStatus('无画板');
+        return;
+    }
+
+    if (refreshBtn) refreshBtn.setAttribute('aria-disabled', 'true');
+    setRefreshStatus('更新中...', true);
+
+    try {
+        const res = await fetch(`${getApiBase()}/api/signs/batch`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: [boardId] })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        reportSignboardServerStatus('online');
+
+        const data = await res.json();
+        const board = data.boards?.[0];
+        if (!board) {
+            if (hasBoardContentChanged({ id: boardId, mode: 'empty', content: '', extra: {} })) {
+                window.updateSign?.(boardId, '', 'empty', {});
+            }
+            setRefreshStatus('无数据');
+            return;
+        }
+
+        const normalizedBoard = { ...board, extra: normalizeExtra(board.extra) };
+        const changed = hasBoardContentChanged(normalizedBoard);
+        upsertBoardMeta(normalizedBoard);
+
+        if (changed) {
+            window.updateSign?.(normalizedBoard.id, normalizedBoard.content, normalizedBoard.mode, normalizedBoard.extra);
+            setRefreshStatus('已更新');
+        } else {
+            updateHotInfo(hotIndex, boardsData, isExpanded);  // 内容没变也刷新日期等元信息
+            setRefreshStatus('无变化');
+        }
+    } catch (e) {
+        console.error('[HotInfo] 刷新当前画板失败:', e);
+        reportSignboardServerStatus('offline', { message: e.message });
+        setRefreshStatus('失败');
+    } finally {
+        if (refreshBtn) refreshBtn.removeAttribute('aria-disabled');
+    }
 }
 
 /**
@@ -103,9 +211,10 @@ async function loadBoardsData() {
         if (res.ok) {
             const data = await res.json();
             boardsData = data.boards || [];
+            reportSignboardServerStatus('online');
         }
     } catch (e) {
-        console.error('[HotInfo] 加载画板数据失败:', e);
+        reportSignboardServerStatus('offline', { message: e.message });
     }
 }
 
@@ -127,6 +236,7 @@ export function initHotInfo(ccgxkObj) {
 
     const toggleBtn = document.getElementById('signHotInfoToggle');
     const container = document.getElementById('signHotInfo');
+    const refreshBtn = document.getElementById('signHotInfoRefresh');
 
     // 切换展开状态
     toggleBtn.addEventListener('click', (e) => {
@@ -138,6 +248,13 @@ export function initHotInfo(ccgxkObj) {
         if (isExpanded && isHotDetecting(ccgxkObjRef)) {
             updateHotInfo(ccgxkObjRef.hotPoint, boardsData, isExpanded);
         }
+    });
+
+    refreshBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (refreshBtn.getAttribute('aria-disabled') === 'true') return;
+        refreshCurrentBoard();
     });
 
     // 图片与文字都走统一内容模态框，只是渲染类型不同。
@@ -244,18 +361,11 @@ export function initHotInfo(ccgxkObj) {
         lastHotIndex = -1;
     });
 
-    // SSE 更新时只修补当前这条缓存，避免每次保存后重新全量拉取。
+    // updateSign 触发时只修补当前这条缓存，避免每次保存后重新全量拉取。
     const originalUpdateSign = window.updateSign;
     window.updateSign = function(boardId, content, mode, extra) {
         if (originalUpdateSign) originalUpdateSign(boardId, content, mode, extra);
-        // 只更新本地 boardsData 中对应 ID 的那条
-        const idx = boardsData.findIndex(b => b.id === boardId);
-        const newBoard = { id: boardId, content, mode, extra: extra || {} };
-        if (idx >= 0) {
-            boardsData[idx] = { ...boardsData[idx], ...newBoard };
-        } else {
-            boardsData.push(newBoard);
-        }
+        upsertBoardMeta({ id: boardId, content, mode, extra: extra || {} }); // 只更新本地 boardsData 中对应 ID 的那条
 
         if (!ccgxkObjRef) return;
 

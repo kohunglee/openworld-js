@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-在三维世界中编辑信息板/画板内容的插件系统。点击画板 → 弹出 HUD 编辑窗口 → 编辑文字/图片 → SSE 实时刷新画布。
+在三维世界中编辑信息板/画板内容的插件系统。点击画板 → 弹出 HUD 编辑窗口 → 编辑文字/图片 → 保存成功后本地立即刷新画布；HotInfo 可手动刷新当前画板。
 
 ## 目录结构
 
@@ -13,12 +13,11 @@ signboard_lab/
 ├── config.js         # 主题/常量配置，API_BASE
 ├── store.js          # 数据存储（signContentMap, signIndexMap, API 加载）
 ├── renderer.js       # 渲染器（文本自动换行 + Canvas 绘制）
-├── hotUpdate.js      # 热更新（updateSign + SSE 客户端）
+├── hotUpdate.js      # 本地刷新入口（updateSign）
 ├── server/
 │   ├── server.js     # API 服务器入口 (Node.js + SQLite, port 8899)
 │   ├── db/index.js   # SQLite 数据库（boards 表）
 │   ├── api/signs.js  # Signs API：GET/POST 全量 + PATCH 单条更新
-│   ├── sse.js        # SSE 实时推送
 │   ├── helpers.js    # 共享工具（sendJson / readBody）
 │   ├── admin.html    # 网页版信息板批量编辑器
 │   └── js/main.js    # admin.html 的 JS
@@ -31,37 +30,43 @@ signboard_lab/
 2. ✅ 文字编辑模式 - textarea 编辑，Ctrl/Cmd+S 或按钮保存
 3. ✅ 图片编辑模式 - URL 输入框 + 实时预览
 4. ✅ 模式切换 - 文字/图片 按钮切换，自动检测已有模式
-5. ✅ 保存流程 - PATCH 单条更新 API → SSE 广播 → 3D 画布实时刷新
+5. ✅ 保存流程 - PATCH 单条更新 API → 客户端本地 updateSign → 3D 画布立即刷新
 6. ✅ 新板子支持 - 数据库里没有的板子，编辑保存后也能实时更新
 7. ✅ 文本换行 - textarea 中的 `\n` 正确渲染为画布换行
 8. ✅ 保存后自动关闭面板
 9. ✅ 服务器连不通时 alert 提示，内容不丢失
 10. ✅ FOV 滑杆 - 在 Tab 面板中可调节 FOV（1-120°，默认70°，可还原）
+11. ✅ 服务器离线提示 - 懒加载失败后暂停自动重试，Tab 侧栏显示状态，可手动重试连接
 
 ### 关键架构决策
 
 **API 设计**：
 - `PATCH /api/signs/:id` - 单条更新（signPanel 用，5亿条数据也扛得住）
 - `POST /api/signs` - 批量替换（admin.html 用）
-- SSE 广播格式：`{ boards: [单条board] }`，只传变化的那条
+- `POST /api/signs/batch` - 批量获取，懒加载与 HotInfo 当前画板手动刷新共用
 
 **signContentMap 存储策略（image 模式）**：
 - 同时存储到 `boardId`（面板读取）和 `boardId + random`（errorTexture_diy hook 查找）
 - `random` 后缀用于对抗 Chrome 纹理缓存
 - text 模式只用 `boardId`
 
-**SSE 更新检测**：
-- `cur` 为空（新板子）→ 直接调用 updateSign
-- `cur` 存在 → 检查 mode/content 是否变化，变化才更新
-- signPanel.save() 不碰 signContentMap，完全让 SSE 回环触发刷新
+**刷新策略**：
+- 保存成功后，signPanel 直接调用 `window.updateSign(boardId, content, mode, extra)`，不再等待服务端推送回环
+- HotInfo 的“更新”按钮只请求当前热点对应的 boardId，并在内容变化时调用 `updateSign`
+- 后续若做可见画板低频刷新，优先复用 `POST /api/signs/batch`，不要恢复全局长连接
+
+**服务器离线策略**：
+- `store.js` 的懒加载批量请求失败后，会把 ID 留在 `pendingIds`，暂停自动重试，避免 100ms 一次刷控制台
+- 通过 `window.signboardServerStatus` 和 `signboard:server-status` 事件通知 Tab 侧栏
+- Tab 侧栏的“重试连接”调用 `window.retrySignboardLazyLoad()`，恢复 pending 画板加载
 
 ## 核心数据流
 
 ```
 用户编辑 → signPanel.save()
   → PATCH /api/signs/:id (单条)
-  → 服务器 upsertBoard() + SSE broadcast({boards:[单条]})
-  → hotUpdate SSE handler → updateSign()
+  → 服务器 upsertBoard()
+  → signPanel 保存成功后本地调用 updateSign()
     → signContentMap 更新
     → texture 缓存清除
     → W.plane() 触发重绘
@@ -116,7 +121,7 @@ signIndexMap.set(id, { index });  // id → 物体 index
 
 ---
 
-最后更新：2026-04-10
+最后更新：2026-05-03
 
 
 -----
@@ -129,6 +134,25 @@ signIndexMap.set(id, { index });  // id → 物体 index
 - mode=1（只看模式）：服务器无数据的画板自动隐藏
 - mode=2（编辑模式）：所有画板正常显示，方便编辑
 - 核心：`fromServer` 标志 + `computeShouldBeHidden()` 动态计算
+
+------
+
+2026年05月03日
+
+**信息板服务器离线提示**：
+- store 懒加载失败后暂停自动重试，避免服务器关闭时控制台刷屏
+- Tab 服务器设置区新增状态文本与“重试连接”按钮
+- 离线状态只放在 Tab 侧栏的服务器设置区，不占用主视图
+
+------
+
+2026年05月03日
+
+**移除 SSE 长连接刷新**：
+- 客户端删除 `EventSource /api/signs/stream` 初始化，保留 `window.updateSign` 作为唯一渲染刷新原语
+- signPanel 保存成功后直接本地刷新，不再等待服务端广播
+- HotInfo 增加“更新”按钮，只刷新当前热点画板
+- 服务端删除 `/api/signs/stream` 路由和 `server/sse.js`
 
 ------
 

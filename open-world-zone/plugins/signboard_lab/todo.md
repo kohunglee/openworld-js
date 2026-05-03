@@ -11,7 +11,7 @@
 | 文件 | 当前职责 | 问题 |
 |------|---------|------|
 | `store.js` | 数据存储 + 懒加载 + 隐藏计算 | 太杂 |
-| `hotUpdate.js` | updateSign(做太多事) + SSE | updateSign 成为"上帝函数" |
+| `hotUpdate.js` | updateSign(做太多事) | updateSign 成为"上帝函数" |
 | `signTest.js` | hook逻辑 + 隐藏状态设置 | hook里逻辑太多 |
 
 ### 核心混乱点
@@ -34,7 +34,7 @@ signboard_lab/
 ├── visibility.js      # 【新】隐藏逻辑集中地
 ├── renderer.js        # 渲染（不变）
 ├── lazyLoad.js        # 【新】懒加载逻辑
-├── hotUpdate.js       # SSE + 触发更新
+├── hotUpdate.js       # 触发纹理刷新
 ├── handlers/          # 图片处理等
 ├── signPanel/         # 编辑面板
 └── hotinfo/           # 热点信息

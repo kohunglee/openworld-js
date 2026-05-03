@@ -54,6 +54,35 @@ export const styleCode = `
     font-family: monospace;
 }
 
+.sign-hot-info-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.sign-hot-info-actions a {
+    cursor: pointer;
+    font-size: 12px;
+    text-decoration: underline;
+}
+
+.sign-hot-info-actions a[aria-disabled="true"] {
+    cursor: default;
+    opacity: 0.55;
+    text-decoration: none;
+}
+
+.sign-hot-info-actions a:hover:not([aria-disabled="true"]) {
+    color: #1d4ed8;
+}
+
+#signHotInfoRefreshStatus {
+    color: #6b7280;
+    font-size: 12px;
+}
+
 .sign-hot-info-remark {
     background: rgba(255, 250, 220, 0.8);
     padding: 6px 8px;

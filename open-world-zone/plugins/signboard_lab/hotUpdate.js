@@ -1,9 +1,9 @@
 /**
- * 热更新模块
- * updateSign + SSE 实时监听
+ * 画板本地刷新模块
+ * updateSign 是渲染层的统一刷新入口，保存成功、懒加载、手动刷新都走这里。
  */
 
-import { getApiBase, makeImgId } from './config.js';
+import { makeImgId } from './config.js';
 import { signContentMap, signIndexMap, setSignContent, getCcgxkObj, getTextureModule } from './store.js';
 
 // 热更新函数（放到全局，方便调用）
@@ -35,50 +35,3 @@ window.updateSign = function(boardId, content, mode = 'text', extra = {}) {
     }
     ccgxkObj.currentlyActiveIndices.delete(index);  // 让引擎重新加载一次图片（注意，接下来就是走 hook 流程了）
 };
-
-// SSE 客户端（带自动重连）
-let es = null;
-let reconnectTimer = null;
-export function initSSE() {
-    if (es) {
-        es.close();
-        es = null;
-    }
-    if (reconnectTimer) {
-        clearTimeout(reconnectTimer);
-        reconnectTimer = null;
-    }
-    try {
-        const apiBase = getApiBase();
-        es = new EventSource(`${apiBase}/api/signs/stream`);
-        es.onopen = () => {
-            console.log(`[SSE] 已连接 ${apiBase}`);
-        };
-        es.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            if (data.boards) {
-                data.boards.forEach(board => {
-                    if (!signIndexMap.has(board.id)) return;
-                    const cur = signContentMap.get(board.id);
-                    if (cur) {  // cur 为空说明是新板子，直接更新；否则检查是否有变化
-                        const changed = cur.mode !== board.mode
-                            || (board.mode === 'text' && cur.t !== board.content)
-                            || (board.mode === 'image' && cur.imgUrl !== board.content)
-                            || JSON.stringify(cur.extra) !== JSON.stringify(board.extra);  // 也检查 extra 是否变化
-                        if (!changed) return;
-                    }
-                    window.updateSign(board.id, board.content, board.mode, board.extra || {});
-                });
-            }
-        };
-        es.onerror = () => {
-            console.log('[SSE] 连接断开，3秒后重连...');
-            es.close();
-            es = null;
-            reconnectTimer = setTimeout(initSSE, 3000);
-        };
-    } catch (e) {
-        console.log('[SSE] 连接失败（开发服务器未启动？）');
-        reconnectTimer = setTimeout(initSSE, 5000);
-    }
-}

@@ -10,7 +10,6 @@
 import http from 'http';
 import { initDatabase, closeDatabase } from './db/index.js';
 import { handleGetSigns, handleSaveSigns, handleUpdateOneBoard, handleGetSignsBatch } from './api/signs.js';
-import { handleSseStream, closeAllClients } from './sse.js';
 
 const PORT = 8899;
 
@@ -37,8 +36,6 @@ function createServer() {
         if (method === 'GET' && pathname === '/api/signs') {
             console.log('📡 GET /api/signs');
             handleGetSigns(req, res);
-        } else if (method === 'GET' && pathname === '/api/signs/stream') {
-            handleSseStream(req, res);
         } else if (method === 'POST' && pathname === '/api/signs/batch') {
             console.log('📡 POST /api/signs/batch');
             handleGetSignsBatch(req, res);
@@ -77,7 +74,6 @@ function main() {
 ║   API 端点:                               ║
 ║     GET/POST  /api/signs                  ║
 ║     POST     /api/signs/batch             ║
-║     GET       /api/signs/stream (SSE)     ║
 ║     PATCH    /api/signs/<id>              ║
 ║                                          ║
 ║   Ctrl+C 停止                              ║
@@ -88,7 +84,6 @@ function main() {
     // 优雅关闭
     const shutdown = () => {
         console.log('\n[Server] 正在关闭...');
-        closeAllClients();  // 先断开 SSE 长连接
         server.close(() => {
             closeDatabase();
             console.log('[Server] 已安全停止');

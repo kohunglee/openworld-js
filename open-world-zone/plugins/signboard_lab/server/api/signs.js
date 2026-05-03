@@ -8,7 +8,6 @@
 
 import { getAllBoards, replaceAllBoards, upsertBoard, getBoardsByIds } from '../db/index.js';
 import { sendJson, readBody } from '../helpers.js';
-import { broadcast } from '../sse.js';
 
 // ── GET /api/signs ──
 
@@ -109,11 +108,6 @@ export function handleSaveSigns(req, res) {
 
       console.log(`✅ 已保存 ${newBoards.length} 个信息板到数据库，变化 ${changedBoards.length} 条`);
       sendJson(res, { success: true, message: '保存成功', changed: changedBoards.length });
-
-      // SSE 只广播变化的 boards（不再广播全部！）
-      if (changedBoards.length > 0) {
-        broadcast({ boards: changedBoards });
-      }
     } catch (e) {
       sendJson(res, { error: e.message }, 500);
     }
@@ -137,10 +131,7 @@ export function handleUpdateOneBoard(req, res, id) {
       upsertBoard(board);
       console.log(`✅ 已更新信息板: ${id}`);
 
-      sendJson(res, { success: true, message: '更新成功' });
-
-      // SSE 广播单条变化（格式与全量一致，hotUpdate handler 能直接处理）
-      broadcast({ boards: [{ ...board, extra: board.extra }] });
+      sendJson(res, { success: true, message: '更新成功', board: { ...board, extra: board.extra } });
     } catch (e) {
       sendJson(res, { error: e.message }, 500);
     }

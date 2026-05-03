@@ -285,6 +285,10 @@ const htmlCode = `
                 style="flex:1;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:14px">
             <button id="serverAddressSave" style="padding:4px 12px;font-size:13px">保存</button>
             <button id="serverAddressReset" style="padding:4px 12px;font-size:13px">默认</button>
+            <button id="serverAddressRetry" style="padding:4px 12px;font-size:13px">重试连接</button>
+        </div>
+        <div id="serverStatusText" style="font-size:12px;color:#64748b;margin-bottom:6px">
+            信息板服务器状态待检测
         </div>
         <div style="font-size:12px;color:#888;margin-bottom:8px">
             信息板 API 服务器地址，修改后刷新页面才生效

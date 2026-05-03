@@ -12,6 +12,10 @@ export const htmlTemplate = `
         <div class="sign-hot-info-row">
             <span class="sign-hot-info-label"></span>
             <span class="sign-hot-info-value" id="signHotInfoId">-</span>
+            <span class="sign-hot-info-actions">
+                <a id="signHotInfoRefresh">[更新]</a>
+                <span id="signHotInfoRefreshStatus"></span>
+            </span>
         </div>
         <div class="sign-hot-info-row">
             <span class="sign-hot-info-label"></span>
@@ -52,11 +56,11 @@ export const htmlTemplate = `
 </div>
 `;
 
-const LINK_PATTERN = /(?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?::\d+)?(?:\/[^\s<]*)?/g;
+const LINK_PATTERN = /(?:[a-zA-Z][a-zA-Z0-9+.-]*:\/\/[^\s<]+|(?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?::\d+)?(?:\/[^\s<]*)?)/g;
 
 function normalizeLinkUrl(rawUrl) {
     if (!rawUrl) return '';
-    return /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
+    return /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
 }
 
 // 格式化链接展示；侧栏备注可压短，内容模态框保留完整文本方便复制。

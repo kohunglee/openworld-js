@@ -4,7 +4,7 @@
  * 状态管理、显示/隐藏、保存逻辑
  */
 
-import { signContentMap, signIndexMap } from '../store.js';
+import { reportSignboardServerStatus, signContentMap, signIndexMap } from '../store.js';
 import { getApiBase } from '../config.js';
 const areaEditorUrl = new URL('../../../assest/areaeditor.js', import.meta.url).href;
 import {
@@ -293,11 +293,17 @@ export default function createSignPanel(ccgxkObj) {
             });
 
             if (!res.ok) throw new Error('保存失败');
+            reportSignboardServerStatus('online');
+
+            if (typeof window.updateSign === 'function') {
+                window.updateSign(state.boardId, content, mode, extra);  // 保存成功后本机立即刷新，不再依赖服务端推送回环
+            }
 
             updateStatus('已保存', 'saved');
             hide();  // 保存成功后沿用统一收口逻辑，避免漏掉热点/鼠标状态恢复
         } catch (e) {
             console.error('[signPanel] 保存失败:', e);
+            reportSignboardServerStatus('offline', { message: e.message });
             alert('保存失败: ' + e.message + '\n你的内容还在，不会丢失。');
             updateStatus('保存失败', 'error');
         } finally {

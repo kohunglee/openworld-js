@@ -5,7 +5,7 @@
  *   config.js           - 主题/常量配置
  *   store.js            - 数据存储（API 加载 + 画板内容缓存）
  *   renderer.js         - 渲染器（智能文本绘制）
- *   hotUpdate.js        - 热更新（updateSign + SSE）
+ *   hotUpdate.js        - 本地刷新入口（updateSign）
  *   signTest.js         - 入口（Hook 注册 + 编排）
  *   signPanel.js        - 编辑面板（可拖动 HUD 窗口）
  *   handlers/
@@ -14,7 +14,7 @@
 
 import { signContentMap, signIndexMap, lazyLoadSign, setCcgxkObj, setTextureModule } from './store.js';
 import { drawSmartText } from './renderer.js';
-import { initSSE } from './hotUpdate.js';
+import './hotUpdate.js';
 import { handleImageMode } from './handlers/imageHandler.js';
 import signPanel from './signPanel/signTest.js';
 import { initHotInfo } from './hotinfo/hotinfo.js';
@@ -60,8 +60,6 @@ const setSignBoard = (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2) => {
         noIns: true,
         offset: offsetValue,
     });
-
-    initSSE();
 };
 
 // 入口
