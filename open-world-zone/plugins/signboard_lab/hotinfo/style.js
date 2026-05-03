@@ -60,7 +60,6 @@ export const styleCode = `
     white-space: pre-line;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     font-size: 12px;
-    line-height: 1.55;
     word-break: break-word;
 }
 

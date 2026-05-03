@@ -3,8 +3,8 @@
  *
  * 文件结构：
  *   config.js           - 主题/常量配置
- *   store.js            - 数据存储（API 加载 + Canvas 函数编译）
- *   renderer.js         - 渲染器（文本、Canvas）
+ *   store.js            - 数据存储（API 加载 + 画板内容缓存）
+ *   renderer.js         - 渲染器（智能文本绘制）
  *   hotUpdate.js        - 热更新（updateSign + SSE）
  *   signTest.js         - 入口（Hook 注册 + 编排）
  *   signPanel.js        - 编辑面板（可拖动 HUD 窗口）

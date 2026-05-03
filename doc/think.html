@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenWorld 3D Knowledge Villa Strategy</title>
+  <script src="../vendor/tailwindcss.min.js"></script>
+  <style>
+    body { background: #f6f7f4; color: #17202a; }
+    .grain { background-image: linear-gradient(90deg, rgba(23,32,42,.05) 1px, transparent 1px), linear-gradient(rgba(23,32,42,.05) 1px, transparent 1px); background-size: 28px 28px; }
+    .hero-scene { perspective: 900px; }
+    .room-plane { transform: rotateX(58deg) rotateZ(-36deg); transform-style: preserve-3d; }
+    .wall-left { transform: rotateY(64deg); transform-origin: left center; }
+    .wall-right { transform: rotateY(-64deg); transform-origin: right center; }
+    .path-line { background: repeating-linear-gradient(90deg, #0f766e 0 16px, transparent 16px 28px); }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+  <header class="grain border-b border-slate-300">
+    <div class="mx-auto grid min-h-[92vh] max-w-7xl grid-cols-1 items-center gap-8 px-5 py-8 lg:grid-cols-[1fr_1.1fr] lg:px-8">
+      <section>
+        <div class="mb-4 inline-flex items-center gap-2 border border-slate-400 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
+          Overseas-first MVP · 8-week signal test
+        </div>
+        <h1 class="max-w-4xl text-4xl font-black leading-tight text-slate-950 sm:text-6xl">
+          Turn notes into a walkable 3D knowledge space
+        </h1>
+        <p class="mt-5 max-w-2xl text-lg leading-8 text-slate-700">
+          openworld-js 已经跑通“墙上写字、贴照片”的核心 API。下一步不是做更复杂的引擎，而是把 Lark / Notion / Google Docs / Markdown 内容源，变成可分享、可收费、可 SEO 的 3D Knowledge Villa。
+        </p>
+        <div class="mt-7 grid max-w-xl grid-cols-3 gap-3">
+          <div class="border border-slate-300 bg-white p-4">
+            <div class="text-3xl font-black text-teal-700">119</div>
+            <div class="mt-1 text-xs font-medium text-slate-600">SQLite boards</div>
+          </div>
+          <div class="border border-slate-300 bg-white p-4">
+            <div class="text-3xl font-black text-indigo-700">6</div>
+            <div class="mt-1 text-xs font-medium text-slate-600">closed APIs</div>
+          </div>
+          <div class="border border-slate-300 bg-white p-4">
+            <div class="text-3xl font-black text-rose-700">8w</div>
+            <div class="mt-1 text-xs font-medium text-slate-600">market test</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="hero-scene">
+        <div class="relative mx-auto h-[520px] max-w-2xl overflow-hidden border border-slate-300 bg-slate-100 shadow-2xl">
+          <img src="../owzlogo.png" alt="openworld-js logo" class="absolute right-5 top-5 h-16 w-16 border border-slate-300 bg-white object-cover p-2">
+          <div class="absolute left-8 top-8 text-sm font-bold uppercase tracking-wide text-slate-600">3D Knowledge Villa</div>
+          <div class="room-plane absolute left-1/2 top-40 h-64 w-[520px] -translate-x-1/2 border border-slate-400 bg-white shadow-xl">
+            <div class="absolute inset-x-0 top-0 h-10 border-b border-slate-300 bg-teal-100"></div>
+            <div class="grid h-full grid-cols-5 gap-3 p-8 pt-14">
+              <div class="border border-slate-300 bg-white p-2 text-xs font-semibold text-slate-700">Intro</div>
+              <div class="border border-slate-300 bg-amber-100 p-2 text-xs font-semibold text-slate-700">Room A</div>
+              <div class="border border-slate-300 bg-white p-2 text-xs font-semibold text-slate-700">Room B</div>
+              <div class="border border-slate-300 bg-sky-100 p-2 text-xs font-semibold text-slate-700">Room C</div>
+              <div class="border border-slate-300 bg-white p-2 text-xs font-semibold text-slate-700">Archive</div>
+            </div>
+          </div>
+          <div class="wall-left absolute left-12 top-32 h-56 w-48 border border-slate-400 bg-white p-4 shadow-lg">
+            <div class="mb-3 h-5 w-20 bg-slate-900"></div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="h-14 border border-slate-300 bg-rose-100"></div>
+              <div class="h-14 border border-slate-300 bg-white"></div>
+              <div class="h-14 border border-slate-300 bg-white"></div>
+              <div class="h-14 border border-slate-300 bg-teal-100"></div>
+            </div>
+          </div>
+          <div class="wall-right absolute right-12 top-32 h-56 w-48 border border-slate-400 bg-white p-4 shadow-lg">
+            <div class="mb-3 h-5 w-24 bg-slate-900"></div>
+            <div class="space-y-2">
+              <div class="h-8 border border-slate-300 bg-indigo-100"></div>
+              <div class="h-8 border border-slate-300 bg-white"></div>
+              <div class="h-8 border border-slate-300 bg-amber-100"></div>
+              <div class="h-8 border border-slate-300 bg-white"></div>
+            </div>
+          </div>
+          <div class="absolute bottom-7 left-1/2 h-3 w-72 -translate-x-1/2 path-line"></div>
+          <div class="absolute bottom-12 left-1/2 -translate-x-1/2 border border-slate-900 bg-slate-950 px-4 py-2 text-xs font-semibold text-white">walk · hover · open full text · edit</div>
+        </div>
+      </section>
+    </div>
+  </header>
+
+  <main>
+    <section class="border-b border-slate-300 bg-white">
+      <div class="mx-auto max-w-7xl px-5 py-12 lg:px-8">
+        <div class="grid gap-4 lg:grid-cols-[.65fr_1.35fr]">
+          <div>
+            <h2 class="text-2xl font-black text-slate-950">Current API Closure</h2>
+            <p class="mt-3 leading-7 text-slate-700">当前真正闭环的是 signboard 的 boards 协议。它已经可以支撑内容空间化 MVP。</p>
+          </div>
+          <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <div class="border border-slate-300 bg-slate-50 p-4">
+              <div class="font-mono text-sm font-bold text-teal-700">GET /api/signs</div>
+              <p class="mt-2 text-sm leading-6 text-slate-700">全量读取信息板，供热点侧栏和 admin 管理页使用。</p>
+            </div>
+            <div class="border border-slate-300 bg-slate-50 p-4">
+              <div class="font-mono text-sm font-bold text-teal-700">POST /api/signs/batch</div>
+              <p class="mt-2 text-sm leading-6 text-slate-700">按 ID 合并懒加载，让大量墙面不必入口全量请求。</p>
+            </div>
+            <div class="border border-slate-300 bg-slate-50 p-4">
+              <div class="font-mono text-sm font-bold text-teal-700">PATCH /api/signs/:id</div>
+              <p class="mt-2 text-sm leading-6 text-slate-700">3D 编辑面板单条 upsert，保存文字、图片 URL 和备注。</p>
+            </div>
+            <div class="border border-slate-300 bg-slate-50 p-4">
+              <div class="font-mono text-sm font-bold text-teal-700">GET /api/signs/stream</div>
+              <p class="mt-2 text-sm leading-6 text-slate-700">SSE 实时推送变化，让管理后台、AI、3D 客户端联动。</p>
+            </div>
+            <div class="border border-slate-300 bg-slate-50 p-4">
+              <div class="font-mono text-sm font-bold text-teal-700">POST /api/signs</div>
+              <p class="mt-2 text-sm leading-6 text-slate-700">admin 批量替换保存，适合导入器和迁移工具谨慎使用。</p>
+            </div>
+            <div class="border border-slate-300 bg-slate-50 p-4">
+              <div class="font-mono text-sm font-bold text-rose-700">Cleaned</div>
+              <p class="mt-2 text-sm leading-6 text-slate-700">Canvas 函数库残留已清除，当前只保留 text/image 已闭环模式。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-slate-950 text-white">
+      <div class="mx-auto max-w-7xl px-5 py-14 lg:px-8">
+        <div class="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+          <div>
+            <h2 class="text-3xl font-black">Connector → Curator → World Runtime</h2>
+            <p class="mt-4 max-w-xl leading-7 text-slate-300">海外站不要定位成中文飞书工具。飞书/Lark 只是已跑通的 connector 原型，真正的产品应当抽象成内容源导入器。</p>
+          </div>
+          <div class="grid gap-3">
+            <div class="grid gap-3 md:grid-cols-4">
+              <div class="border border-slate-700 bg-slate-900 p-4">
+                <div class="text-xs font-bold uppercase text-amber-300">Sources</div>
+                <p class="mt-2 text-sm text-slate-300">Lark · Notion · Google Docs · Markdown · RSS · Readwise</p>
+              </div>
+              <div class="border border-slate-700 bg-slate-900 p-4">
+                <div class="text-xs font-bold uppercase text-amber-300">AI Curator</div>
+                <p class="mt-2 text-sm text-slate-300">split · summarize · place · route · SEO</p>
+              </div>
+              <div class="border border-slate-700 bg-slate-900 p-4">
+                <div class="text-xs font-bold uppercase text-amber-300">SaaS Console</div>
+                <p class="mt-2 text-sm text-slate-300">auth · teams · billing · projects · publish</p>
+              </div>
+              <div class="border border-slate-700 bg-slate-900 p-4">
+                <div class="text-xs font-bold uppercase text-amber-300">3D World</div>
+                <p class="mt-2 text-sm text-slate-300">openworld-js · signboards · SSE · full-text modal</p>
+              </div>
+            </div>
+            <div class="border border-teal-500 bg-teal-950/60 p-4">
+              <div class="text-sm font-bold text-teal-200">Best MVP sentence</div>
+              <p class="mt-2 text-xl font-black text-white">Turn your notes into a walkable 3D knowledge space.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white">
+      <div class="mx-auto max-w-7xl px-5 py-14 lg:px-8">
+        <div class="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <h2 class="text-3xl font-black text-slate-950">Overseas Product Ideas</h2>
+            <p class="mt-3 max-w-2xl leading-7 text-slate-700">按 2 个月内见效果排序，先做能录屏、能发帖、能收 setup fee 的海外小众工具。</p>
+          </div>
+          <div class="border border-slate-300 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">$99-$499 first-cash target</div>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <article class="border border-slate-300 bg-[#f8fafc] p-5">
+            <div class="text-xs font-bold uppercase text-teal-700">Priority 1</div>
+            <h3 class="mt-2 text-xl font-black text-slate-950">3D Knowledge Villa</h3>
+            <p class="mt-3 text-sm leading-6 text-slate-700">把 Notion / Docs / Markdown 变成可逛的空间。适合 newsletter writers、course creators、researchers。</p>
+            <div class="mt-4 border-t border-slate-300 pt-3 text-sm font-semibold text-slate-800">Pricing: $12/mo · $499 setup</div>
+          </article>
+          <article class="border border-slate-300 bg-[#f8fafc] p-5">
+            <div class="text-xs font-bold uppercase text-indigo-700">Priority 2</div>
+            <h3 class="mt-2 text-xl font-black text-slate-950">Researcher Authority Site</h3>
+            <p class="mt-3 text-sm leading-6 text-slate-700">把博客、RSS、Substack archive 做成 2D SEO + 3D 展馆的个人主页。</p>
+            <div class="mt-4 border-t border-slate-300 pt-3 text-sm font-semibold text-slate-800">Pricing: $29/mo · $499-$4999 done-for-you</div>
+          </article>
+          <article class="border border-slate-300 bg-[#f8fafc] p-5">
+            <div class="text-xs font-bold uppercase text-rose-700">Priority 3</div>
+            <h3 class="mt-2 text-xl font-black text-slate-950">AI Course Museum</h3>
+            <p class="mt-3 text-sm leading-6 text-slate-700">把 syllabus、lesson notes、training docs 变成学生愿意逛的课程展馆。</p>
+            <div class="mt-4 border-t border-slate-300 pt-3 text-sm font-semibold text-slate-800">Pricing: $19-$49/mo · $499 setup</div>
+          </article>
+          <article class="border border-slate-300 bg-[#f8fafc] p-5">
+            <div class="text-xs font-bold uppercase text-amber-700">Priority 4</div>
+            <h3 class="mt-2 text-xl font-black text-slate-950">Worldbuilding Story Bible</h3>
+            <p class="mt-3 text-sm leading-6 text-slate-700">为 novelists、TTRPG creators、game writers 做人物、地点、势力、时间线资料馆。</p>
+            <div class="mt-4 border-t border-slate-300 pt-3 text-sm font-semibold text-slate-800">Pricing: $12-$49/mo · $499 setup</div>
+          </article>
+          <article class="border border-slate-300 bg-[#f8fafc] p-5">
+            <div class="text-xs font-bold uppercase text-sky-700">Later</div>
+            <h3 class="mt-2 text-xl font-black text-slate-950">ADHD Memory House</h3>
+            <p class="mt-3 text-sm leading-6 text-slate-700">把复习内容变成每日 10 分钟空间路线，适合 visual thinkers 与 memory palace 用户。</p>
+            <div class="mt-4 border-t border-slate-300 pt-3 text-sm font-semibold text-slate-800">Pricing: $8-$15/mo</div>
+          </article>
+          <article class="border border-slate-300 bg-[#f8fafc] p-5">
+            <div class="text-xs font-bold uppercase text-slate-700">B2B option</div>
+            <h3 class="mt-2 text-xl font-black text-slate-950">Startup Demo Room</h3>
+            <p class="mt-3 text-sm leading-6 text-slate-700">把 SaaS 产品故事、案例、FAQ、截图做成可分享的 3D Demo Room。</p>
+            <div class="mt-4 border-t border-slate-300 pt-3 text-sm font-semibold text-slate-800">Pricing: $499-$4999 per room</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-y border-slate-300 bg-slate-100">
+      <div class="mx-auto max-w-7xl px-5 py-14 lg:px-8">
+        <h2 class="text-3xl font-black text-slate-950">8-Week Plan</h2>
+        <div class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div class="border border-slate-300 bg-white p-5">
+            <div class="text-3xl font-black text-teal-700">01</div>
+            <h3 class="mt-3 font-black">Importer proof</h3>
+            <p class="mt-2 text-sm leading-6 text-slate-700">Markdown/Lark 文档切成 20-80 张 boards，写入 signboard server。</p>
+          </div>
+          <div class="border border-slate-300 bg-white p-5">
+            <div class="text-3xl font-black text-teal-700">02</div>
+            <h3 class="mt-3 font-black">Fixed villa template</h3>
+            <p class="mt-2 text-sm leading-6 text-slate-700">入口、走廊、3 个房间、全文模态框、图片板，保证录屏好看。</p>
+          </div>
+          <div class="border border-slate-300 bg-white p-5">
+            <div class="text-3xl font-black text-teal-700">03</div>
+            <h3 class="mt-3 font-black">SaaS project page</h3>
+            <p class="mt-2 text-sm leading-6 text-slate-700">项目、2D 列表、打开 3D、免费限制、公开链接，不做重 OAuth。</p>
+          </div>
+          <div class="border border-slate-300 bg-white p-5">
+            <div class="text-3xl font-black text-teal-700">04</div>
+            <h3 class="mt-3 font-black">Market signal</h3>
+            <p class="mt-2 text-sm leading-6 text-slate-700">英文 landing page、录屏、20-50 个海外用户触达、$99-$499 setup。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white">
+      <div class="mx-auto grid max-w-7xl gap-8 px-5 py-14 lg:grid-cols-[1fr_1fr] lg:px-8">
+        <div>
+          <h2 class="text-3xl font-black text-slate-950">Visual Proof Assets</h2>
+          <p class="mt-3 leading-7 text-slate-700">当前仓库里已有可用于样板页和演示的视觉素材。后续真正销售页应换成录屏和真实 3D 空间截图。</p>
+          <div class="mt-6 grid grid-cols-2 gap-4">
+            <img src="../open-world-zone/plugins/signboard_lab/img/001.png" alt="signboard visual asset" class="h-44 w-full border border-slate-300 object-cover">
+            <img src="../open-world-zone/plugins/signboard_lab/server/image.png" alt="signboard server screenshot asset" class="h-44 w-full border border-slate-300 object-cover">
+          </div>
+        </div>
+        <div class="border border-slate-300 bg-slate-50 p-6">
+          <h3 class="text-xl font-black text-slate-950">What to avoid in 8 weeks</h3>
+          <ul class="mt-4 space-y-3 text-sm leading-6 text-slate-700">
+            <li class="border-l-4 border-rose-500 pl-3">不要做完整多用户 OAuth，先用 Markdown/Lark/手工导入验证价值。</li>
+            <li class="border-l-4 border-rose-500 pl-3">不要重构生产 signboard server，先用现有 boards API 跑通样板。</li>
+            <li class="border-l-4 border-rose-500 pl-3">不要做无限建筑生成，先做一个固定但可录屏的 villa 模板。</li>
+            <li class="border-l-4 border-rose-500 pl-3">不要先追求订阅自动化，第一笔钱优先靠 done-for-you setup。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-slate-300 bg-slate-950 px-5 py-8 text-sm text-slate-300">
+    <div class="mx-auto flex max-w-7xl flex-col justify-between gap-3 md:flex-row">
+      <span>Generated from /openworld-js/doc/think.md</span>
+      <span>Overseas-first · AI curator · 3D knowledge OS</span>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,6 +1,6 @@
 /**
  * 渲染器模块
- * 智能文本绘制 + Canvas 绘制
+ * 基于 HTML Canvas 的智能文本绘制
  */
 
 import { THEME } from './config.js';
@@ -90,4 +90,3 @@ export function drawSmartText(ctx, width, height, text) {
         }
     }
 }
-

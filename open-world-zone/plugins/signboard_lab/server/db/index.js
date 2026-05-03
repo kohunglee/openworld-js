@@ -57,13 +57,6 @@ export function initDatabase() {
     console.warn('[DB] extra 字段迁移警告:', e.message);
   }
 
-  // ── 迁移：删除 canvas_functions 表（如果存在）──
-  try {
-    db.exec(`DROP TABLE IF EXISTS canvas_functions`);
-  } catch (e) {
-    // 忽略
-  }
-
   console.log('[DB] 数据库已初始化 (WAL 模式)');
 }
 

@@ -16,12 +16,11 @@ signboard_lab/
 ├── hotUpdate.js      # 热更新（updateSign + SSE 客户端）
 ├── server/
 │   ├── server.js     # API 服务器入口 (Node.js + SQLite, port 8899)
-│   ├── db/index.js   # SQLite 数据库（boards + canvas_functions 表）
+│   ├── db/index.js   # SQLite 数据库（boards 表）
 │   ├── api/signs.js  # Signs API：GET/POST 全量 + PATCH 单条更新
-│   ├── api/canvas.js # Canvas 函数库 API
 │   ├── sse.js        # SSE 实时推送
 │   ├── helpers.js    # 共享工具（sendJson / readBody）
-│   ├── admin.html    # 网页版编辑器（旧版，批量编辑用）
+│   ├── admin.html    # 网页版信息板批量编辑器
 │   └── js/main.js    # admin.html 的 JS
 ```
 
@@ -49,7 +48,7 @@ signboard_lab/
 **signContentMap 存储策略（image 模式）**：
 - 同时存储到 `boardId`（面板读取）和 `boardId + random`（errorTexture_diy hook 查找）
 - `random` 后缀用于对抗 Chrome 纹理缓存
-- text/canvas 模式只用 `boardId`
+- text 模式只用 `boardId`
 
 **SSE 更新检测**：
 - `cur` 为空（新板子）→ 直接调用 updateSign
@@ -130,6 +129,16 @@ signIndexMap.set(id, { index });  // id → 物体 index
 - mode=1（只看模式）：服务器无数据的画板自动隐藏
 - mode=2（编辑模式）：所有画板正常显示，方便编辑
 - 核心：`fromServer` 标志 + `computeShouldBeHidden()` 动态计算
+
+------
+
+2026年05月03日
+
+**彻底清理 Canvas 函数库残留**：
+- admin.html 移除 Canvas 函数库 Tab、代码编辑器、预览区、新增函数弹窗
+- server/js/main.js 移除 `/api/canvas-lib`、`new Function` 预览、函数新增/保存/删除逻辑
+- server/db/index.js 移除 `canvas_functions` 历史表删除迁移代码
+- 当前信息板只保留 text/image 两种已闭环模式
 
 ------
 
