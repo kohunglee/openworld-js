@@ -56,6 +56,7 @@ const handleSvg = (svgCode, uniqueImgId, ccgxkObj, index, id, imgUrl) => {
 export function handleImageMode(index, id, imgUrl, ccgxkObj) {
     const uniqueImgId = makeImgId(index, id);
     let imgEl = document.getElementById(uniqueImgId);
+    const makeBustUrl = () => `${imgUrl}${imgUrl.includes('?') ? '&' : '?'}try=${1}`;  // 加上这个才显示（原理不太清楚）
 
     if (imgEl?.complete) return applyImage(imgEl, ccgxkObj, index, id);
     if (imgEl) return; // 加载中
@@ -66,6 +67,9 @@ export function handleImageMode(index, id, imgUrl, ccgxkObj) {
     imgEl.crossOrigin = 'anonymous';
     imgEl.style.display = 'none';
     document.body.appendChild(imgEl);
+    let retryCount = 0;
+    const maxRetry = 1;
+
     imgEl.onload = () => {
         if (imgEl.naturalWidth === 0) {  // naturalWidth 为 0 可能是 SVG，尝试 fetch 处理
             fetch(imgUrl).then(r => r.text()).then(text => {
@@ -77,6 +81,13 @@ export function handleImageMode(index, id, imgUrl, ccgxkObj) {
             applyImage(imgEl, ccgxkObj, index, id);
         }
     };
-    imgEl.onerror = () => console.error("图片加载失败:", imgUrl);
-    imgEl.src = imgUrl;
+    imgEl.onerror = () => {
+        if (retryCount < maxRetry) {  // 绕过 cloudflare 的坏缓存或风控瞬时状态 
+            retryCount += 1;
+            return void setTimeout(() => {
+                imgEl.src = makeBustUrl();
+            }, 500);
+        }
+    };
+    imgEl.src = makeBustUrl();
 }
