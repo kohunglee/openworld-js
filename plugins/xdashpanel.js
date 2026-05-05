@@ -11,7 +11,7 @@ export default function(ccgxkObj) {
     const content = template.content.cloneNode(true);
     document.body.appendChild(content);
 
-    shiftInfo.textContent = '当前人数：' + 1 + ' | '; // 【测试，临时】
+    shiftInfo.textContent = 'Online: ' + 1 + ' | '; // 【测试，临时】
 
     ccgxkObj.fpsFrameCount = 0;  //+ FPS 计算的辅助值
     ccgxkObj.lastTime = performance.now();
@@ -30,14 +30,14 @@ export default function(ccgxkObj) {
             this.displayPOS();  // 一秒显示一次显示主角坐标
             const mVP = this.mainVPlayer;
             var dynaNodesCon = this.calPosID(mVP?.X, mVP?.Y, mVP?.Z, 2);
-            posIDMVP.textContent = dynaNodesCon.replace(/[Dd]/g,'东').replace(/[Xx]/g,'西').replace(/[Nn]/g,'南').replace(/[Bb]/g,'北');  // 一秒显示一次主角位置编码
-            fpsInfo.textContent = ('FPS：' + fps.toFixed(1) + '  ，渲染：' + this.W.drawTime );  // 一秒显示一次 FPS
+            posIDMVP.textContent = dynaNodesCon.replace(/[Dd]/g,'W').replace(/[Xx]/g,'E').replace(/[Nn]/g,'S').replace(/[Bb]/g,'N');  // 一秒显示一次主角位置编码
+            fpsInfo.textContent = ('FPS: ' + fps.toFixed(1) + '  ，Render: ' + this.W.drawTime );  // 一秒显示一次 FPS
             modListCount.textContent = (
-                '当前模型数：' +
-                ' 激活 ' +this.currentlyActiveIndices.size +
-                `（物理 ${this.world.bodies.length} | 渲染 ${this._calWNotHidden()}）` +
-                `（已入档案 ${this.indexToArgs.size}）` +
-                `（纹理 ${this.textureMap.size}）` +
+                'Models: ' +
+                ' Active ' +this.currentlyActiveIndices.size +
+                ` | Phys ${this.world.bodies.length} | Rendered ${this._calWNotHidden()}` +
+                ` | Tracked ${this.indexToArgs.size}` +
+                ` | Textures ${this.textureMap.size}` +
                 ' |');
         }
     }
@@ -46,7 +46,7 @@ export default function(ccgxkObj) {
         var output = document.getElementById('metrics');
         if (performance.memory) {
             const mem = performance.memory;
-            output.textContent = `内存: ${(mem.usedJSHeapSize/1048576).toFixed(1)}MB/` +
+            output.textContent = `Mem: ${(mem.usedJSHeapSize/1048576).toFixed(1)}MB/` +
                     `${(mem.jsHeapSizeLimit/1048576).toFixed(1)}MB`  + ' | ';
         }
     }
@@ -76,6 +76,7 @@ const htmlCode = `
         padding: 0.3em;
         color: #ffffff;
         font-size: 12px;
+        font-family: monospace;
     }
 </style>
 <div id="myHUD" class="myHUD">

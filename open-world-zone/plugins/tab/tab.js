@@ -194,9 +194,10 @@ export default function(ccgxkObj) {
 
 const htmlCode = `
 <style>
-    .info-modal button {
+    button {
         cursor: pointer;
     }
+
     #someCtrl {
         position: fixed;
         top: 25px;
@@ -208,9 +209,15 @@ const htmlCode = `
         height: 50px;
         font-size: 20px;
     }
+
+    #btn01 {
+        width: 105px;
+    }
+
     .info-modal {
         position: fixed;
-        background-color: #ffffff6b;
+        background-color: #ffffffc9;
+        
         backdrop-filter: blur(7px);
         right: 30px;
         top: 30px;
@@ -224,6 +231,7 @@ const htmlCode = `
         opacity: 1;
         pointer-events: auto;
     }
+
     .zindex-1 {  /* 使用这个来控制model，或许可以展示 ads ？  */
         position: fixed;
         z-index: -1; /* 不挡住页面 */
@@ -231,133 +239,254 @@ const htmlCode = `
         pointer-events: none; /* 防止误点 */
         transition: opacity 0.3s ease, z-index 0.3s ease;
     }
+
+    .tab-section-inline {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        margin: 0 0 8px 0;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .tab-row {
+        display: flex;
+        margin: 8px 0;
+    }
+
+    .tab-row-wrap {
+        flex-wrap: wrap;
+    }
+
+    .tab-row-gap-8 {
+        gap: 8px;
+    }
+
+    .tab-row-gap-10 {
+        gap: 10px;
+    }
+
+    .tab-row-gap-16 {
+        gap: 16px;
+    }
+
+    .tab-note {
+        font-size: 12px;
+        color: #000;
+    }
+
+    .tab-note-mb8 {
+        margin-bottom: 8px;
+    }
+
+    .tab-note-mb6 {
+        margin-bottom: 6px;
+    }
+
+    .tab-tiny {
+        font-size: 12px;
+    }
+
+    .tab-scale-note {
+        font-size: 12px;
+        color: #000;
+    }
+
+    .tab-fov-slider {
+        flex: 1;
+    }
+
+    .tab-fov-value {
+        min-width: 35px;
+        text-align: right;
+    }
+
+    .tab-btn-mode {
+        padding: 8px 16px;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .tab-btn-mode-0 {
+        background: #3498db;
+    }
+
+    .tab-btn-mode-1 {
+        background: #27ae60;
+    }
+
+    .tab-btn-mode-2 {
+        background: #9b59b6;
+    }
+
+    .tab-btn-sm {
+        padding: 2px 8px;
+        font-size: 12px;
+    }
+
+    .tab-btn-md {
+        padding: 4px 12px;
+        font-size: 13px;
+    }
+
+    .tab-btn-lg {
+        padding: 6px 14px;
+        font-size: 14px;
+    }
+
+    .tab-label-nowrap {
+        white-space: nowrap;
+    }
+
+    .tab-input-text {
+        flex: 1;
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .tab-input-number {
+        width: 100px;
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .tab-clickable {
+        cursor: pointer;
+    }
+
+    .tab-server-status-initial {
+        color: #000;
+    }
 </style>
 
 <div id="someCtrl">
-    <button id="btn01" style="width: 105px;">面板(Tab)</button>
+    <button id="btn01">Panel</button>
 </div>
 
 <div class="info-modal zindex-1" id="myinfoModal">
-    
-    <div> <button id="closeBtn">关闭(Tab)</button> </div>
+    <div><button id="closeBtn">关闭(Tab)</button></div>
 
-    <div>
+    <section>
         <h3>快捷操作</h3>
-            <button id="goOPOS">到原点</button>
-            <button id="goHall">到外面</button>
-            <button id="fixError">修NaN</button>
-            <button id="togglePhonePanel">手机面板</button><br><br>
-            <button id="goH01">1</button>
-            <button id="goH02">2</button>
-            <button id="goH03">3</button>
-            <button id="goH04">4</button>
-            <button id="goH05">5</button>
-            <button id="goTSG">TSG</button>
-            <button id="goTOP">TSG</button>
+        <button id="goOPOS">到原点</button>
+        <button id="goHall">到外面</button>
+        <button id="fixError">修NaN</button>
+        <button id="togglePhonePanel">手机面板</button><br><br>
+        <button id="goH01">1</button>
+        <button id="goH02">2</button>
+        <button id="goH03">3</button>
+        <button id="goH04">4</button>
+        <button id="goH05">5</button>
+        <button id="goTSG">TSG</button>
+        <button id="goTOP">TSG</button>
         <hr>
-    </div>
+    </section>
 
-    <div>
+    <section>
         <h3>上一个项目的地址</h3>
-            <a href="https://ow.ccgxk.com/demo/house?logicadd=1" target="_blank">https://ow.ccgxk.com/demo/house?logicadd=1</a>
+        <a href="https://ow.ccgxk.com/demo/house?logicadd=1" target="_blank">https://ow.ccgxk.com/demo/house?logicadd=1</a>
         <hr>
-    </div>
-    
+    </section>
 
-    <div>
+    <section>
         <h3>模式切换</h3>
-        <div id="modeDisplay" style="display:inline-flex;align-items:center;padding:4px 10px;margin:0 0 8px 0;border-radius:4px;font-size:12px;font-weight:bold;color:#fff;">当前模式: 加载中</div>
-        <div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap">
-            <button id="modeBtn0" style="padding:8px 16px;background:#3498db;color:#fff;border-radius:4px;cursor:pointer;">编辑模式</button>
-            <button id="modeBtn1" style="padding:8px 16px;background:#27ae60;color:#fff;border-radius:4px;cursor:pointer;">展示模式</button>
-            <button id="modeBtn2" style="padding:8px 16px;background:#9b59b6;color:#fff;border-radius:4px;cursor:pointer;">文字编辑</button>
+        <div id="modeDisplay" class="tab-section-inline">当前模式: 加载中</div>
+        <div class="tab-row tab-row-gap-8 tab-row-wrap">
+            <button id="modeBtn0" class="tab-btn-mode tab-btn-mode-0">编辑模式</button>
+            <button id="modeBtn1" class="tab-btn-mode tab-btn-mode-1">展示模式</button>
+            <button id="modeBtn2" class="tab-btn-mode tab-btn-mode-2">文字编辑</button>
         </div>
-        <div style="font-size:12px;color:#888">点击切换模式（会刷新页面）</div>
+        <div class="tab-note">点击切换模式（会刷新页面）</div>
         <hr>
-    </div>
+    </section>
 
-    <div>
+    <section>
         <h3>画面设置</h3>
-        <div style="display:flex;align-items:center;gap:10px;margin:8px 0">
+        <div class="tab-row tab-row-gap-10">
             <label>FOV:</label>
-            <span style="font-size:12px;color:#666">120</span>
-            <input type="range" id="fovSlider" min="1" max="120" value="61" step="1" style="flex:1">
-            <span style="font-size:12px;color:#666">1</span>
-            <span id="fovValue" style="min-width:35px;text-align:right">60°</span>
-            <button id="fovReset" style="padding:2px 8px;font-size:12px">还原</button>
+            <span class="tab-scale-note">120</span>
+            <input type="range" id="fovSlider" min="1" max="120" value="61" step="1" class="tab-fov-slider">
+            <span class="tab-scale-note">1</span>
+            <span id="fovValue" class="tab-fov-value">60°</span>
+            <button id="fovReset" class="tab-btn-sm">还原</button>
         </div>
         <hr>
-    </div>
+    </section>
 
-    <div>
+    <section>
         <h3>按键引导</h3>
-        <div style="display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap">
-            <button id="showKeyGuideBtn" style="padding:6px 14px;font-size:14px">显示引导器</button>
+        <div class="tab-row tab-row-gap-10 tab-row-wrap">
+            <button id="showKeyGuideBtn" class="tab-btn-lg">显示引导器</button>
         </div>
-        <div style="font-size:12px;color:#888;margin-bottom:8px">
+        <div class="tab-note tab-note-mb8">
             左下角显示按键引导；如果之前点过“不再显示”，这里可以重新打开
         </div>
         <hr>
-    </div>
+    </section>
 
-    <div>
+    <section>
         <h3>角色速度</h3>
-        <div style="display:flex;gap:16px;margin:8px 0">
-            <label style="cursor:pointer"><input type="radio" name="speed" value="50"> 慢</label>
-            <label style="cursor:pointer"><input type="radio" name="speed" value="8" checked> 正常</label>
+        <div class="tab-row tab-row-gap-16">
+            <label class="tab-clickable"><input type="radio" name="speed" value="50"> 慢</label>
+            <label class="tab-clickable"><input type="radio" name="speed" value="8" checked> 正常</label>
         </div>
         <hr>
-    </div>
+    </section>
 
-    <div>
+    <section>
         <h3>服务器设置</h3>
-        <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
-            <label style="white-space:nowrap">地址:</label>
-            <input type="text" id="serverAddressInput" placeholder="127.0.0.1:8899"
-                style="flex:1;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:14px">
-            <button id="serverAddressSave" style="padding:4px 12px;font-size:13px">保存</button>
-            <button id="serverAddressReset" style="padding:4px 12px;font-size:13px">默认</button>
-            <button id="serverAddressRetry" style="padding:4px 12px;font-size:13px">重试连接</button>
+        <div class="tab-row tab-row-gap-8">
+            <label class="tab-label-nowrap">地址:</label>
+            <input type="text" id="serverAddressInput" placeholder="127.0.0.1:8899" class="tab-input-text">
+            <button id="serverAddressSave" class="tab-btn-md">保存</button>
+            <button id="serverAddressReset" class="tab-btn-md">默认</button>
+            <button id="serverAddressRetry" class="tab-btn-md">重试连接</button>
         </div>
-        <div id="serverStatusText" style="font-size:12px;color:#64748b;margin-bottom:6px">
+        <div id="serverStatusText" class="tab-tiny tab-note-mb6 tab-server-status-initial">
             信息板服务器状态待检测
         </div>
-        <div style="font-size:12px;color:#888;margin-bottom:8px">
+        <div class="tab-note tab-note-mb8">
             信息板 API 服务器地址，修改后需刷新页面才生效
         </div>
         <hr>
-    </div>
+    </section>
 
-    <div>
+    <section>
         <h3>plane 渲染数量</h3>
-        <div style="display:flex;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap">
-            <label style="white-space:nowrap">保留最近:</label>
-            <input type="number" id="autoWLimitInput" min="0" step="1"
-                style="width:100px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:14px">
+        <div class="tab-row tab-row-gap-8 tab-row-wrap">
+            <label class="tab-label-nowrap">保留最近:</label>
+            <input type="number" id="autoWLimitInput" min="0" step="1" class="tab-input-number">
             <span>个 plane</span>
-            <button id="autoWLimitReset" style="padding:4px 12px;font-size:13px">恢复默认</button>
-            <button id="autoWLimitSave" style="padding:4px 12px;font-size:13px">保存</button>
+            <button id="autoWLimitReset" class="tab-btn-md">恢复默认</button>
+            <button id="autoWLimitSave" class="tab-btn-md">保存</button>
         </div>
-        <div id="autoWCurrentText" style="font-size:12px;color:#666;margin-bottom:6px">
+        <div id="autoWCurrentText" class="tab-scale-note tab-note-mb6">
             当前的限制个数是 30
         </div>
-        <div style="font-size:12px;color:#888;margin-bottom:8px">
+        <div class="tab-note tab-note-mb8">
             每秒按与主角距离排序，只渲染最近的 plane，其余自动 hidden
         </div>
         <hr>
-    </div>
+    </section>
 
-    <div>
+    <section>
         <h3>失焦渲染设置</h3>
-        <div style="display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap">
-            <button id="renderToggleBtn" style="padding:6px 14px;font-size:14px">停止渲染</button>
+        <div class="tab-row tab-row-gap-10 tab-row-wrap">
+            <button id="renderToggleBtn" class="tab-btn-lg">停止渲染</button>
         </div>
         <hr>
-    </div>
+    </section>
 
     <h3>万数块情况</h3>
     <div id="wskStudio"></div><!-- 万数块临时测试使用 -->
 
-    <div> <button id="closeBtn02">关闭(Tab)</button> </div>
+    <div><button id="closeBtn02">关闭(Tab)</button></div>
 </div>
 `;

@@ -79,11 +79,11 @@ export function initServerConfig($, onAddressChange) {
         const status = detail.status || 'unknown';
         const pending = detail.pending || 0;
         const statusMap = {
-            online: { text: '信息板服务器已连接', color: '#15803d' },
-            offline: { text: `信息板服务器未连接，已暂停自动重试${pending ? `（待加载 ${pending} 块）` : ''}`, color: '#b91c1c' },
-            connecting: { text: '正在重新连接信息板服务器...', color: '#92400e' },
-            idle: { text: '信息板服务器未请求', color: '#64748b' },
-            unknown: { text: '信息板服务器状态待检测', color: '#64748b' }
+            online: { text: '信息板服务器已连接', color: '#000' },
+            offline: { text: `信息板服务器未连接，已暂停自动重试${pending ? `（待加载 ${pending} 块）` : ''}`, color: '#000' },
+            connecting: { text: '正在重新连接信息板服务器...', color: '#000' },
+            idle: { text: '信息板服务器未请求', color: '#000' },
+            unknown: { text: '信息板服务器状态待检测', color: '#000' }
         };
         const info = statusMap[status] || statusMap.unknown;
 

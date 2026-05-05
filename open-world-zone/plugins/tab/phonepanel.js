@@ -8,7 +8,7 @@
 
 export function initPhonePanel($, ccgxkObj) {
     const template = document.createElement('template');
-    template.innerHTML = htmlCode;
+    template.innerHTML = PHONE_PANEL_HTML;
     document.body.appendChild(template.content.cloneNode(true));
 
     // ========================
@@ -87,7 +87,7 @@ export function initPhonePanel($, ccgxkObj) {
 }
 
 // HTML 和 CSS 模板
-const htmlCode = `
+const PHONE_PANEL_STYLE = `
 <style>
     /* 移动端控制面板 */
     .phone-panel {
@@ -123,7 +123,7 @@ const htmlCode = `
     }
 
     .phone-panel-cell:active {
-        color: #0ff;
+        color: #000;
         transform: scale(1.1);
     }
 
@@ -139,7 +139,9 @@ const htmlCode = `
         }
     }
 </style>
+`;
 
+const PHONE_PANEL_MARKUP = `
 <div id="phonePanel" class="phone-panel phone-panel-hidden">
     <button class="phone-panel-cell" id="ppTurnL">←</button>
     <button class="phone-panel-cell" id="ppGoF">前</button>
@@ -154,6 +156,12 @@ const htmlCode = `
     <button class="phone-panel-cell" id="ppLookDn">下</button>
 </div>
 `;
+
+/**
+ * 面板模板拆分成样式与结构两段，便于后续只改布局或只改样式。
+ * 这里仍然保持原始样式值，不改变显示效果。
+ */
+const PHONE_PANEL_HTML = `${PHONE_PANEL_STYLE}\n${PHONE_PANEL_MARKUP}`;
 
 export default function(ccgxkObj) {
     const $ = id => document.getElementById(id);

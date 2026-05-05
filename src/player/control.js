@@ -120,7 +120,7 @@ export default {
         if(!posInfo) {return 0}
         if(this.mainVPlayer !== null){
             posInfo.textContent = (
-                '位置: X:' + pos.x.toFixed(2) +
+                'Pos: X:' + pos.x.toFixed(2) +
                 ', Y:' + pos.y.toFixed(2) +
                 ', Z:' + pos.z.toFixed(2) + ', | '
             );

@@ -32,15 +32,10 @@ const GUIDE_LAYOUT = [
 ];
 
 /**
- * 注入一次样式表。
- * 绝大多数视觉样式都放在这里，JS 只保留动态坐标/宽度和状态切换。
+ * 引导器样式。
+ * 独立成常量后，后续改视觉时不会和逻辑代码混在一起。
  */
-function ensureGuideStyle() {
-    if (document.getElementById(STYLE_ID)) return;
-
-    const style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.textContent = `
+const GUIDE_STYLE_CSS = `
 #keyGuidePanel {
     position: fixed;
     left: 18px;
@@ -77,7 +72,7 @@ function ensureGuideStyle() {
 
 #keyGuidePanel .kg-subtitle {
     font-size: 12px;
-    color: rgba(255,255,255,0.72);
+    color: #fff;
 }
 
 #keyGuidePanel .kg-close-btn {
@@ -123,7 +118,7 @@ function ensureGuideStyle() {
 
 #keyGuidePanel .kg-keycap.is-active {
     background: #facc15;
-    color: #111827;
+    color: #000;
     border-color: #fde68a;
     transform: translateY(1px);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.45);
@@ -135,12 +130,23 @@ function ensureGuideStyle() {
     align-items: center;
     gap: 3px;
     font-size: 12px;
-    color: rgba(255,255,255,0.92);
+    color: #fff;
     text-align: center;
     line-height: 1.05;
     min-width: 100%;
 }
 `;
+
+/**
+ * 注入一次样式表。
+ * 绝大多数视觉样式都放在这里，JS 只保留动态坐标/宽度和状态切换。
+ */
+function ensureGuideStyle() {
+    if (document.getElementById(STYLE_ID)) return;
+
+    const style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = GUIDE_STYLE_CSS;
 
     document.head.appendChild(style);
 }

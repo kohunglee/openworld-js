@@ -96,7 +96,7 @@ export function setVK() {
 
         const totalCount = k.frendMap.size + 1;
         // document.getElementById('onlineCount').innerText = totalCount;  // 总数
-        document.getElementById('shiftInfo').innerText = '当前人数: ' + totalCount + ' | ';
+        document.getElementById('shiftInfo').innerText = 'Online: ' + totalCount + ' | ';
 
         const ul = document.getElementById('frendPosInfo');
         // ul.innerHTML = ''; // 清空旧内容
