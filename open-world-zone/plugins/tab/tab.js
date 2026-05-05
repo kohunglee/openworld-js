@@ -7,6 +7,7 @@ import { initServerConfig } from './serverConfig.js';
 import { initModeSwitch } from './modeSwitch.js';
 import { initPhonePanel } from './phonepanel.js';
 import { initAutoW } from './autoW.js';
+import { initKeyGuide } from './keyGuide.js';
 
 export default function(ccgxkObj) {
     // console.log('导入 侧边栏 插件成功');
@@ -138,6 +139,14 @@ export default function(ccgxkObj) {
     // plane 自动裁剪
     // ========================
     initAutoW($, ccgxkObj);
+
+    // ========================
+    // 左下角按键引导器
+    // ========================
+    initKeyGuide();
+    $("showKeyGuideBtn")?.addEventListener("click", () => {
+        window.keyGuideAPI?.resetHidden?.();
+    });
 
     // ========================
     // 手动渲染开关（不做自动失焦逻辑）
@@ -276,6 +285,17 @@ const htmlCode = `
             <span style="font-size:12px;color:#666">1</span>
             <span id="fovValue" style="min-width:35px;text-align:right">60°</span>
             <button id="fovReset" style="padding:2px 8px;font-size:12px">还原</button>
+        </div>
+        <hr>
+    </div>
+
+    <div>
+        <h3>按键引导</h3>
+        <div style="display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap">
+            <button id="showKeyGuideBtn" style="padding:6px 14px;font-size:14px">显示引导器</button>
+        </div>
+        <div style="font-size:12px;color:#888;margin-bottom:8px">
+            左下角显示按键引导；如果之前点过“不再显示”，这里可以重新打开
         </div>
         <hr>
     </div>
