@@ -104,12 +104,12 @@ async function refreshCurrentBoard() {
     const refreshBtn = document.getElementById('signHotInfoRefresh');
 
     if (!boardId) {
-        setRefreshStatus('无画板');
+        setRefreshStatus('No ID');
         return;
     }
 
     if (refreshBtn) refreshBtn.setAttribute('aria-disabled', 'true');
-    setRefreshStatus('更新中...', true);
+    setRefreshStatus('Sync...', true);
 
     try {
         const res = await fetch(`${getApiBase()}/api/signs/batch`, {
@@ -126,7 +126,7 @@ async function refreshCurrentBoard() {
             if (hasBoardContentChanged({ id: boardId, mode: 'empty', content: '', extra: {} })) {
                 window.updateSign?.(boardId, '', 'empty', {});
             }
-            setRefreshStatus('无数据');
+            setRefreshStatus('No Data');
             return;
         }
 
@@ -136,15 +136,15 @@ async function refreshCurrentBoard() {
 
         if (changed) {
             window.updateSign?.(normalizedBoard.id, normalizedBoard.content, normalizedBoard.mode, normalizedBoard.extra);
-            setRefreshStatus('已更新');
+            setRefreshStatus('Synced');
         } else {
             updateHotInfo(hotIndex, boardsData, isExpanded);  // 内容没变也刷新日期等元信息
-            setRefreshStatus('无变化');
+            setRefreshStatus('No Diff');
         }
     } catch (e) {
         console.error('[HotInfo] 刷新当前画板失败:', e);
         reportSignboardServerStatus('offline', { message: e.message });
-        setRefreshStatus('失败');
+        setRefreshStatus('Failed');
     } finally {
         if (refreshBtn) refreshBtn.removeAttribute('aria-disabled');
     }
@@ -163,7 +163,7 @@ function openContentModalForBoard(payload) {
     if (info.mode === 'image' && info.imgUrl) {
         openContentModal({
             type: 'image',
-            titleText: '原图',
+            titleText: 'Image',
             imageUrl: info.imgUrl,
             allowEdit
         });
@@ -173,7 +173,7 @@ function openContentModalForBoard(payload) {
     if (info.mode === 'text' && info.t) {
         openContentModal({
             type: 'text',
-            titleText: '全文',
+            titleText: 'Text',
             text: info.t,
             allowEdit
         });
@@ -182,8 +182,8 @@ function openContentModalForBoard(payload) {
 
     openContentModal({
         type: 'text',
-        titleText: '内容',
-        text: '当前画板还没有图片或正文内容。',
+        titleText: 'Info',
+        text: 'No image or text yet.',
         allowEdit
     });
 }
@@ -243,7 +243,7 @@ export function initHotInfo(ccgxkObj) {
         e.preventDefault();
         e.stopPropagation();
         isExpanded = !isExpanded;
-        toggleBtn.textContent = isExpanded ? '折叠' : '展开';
+        toggleBtn.textContent = isExpanded ? 'Hide' : 'Show';
         container.style.display = isExpanded && isHotDetecting(ccgxkObjRef) ? 'block' : 'none';
         if (isExpanded && isHotDetecting(ccgxkObjRef)) {
             updateHotInfo(ccgxkObjRef.hotPoint, boardsData, isExpanded);

@@ -172,7 +172,7 @@ export default function createSignPanel(ccgxkObj) {
         state.boardId = findBoardId(hotIndex);
 
         // 显示画板 ID
-        setBoardIdDisplay(state.boardId ? `#${state.boardId}` : '(未注册画板)');
+        setBoardIdDisplay(state.boardId ? `#${state.boardId}` : '(No Board)');
 
         // 按当前热点回填内容。面板每次打开都重新读 store，避免显示上一次残留值。
         let detectedMode = 'text';
@@ -265,7 +265,7 @@ export default function createSignPanel(ccgxkObj) {
      */
     async function save() {
         if (!state.boardId) {
-            updateStatus('无画板 ID', 'error');
+            updateStatus('No Board ID', 'error');
             return;
         }
 
@@ -282,7 +282,7 @@ export default function createSignPanel(ccgxkObj) {
         }
         extra.remark = remark;
 
-        updateStatus('保存中...', 'saving');
+        updateStatus('Saving...', 'saving');
         updateSaveButton(true);
 
         try {
@@ -292,20 +292,20 @@ export default function createSignPanel(ccgxkObj) {
                 body: JSON.stringify({ mode, content, extra })
             });
 
-            if (!res.ok) throw new Error('保存失败');
+            if (!res.ok) throw new Error('Save failed');
             reportSignboardServerStatus('online');
 
             if (typeof window.updateSign === 'function') {
                 window.updateSign(state.boardId, content, mode, extra);  // 保存成功后本机立即刷新，不再依赖服务端推送回环
             }
 
-            updateStatus('已保存', 'saved');
+            updateStatus('Saved', 'saved');
             hide();  // 保存成功后沿用统一收口逻辑，避免漏掉热点/鼠标状态恢复
         } catch (e) {
             console.error('[signPanel] 保存失败:', e);
             reportSignboardServerStatus('offline', { message: e.message });
-            alert('保存失败: ' + e.message + '\n你的内容还在，不会丢失。');
-            updateStatus('保存失败', 'error');
+            alert('Save failed: ' + e.message + '\nYour content is still here.');
+            updateStatus('Save failed', 'error');
         } finally {
             updateSaveButton(false);
         }

@@ -13,29 +13,29 @@ const htmlTemplate = `
     <div class="sign-panel-box" id="signPanelBox">
         <div class="sign-panel-header" id="signPanelHeader">
             <span>
-                <span class="sign-panel-title">信息板编辑</span>
+                <span class="sign-panel-title">Board Edit</span>
                 <span class="sign-panel-title-id" id="signPanelBoardId"></span>
             </span>
             <button class="sign-panel-close" id="signPanelClose">&times;</button>
         </div>
         <div class="sign-mode-bar">
-            <button class="sign-mode-btn active" id="signModeText" data-mode="text">文字</button>
-            <button class="sign-mode-btn" id="signModeImage" data-mode="image">图片</button>
-            <button class="sign-mode-btn sign-mode-expand-btn" id="signTextExpandToggle" type="button">全屏模式</button>
+            <button class="sign-mode-btn active" id="signModeText" data-mode="text">Text</button>
+            <button class="sign-mode-btn" id="signModeImage" data-mode="image">Image</button>
+            <button class="sign-mode-btn sign-mode-expand-btn" id="signTextExpandToggle" type="button">Expand</button>
         </div>
         <div class="sign-panel-content">
             <textarea class="sign-panel-textarea" id="signPanelTextarea"
-                placeholder="输入画板文字内容..."></textarea>
+                placeholder="Enter text..."></textarea>
             <div class="sign-image-area" id="signImageArea" style="display:none">
                 <input type="text" class="sign-image-input" id="signImageUrl"
-                    placeholder="输入图片 URL...">
+                    placeholder="Paste image URL...">
                 <div class="sign-image-preview" id="signImagePreview">
-                    <span class="placeholder">图片预览</span>
+                    <span class="placeholder">Preview</span>
                 </div>
             </div>
             <div class="sign-remark-section" id="signRemarkSection">
                 <div class="sign-remark-header" id="signRemarkHeader">
-                    <span class="sign-remark-title">备注（不显示在画布）</span>
+                    <span class="sign-remark-title">Note (hidden)</span>
                     <span class="sign-remark-toggle" id="signRemarkToggle">▼</span>
                 </div>
                 <div class="sign-remark-body" id="signRemarkBody">
@@ -46,7 +46,7 @@ const htmlTemplate = `
         <div class="sign-panel-footer">
             <span class="sign-panel-status" id="signPanelStatus"></span>
             <div>
-                <button class="sign-save-btn" id="signPanelSave">保存</button>
+                <button class="sign-save-btn" id="signPanelSave">Save</button>
                 <span class="sign-save-hint">Ctrl/Cmd+S</span>
             </div>
         </div>
@@ -164,11 +164,11 @@ export function updateImagePreview(url) {
     if (!preview) return;
 
     if (!url) {
-        preview.innerHTML = '<span class="placeholder">图片预览</span>';
+        preview.innerHTML = '<span class="placeholder">Preview</span>';
         return;
     }
 
-    preview.innerHTML = `<img src="${url}" onerror="this.parentElement.innerHTML='<span class=placeholder>加载失败</span>'">`;
+    preview.innerHTML = `<img src="${url}" onerror="this.parentElement.innerHTML='<span class=placeholder>Load Err</span>'">`;
 }
 
 /**
@@ -410,7 +410,7 @@ function setTextExpand(expanded, options = {}) {
 
     modal.classList.toggle('text-expand-mode', expanded);
     box.classList.toggle('text-expand-mode', expanded);
-    toggle.textContent = expanded ? '恢复小屏' : '全屏模式';
+    toggle.textContent = expanded ? 'Compact' : 'Expand';
 
     if (expanded) {
         modal.style.left = '50%';

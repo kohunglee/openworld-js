@@ -6,14 +6,14 @@ import { signContentMap, signIndexMap, lazyLoadSign } from '../store.js';
 
 // HTML 模板
 export const htmlTemplate = `
-<button id="signHotInfoToggle" style="display: none;">折叠</button>
+<button id="signHotInfoToggle" style="display: none;">Hide</button>
 <div id="signHotInfo" class="sign-hot-info" style="display: none;">
     <div class="sign-hot-info-body" id="signHotInfoBody">
         <div class="sign-hot-info-row">
             <span class="sign-hot-info-label"></span>
             <span class="sign-hot-info-value" id="signHotInfoId">-</span>
             <span class="sign-hot-info-actions">
-                <a id="signHotInfoRefresh">[更新]</a>
+                <a id="signHotInfoRefresh">[Sync]</a>
                 <span id="signHotInfoRefreshStatus"></span>
             </span>
         </div>
@@ -22,28 +22,28 @@ export const htmlTemplate = `
             <span class="sign-hot-info-value" id="signHotInfoDate">-</span>
         </div>
         <div class="sign-hot-info-view-original" id="signHotInfoViewOriginal" style="display: none;">
-            <a>[查看原图]</a>
-            <a id="signHotInfoEditImage">[编辑]</a>
+            <a>[View Img]</a>
+            <a id="signHotInfoEditImage">[Edit]</a>
         </div>
         <div class="sign-hot-info-view-original" id="signHotInfoCopyText" style="display: none;">
-            <a>[打开全文]</a>
-            <a id="signHotInfoEditText">[编辑]</a>
+            <a>[View Txt]</a>
+            <a id="signHotInfoEditText">[Edit]</a>
         </div>
         <div class="sign-hot-info-view-original" id="signHotInfoViewEmpty" style="display: none;">
-            <a>[查看]</a>
-            <a id="signHotInfoEditEmpty">[编辑]</a>
+            <a>[View]</a>
+            <a id="signHotInfoEditEmpty">[Edit]</a>
         </div>
         <div class="sign-hot-info-remark" id="signHotInfoRemark" style="display: none;"></div>
     </div>
 </div>
 <div id="signHotInfoContentModal" style="display: none;">
     <div class="sign-hot-info-content-modal-backdrop" id="signHotInfoContentModalBackdrop"></div>
-    <div class="sign-hot-info-content-modal-panel" role="dialog" aria-modal="true" aria-label="内容预览">
+    <div class="sign-hot-info-content-modal-panel" role="dialog" aria-modal="true" aria-label="Content Preview">
         <div class="sign-hot-info-content-modal-header">
-            <span id="signHotInfoContentModalTitle">内容</span>
+            <span id="signHotInfoContentModalTitle">Info</span>
             <div class="sign-hot-info-text-modal-actions">
-                <button type="button" id="signHotInfoContentModalEdit" style="display: none;">编辑</button>
-                <button type="button" id="signHotInfoContentModalClose">关闭</button>
+                <button type="button" id="signHotInfoContentModalEdit" style="display: none;">Edit</button>
+                <button type="button" id="signHotInfoContentModalClose">Close</button>
             </div>
         </div>
         <div class="sign-hot-info-content-modal-body">
@@ -156,7 +156,7 @@ export function updateHotInfo(hotIndex, boardsData, isExpanded) {
     const boardData = boardsData.find(b => b.id === boardId);
     if (boardData && boardData.updated_at) {
         const date = new Date(boardData.updated_at);
-        dateSpan.textContent = date.toLocaleString('zh-CN', {
+        dateSpan.textContent = date.toLocaleString('en-US', {
             year: 'numeric', month: 'numeric', day: 'numeric',
             hour: '2-digit', minute: '2-digit', second: '2-digit'
         });
@@ -223,7 +223,7 @@ export function openContentModal(options = {}) {
 
     const {
         type = 'text',
-        titleText = '内容',
+        titleText = 'Info',
         text = '',
         imageUrl = '',
         allowEdit = false
@@ -260,7 +260,7 @@ export function closeContentModal() {
     if (!modal || !title || !textEl || !imageWrap || !imageEl) return;
 
     modal.style.display = 'none';
-    title.textContent = '内容';
+    title.textContent = 'Info';
     if (editBtn) editBtn.style.display = 'none';
     textEl.hidden = false;
     textEl.replaceChildren();

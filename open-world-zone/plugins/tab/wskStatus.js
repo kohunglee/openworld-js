@@ -40,7 +40,7 @@ export function initWskStatus(ccgxkObj) {
             gridHTML += `<span title="idx:${idx} ${info ? info?.n : 'empty'}"
                 style="display:inline-block;width:18px;height:18px;line-height:18px;text-align:center;
                 font-size:11px;margin:1px;cursor:default;border-radius:2px;
-                background:${has ? '#3a7bd5' : '#e0e0e0'};color:${has ? '#fff' : '#999'};">
+                background:${has ? '#3a7bd5' : '#00ecd8'};color:${has ? '#fff' : '#999'};">
                 ${has ? '■' : '·'}
             </span>`;
             if ((i + 1) % 10 === 0) gridHTML += '<br>';
@@ -53,7 +53,7 @@ export function initWskStatus(ccgxkObj) {
             const pct = Math.round((used / total) * 100);
             return `
                 <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
-                    <div style="flex:1;height:10px;background:#e0e0e0;border-radius:5px;overflow:hidden;">
+                    <div style="flex:1;height:10px;background:#00ecd8;border-radius:5px;overflow:hidden;">
                         <div style="width:${pct}%;height:100%;background:${color};border-radius:5px;transition:width 0.3s;"></div>
                     </div>
                     <span style="font-size:11px;color:#555;min-width:80px;">${used} / ${total} (${pct}%)</span>
