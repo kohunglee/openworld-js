@@ -5,7 +5,7 @@
  */
 
 const STORAGE_KEY = 'signboard_server_address';
-const DEFAULT_ADDRESS = 'https://selfdb.ccgxk.com';
+const DEFAULT_ADDRESS = 'https://openworld.zone/owz-serverapi';
 
 /**
  * 获取当前服务器地址

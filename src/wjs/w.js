@@ -12,6 +12,19 @@ const W = {
 
   // WJS 的 JS 钩子，可用于添加插件、扩展功能
   wjsHooks : hooks,
+  isRendering: false,
+  rafId: 0,
+  toggleRender: () => {
+    W.isRendering = !W.isRendering;
+    if (W.isRendering) {
+      W.lastFrame = performance.now();
+      if (!W.rafId) W.rafId = requestAnimationFrame(W.draw);
+    } else if (W.rafId) {
+      cancelAnimationFrame(W.rafId);
+      W.rafId = 0;
+    }
+    return W.isRendering;
+  },
 
   // 初始化
   reset: canvas => {
@@ -79,7 +92,7 @@ const W = {
         W.gl.enable(2929);
         W.light({y: -1});
         W.camera({fov: 30});
-        setTimeout(W.draw, 16);  // 开始绘制
+        W.toggleRender();  // 开始绘制
   },
 
   // 设置对象的状态 
@@ -178,15 +191,22 @@ const W = {
 
   // 绘制场景
   draw: (now, dt, v, i, transparent = []) => {
+        // 被暂停时不再绘制，也不再递归调度下一帧。
+        if (!W.isRendering) {
+          W.rafId = 0;
+          return;
+        }
         const frameRenderStart = performance.now();  // 记录开始的时间
         dt = now - W.lastFrame;
         W.lastFrame = now;
-        requestAnimationFrame(W.draw);
+        W.rafId = requestAnimationFrame(W.draw);
         if (W.debugFBO) {  // 如果打开，就播放 FBO 的画面，然后直接结束这一帧
           renderFBOToCanvas();
           return; 
         } else {
-          if(W.next.camera.g){  W.render(W.next[W.next.camera.g], dt, 1); }
+          if (W.next?.camera?.g && W.next[W.next.camera.g]) {
+            W.render(W.next[W.next.camera.g], dt, 1);
+          }
           v = W.animation('camera');  //  获取相机的矩阵
           if(W.next?.camera?.g){
             v.preMultiplySelf(W.next[W.next.camera.g].M || W.next[W.next.camera.g].m);

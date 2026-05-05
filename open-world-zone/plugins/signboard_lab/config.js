@@ -12,12 +12,12 @@ export const THEME = {
 
 // 服务器地址存储 key
 const STORAGE_KEY = 'signboard_server_address';
-const DEFAULT_ADDRESS = '127.0.0.1:8899';  // 默认地址
+const DEFAULT_ADDRESS = 'https://openworld.zone/owz-serverapi';  // 默认地址
 
 // 获取 API 的 base URL
 export function getApiBase() {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored || 'http://' + DEFAULT_ADDRESS;
+    return stored || DEFAULT_ADDRESS;
 }
 
 // 向后兼容：导出 API_BASE（首次加载时的值）
