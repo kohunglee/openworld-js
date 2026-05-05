@@ -18,17 +18,17 @@ const MOBILE_BREAKPOINT = 768;
  */
 const KEY_UNIT = 42;
 const GUIDE_LAYOUT = [
-    { code: 'Tab', label: 'TAB', desc: '边栏', x: 0, y: 48, width: 64 },
-    { code: 'KeyQ', label: 'Q', desc: '加速', x: 104, y: 48 },
-    { code: 'KeyW', label: 'W', desc: '前进', x: 154, y: 48 },
-    { code: 'KeyE', label: 'E', desc: '跳跃', x: 204, y: 48 },
-    { code: 'KeyA', label: 'A', desc: '左移', x: 104, y: 110 },
-    { code: 'KeyS', label: 'S', desc: '后退', x: 154, y: 110 },
-    { code: 'KeyD', label: 'D', desc: '右移', x: 204, y: 110 },
-    { code: 'KeyF', label: 'F', desc: '冻结', x: 254, y: 110 },
-    { code: 'KeyV', label: 'V', desc: '视角', x: 304, y: 170 },
-    { code: 'ShiftLeft', label: 'Shift', desc: '加速', x: 0, y: 170, width: 86, aliases: ['ShiftRight'] },
-    { code: 'Space', label: '空格', desc: '跳跃', x: 110, y: 220, width: 138 },
+    { code: 'Tab', label: 'TAB', desc: 'Panel', x: 0, y: 48, width: 64 },
+    { code: 'KeyQ', label: 'Q', desc: 'Boost', x: 104, y: 48 },
+    { code: 'KeyW', label: 'W', desc: 'Forward', x: 154, y: 48 },
+    { code: 'KeyE', label: 'E', desc: 'Jump', x: 204, y: 48 },
+    { code: 'KeyA', label: 'A', desc: 'Left', x: 104, y: 110 },
+    { code: 'KeyS', label: 'S', desc: 'Back', x: 154, y: 110 },
+    { code: 'KeyD', label: 'D', desc: 'Right', x: 204, y: 110 },
+    { code: 'KeyF', label: 'F', desc: 'Freeze', x: 254, y: 110 },
+    { code: 'KeyV', label: 'V', desc: 'View', x: 304, y: 170 },
+    { code: 'ShiftLeft', label: 'Shift', desc: 'Boost', x: 0, y: 170, width: 86, aliases: ['ShiftRight'] },
+    { code: 'Space', label: 'Space', desc: 'Jump', x: 110, y: 220, width: 138 },
 ];
 
 /**
@@ -237,11 +237,11 @@ export function initKeyGuide() {
 
     const title = document.createElement('div');
     title.className = 'kg-title';
-    title.textContent = '按键引导';
+    title.textContent = 'Key Guide';
 
     const subtitle = document.createElement('div');
     subtitle.className = 'kg-subtitle';
-    subtitle.textContent = '加速、跳跃，推荐使用按键 Q / E ';
+    subtitle.textContent = 'Recommended: Q / E for boost & jump';
 
     titleWrap.appendChild(title);
     titleWrap.appendChild(subtitle);
@@ -249,7 +249,7 @@ export function initKeyGuide() {
     const closeBtn = document.createElement('button');
     closeBtn.type = 'button';
     closeBtn.className = 'kg-close-btn';
-    closeBtn.textContent = '关闭';
+    closeBtn.textContent = 'Close';
 
     header.appendChild(titleWrap);
     header.appendChild(closeBtn);
@@ -337,7 +337,7 @@ export function initKeyGuide() {
     const handleClose = (event) => {
         event?.preventDefault?.();
         event?.stopPropagation?.();
-        const confirmed = window.confirm('是否不再显示这个按键引导？后续仍可在边栏里重新打开。');
+        const confirmed = window.confirm('Hide this key guide? You can turn it back on in the panel.');
         if (!confirmed) return;
         setGuideHiddenForever(true);
         panel.hidden = true;

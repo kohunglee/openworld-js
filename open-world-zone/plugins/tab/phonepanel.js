@@ -83,7 +83,7 @@ export function initPhonePanel($, ccgxkObj) {
     bindIntervalControl("ppLookUp", () => { k.keys.turnUp   += turnNum });
     bindIntervalControl("ppLookDn", () => { k.keys.turnUp   -= turnNum });
 
-    console.log('[PhonePanel] 移动端控制面板插件加载完成');
+    // console.log('[PhonePanel] 移动端控制面板插件加载完成');
 }
 
 // HTML 和 CSS 模板
@@ -143,17 +143,17 @@ const PHONE_PANEL_STYLE = `
 
 const PHONE_PANEL_MARKUP = `
 <div id="phonePanel" class="phone-panel phone-panel-hidden">
-    <button class="phone-panel-cell" id="ppTurnL">←</button>
-    <button class="phone-panel-cell" id="ppGoF">前</button>
-    <button class="phone-panel-cell" id="ppTurnR">→</button>
+    <button class="phone-panel-cell" id="ppTurnL">↶</button>
+    <button class="phone-panel-cell" id="ppGoF">F</button>
+    <button class="phone-panel-cell" id="ppTurnR">↷</button>
 
-    <button class="phone-panel-cell" id="ppGoL">左</button>
-    <button class="phone-panel-cell" id="ppGoJump">蹦</button>
-    <button class="phone-panel-cell" id="ppGoR">右</button>
+    <button class="phone-panel-cell" id="ppGoL">L</button>
+    <button class="phone-panel-cell" id="ppGoJump">⤒</button>
+    <button class="phone-panel-cell" id="ppGoR">R</button>
 
-    <button class="phone-panel-cell" id="ppLookUp">上</button>
-    <button class="phone-panel-cell" id="ppGoB">后</button>
-    <button class="phone-panel-cell" id="ppLookDn">下</button>
+    <button class="phone-panel-cell" id="ppLookUp">↑</button>
+    <button class="phone-panel-cell" id="ppGoB">B</button>
+    <button class="phone-panel-cell" id="ppLookDn">↓</button>
 </div>
 `;
 

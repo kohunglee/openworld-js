@@ -79,11 +79,11 @@ export function initServerConfig($, onAddressChange) {
         const status = detail.status || 'unknown';
         const pending = detail.pending || 0;
         const statusMap = {
-            online: { text: '信息板服务器已连接', color: '#000' },
-            offline: { text: `信息板服务器未连接，已暂停自动重试${pending ? `（待加载 ${pending} 块）` : ''}`, color: '#000' },
-            connecting: { text: '正在重新连接信息板服务器...', color: '#000' },
-            idle: { text: '信息板服务器未请求', color: '#000' },
-            unknown: { text: '信息板服务器状态待检测', color: '#000' }
+            online: { text: 'Info Panel connected', color: '#000' },
+            offline: { text: `Info Panel offline. Retry paused${pending ? ` (${pending} pending)` : ''}`, color: '#000' },
+            connecting: { text: 'Reconnecting Info Panel...', color: '#000' },
+            idle: { text: 'Info Panel idle', color: '#000' },
+            unknown: { text: 'Checking Info Panel...', color: '#000' }
         };
         const info = statusMap[status] || statusMap.unknown;
 
@@ -101,12 +101,12 @@ export function initServerConfig($, onAddressChange) {
     saveBtn.addEventListener('click', () => {
         const address = input.value.trim();
         if (!address) {
-            alert('服务器地址不能为空');
+            alert('Server URL cannot be empty');
             input.value = getServerAddress();
             return;
         }
         saveServerAddress(address);
-        alert('已保存: ' + address);
+        alert('Saved: ' + address);
         renderStatus({ status: 'idle' });
         if (onAddressChange) onAddressChange(address);
     });

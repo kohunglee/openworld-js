@@ -120,8 +120,8 @@ export function initAutoW($, ccgxkObj) {
     // 统一刷新当前文字和 plane 显隐，避免按钮逻辑重复
     const applyNow = () => {
         const planeCount = updatePlaneVisibility(ccgxkObj, currentLimit);
-        if (currentText) currentText.textContent = '当前的限制个数是 ' + currentLimit + '，当前 plane 总数是 ' + planeCount;
-    };
+        if (currentText) currentText.textContent = 'Current limit: ' +
+            currentLimit + '. Total planes: ' + planeCount;    };
 
     if (saveBtn && input) {
         saveBtn.addEventListener('click', () => {

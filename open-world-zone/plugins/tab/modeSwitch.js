@@ -8,9 +8,9 @@
 
 export function initModeSwitch($, ccgxkObj) {
     const MODES = [
-        { value: 0, label: '调整模式', color: '#3498db', refresh: true },
-        { value: 1, label: '展示模式', color: '#27ae60', refresh: false },
-        { value: 2, label: '文字编辑', color: '#9b59b6', refresh: false },
+        { value: 0, label: 'Cube Editor Mode', color: '#3498db', refresh: true },
+        { value: 1, label: 'View Mode', color: '#27ae60', refresh: false },
+        { value: 2, label: 'Text Editor Mode', color: '#9b59b6', refresh: false },
     ];
 
     // 获取当前模式
@@ -81,7 +81,7 @@ export function initModeSwitch($, ccgxkObj) {
 
         displayEl.style.backgroundColor = modeInfo.color;
         displayEl.style.color = '#fff';
-        displayEl.textContent = `当前模式: ${modeInfo.label} (${currentMode})`;
+        displayEl.textContent = `Current: ${modeInfo.label} (${currentMode})`;
     }
 
     // 更新按钮状态
@@ -114,6 +114,4 @@ export function initModeSwitch($, ccgxkObj) {
         updateModeDisplay();
         updateButtonStates();
     }, 500);
-
-    console.log('[ModeSwitch] 当前模式:', getCurrentMode(), 'ccgxkObj.mode:', ccgxkObj.mode);
 }

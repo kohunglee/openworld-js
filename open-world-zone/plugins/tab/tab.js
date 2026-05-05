@@ -10,8 +10,6 @@ import { initAutoW } from './autoW.js';
 import { initKeyGuide } from './keyGuide.js';
 
 export default function(ccgxkObj) {
-    // console.log('导入 侧边栏 插件成功');
-
     const $ = id => document.getElementById(id);
 
     const template = document.createElement('template');  //+4 将 html 节点添加到文档
@@ -153,10 +151,10 @@ export default function(ccgxkObj) {
     // ========================
     const renderToggleBtn = $("renderToggleBtn");
     if (renderToggleBtn) {
-        renderToggleBtn.textContent = "停止渲染";
+        renderToggleBtn.textContent = "Stop Rendering";
         renderToggleBtn.addEventListener("click", () => {
             const isRendering = ccgxkObj?.W?.toggleRender?.();
-            renderToggleBtn.textContent = isRendering ? "停止渲染" : "继续渲染";
+            renderToggleBtn.textContent = isRendering ? "Stop Rendering" : "Resume Rendering";
         });
     }
 
@@ -371,122 +369,125 @@ const htmlCode = `
 </div>
 
 <div class="info-modal zindex-1" id="myinfoModal">
-    <div><button id="closeBtn">关闭(Tab)</button></div>
+    <div><button id="closeBtn">Close (Tab)</button></div>
 
     <section>
-        <h3>快捷操作</h3>
-        <button id="goOPOS">到原点</button>
-        <button id="goHall">到外面</button>
-        <button id="fixError">修NaN</button>
-        <button id="togglePhonePanel">手机面板</button><br><br>
+        <h3>Quick Actions</h3>
+        <button id="goOPOS">To Origin</button>
+        <button id="goHall">To Outside</button>
+        <button id="fixError">Fix NaN</button>
+        <button id="togglePhonePanel">Mobile Panel</button><br><br>
+        floor:
         <button id="goH01">1</button>
         <button id="goH02">2</button>
         <button id="goH03">3</button>
         <button id="goH04">4</button>
         <button id="goH05">5</button>
-        <button id="goTSG">TSG</button>
-        <button id="goTOP">TSG</button>
+        <button id="goTSG">Lib</button>
+        <button id="goTOP">Top</button>
         <hr>
     </section>
 
     <section>
-        <h3>上一个项目的地址</h3>
-        <a href="https://ow.ccgxk.com/demo/house?logicadd=1" target="_blank">https://ow.ccgxk.com/demo/house?logicadd=1</a>
-        <hr>
-    </section>
-
-    <section>
-        <h3>模式切换</h3>
-        <div id="modeDisplay" class="tab-section-inline">当前模式: 加载中</div>
+        <h3>Mode</h3>
+        <div id="modeDisplay" class="tab-section-inline">Current: loading</div>
         <div class="tab-row tab-row-gap-8 tab-row-wrap">
-            <button id="modeBtn0" class="tab-btn-mode tab-btn-mode-0">编辑模式</button>
-            <button id="modeBtn1" class="tab-btn-mode tab-btn-mode-1">展示模式</button>
-            <button id="modeBtn2" class="tab-btn-mode tab-btn-mode-2">文字编辑</button>
+            <button id="modeBtn0" class="tab-btn-mode tab-btn-mode-0">Cube Edit</button>
+            <button id="modeBtn1" class="tab-btn-mode tab-btn-mode-1">View (Def)</button>
+            <button id="modeBtn2" class="tab-btn-mode tab-btn-mode-2">Text Edit</button>
         </div>
-        <div class="tab-note">点击切换模式（会刷新页面）</div>
+        <div class="tab-note">Click to switch mode. The page will reload.</div>
         <hr>
     </section>
 
     <section>
-        <h3>画面设置</h3>
+        <h3>Display</h3>
         <div class="tab-row tab-row-gap-10">
             <label>FOV:</label>
             <span class="tab-scale-note">120</span>
             <input type="range" id="fovSlider" min="1" max="120" value="61" step="1" class="tab-fov-slider">
             <span class="tab-scale-note">1</span>
             <span id="fovValue" class="tab-fov-value">60°</span>
-            <button id="fovReset" class="tab-btn-sm">还原</button>
+            <button id="fovReset" class="tab-btn-sm">Reset</button>
         </div>
         <hr>
     </section>
 
     <section>
-        <h3>按键引导</h3>
+        <h3>Key Guide</h3>
         <div class="tab-row tab-row-gap-10 tab-row-wrap">
-            <button id="showKeyGuideBtn" class="tab-btn-lg">显示引导器</button>
+            <button id="showKeyGuideBtn" class="tab-btn-lg">Show Guide</button>
         </div>
         <div class="tab-note tab-note-mb8">
-            左下角显示按键引导；如果之前点过“不再显示”，这里可以重新打开
+            Show key hints in the lower-left corner.<br>
+            You can turn it back on here anytime.
         </div>
         <hr>
     </section>
 
     <section>
-        <h3>角色速度</h3>
+        <h3>Move Speed</h3>
         <div class="tab-row tab-row-gap-16">
-            <label class="tab-clickable"><input type="radio" name="speed" value="50"> 慢</label>
-            <label class="tab-clickable"><input type="radio" name="speed" value="8" checked> 正常</label>
+            <label class="tab-clickable"><input type="radio" name="speed" value="50"> Slow</label>
+            <label class="tab-clickable"><input type="radio" name="speed" value="8" checked> Normal</label>
         </div>
         <hr>
     </section>
 
     <section>
-        <h3>服务器设置</h3>
+        <h3>Server</h3>
         <div class="tab-row tab-row-gap-8">
-            <label class="tab-label-nowrap">地址:</label>
+            <label class="tab-label-nowrap">URL:</label>
             <input type="text" id="serverAddressInput" placeholder="127.0.0.1:8899" class="tab-input-text">
-            <button id="serverAddressSave" class="tab-btn-md">保存</button>
-            <button id="serverAddressReset" class="tab-btn-md">默认</button>
-            <button id="serverAddressRetry" class="tab-btn-md">重试连接</button>
+            <button id="serverAddressSave" class="tab-btn-md">Save</button>
+            <button id="serverAddressReset" class="tab-btn-md">Default</button>
+            <button id="serverAddressRetry" class="tab-btn-md">Retry</button>
         </div>
         <div id="serverStatusText" class="tab-tiny tab-note-mb6 tab-server-status-initial">
-            信息板服务器状态待检测
+            Info Panel server connected.
         </div>
         <div class="tab-note tab-note-mb8">
-            信息板 API 服务器地址，修改后需刷新页面才生效
+            Refresh the page after changing it.
         </div>
         <hr>
     </section>
 
     <section>
-        <h3>plane 渲染数量</h3>
+        <h3>Signboard Render Limit</h3>
         <div class="tab-row tab-row-gap-8 tab-row-wrap">
-            <label class="tab-label-nowrap">保留最近:</label>
+            <label class="tab-label-nowrap">Keep:</label>
             <input type="number" id="autoWLimitInput" min="0" step="1" class="tab-input-number">
-            <span>个 plane</span>
-            <button id="autoWLimitReset" class="tab-btn-md">恢复默认</button>
-            <button id="autoWLimitSave" class="tab-btn-md">保存</button>
+            <span> plane</span>
+            <button id="autoWLimitReset" class="tab-btn-md">Reset</button>
+            <button id="autoWLimitSave" class="tab-btn-md">Save</button>
         </div>
         <div id="autoWCurrentText" class="tab-scale-note tab-note-mb6">
-            当前的限制个数是 30
+            Current limit: 30
         </div>
         <div class="tab-note tab-note-mb8">
-            每秒按与主角距离排序，只渲染最近的 plane，其余自动 hidden
+            Planes are sorted by distance from the player every second.<br>
+            Only the nearest planes are rendered. Others are hidden.
         </div>
         <hr>
     </section>
 
     <section>
-        <h3>失焦渲染设置</h3>
+        <h3>Rendering</h3>
         <div class="tab-row tab-row-gap-10 tab-row-wrap">
-            <button id="renderToggleBtn" class="tab-btn-lg">停止渲染</button>
+            <button id="renderToggleBtn" class="tab-btn-lg">Stop Rendering</button>
         </div>
         <hr>
     </section>
 
-    <h3>万数块情况</h3>
+    <h3>Slot Usage</h3>
     <div id="wskStudio"></div><!-- 万数块临时测试使用 -->
 
-    <div><button id="closeBtn02">关闭(Tab)</button></div>
+    <section>
+        <h3>Previous Project URL</h3>
+        <a href="https://ow.ccgxk.com/demo/house?logicadd=1" target="_blank">https://ow.ccgxk.com/demo/house?logicadd=1</a>
+        <hr>
+    </section>
+
+    <div><button id="closeBtn02">Close (Tab)</button></div>
 </div>
 `;
