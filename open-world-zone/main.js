@@ -19,7 +19,8 @@ await ensureCannon();
 const { default: k } = await import('../src/openworld.js');
 globalThis.k = k;
 k.initWorld('openworldCanv', true);
-k.mode = +new URLSearchParams(location.search).get('mode');  // 展示模式，自用
+const mode = new URLSearchParams(location.search).get('mode');
+k.mode = mode === null ? 1 : +mode;  // 为空，就是 1
 
 // 导入公共插件模块
 import xmap from '@plugins/xmap.js';
@@ -59,8 +60,6 @@ tab(k);
 
 // import signboard from './plugins/signboard/signboard.js';  // 指示牌测试
 // signboard(k);
-
-
 
 // 添加地面
 const gX = 0, gY = -2.5, gZ = 0;

@@ -1205,7 +1205,7 @@ import{_ as ot}from"../../shared/assets/preload-helper.DEhDIiTV.js";(0,eval)('_=
             信息板服务器状态待检测
         </div>
         <div style="font-size:12px;color:#888;margin-bottom:8px">
-            信息板 API 服务器地址，修改后刷新页面才生效
+            信息板 API 服务器地址，修改后需刷新页面才生效
         </div>
         <hr>
     </div>

@@ -19,8 +19,9 @@ export function initModeSwitch($, ccgxkObj) {
         if (ccgxkObj.mode === 1 || ccgxkObj.mode === 2) {
             return ccgxkObj.mode;
         }
-        // 模式0从URL参数获取，或默认为0
-        return 0;
+        // 其余情况从 URL 读取 mode（尤其是 mode=0），无效/缺省时回退到 1
+        const urlMode = Number(new URLSearchParams(window.location.search).get('mode'));
+        return [0, 1, 2].includes(urlMode) ? urlMode : 1;
     }
 
     // 隐藏侧边栏（与tab.js保持一致）
@@ -65,7 +66,7 @@ export function initModeSwitch($, ccgxkObj) {
         // 模式1/2 → 模式0：删除URL参数（刷新页面）
         if ((currentMode === 1 || currentMode === 2) && mode === 0) {
             const url = new URL(window.location.href);
-            url.searchParams.delete('mode');
+            url.searchParams.set('mode', mode);
             window.location.href = url.toString();
             return;
         }
