@@ -139,6 +139,18 @@ export default function(ccgxkObj) {
     // ========================
     initAutoW($, ccgxkObj);
 
+    // ========================
+    // 手动渲染开关（不做自动失焦逻辑）
+    // ========================
+    const renderToggleBtn = $("renderToggleBtn");
+    if (renderToggleBtn) {
+        renderToggleBtn.textContent = "停止渲染";
+        renderToggleBtn.addEventListener("click", () => {
+            const isRendering = ccgxkObj?.W?.toggleRender?.();
+            renderToggleBtn.textContent = isRendering ? "停止渲染" : "继续渲染";
+        });
+    }
+
     // PC 端显示/隐藏手机控制面板
     $("togglePhonePanel")?.addEventListener("click", () => {
         const panel = $("phonePanel");
@@ -311,6 +323,14 @@ const htmlCode = `
         </div>
         <div style="font-size:12px;color:#888;margin-bottom:8px">
             每秒按与主角距离排序，只渲染最近的 plane，其余自动 hidden
+        </div>
+        <hr>
+    </div>
+
+    <div>
+        <h3>失焦渲染设置</h3>
+        <div style="display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap">
+            <button id="renderToggleBtn" style="padding:6px 14px;font-size:14px">停止渲染</button>
         </div>
         <hr>
     </div>
