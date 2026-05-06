@@ -156,11 +156,16 @@ export default function(ccgxkObj) {
     // 手动渲染开关（不做自动失焦逻辑）
     // ========================
     const renderToggleBtn = $("renderToggleBtn");
+    const renderStoppedOverlay = $("renderStoppedOverlay");
     if (renderToggleBtn) {
         renderToggleBtn.textContent = "Stop Rendering";
         renderToggleBtn.addEventListener("click", () => {
             const isRendering = ccgxkObj?.W?.toggleRender?.();
             renderToggleBtn.textContent = isRendering ? "Stop Rendering" : "Resume Rendering";
+            // 渲染暂停时显示中央提示，恢复渲染时隐藏提示
+            if (renderStoppedOverlay) {
+                renderStoppedOverlay.classList.toggle("render-stopped-overlay-visible", !isRendering);
+            }
         });
     }
 
@@ -368,6 +373,28 @@ const htmlCode = `
     .tab-server-status-initial {
         color: #000;
     }
+
+    .render-stopped-overlay {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        display: none;
+        padding: 16px 24px;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.72);
+        color: #fff;
+        font-size: 16px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .render-stopped-overlay-visible {
+        display: block;
+    }
 </style>
 
 <div id="someCtrl">
@@ -496,4 +523,6 @@ const htmlCode = `
 
     <div><button id="closeBtn02">Close (Tab)</button></div>
 </div>
+
+<div id="renderStoppedOverlay" class="render-stopped-overlay">Rendering Stopped</div>
 `;
