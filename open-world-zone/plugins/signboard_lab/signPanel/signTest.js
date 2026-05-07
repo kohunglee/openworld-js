@@ -156,6 +156,21 @@ export default function createSignPanel(ccgxkObj) {
         };
         document.addEventListener('keydown', state.keyHandler);
 
+        /**
+         * 当窗口重新获得焦点或页面从后台切回前台时：
+         * 若当前正处于图片 URL 编辑模式且面板可见，强制重新聚焦并全选 URL。
+         * 这样可以保证你切回页面后直接 Cmd/Ctrl+V 覆盖，不需要额外点选。
+         */
+        window.addEventListener('focus', () => {
+            if (!state.visible || state.mode !== 'image') return;
+            focusInput('image');
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState !== 'visible') return;
+            if (!state.visible || state.mode !== 'image') return;
+            focusInput('image');
+        });
+
         state.initialized = true;
     }
 

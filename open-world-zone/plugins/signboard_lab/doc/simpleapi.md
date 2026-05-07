@@ -74,3 +74,8 @@
 - 编辑面板保存走 `PATCH /api/signs/:id`。保存成功后前端立即执行 `window.updateSign(id, content, mode, extra)`，本机刷新纹理。
 - 当前已不需要 SSE，也不需要服务端主动推送。未来多人协作再加轮询/WebSocket。
 - 图片上传暂时不是接口职责；`image` 模式只要求 `content` 能被浏览器当图片 URL 加载。
+
+
+
+
+2026-05-06T08:32:07.898Z",   board1h-0","mode":"text","content":"amazing\n\n狗狗好","contentLength":12,"contentTruncated":false,"extra":{"remark":"123"},"status":200,"success":true,"latencyMs":65,"ip":"::ffff:127.0.0.1","ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"

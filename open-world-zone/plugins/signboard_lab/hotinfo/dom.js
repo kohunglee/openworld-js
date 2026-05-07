@@ -202,8 +202,8 @@ export function updateHotInfo(hotIndex, boardsData, isExpanded) {
         remarkDiv.style.display = 'none';
     }
 
-    // 空板子也给一个入口，避免必须先切编辑模式才能继续填写内容。
-    if (!hasImageContent && !hasTextContent && !remark) {
+    // 只要图文内容为空，就始终给编辑入口，避免出现无法再次编辑的死锁状态。
+    if (!hasImageContent && !hasTextContent) {
         viewEmptyDiv.style.display = 'block';
     }
 }

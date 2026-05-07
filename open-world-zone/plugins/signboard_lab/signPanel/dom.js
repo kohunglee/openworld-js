@@ -215,7 +215,9 @@ export function setBoardIdDisplay(text) {
 }
 
 /**
- * 聚焦输入框（光标定位到最后一个可见字符后，并滚动到该位置）
+ * 聚焦输入框
+ * - text 模式：光标定位到最后一个可见字符后，并滚动到该位置
+ * - image 模式：强制全选 URL，便于直接粘贴替换
  */
 export function focusInput(mode) {
     const el = mode === 'text'
@@ -223,6 +225,13 @@ export function focusInput(mode) {
         : document.getElementById('signImageUrl');
 
     if (!el) return;
+
+    // 图片 URL 场景：始终强制 focus + 全选，满足“打开即粘贴替换”的极速流
+    if (mode === 'image') {
+        el.focus();
+        el.select();
+        return;
+    }
 
     // 找到最后一个非空白字符的位置
     const trimmedLen = el.value.trimEnd().length;

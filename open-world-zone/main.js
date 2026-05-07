@@ -68,7 +68,7 @@ k.addPhy({ name:'ground-phy', X:gX, Y:gY, Z:gZ, width:gW, depth:gD, height:gH })
 k.W.cube({ n:'ground', x:gX, y:gY, z:gZ, w:gW, d:gD, h:gH, t:marble, b: '#ceffa8', mix: 0.6, tile:[50, 50] });  // 渲染体
 
 // 添加主角
-const lastPos = k?.lastPos || {x:21 + Math.random() * 10, y:5.00, z:15 + Math.random() * 10, rX:0, rY:0, rZ:0};
+const lastPos = k?.lastPos || {x:118.48, y:2.93, z:13.25, rX:0, rY:0, rZ:0};
 k.keys.turnRight = lastPos.rY;
 k.mainVPlayer = k.addPhy({ name:'mainPlayer',t:marble,mix:0.3, X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z, size:1, mass:50, colliGroup:1 });
 k.W.cube({ n:'mainPlayer', b:'#FDF9EE' });  // 注意，主角的 n 一定要与物理体的 name 一致

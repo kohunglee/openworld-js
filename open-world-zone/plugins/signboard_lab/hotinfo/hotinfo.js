@@ -183,7 +183,8 @@ function openContentModalForBoard(payload) {
     openContentModal({
         type: 'text',
         titleText: 'Info',
-        text: 'No image or text yet.',
+        // 空内容保持空白展示，避免给用户造成“系统写入了默认文案”的误解。
+        text: '',
         allowEdit
     });
 }
