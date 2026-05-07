@@ -22,6 +22,7 @@ const htmlTemplate = `
             <button class="sign-mode-btn active" id="signModeText" data-mode="text">Text</button>
             <button class="sign-mode-btn" id="signModeImage" data-mode="image">Image</button>
             <button class="sign-mode-btn sign-mode-expand-btn" id="signTextExpandToggle" type="button">Expand</button>
+            <button class="sign-mode-btn sign-mode-expand-btn" id="signImageUploadBtn" type="button" hidden>Upload</button>
         </div>
         <div class="sign-panel-content">
             <textarea class="sign-panel-textarea" id="signPanelTextarea"
@@ -85,6 +86,7 @@ export function bindEvents(handlers) {
     document.getElementById('signModeText')?.addEventListener('click', () => onSwitchMode('text'));
     document.getElementById('signModeImage')?.addEventListener('click', () => onSwitchMode('image'));
     document.getElementById('signTextExpandToggle')?.addEventListener('click', toggleTextExpand);
+    document.getElementById('signImageUploadBtn')?.addEventListener('click', openImageUploadPage);
 
     const imgUrlInput = document.getElementById('signImageUrl');
     if (imgUrlInput) {
@@ -148,7 +150,7 @@ export function updateModeButtons(mode) {
  * 更新内容区显示
  */
 export function updateContentArea(mode) {
-    syncTextExpandVisibility(mode);
+    syncModeActionButtons(mode);
     const textarea = document.getElementById('signPanelTextarea');
     const imageArea = document.getElementById('signImageArea');
 
@@ -388,13 +390,23 @@ function exitTextExpand(options) {
 }
 
 /**
- * 根据当前编辑模式同步全屏按钮可见性，并在文字模式下恢复上次尺寸选择。
+ * 在图片模式中打开上传页面（新窗口）。
+ */
+function openImageUploadPage() {
+    window.open('https://openworld.zone/upload-image', '_blank', 'noopener,noreferrer');
+}
+
+/**
+ * 根据当前编辑模式同步右侧动作按钮可见性，并在文字模式下恢复上次尺寸选择。
  * @param {string} mode - 当前编辑模式
  */
-function syncTextExpandVisibility(mode) {
+function syncModeActionButtons(mode) {
     const toggle = document.getElementById('signTextExpandToggle');
+    const uploadBtn = document.getElementById('signImageUploadBtn');
     const isTextMode = mode === 'text';
+    const isImageMode = mode === 'image';
     if (toggle) toggle.hidden = !isTextMode;
+    if (uploadBtn) uploadBtn.hidden = !isImageMode;
     if (!isTextMode) {
         exitTextExpand({ rememberPreference: false });
         return;
