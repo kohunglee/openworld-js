@@ -393,7 +393,7 @@ function exitTextExpand(options) {
  * 在图片模式中打开上传页面（新窗口）。
  */
 function openImageUploadPage() {
-    window.open('https://openworld.zone/upload-image', '_blank', 'noopener,noreferrer');
+    window.open('https://openworld.zone/upload-image/', '_blank', 'noopener,noreferrer');
 }
 
 /**
