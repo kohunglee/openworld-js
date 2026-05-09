@@ -9,6 +9,9 @@ import { initPhonePanel } from './phonepanel.js';
 import { initAutoW } from './autoW.js';
 import { initKeyGuide } from './keyGuide.js';
 import { initWskStatus } from './wskStatus.js';
+import { initSignboardPerfPanel } from './signboardPerfPanel.js';
+import { getCookie, setCookie } from '../../vktool.js';
+import { setVK } from '../../vk.js';
 
 export default function(ccgxkObj) {
     const $ = id => document.getElementById(id);
@@ -25,6 +28,41 @@ export default function(ccgxkObj) {
     btn01.addEventListener("mousedown", showModal);
     $("closeBtn").addEventListener("click", hideModal);
     $("closeBtn02").addEventListener("click", hideModal);
+
+    // ========================
+    // VK 开关 + Cookie
+    // ========================
+    {
+        const checkbox = $("closeVK");
+        const onlineInfo = $("onlineInfo");
+        const shiftInfo = $("shiftInfo");
+        const onlineCount = $("onlineCount");
+
+        // 从 cookie 恢复原版“下次进来也会自动关闭”的状态。
+        const saved = getCookie("closeVK") === "true";
+        checkbox.checked = saved;
+        onlineInfo.hidden = saved;
+        if (saved) {
+            shiftInfo.innerText = "Online: 0 | ";
+            onlineCount.innerText = "0";
+        }
+
+        checkbox.addEventListener("change", () => {
+            const isOff = checkbox.checked;
+
+            if (isOff) {
+                globalThis.vkSocket?.close?.();
+                onlineInfo.hidden = true;
+                shiftInfo.innerText = "Online: 0 | ";
+                onlineCount.innerText = "0";
+            } else {
+                setVK();
+                onlineInfo.hidden = false;
+            }
+
+            setCookie("closeVK", isOff);
+        });
+    }
 
     // 虚拟鼠标
     const unlockPointer = () => {
@@ -151,6 +189,11 @@ export default function(ccgxkObj) {
     // WSK/BSK/DSK 槽位状态面板
     // ========================
     initWskStatus(ccgxkObj);
+
+    // ========================
+    // 信息板加载性能诊断
+    // ========================
+    initSignboardPerfPanel($);
 
     // ========================
     // 手动渲染开关（不做自动失焦逻辑）
@@ -395,6 +438,39 @@ const htmlCode = `
     .render-stopped-overlay-visible {
         display: block;
     }
+
+    .signboard-perf-grid {
+        display: grid;
+        grid-template-columns: 92px 1fr;
+        gap: 3px 8px;
+        font-family: monospace;
+        font-size: 11px;
+        line-height: 1.35;
+        color: #111;
+    }
+
+    .signboard-perf-grid span {
+        color: #666;
+    }
+
+    .signboard-perf-grid b {
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .signboard-perf-events {
+        margin-top: 8px;
+        padding: 6px;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 10px;
+        color: #333;
+    }
+
+    .signboard-perf-event {
+        overflow-wrap: anywhere;
+    }
 </style>
 
 <div id="someCtrl">
@@ -418,6 +494,16 @@ const htmlCode = `
         <button id="goH05">5</button>
         <button id="goTSG">Lib</button>
         <button id="goTOP">Top</button>
+        <hr>
+    </section>
+
+    <section>
+        <h3>Online Users</h3>
+        <input type="checkbox" id="closeVK"> <span class="moselect">Disable online mode (also disabled next time)</span><br><br>
+        <div id="onlineInfo">
+            Current online users: <span id="onlineCount">1</span>&nbsp;&nbsp;<span id="isConneting"></span>
+            <ul id="frendPosInfo"></ul>
+        </div>
         <hr>
     </section>
 
@@ -500,6 +586,18 @@ const htmlCode = `
         <div class="tab-note tab-note-mb8">
             Planes are sorted by distance from the player every second.<br>
             Only the nearest planes are rendered. Others are hidden.
+        </div>
+        <hr>
+    </section>
+
+    <section>
+        <h3>Signboard Diagnostics</h3>
+        <div class="tab-row tab-row-gap-8 tab-row-wrap">
+            <button id="signboardPerfReset" class="tab-btn-md">Reset Stats</button>
+            <button id="signboardPerfDump" class="tab-btn-md">Dump Console</button>
+        </div>
+        <div id="signboardPerfStats" class="tab-note tab-note-mb8">
+            Signboard diagnostics loading.
         </div>
         <hr>
     </section>

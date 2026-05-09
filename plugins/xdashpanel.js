@@ -11,7 +11,7 @@ export default function(ccgxkObj) {
     const content = template.content.cloneNode(true);
     document.body.appendChild(content);
 
-    shiftInfo.textContent = 'Online: ' + 1 + ' | '; // 【测试，临时】
+    shiftInfo.textContent = 'Online: ' + 1 + ' | '; // 【测试，临时，VK 连接后会接管人数显示】
 
     ccgxkObj.fpsFrameCount = 0;  //+ FPS 计算的辅助值
     ccgxkObj.lastTime = performance.now();

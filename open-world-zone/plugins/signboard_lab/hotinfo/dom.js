@@ -13,7 +13,7 @@ export const htmlTemplate = `
             <span class="sign-hot-info-label"></span>
             <span class="sign-hot-info-value" id="signHotInfoId">-</span>
             <span class="sign-hot-info-actions">
-                <a id="signHotInfoRefresh">[Sync]</a>
+                <a id="signHotInfoRefresh">[refresh]</a>
                 <span id="signHotInfoRefreshStatus"></span>
             </span>
         </div>

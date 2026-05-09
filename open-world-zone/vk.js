@@ -6,15 +6,23 @@
 import { id2name } from './vktool.js';
 
 let lastTime = 0;
+
+/**
+ * 开启 VK 多人在线。
+ *
+ * 这里尽量保持 demo/house/script/vk.js 的运行手感：连接状态、在线人数、
+ * 好友坐标列表、颜色块、手机端标识、失焦暂停和断线重连都沿用原版逻辑。
+ * 只有两处做了 Vite 模块化适配：显式读取 globalThis.k，以及通过
+ * globalThis.vkSocket 保留原脚本时代的全局 socket 句柄。
+ */
 export function setVK() {
     const k = globalThis.k;  // Vite 模块里显式读取全局 openworld 实例
-    // console.log('okokvk');
     const closeVKCheck = document.getElementById('closeVK');
     const now = Date.now();
 
     // 节流措施
     if(true){
-        // if(closeVKCheck.checked) { return 0; }  // 不开启在线功能
+        if(closeVKCheck.checked) { return 0; }  // 不开启在线功能
         if(globalThis.vkSocket !== undefined){
             if(globalThis.vkSocket.readyState === 0){ return 0; }  // 可能可以减少一些频繁调用（如频繁勾选那个选择框）
         }
@@ -24,11 +32,11 @@ export function setVK() {
 
     k.rId = k?.rId || Math.floor(Math.random() * 10 ** 7); // 随机7位数字，作为 ID 标识
     const connectInfo = document.getElementById('isConneting');
-    // connectInfo.innerText = '（连接中...）';
+    connectInfo.innerText = 'Connecting...';
     const isTouch = matchMedia('(hover: none) and (pointer: coarse)').matches;  // 是否是移动设备
     const localTime = now.toLocaleString();
     
-    // console.log(`我的 ID: ${k.rId}  ` + localTime);
+    console.log(`我的 ID: ${k.rId}  ` + localTime);
     const workerUrl = "wss://myshwsa.ccgxk.com/ws/";  // 新服务器
 
     k.frendMap = new Map(); // 用于存储好友的实例 ID 和对应的实例索引
@@ -38,8 +46,8 @@ export function setVK() {
     const defaultPos = { x: 0, y: 0, z: 0, ry: 0 };
 
     vkSocket.onopen = () => {  // 连接 wss
-        // console.log("连接 vkSocket 成功！");
-        // connectInfo.innerText = '（已连接）';
+        console.log("连接 vkSocket 成功！");
+        connectInfo.innerText = 'Connected';
     };
 
     // 将位置信息发送到 wss
@@ -95,15 +103,15 @@ export function setVK() {
         }
 
         const totalCount = k.frendMap.size + 1;
-        // document.getElementById('onlineCount').innerText = totalCount;  // 总数
+        document.getElementById('onlineCount').innerText = totalCount;  // 总数
         document.getElementById('shiftInfo').innerText = 'Online: ' + totalCount + ' | ';
 
         const ul = document.getElementById('frendPosInfo');
-        // ul.innerHTML = ''; // 清空旧内容
+        ul.innerHTML = ''; // 清空旧内容
 
         const liMe = document.createElement('li');
         const mvp = k.mainVPlayer.body.position;
-        liMe.textContent = `我: ${id2name(k.rId)}, x: ${mvp.x.toFixed(2) ?? '-'}, y: ${mvp.y.toFixed(2) ?? '-'}, z: ${mvp.z.toFixed(2) ?? '-'} ${ (isTouch) ? '（手机端）' : '' }`;
+        liMe.textContent = `Me: ${id2name(k.rId)}, x: ${mvp.x.toFixed(2) ?? '-'}, y: ${mvp.y.toFixed(2) ?? '-'}, z: ${mvp.z.toFixed(2) ?? '-'} ${ (isTouch) ? '(mobile)' : '' }`;
         liMe.style.color = 'rgba(213, 0, 0, 1)';
         const colorBox = document.createElement('span');  // 创建色块（先这样吧，后续再优化性能）
         colorBox.style.display = 'inline-block';
@@ -114,7 +122,7 @@ export function setVK() {
         colorBox.style.background = numToColor(k.rId);
         liMe.appendChild(colorBox);
 
-        // ul.appendChild(liMe);
+        ul.appendChild(liMe);
 
         for (const [key, value] of k.frendMap) {
             const timeDiff = Date.now() - Number(value.time);
@@ -124,7 +132,7 @@ export function setVK() {
                 Object.assign(updateData, defaultPos);
                 const ip = (k.frendMap.get(key).ip) ? k.frendMap.get(key).ip : '';
                 k.frendMap.delete(key);
-                // console.log(`frendMap 删除游客 ${key}（${id2name(key) + '' + ip}）- ${(new Date().toLocaleString('zh-CN', { hour12: false }))} ---------------`);
+                console.log(`frendMap 删除游客 ${key}（${id2name(key) + '' + ip}）- ${(new Date().toLocaleString('zh-CN', { hour12: false }))} ---------------`);
             } else {
                 Object.assign(updateData, {
                     x: parseFloat(value.x),
@@ -144,7 +152,7 @@ export function setVK() {
 
             // 创建 li 并写入信息
             const li = document.createElement('li');
-            li.textContent = `id: ${id2name(key)}, x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${ ((updateData.mb ?? '' ) === 'm') ? '（手机端）' : '' }`;
+            li.textContent = `Player: ${id2name(key)}, x: ${updateData.x ?? '-'}, y: ${updateData.y ?? '-'}, z: ${updateData.z ?? '-'} ${ ((updateData.mb ?? '' ) === 'm') ? '(mobile)' : '' }`;
             li.title = (updateData.ip ?? '' );
             const colorBox = document.createElement('span');  // 创建色块（先这样吧，后续再优化性能）
             colorBox.style.display = 'inline-block';
@@ -155,14 +163,15 @@ export function setVK() {
             colorBox.style.background = updateData.b;
             li.appendChild(colorBox);
 
-            // ul.appendChild(li);
+            ul.appendChild(li);
         }
     }
     updateFrends();
 
     vkSocket.onclose = () => {  // 断开 wss
-        // console.log("vkSocket 已断开连接。");
+        console.log("vkSocket 已断开连接。");
         reMod && clearInterval(reMod);
+        intervalId && clearInterval(intervalId);
         k.frendMap = new Map();
         k.W.delete('frends');
         sendMessage({
@@ -193,7 +202,6 @@ export function setVK() {
         n: 'frends',
         instances: arrIns,
     });
-    // console.log('okokvk');
 
 
     // 接收事件
@@ -212,8 +220,8 @@ export function setVK() {
             updateFrends();
 
         } catch (e) {
-            // console.log(event.data);
-            // console.error("无法解析收到的 JSON:");
+            console.log(event.data);
+            console.error("无法解析收到的 JSON:");
         }
     };
 
@@ -223,10 +231,10 @@ export function setVK() {
             const isActive = !document.hidden && document.hasFocus();
             if (isActive) {  // 活动
                 k.donotUseSocket = false;
-                // document.getElementById('isConneting').style.color = "unset";
+                document.getElementById('isConneting').style.color = "unset";
             } else {  // 不在页面
                 k.donotUseSocket = true;
-                // document.getElementById('isConneting').style.color = "grey";
+                document.getElementById('isConneting').style.color = "grey";
             }
         }
         
