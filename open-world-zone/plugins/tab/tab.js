@@ -9,7 +9,6 @@ import { initPhonePanel } from './phonepanel.js';
 import { initAutoW } from './autoW.js';
 import { initKeyGuide } from './keyGuide.js';
 import { initWskStatus } from './wskStatus.js';
-import { initSignboardPerfPanel } from './signboardPerfPanel.js';
 import { getCookie, setCookie } from '../../vktool.js';
 import { setVK } from '../../vk.js';
 
@@ -189,11 +188,6 @@ export default function(ccgxkObj) {
     // WSK/BSK/DSK 槽位状态面板
     // ========================
     initWskStatus(ccgxkObj);
-
-    // ========================
-    // 信息板加载性能诊断
-    // ========================
-    initSignboardPerfPanel($);
 
     // ========================
     // 手动渲染开关（不做自动失焦逻辑）
