@@ -35,18 +35,17 @@ const setSignBoard = (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2) => {
         if (info) {  // 引擎里已经有数据
             const { mode } = info;
             if (mode === 'text') {
-                drawSmartText(ctx, width, height, info.t);
+                drawSmartText(ctx, width, height, info.t, id);
             } else if (mode === 'image') {
-                // drawSmartText(ctx, width, height, 'Loading...');
                 handleImageMode(index, id, info.imgUrl, ccgxkObj);
             } else if (mode === 'empty') {
-                drawSmartText(ctx, width, height, id);
+                drawSmartText(ctx, width, height, id, id);
             }
             ccgxkObj.W.next['T' + index].hidden = false;
             _this.indexToArgs.get(index).isInvisible = false;
         } else {  // 还没数据，懒加载，去服务器那里获取
             lazyLoadSign(id);
-            drawSmartText(ctx, width, height, 'Loading...');
+            drawSmartText(ctx, width, height, 'Loading...', id);
         }
     });
 
