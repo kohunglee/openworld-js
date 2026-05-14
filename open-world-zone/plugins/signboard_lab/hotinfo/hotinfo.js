@@ -7,7 +7,18 @@
 import { getApiBase } from '../config.js';
 import { reportSignboardServerStatus, signContentMap } from '../store.js';
 import { styleCode } from './style.js';
-import { htmlTemplate, unlockPointer, updateHotInfo, openContentModal, closeContentModal, findBoardIdByIndex } from './dom.js';
+import {
+    htmlTemplate,
+    unlockPointer,
+    updateHotInfo,
+    openContentModal,
+    closeContentModal,
+    findBoardIdByIndex,
+    LINK_PATTERN,
+    normalizeLinkUrl,
+    isHtmlRemarkText,
+    normalizeRemarkHtml
+} from './dom.js';
 
 let lastHotIndex = -1;
 let isExpanded = true;      // 左侧热点信息面板是否展开
@@ -15,6 +26,9 @@ let ccgxkObjRef = null;     // 缓存引擎实例，供事件回调复用
 let boardsData = [];        // API 返回的画板元数据缓存
 let activeModalState = null; // 当前内容模态框锁定的板子，避免 hover 漂移后编辑错目标
 let refreshStatusTimer = null; // 更新按钮的短状态提示计时器
+
+const FROZEN_TEXT_PRE_STYLE = 'white-space:pre-wrap;word-break:break-word;';
+const FROZEN_PAGE_WIDTH = 'min(860px, calc(100vw - 48px))';
 
 /**
  * 指定热点在 mode=1 下是否允许调起编辑器。
@@ -53,6 +67,169 @@ function normalizeExtra(extra = {}) {
     } catch {
         return {};
     }
+}
+
+/**
+ * 转义冻结页里的普通文本，避免正文内容被浏览器误当成标签解析。
+ */
+function escapeFrozenHtml(value = '') {
+    return String(value).replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[char]));
+}
+
+/**
+ * 补齐裸域名链接协议，保持和模态框里的链接识别体验一致。
+ */
+function linkifyFrozenPlainText(text = '') {
+    const sourceText = String(text || '');
+    const htmlParts = [];
+    let lastIndex = 0;
+
+    LINK_PATTERN.lastIndex = 0;
+    sourceText.replace(LINK_PATTERN, (match, offset) => {
+        if (offset > lastIndex) {
+            htmlParts.push(escapeFrozenHtml(sourceText.slice(lastIndex, offset)));
+        }
+
+        const href = escapeFrozenHtml(normalizeLinkUrl(match));
+        const label = escapeFrozenHtml(match);
+        htmlParts.push(`<a href="${href}" target="_blank" rel="noopener noreferrer">${label}</a>`);
+        lastIndex = offset + match.length;
+        return match;
+    });
+
+    if (lastIndex < sourceText.length) {
+        htmlParts.push(escapeFrozenHtml(sourceText.slice(lastIndex)));
+    }
+
+    return htmlParts.join('');
+}
+
+/**
+ * 用正文第一行做临时标签页标题；没有第一行时给浏览器一个很短的兜底标题。
+ */
+function getFrozenPageTitle(text = '') {
+    const firstLine = (String(text || '').split(/\r?\n/)[0] || '').trim() || 'Text';
+    return firstLine.length > 20 ? `${firstLine.slice(0, 20)}...` : firstLine;
+}
+
+/**
+ * Mark 备注如果是 HTML，就保留 HTML 结构；只移除 script，并给已有链接补上新标签页打开属性。
+ */
+function prepareFrozenRemarkHtml(remark = '') {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = normalizeRemarkHtml(remark, { shortenDisplay: false });
+    wrapper.querySelectorAll('script').forEach((node) => node.remove());
+    wrapper.querySelectorAll('a').forEach((link) => {
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+    });
+    return wrapper.innerHTML;
+}
+
+/**
+ * 统一生成冻结页里使用的简洁区块，正文和备注通过不同底色避免视觉混淆。
+ */
+function buildFrozenSectionHtml(label, bodyHtml, background) {
+    return [
+        `<section style="margin:0 0 18px;padding:16px 18px;background:${background};">`,
+        `<div style="margin:0 0 10px;font:600 13px/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#475569;">${label}</div>`,
+        bodyHtml,
+        '</section>'
+    ].join('');
+}
+
+/**
+ * 生成冻结页中的 Mark 区块；无备注时直接返回空字符串，避免插入无意义占位。
+ */
+function buildFrozenRemarkSectionHtml(remark = '') {
+    const safeRemark = String(remark || '');
+    if (!safeRemark.trim()) return '';
+
+    const remarkIsHtml = isHtmlRemarkText(safeRemark);
+    const remarkHtml = remarkIsHtml
+        ? prepareFrozenRemarkHtml(safeRemark)
+        : `<pre style="margin:0;${FROZEN_TEXT_PRE_STYLE}">${linkifyFrozenPlainText(safeRemark)}</pre>`;
+
+    return buildFrozenSectionHtml('Mark', remarkHtml, '#f8fafc');
+}
+
+/**
+ * 组装冻结页的最小 HTML 骨架：主体居中，宽度收敛，正文和备注只保留必要的样式。
+ */
+function buildFrozenPageHtml({ title, mainSectionHtml = '', remarkSectionHtml = '' }) {
+    return [
+        '<!doctype html><html><head><meta charset="utf-8">',
+        `<title>${escapeFrozenHtml(title)}</title>`,
+        '</head><body style="margin:0;background:#f3f4f6;color:#111827;">',
+        `<main style="box-sizing:border-box;width:${FROZEN_PAGE_WIDTH};margin:28px auto 40px;padding:0 4px;">`,
+        mainSectionHtml,
+        remarkSectionHtml,
+        '</main></body></html>'
+    ].join('');
+}
+
+/**
+ * 生成文本冻结页 HTML：正文与备注分区展示，链接保留可点击。
+ */
+function buildFrozenTextPageHtml(info) {
+    const text = info?.t || '';
+    const extra = normalizeExtra(info?.extra);
+    const mainSectionHtml = buildFrozenSectionHtml(
+        'Content',
+        `<pre style="margin:0;${FROZEN_TEXT_PRE_STYLE}">${linkifyFrozenPlainText(text)}</pre>`,
+        '#fff7ed'
+    );
+    const remarkSectionHtml = buildFrozenRemarkSectionHtml(extra.remark);
+
+    return buildFrozenPageHtml({
+        title: getFrozenPageTitle(text),
+        mainSectionHtml,
+        remarkSectionHtml
+    });
+}
+
+/**
+ * 生成图片冻结页 HTML：图片居中显示，必要时在下方补一个 Mark 区块。
+ */
+function buildFrozenImagePageHtml(info) {
+    const imageUrl = info?.imgUrl || '';
+    const extra = normalizeExtra(info?.extra);
+    const mainSectionHtml = buildFrozenSectionHtml(
+        'Content',
+        `<div style="display:flex;justify-content:center;"><img src="${escapeFrozenHtml(imageUrl)}" alt="" style="display:block;max-width:100%;max-height:78vh;height:auto;object-fit:contain;" /></div>`,
+        '#fff7ed'
+    );
+    const remarkSectionHtml = buildFrozenRemarkSectionHtml(extra.remark);
+
+    return buildFrozenPageHtml({
+        title: 'Image',
+        mainSectionHtml,
+        remarkSectionHtml
+    });
+}
+
+/**
+ * 基于当前模态框锁定的板子打开 blob 临时页，实现“冻结当前内容”的独立阅读窗口。
+ */
+function openFrozenPageForActiveModal() {
+    if (!activeModalState) return;
+    const info = signContentMap.get(activeModalState.boardId);
+    if (!info) return;
+
+    const html = info.mode === 'image' && info.imgUrl
+        ? buildFrozenImagePageHtml(info)
+        : buildFrozenTextPageHtml(info);
+    const blobUrl = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
+    window.open(blobUrl, '_blank', 'noopener,noreferrer');
+
+    // 新标签页完成加载后即可释放主页面里的 blob 引用；已打开的冻结页内容不会被清空。
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
 }
 
 /**
@@ -165,7 +342,8 @@ function openContentModalForBoard(payload) {
             type: 'image',
             titleText: 'Image',
             imageUrl: info.imgUrl,
-            allowEdit
+            allowEdit,
+            allowOpen: true
         });
         return;
     }
@@ -175,7 +353,8 @@ function openContentModalForBoard(payload) {
             type: 'text',
             titleText: 'Text',
             text: info.t,
-            allowEdit
+            allowEdit,
+            allowOpen: true
         });
         return;
     }
@@ -298,6 +477,7 @@ export function initHotInfo(ccgxkObj) {
     const contentModalBackdrop = document.getElementById('signHotInfoContentModalBackdrop');
     const contentModalCloseBtn = document.getElementById('signHotInfoContentModalClose');
     const contentModalEditBtn = document.getElementById('signHotInfoContentModalEdit');
+    const contentModalOpenBtn = document.getElementById('signHotInfoContentModalOpen');
 
     contentModalBackdrop.addEventListener('click', (e) => {
         e.preventDefault();
@@ -316,6 +496,12 @@ export function initHotInfo(ccgxkObj) {
         e.stopPropagation();
         if (!activeModalState || !canEditHot(activeModalState.hotIndex)) return;
         ccgxkObjRef.signPanel.show(activeModalState.hotIndex);  // 以模态框锁定的那块板子为准
+    });
+
+    contentModalOpenBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openFrozenPageForActiveModal();
     });
 
     contentModal.addEventListener('click', (e) => {

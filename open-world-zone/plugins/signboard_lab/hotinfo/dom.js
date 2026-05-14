@@ -43,6 +43,7 @@ export const htmlTemplate = `
             <span id="signHotInfoContentModalTitle">Info</span>
             <div class="sign-hot-info-text-modal-actions">
                 <button type="button" id="signHotInfoContentModalEdit" style="display: none;">Edit</button>
+                <button type="button" id="signHotInfoContentModalOpen" style="display: none;">Pop</button>
                 <button type="button" id="signHotInfoContentModalClose">Close</button>
             </div>
         </div>
@@ -56,11 +57,15 @@ export const htmlTemplate = `
 </div>
 `;
 
-const LINK_PATTERN = /(?:[a-zA-Z][a-zA-Z0-9+.-]*:\/\/[^\s<]+|(?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?::\d+)?(?:\/[^\s<]*)?)/g;
+export const LINK_PATTERN = /(?:[a-zA-Z][a-zA-Z0-9+.-]*:\/\/[^\s<]+|(?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?::\d+)?(?:\/[^\s<]*)?)/g;
 
-function normalizeLinkUrl(rawUrl) {
+export function normalizeLinkUrl(rawUrl) {
     if (!rawUrl) return '';
     return /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
+}
+
+export function isHtmlRemarkText(text = '') {
+    return /^\s*</.test(text) && text.includes('>');
 }
 
 // 格式化链接展示；侧栏备注可压短，内容模态框保留完整文本方便复制。
@@ -76,6 +81,19 @@ function formatLinksInContainer(container) {
     container.querySelectorAll('a').forEach(link => {
         formatLinkDisplay(link, link.getAttribute('href') || link.textContent || '');
     });
+}
+
+/**
+ * 统一规范化备注 HTML：保留原结构，但给已有链接补 title，并按需要压短显示。
+ */
+export function normalizeRemarkHtml(remark = '', options = {}) {
+    const { shortenDisplay = true } = options;
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = String(remark || '');
+    wrapper.querySelectorAll('a').forEach((link) => {
+        formatLinkDisplay(link, link.getAttribute('href') || link.textContent || '', shortenDisplay);
+    });
+    return wrapper.innerHTML;
 }
 
 function renderTextWithLinks(container, text, options = {}) {
@@ -190,10 +208,9 @@ export function updateHotInfo(hotIndex, boardsData, isExpanded) {
     if (typeof extra === 'string') extra = JSON.parse(extra);
     const remark = extra.remark;
     if (remark) {
-        const isHtml = /^\s*</.test(remark) && remark.includes('>');
+        const isHtml = isHtmlRemarkText(remark);
         if (isHtml) {
-            remarkDiv.innerHTML = remark;
-            formatLinksInContainer(remarkDiv);
+            remarkDiv.innerHTML = normalizeRemarkHtml(remark);
         }
         else renderTextWithLinks(remarkDiv, remark);  // 纯文本备注也自动把网址转成可点击链接
         remarkDiv.style.display = 'block';
@@ -219,6 +236,7 @@ export function openContentModal(options = {}) {
     const imageWrap = document.getElementById('signHotInfoContentModalImageWrap');
     const imageEl = document.getElementById('signHotInfoContentModalImage');
     const editBtn = document.getElementById('signHotInfoContentModalEdit');
+    const openBtn = document.getElementById('signHotInfoContentModalOpen');
     if (!modal || !title || !textEl || !imageWrap || !imageEl) return;
 
     const {
@@ -226,7 +244,8 @@ export function openContentModal(options = {}) {
         titleText = 'Info',
         text = '',
         imageUrl = '',
-        allowEdit = false
+        allowEdit = false,
+        allowOpen = false
     } = options;
 
     title.textContent = titleText;
@@ -244,6 +263,7 @@ export function openContentModal(options = {}) {
     }
 
     if (editBtn) editBtn.style.display = allowEdit ? '' : 'none';
+    if (openBtn) openBtn.style.display = allowOpen ? '' : 'none';
     modal.style.display = 'flex';
 }
 
@@ -257,11 +277,13 @@ export function closeContentModal() {
     const imageWrap = document.getElementById('signHotInfoContentModalImageWrap');
     const imageEl = document.getElementById('signHotInfoContentModalImage');
     const editBtn = document.getElementById('signHotInfoContentModalEdit');
+    const openBtn = document.getElementById('signHotInfoContentModalOpen');
     if (!modal || !title || !textEl || !imageWrap || !imageEl) return;
 
     modal.style.display = 'none';
     title.textContent = 'Info';
     if (editBtn) editBtn.style.display = 'none';
+    if (openBtn) openBtn.style.display = 'none';
     textEl.hidden = false;
     textEl.replaceChildren();
     imageWrap.hidden = true;
