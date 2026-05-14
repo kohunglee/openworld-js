@@ -47,7 +47,7 @@ signboard_lab/
 
 **signContentMap 存储策略（image 模式）**：
 - 同时存储到 `boardId`（面板读取）和 `boardId + random`（errorTexture_diy hook 查找）
-- `random` 后缀用于对抗 Chrome 纹理缓存
+- `random` 后缀用于触发图片纹理重新进入当前 hook 刷新链路
 - text 模式只用 `boardId`
 
 **刷新策略**：
@@ -112,7 +112,7 @@ signIndexMap.set(id, { index });  // id → 物体 index
 
 ## 注意事项
 
-1. `random` 后缀是对抗 Chrome 纹理缓存的老办法，不要动它
+1. image 模式当前仍依赖 `random` 后缀触发重载链路，不能直接改成稳定 key
 2. signContentMap 的 key 必须考虑面板读取和 hook 查找两个场景
 3. 鼠标锁定交互必须正确：显示面板 unlockPointer + drawPointPause=true，关闭反之
 4. 本项目由 `build_lab` 引入，测试需在完整环境中运行

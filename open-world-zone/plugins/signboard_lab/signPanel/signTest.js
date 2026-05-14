@@ -265,6 +265,18 @@ export default function createSignPanel(ccgxkObj) {
     }
 
     /**
+     * 判断这次保存是否真的改到了画板可见内容。
+     * 备注只存在 extra 中，不应该触发 3D 纹理重新加载。
+     */
+    function hasRenderableContentChanged(prevInfo, mode, content) {
+        if (!prevInfo) return true;
+        if (prevInfo.mode !== mode) return true;
+        if (mode === 'image') return prevInfo.imgUrl !== content;
+        if (mode === 'text') return prevInfo.t !== content;
+        return false;
+    }
+
+    /**
      * 切换面板
      */
     function toggle(hotIndex) {
@@ -296,6 +308,7 @@ export default function createSignPanel(ccgxkObj) {
             extra = JSON.parse(extra);
         }
         extra.remark = remark;
+        const renderChanged = hasRenderableContentChanged(info, mode, content);
 
         updateStatus('Saving...', 'saving');
         updateSaveButton(true);
@@ -310,7 +323,7 @@ export default function createSignPanel(ccgxkObj) {
             if (!res.ok) throw new Error('Save failed');
             reportSignboardServerStatus('online');
 
-            if (typeof window.updateSign === 'function') {
+            if (renderChanged && typeof window.updateSign === 'function') {
                 window.updateSign(state.boardId, content, mode, extra);  // 保存成功后本机立即刷新，不再依赖服务端推送回环
             }
 

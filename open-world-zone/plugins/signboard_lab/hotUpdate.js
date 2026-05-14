@@ -33,5 +33,6 @@ window.updateSign = function(boardId, content, mode = 'text', extra = {}) {
     } else {  // text 模式
         ccgxkObj.indexToArgs.get(index).texture = boardId;
     }
+
     ccgxkObj.currentlyActiveIndices.delete(index);  // 让引擎重新加载一次图片（注意，接下来就是走 hook 流程了）
 };
