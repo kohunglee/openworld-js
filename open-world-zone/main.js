@@ -57,6 +57,8 @@ import normalevent from './plugins/normalevent/normalevent.js';  // 常用的事
 normalevent(k);
 import tab from './plugins/tab/tab.js';  // tab 侧边框里的内容
 tab(k);
+import mario from './plugins/mario/mario.js';  // 马里奥模型
+mario(k);
 
 // import signboard from './plugins/signboard/signboard.js';  // 指示牌测试
 // signboard(k);

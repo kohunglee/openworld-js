@@ -1,11 +1,24 @@
 <!DOCTYPE html>
-<meta charset="UTF-8">
-<meta http-equiv="expires" content="0">
-<meta http-equiv="pragma" content="no-cache">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style> body { margin: 0; } </style>
 
-<title>Open World Zone</title>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style> body { margin: 0; } </style>
+    <title>Open World Zone</title>
+</head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q5WBQ917LX"></script>
+<script>
+    if(location.hostname=="openworld.zone"){
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Q5WBQ917LX');
+    }
+</script>
 
 <body>
     <img src="./assest/texture.jpeg" id="marble" hidden>

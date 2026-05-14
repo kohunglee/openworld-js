@@ -171,7 +171,7 @@ export const styleCode = `
     background: rgba(255, 255, 255, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.4);
     color: rgba(30, 30, 30, 0.9);
-    font-size: 18px;
+    font-size: 14px;
     font-family: 'Microsoft YaHei', sans-serif;
     padding: 12px 14px;
     line-height: 1.65;
