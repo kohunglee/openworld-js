@@ -1,0 +1,285 @@
+:root {
+    color-scheme: dark;
+    --bg: #101318;
+    --panel: #191f27;
+    --panel-2: #202833;
+    --line: #344152;
+    --text: #edf2f7;
+    --muted: #9aa8b8;
+    --accent: #38bdf8;
+    --accent-2: #f59e0b;
+    --danger: #ef4444;
+    --input: #0d1117;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: 0;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    min-height: 34px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--panel-2);
+    color: var(--text);
+    cursor: pointer;
+}
+
+button:hover {
+    border-color: var(--accent);
+}
+
+button.is-active {
+    border-color: var(--accent);
+    background: #123041;
+}
+
+.app-shell {
+    display: grid;
+    grid-template-columns: 320px minmax(420px, 1fr) 340px;
+    width: 100%;
+    height: 100%;
+}
+
+.panel {
+    min-width: 0;
+    overflow: auto;
+    background: var(--panel);
+    border-color: var(--line);
+    border-style: solid;
+}
+
+.panel-left {
+    border-width: 0 1px 0 0;
+}
+
+.panel-right {
+    border-width: 0 0 0 1px;
+}
+
+.panel-section {
+    padding: 14px;
+    border-bottom: 1px solid var(--line);
+}
+
+.section-title {
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #dbeafe;
+}
+
+.button-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.tool-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.field-label {
+    display: block;
+    margin: 10px 0 6px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+textarea,
+.text-input,
+select,
+.form-grid input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--input);
+    color: var(--text);
+    outline: none;
+}
+
+textarea:focus,
+.text-input:focus,
+select:focus,
+.form-grid input:focus {
+    border-color: var(--accent);
+}
+
+textarea {
+    min-height: 150px;
+    padding: 10px;
+    resize: vertical;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.text-input,
+select,
+.form-grid input {
+    height: 34px;
+    padding: 0 8px;
+}
+
+.snap-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.status-line {
+    min-height: 34px;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--input);
+    color: #c7d2fe;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 12px;
+}
+
+.hint {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.viewport-shell {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+}
+
+#scene {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.viewport-hud {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.viewport-hud span {
+    padding: 6px 8px;
+    border: 1px solid rgba(148, 163, 184, 0.38);
+    border-radius: 6px;
+    background: rgba(15, 23, 42, 0.78);
+    color: #cbd5e1;
+    font-size: 12px;
+}
+
+.crosshair {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 22px;
+    height: 22px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.crosshair::before,
+.crosshair::after {
+    content: "";
+    position: absolute;
+    background: rgba(237, 242, 247, 0.86);
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.55);
+}
+
+.crosshair::before {
+    left: 10px;
+    top: 2px;
+    width: 2px;
+    height: 18px;
+}
+
+.crosshair::after {
+    left: 2px;
+    top: 10px;
+    width: 18px;
+    height: 2px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.form-grid-small {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.form-grid label {
+    display: grid;
+    gap: 4px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.color-row {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 8px;
+    align-items: center;
+}
+
+.color-row input {
+    width: 48px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--input);
+}
+
+.export-section {
+    display: flex;
+    min-height: 360px;
+    flex-direction: column;
+}
+
+#json-preview {
+    min-height: 250px;
+    flex: 1;
+}
+
+@media (max-width: 1100px) {
+    .app-shell {
+        grid-template-columns: 280px minmax(360px, 1fr) 300px;
+    }
+}

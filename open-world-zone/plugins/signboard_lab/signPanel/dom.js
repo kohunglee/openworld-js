@@ -4,7 +4,13 @@
  * 初始化 HTML、事件绑定、拖拽功能
  */
 
+/* global AreaEditor */
 import { styleCode } from './style.js';
+
+// 备注框高度本地记忆；只影响 signPanel，不影响其他 textarea。
+const REMARK_TEXTAREA_HEIGHT_STORAGE_KEY = 'signpanel_mark_textarea_height';
+const REMARK_TEXTAREA_MIN_HEIGHT = 80;
+let remarkTextareaResizeObserver = null;
 
 // HTML 模板
 const htmlTemplate = `
@@ -364,7 +370,70 @@ export function getRemarkValue() {
  * 初始化备注区域状态；备注编辑器不记忆展开偏好，默认一直折叠。
  */
 export function initRemarkState() {
+    bindRemarkTextareaResizeMemory();
+    applyStoredRemarkTextareaHeight();
     setRemarkExpanded(false);
+}
+
+/**
+ * 读取本地保存的备注框高度；异常环境下直接回退默认高度。
+ */
+function getStoredRemarkTextareaHeight() {
+    try {
+        const value = Number.parseInt(localStorage.getItem(REMARK_TEXTAREA_HEIGHT_STORAGE_KEY), 10);
+        return Number.isFinite(value) && value >= REMARK_TEXTAREA_MIN_HEIGHT ? value : null;
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * 把用户上次手动拖拽后的备注框高度恢复回来。
+ */
+function applyStoredRemarkTextareaHeight() {
+    const textarea = document.getElementById('signRemarkTextarea');
+    const storedHeight = getStoredRemarkTextareaHeight();
+    if (!textarea || !storedHeight) return;
+
+    textarea.style.height = `${storedHeight}px`;
+}
+
+/**
+ * 保存备注框当前高度；隐藏折叠态会读到 0，这类值要忽略。
+ * @param {number} height - textarea 当前可见高度
+ */
+function saveRemarkTextareaHeight(height) {
+    const roundedHeight = Math.round(height);
+    if (!Number.isFinite(roundedHeight) || roundedHeight < REMARK_TEXTAREA_MIN_HEIGHT) return;
+
+    try {
+        localStorage.setItem(REMARK_TEXTAREA_HEIGHT_STORAGE_KEY, String(roundedHeight));
+    } catch {
+        // localStorage 被禁用时不阻断编辑流程。
+    }
+}
+
+/**
+ * 监听备注框的原生拖拽尺寸变化，并记住用户手动调出来的高度。
+ */
+function bindRemarkTextareaResizeMemory() {
+    const textarea = document.getElementById('signRemarkTextarea');
+    if (!textarea || textarea.dataset.resizeMemoryBound === '1') return;
+
+    textarea.dataset.resizeMemoryBound = '1';
+
+    if (typeof ResizeObserver === 'function') {
+        remarkTextareaResizeObserver = new ResizeObserver(() => {
+            saveRemarkTextareaHeight(textarea.getBoundingClientRect().height);
+        });
+        remarkTextareaResizeObserver.observe(textarea);
+        return;
+    }
+
+    // 兼容少数没有 ResizeObserver 的环境：拖完鼠标后记一次高度。
+    textarea.addEventListener('mouseup', () => {
+        saveRemarkTextareaHeight(textarea.getBoundingClientRect().height);
+    });
 }
 
 /**

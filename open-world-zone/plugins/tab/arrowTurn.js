@@ -91,12 +91,17 @@ export function initArrowTurn($, ccgxkObj) {
     function startTurn(code) {
         if (pressedKeys.has(code)) return;
 
+        // 方向键本身的基础转向：左为正，右为负。
+        // 注意：后退反转要做成“实时判断”，不能只在按下瞬间判断。
         const direction = code === 'ArrowLeft' ? 1 : -1;
         pressedKeys.add(code);
         clearStrafeState();
 
         timers.set(code, setInterval(() => {
-            ccgxkObj.keys.turnRight += TURN_STEP * direction;
+            // 只要当前处于后退态，立即反转左右；状态变化要即时生效。
+            const isBackward = Number(ccgxkObj?.keys?.viewBackward) > 0;
+            const actualDirection = isBackward ? -direction : direction;
+            ccgxkObj.keys.turnRight += TURN_STEP * actualDirection;
             clearStrafeState();
         }, TURN_INTERVAL_MS));
     }
@@ -115,7 +120,7 @@ export function initArrowTurn($, ccgxkObj) {
      * 初始化 Tab 面板里的开关。
      * 勾选代表“方向键旋转”，取消勾选代表“方向键平移”。
      */
-    if (checkbox) {
+    if (checkbox) { 
         checkbox.checked = enabled;
         checkbox.addEventListener('change', () => {
             enabled = checkbox.checked;

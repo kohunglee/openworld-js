@@ -383,10 +383,11 @@ export const styleCode = `
 .sign-remark-textarea {
     width: 100%;
     height: 80px;
-    resize: none;
+    min-height: 80px;
+    max-height: 160px;
+    resize: vertical;
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.35);
-    border-radius: 10px;
     color: rgba(50, 50, 50, 0.85);
     font-size: 12px;
     font-family: 'Microsoft YaHei', sans-serif;

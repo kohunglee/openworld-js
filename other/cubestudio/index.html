@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cube Studio</title>
+    <link rel="stylesheet" href="./src/style.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "./vendor/three/three.module.js",
+                "three/addons/": "./vendor/three/addons/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <main class="app-shell">
+        <aside class="panel panel-left">
+            <section class="panel-section">
+                <div class="section-title">项目</div>
+                <div class="button-row">
+                    <button id="load-build-lab" type="button">build_lab 示例</button>
+                    <button id="load-xhall" type="button">xhall 示例</button>
+                </div>
+                <label class="field-label" for="import-text">导入 JSON 数组</label>
+                <textarea id="import-text" spellcheck="false" placeholder='[{"x":0,"y":1,"z":0,"w":1,"h":1,"d":1}]'></textarea>
+                <div class="button-row">
+                    <button id="import-json" type="button">导入</button>
+                    <button id="clear-scene" type="button">清空</button>
+                </div>
+            </section>
+
+            <section class="panel-section">
+                <div class="section-title">工具</div>
+                <div class="tool-grid" aria-label="编辑工具">
+                    <button id="mode-translate" class="is-active" type="button">移动 W</button>
+                    <button id="mode-rotate" type="button">旋转 E</button>
+                    <button id="mode-scale" type="button">缩放 R</button>
+                    <button id="add-cube" type="button">新增方块</button>
+                    <button id="duplicate-cube" type="button">复制</button>
+                    <button id="delete-cube" type="button">删除</button>
+                    <button id="first-person" type="button">第一视角</button>
+                    <button id="undo" type="button">撤销</button>
+                    <button id="redo" type="button">重做</button>
+                </div>
+                <div class="snap-row">
+                    <label for="snap-position">吸附</label>
+                    <select id="snap-position">
+                        <option value="0.1">0.1</option>
+                        <option value="0.5">0.5</option>
+                        <option value="1">1</option>
+                        <option value="5">5</option>
+                    </select>
+                    <label for="snap-rotation">旋转</label>
+                    <select id="snap-rotation">
+                        <option value="15">15°</option>
+                        <option value="5">5°</option>
+                        <option value="45">45°</option>
+                        <option value="90">90°</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="panel-section">
+                <div class="section-title">选择</div>
+                <div id="status-line" class="status-line">未选择方块</div>
+                <p class="hint">单击选择，Shift 单击多选。拖动 gizmo 后会自动记录撤销点。</p>
+            </section>
+        </aside>
+
+        <section class="viewport-shell">
+            <canvas id="scene"></canvas>
+            <div id="crosshair" class="crosshair" hidden></div>
+            <div class="viewport-hud">
+                <span id="hud-primary">左键选择</span>
+                <span>右键/滚轮视角</span>
+                <span>Cmd/Ctrl+Z 撤销</span>
+            </div>
+        </section>
+
+        <aside class="panel panel-right">
+            <section class="panel-section">
+                <div class="section-title">方块属性</div>
+                <div class="form-grid">
+                    <label>x<input id="prop-x" data-prop="x" type="number" step="0.001"></label>
+                    <label>y<input id="prop-y" data-prop="y" type="number" step="0.001"></label>
+                    <label>z<input id="prop-z" data-prop="z" type="number" step="0.001"></label>
+                    <label>w<input id="prop-w" data-prop="w" type="number" step="0.001"></label>
+                    <label>h<input id="prop-h" data-prop="h" type="number" step="0.001"></label>
+                    <label>d<input id="prop-d" data-prop="d" type="number" step="0.001"></label>
+                    <label>rx<input id="prop-rx" data-prop="rx" type="number" step="0.001"></label>
+                    <label>ry<input id="prop-ry" data-prop="ry" type="number" step="0.001"></label>
+                    <label>rz<input id="prop-rz" data-prop="rz" type="number" step="0.001"></label>
+                </div>
+                <label class="field-label" for="prop-b">颜色 b</label>
+                <div class="color-row">
+                    <input id="prop-b" data-prop="b" type="color" value="#888888">
+                    <button id="clear-color" type="button">省略颜色</button>
+                </div>
+            </section>
+
+            <section class="panel-section">
+                <div class="section-title">高级字段</div>
+                <div class="form-grid form-grid-small">
+                    <label>dz<input id="prop-dz" data-prop="dz" type="number" step="1"></label>
+                    <label>st<input id="prop-st" data-prop="st" type="number" step="1"></label>
+                    <label>del<input id="prop-del" data-prop="del" type="number" step="1"></label>
+                </div>
+                <label class="field-label" for="prop-t">t</label>
+                <input id="prop-t" data-prop="t" class="text-input" type="text">
+            </section>
+
+            <section class="panel-section export-section">
+                <div class="section-title">JSON</div>
+                <label class="field-label" for="export-name">导出文件名</label>
+                <input id="export-name" class="text-input" type="text" value="cubes.json">
+                <div class="button-row">
+                    <button id="refresh-json" type="button">刷新预览</button>
+                    <button id="download-json" type="button">下载</button>
+                </div>
+                <textarea id="json-preview" spellcheck="false" readonly></textarea>
+            </section>
+        </aside>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>
