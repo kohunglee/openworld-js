@@ -9,6 +9,7 @@ import { initPhonePanel } from './phonepanel.js';
 import { initAutoW } from './autoW.js';
 import { initKeyGuide } from './keyGuide.js';
 import { initWskStatus } from './wskStatus.js';
+import { initArrowTurn } from './arrowTurn.js';
 import { getCookie, setCookie } from '../../vktool.js';
 import { setVK } from '../../vk.js';
 
@@ -183,6 +184,11 @@ export default function(ccgxkObj) {
     $("showKeyGuideBtn")?.addEventListener("click", () => {
         window.keyGuideAPI?.resetHidden?.();
     });
+
+    // ========================
+    // 左右方向键旋转
+    // ========================
+    initArrowTurn($, ccgxkObj);
 
     // ========================
     // WSK/BSK/DSK 槽位状态面板
@@ -531,6 +537,10 @@ const htmlCode = `
         <div class="tab-row tab-row-gap-10 tab-row-wrap">
             <button id="showKeyGuideBtn" class="tab-btn-lg">Show Guide</button>
         </div>
+        <label class="tab-clickable">
+            <input type="checkbox" id="arrowTurnToggle">
+            Arrow keys turn instead of strafe
+        </label>
         <div class="tab-note tab-note-mb8">
             Show key hints in the lower-left corner.<br>
             You can turn it back on here anytime.

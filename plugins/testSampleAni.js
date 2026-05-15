@@ -119,12 +119,13 @@ export default function(ccgxkObj) {
     // ================== 4. 舞台遥控器 (Event Listeners) ==================
     // 我们把键盘事件监听器想象成遥控器，它只负责向“总导演”发送指令。
     // 按下 W，就告诉导演“上演跑步”；松开，就告诉导演“全部停下”。
-    const keyState = { KeyW: false, KeyE: false };
+    const keyState = { KeyW: false, ArrowUp: false, KeyE: false };
 
     window.addEventListener('keydown', (event) => {
         if (!keyState[event.code]) {
             keyState[event.code] = true;
-            if (event.code === 'KeyW') animationManager.play('jog');
+            // W 和方向键上都使用同一个慢跑动画入口。
+            if (event.code === 'KeyW' || event.code === 'ArrowUp') animationManager.play('jog');
         }
     });
 
@@ -134,7 +135,8 @@ export default function(ccgxkObj) {
             // 只有当两个键都松开时才停止动画，或者根据您的需求调整
             // 这里简化为，任何一个键松开，都停止当前动画
             // animationManager.stopCurrent();
-            if (event.code === 'KeyW') { animationManager.stopCurrent() };
+            // 松开 W 或方向键上时，停止同一套慢跑动画。
+            if (event.code === 'KeyW' || event.code === 'ArrowUp') { animationManager.stopCurrent() };
         }
     });
 }
