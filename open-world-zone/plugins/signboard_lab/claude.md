@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-在三维世界中编辑信息板/画板内容的插件系统。点击画板 → 弹出 HUD 编辑窗口 → 编辑文字/图片 → 保存成功后本地立即刷新画布；HotInfo 可手动刷新当前画板。
+在三维世界中编辑信息板/画板内容的插件系统。点击画板 → 弹出 HUD 编辑窗口 → 编辑文字/图片 → 保存到浏览器 IndexedDB 离线队列 → 本地立即刷新画布；HotInfo 可手动刷新当前画板，Tab 面板可一键批量同步离线编辑。
 
 ## 目录结构
 
@@ -14,6 +14,7 @@ signboard_lab/
 ├── store.js          # 数据存储（signContentMap, signIndexMap, API 加载）
 ├── renderer.js       # 渲染器（文本自动换行 + Canvas 绘制）
 ├── hotUpdate.js      # 本地刷新入口（updateSign）
+├── offlineQueue.js   # IndexedDB 离线编辑队列 + bulk-upsert 手动同步
 ├── server/
 │   ├── server.js     # API 服务器入口 (Node.js + SQLite, port 8899)
 │   ├── db/index.js   # SQLite 数据库（boards 表）
@@ -30,18 +31,21 @@ signboard_lab/
 2. ✅ 文字编辑模式 - textarea 编辑，Ctrl/Cmd+S 或按钮保存
 3. ✅ 图片编辑模式 - URL 输入框 + 实时预览
 4. ✅ 模式切换 - 文字/图片 按钮切换，自动检测已有模式
-5. ✅ 保存流程 - PATCH 单条更新 API → 客户端本地 updateSign → 3D 画布立即刷新
+5. ✅ 保存流程 - IndexedDB 离线队列 → 客户端本地 updateSign → 3D 画布立即刷新
 6. ✅ 新板子支持 - 数据库里没有的板子，编辑保存后也能实时更新
 7. ✅ 文本换行 - textarea 中的 `\n` 正确渲染为画布换行
 8. ✅ 保存后自动关闭面板
 9. ✅ 服务器连不通时 alert 提示，内容不丢失
 10. ✅ FOV 滑杆 - 在 Tab 面板中可调节 FOV（1-120°，默认70°，可还原）
 11. ✅ 服务器离线提示 - 懒加载失败后暂停自动重试，Tab 侧栏显示状态，可手动重试连接
+12. ✅ 离线保存队列 - 本机浏览器编辑过的画板写入 IndexedDB，同一 id 只保留最后一次编辑，Tab 面板支持新旧两种手动同步
 
 ### 关键架构决策
 
 **API 设计**：
 - `PATCH /api/signs/:id` - 单条更新（signPanel 用，5亿条数据也扛得住）
+- `POST /api/signs/bulk-upsert` - 离线队列批量 upsert，同步时每批最多 50 条
+- `PATCH /api/signs/:id` - 旧服务器兼容同步路径，离线队列可按 500ms 一条逐个补发
 - `POST /api/signs` - 批量替换（admin.html 用）
 - `POST /api/signs/batch` - 批量获取，懒加载与 HotInfo 当前画板手动刷新共用
 
@@ -51,9 +55,17 @@ signboard_lab/
 - text 模式只用 `boardId`
 
 **刷新策略**：
-- 保存成功后，signPanel 直接调用 `window.updateSign(boardId, content, mode, extra)`，不再等待服务端推送回环
+- 保存成功后，signPanel 先写 `offlineQueue.js` 的 IndexedDB 队列，再直接调用 `window.updateSign(boardId, content, mode, extra)`，不等待服务器
 - HotInfo 的“更新”按钮只请求当前热点对应的 boardId，并在内容变化时调用 `updateSign`
 - 后续若做可见画板低频刷新，优先复用 `POST /api/signs/batch`，不要恢复全局长连接
+
+**离线同步策略**：
+- `offlineQueue.js` 使用 IndexedDB 数据库 `owz_signboard_offline`，对象仓库 `pending_boards`
+- 只保存“本机当前浏览器编辑过”的画板，不缓存懒加载读到的服务器内容
+- 同一个 boardId 使用 `put()` 覆盖，队列里只保留最后一次编辑
+- Tab 插件的 `offlineSync.js` 提供独立的 `Signboard Offline Sync` 区域，可刷新队列、同步、输出控制台、清空本地队列
+- 同步调用 `POST /api/signs/bulk-upsert`，每批最多 50 条；HTTP 207 时只删除成功项，失败项留在 IndexedDB 里继续重试
+- 旧服务器兼容模式调用 `PATCH /api/signs/:id`，按 `500ms` 一条逐个发送；每条成功后立刻从 IndexedDB 删除，失败项保留
 
 **服务器离线策略**：
 - `store.js` 的懒加载批量请求失败后，会把 ID 留在 `pendingIds`，暂停自动重试，避免 100ms 一次刷控制台
@@ -64,13 +76,23 @@ signboard_lab/
 
 ```
 用户编辑 → signPanel.save()
-  → PATCH /api/signs/:id (单条)
-  → 服务器 upsertBoard()
+  → offlineQueue.saveOfflineBoardDraft()
+  → IndexedDB put(id) 覆盖本机最后一次编辑
   → signPanel 保存成功后本地调用 updateSign()
     → signContentMap 更新
     → texture 缓存清除
     → W.plane() 触发重绘
   → errorTexture_diy hook → 渲染新内容
+
+用户点击 Tab 的 Sync Offline Boards
+  → offlineQueue.syncOfflineBoards()
+  → POST /api/signs/bulk-upsert，每批最多 50 条
+  → 成功项从 IndexedDB 删除，失败项保留
+
+用户点击 Tab 的 Sync Legacy Server
+  → offlineQueue.syncOfflineBoardsLegacy()
+  → PATCH /api/signs/:id，按 500ms 一条逐个发送
+  → 每条成功后立刻从 IndexedDB 删除，失败项保留
 ```
 
 ## 数据结构
@@ -121,7 +143,7 @@ signIndexMap.set(id, { index });  // id → 物体 index
 
 ---
 
-最后更新：2026-05-03
+最后更新：2026-05-17
 
 
 -----
@@ -134,6 +156,37 @@ signIndexMap.set(id, { index });  // id → 物体 index
 - mode=1（只看模式）：服务器无数据的画板自动隐藏
 - mode=2（编辑模式）：所有画板正常显示，方便编辑
 - 核心：`fromServer` 标志 + `computeShouldBeHidden()` 动态计算
+
+------
+
+2026年05月16日
+
+**新增 IndexedDB 离线保存与手动批量同步**：
+- signPanel 保存不再等待单条 PATCH，请求慢时也能立即关闭面板并刷新当前画板
+- 新增 `offlineQueue.js`，本机编辑写入 IndexedDB，同一画板只保留最后一次编辑
+- Tab 新增独立 `Signboard Offline Sync` 区域，支持查看 pending 数量、ID 预览、最近同步结果、同步、刷新、控制台 dump、清空本地队列
+- 同步使用后端 `POST /api/signs/bulk-upsert`，每批最多 50 条；部分成功时只移除成功项
+
+------
+
+2026年05月17日
+
+**新增旧服务器兼容逐条同步**：
+- Tab 面板新增 `Sync Legacy Server` 按钮
+- 离线队列支持走旧接口 `PATCH /api/signs/:id`
+- 为了兼容慢服务器和旧接口负载，每条请求之间固定等待 500ms
+- legacy 模式默认不带 `credentials`，避免 `127.0.0.1:8089 -> 127.0.0.1:8899` 时被旧服务的 CORS 配置拦截
+- 逐条同步时只删除成功项，失败项继续保留在 IndexedDB，便于反复重试
+
+------
+
+2026年05月17日
+
+**修复刷新后本地离线稿“数据库还在但画板不显示”**：
+- 页面初始化时自动读取 IndexedDB 待同步草稿
+- 先把草稿灌回 `signContentMap`
+- 当前已经注册到场景里的板子，会立即调用 `updateSign()` 重刷
+- 这样刷新页面后，本地未同步内容不会再被服务器旧内容视觉上覆盖
 
 ------
 

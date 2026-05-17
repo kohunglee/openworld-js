@@ -18,6 +18,7 @@ import './hotUpdate.js';
 import { handleImageMode } from './handlers/imageHandler.js';
 import signPanel from './signPanel/signTest.js';
 import { initHotInfo } from './hotinfo/hotinfo.js';
+import { hydrateOfflineBoardsIntoMemory } from './offlineQueue.js';
 
 /**
  * 设置信息板系统
@@ -64,6 +65,12 @@ const setSignBoard = (instData, ccgxkObj, offsetValue = {x:0}, wskType = 2) => {
 // 入口
 export default function(ccgxkObj) {
     ccgxkObj.signTest = setSignBoard;  // 设置画板的业务逻辑
+
+    // 页面刷新后，先把 IndexedDB 里的离线草稿灌回内存，避免本地草稿被服务器旧内容盖住。
+    hydrateOfflineBoardsIntoMemory().catch(error => {
+        console.error('[signboard offline] hydrate failed:', error);
+    });
+
     signPanel(ccgxkObj); // 初始化编辑面板
     initHotInfo(ccgxkObj); // 初始化热点信息显示（mode=1 时）
     ccgxkObj.hooks.on('hot_action', function(ccgxkObj, e){ // 热点事件

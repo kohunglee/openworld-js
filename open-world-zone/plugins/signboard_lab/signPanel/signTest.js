@@ -4,8 +4,8 @@
  * 状态管理、显示/隐藏、保存逻辑
  */
 
-import { reportSignboardServerStatus, signContentMap, signIndexMap } from '../store.js';
-import { getApiBase } from '../config.js';
+import { reportSignboardServerStatus, setSignContent, signContentMap, signIndexMap } from '../store.js';
+import { saveOfflineBoardDraft } from '../offlineQueue.js';
 const areaEditorUrl = new URL('../../../assest/areaeditor.js', import.meta.url).href;
 import {
     initDOM, bindEvents, initDrag,
@@ -310,29 +310,31 @@ export default function createSignPanel(ccgxkObj) {
         extra.remark = remark;
         const renderChanged = hasRenderableContentChanged(info, mode, content);
 
-        updateStatus('Saving...', 'saving');
+        updateStatus('Saving offline...', 'saving');
         updateSaveButton(true);
 
         try {
-            const res = await fetch(`${getApiBase()}/api/signs/${encodeURIComponent(state.boardId)}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mode, content, extra })
+            // 离线模式：保存只写入本机 IndexedDB，真正上云交给 Tab 面板的一键同步。
+            await saveOfflineBoardDraft({
+                id: state.boardId,
+                name: state.boardId,
+                mode,
+                content,
+                extra
             });
-
-            if (!res.ok) throw new Error('Save failed');
-            reportSignboardServerStatus('online');
+            reportSignboardServerStatus('idle', { message: 'Saved locally. Waiting for manual sync.' });
 
             if (renderChanged && typeof window.updateSign === 'function') {
-                window.updateSign(state.boardId, content, mode, extra);  // 保存成功后本机立即刷新，不再依赖服务端推送回环
+                window.updateSign(state.boardId, content, mode, extra);  // 本机立即刷新，不等待服务器返回
+            } else {
+                setSignContent(state.boardId, mode, content, extra); // 备注等非渲染内容也要进入当前内存态
             }
 
-            updateStatus('Saved', 'saved');
+            updateStatus('Saved offline', 'saved');
             hide();  // 保存成功后沿用统一收口逻辑，避免漏掉热点/鼠标状态恢复
         } catch (e) {
-            console.error('[signPanel] 保存失败:', e);
-            reportSignboardServerStatus('offline', { message: e.message });
-            alert('Save failed: ' + e.message + '\nYour content is still here.');
+            console.error('[signPanel] 离线保存失败:', e);
+            alert('Offline save failed: ' + e.message + '\nYour content is still here.');
             updateStatus('Save failed', 'error');
         } finally {
             updateSaveButton(false);

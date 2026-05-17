@@ -10,6 +10,7 @@ import { initAutoW } from './autoW.js';
 import { initKeyGuide } from './keyGuide.js';
 import { initWskStatus } from './wskStatus.js';
 import { initArrowTurn } from './arrowTurn.js';
+import { initOfflineSync } from './offlineSync.js';
 import { getCookie, setCookie } from '../../vktool.js';
 import { setVK } from '../../vk.js';
 
@@ -161,6 +162,11 @@ export default function(ccgxkObj) {
     initServerConfig($, (newAddress) => {
         console.log('[serverConfig] 服务器地址已更新:', newAddress);
     });
+
+    // ========================
+    // 信息板离线同步
+    // ========================
+    initOfflineSync($);
 
     // ========================
     // 模式切换
@@ -471,6 +477,22 @@ const htmlCode = `
     .signboard-perf-event {
         overflow-wrap: anywhere;
     }
+
+    .signboard-offline-box {
+        padding: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.18);
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.45);
+    }
+
+    .signboard-offline-line {
+        margin-top: 6px;
+        font-family: monospace;
+        font-size: 11px;
+        line-height: 1.4;
+        color: #111;
+        overflow-wrap: anywhere;
+    }
 </style>
 
 <div id="someCtrl">
@@ -558,19 +580,42 @@ const htmlCode = `
     </section>
 
     <section>
-        <h3>Server</h3>
+        <h3>服务器</h3>
         <div class="tab-row tab-row-gap-8">
-            <label class="tab-label-nowrap">URL:</label>
+            <label class="tab-label-nowrap">地址：</label>
             <input type="text" id="serverAddressInput" placeholder="127.0.0.1:8899" class="tab-input-text">
-            <button id="serverAddressSave" class="tab-btn-md">Save</button>
-            <button id="serverAddressReset" class="tab-btn-md">Default</button>
-            <button id="serverAddressRetry" class="tab-btn-md">Retry</button>
+            <button id="serverAddressSave" class="tab-btn-md">保存</button>
+            <button id="serverAddressReset" class="tab-btn-md">默认</button>
+            <button id="serverAddressRetry" class="tab-btn-md">重试</button>
         </div>
         <div id="serverStatusText" class="tab-tiny tab-note-mb6 tab-server-status-initial">
-            Info Panel server connected.
+            信息面板服务器已连接。
         </div>
         <div class="tab-note tab-note-mb8">
-            Refresh the page after changing it.
+            修改后请刷新页面。
+        </div>
+        <hr>
+    </section>
+
+    <section>
+        <h3>信息板离线同步</h3>
+        <div class="signboard-offline-box">
+            <div class="tab-row tab-row-gap-8 tab-row-wrap">
+                <button id="signboardOfflineSyncNow" class="tab-btn-md">同步离线画板</button>
+                <button id="signboardOfflineSyncLegacy" class="tab-btn-md">同步旧版服务器</button>
+                <button id="signboardOfflineRefresh" class="tab-btn-md">刷新队列</button>
+                <button id="signboardOfflineDump" class="tab-btn-md">输出到控制台</button>
+                <button id="signboardOfflineClear" class="tab-btn-md">清空本地队列</button>
+            </div>
+            <div id="signboardOfflineStatus" class="signboard-offline-line">正在加载 IndexedDB 队列。</div>
+            <div id="signboardOfflineIds" class="signboard-offline-line">ID：-</div>
+            <div id="signboardOfflineLast" class="signboard-offline-line">上次同步：-</div>
+            <div class="tab-note tab-note-mb8">
+                保存时会先写入当前浏览器。本按钮会通过 bulk-upsert 提交待同步修改。
+            </div>
+            <div class="tab-note tab-note-mb8">
+                旧版模式会每 500ms 发送一次 PATCH 请求，用于兼容老服务器。
+            </div>
         </div>
         <hr>
     </section>
