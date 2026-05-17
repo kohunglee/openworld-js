@@ -4,23 +4,38 @@
  * 把本机浏览器编辑过的信息板写入 IndexedDB，后续由 Tab 面板手动批量同步到服务器。
  */
 
-import { getApiBase } from './config.js';
+import { getApiBase, normalizeApiBase } from './config.js';
 import { setSignContent, signIndexMap } from './store.js';
 import {
-    clearOfflineBoardProtection,
+    clearOfflineBoardProtectionByServer,
     protectOfflineBoardId,
     resetOfflineBoardProtection,
     unprotectOfflineBoardId
 } from './offlineProtection.js';
 
 const DB_NAME = 'owz_signboard_offline';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'pending_boards';
 const SYNC_LIMIT = 50;
 const LEGACY_SYNC_INTERVAL_MS = 500;
 
 let dbPromise = null;
 let lastSyncResult = null;
+
+/**
+ * 基于当前服务器地址生成离线队列分区 key。
+ * 规则：完整 URL 隔离，只忽略末尾斜杠。
+ */
+function getCurrentServerUrl() {
+    return normalizeApiBase(getApiBase());
+}
+
+/**
+ * 队列主键必须同时包含 serverUrl 和 boardId，避免不同服务器下同名画板互相覆盖。
+ */
+function makeQueueKey(serverUrl, id) {
+    return `${normalizeApiBase(serverUrl)}::${String(id || '').trim()}`;
+}
 
 /**
  * 广播离线队列状态，Tab 面板用这个事件刷新调试信息。
@@ -47,10 +62,34 @@ function openDb() {
 
         request.onupgradeneeded = () => {
             const db = request.result;
+            const tx = request.transaction;
+
             if (!db.objectStoreNames.contains(STORE_NAME)) {
-                const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                const store = db.createObjectStore(STORE_NAME, { keyPath: 'queueKey' });
+                store.createIndex('serverUrl', 'serverUrl', { unique: false });
                 store.createIndex('updatedAt', 'updatedAt', { unique: false });
+                return;
             }
+
+            const oldStore = tx.objectStore(STORE_NAME);
+            const legacyRowsRequest = oldStore.getAll();
+
+            legacyRowsRequest.onsuccess = () => {
+                const legacyRows = legacyRowsRequest.result || [];
+                db.deleteObjectStore(STORE_NAME);
+
+                const newStore = db.createObjectStore(STORE_NAME, { keyPath: 'queueKey' });
+                newStore.createIndex('serverUrl', 'serverUrl', { unique: false });
+                newStore.createIndex('updatedAt', 'updatedAt', { unique: false });
+
+                // 旧版本没有 serverUrl，只能归到“升级当下的当前服务器”名下。
+                // 这至少能避免丢数据；之后用户切换到其他 URL 时就不再串库。
+                const currentServerUrl = getCurrentServerUrl();
+                for (const row of legacyRows) {
+                    const migrated = normalizeBoardDraft(row, currentServerUrl);
+                    newStore.put(migrated);
+                }
+            };
         };
 
         request.onsuccess = () => resolve(request.result);
@@ -90,9 +129,10 @@ async function runStore(mode, executor) {
 /**
  * 规范化要写入离线队列的画板数据，保持和 bulk-upsert API 的请求体一致。
  */
-function normalizeBoardDraft(board) {
+function normalizeBoardDraft(board, serverUrl = getCurrentServerUrl()) {
     const id = String(board?.id || '').trim();
     if (!id) throw new Error('Board id is required');
+    const normalizedServerUrl = normalizeApiBase(serverUrl);
 
     let mode = board.mode;
     if (!['text', 'image', 'empty'].includes(mode)) mode = 'text';
@@ -108,12 +148,14 @@ function normalizeBoardDraft(board) {
     if (!extra || typeof extra !== 'object' || Array.isArray(extra)) extra = {};
 
     return {
+        queueKey: makeQueueKey(normalizedServerUrl, id),
+        serverUrl: normalizedServerUrl,
         id,
         name: String(board.name || id),
         mode,
         content: String(board.content ?? ''),
         extra,
-        updatedAt: Date.now()
+        updatedAt: Number(board.updatedAt) || Date.now()
     };
 }
 
@@ -124,7 +166,7 @@ export async function saveOfflineBoardDraft(board) {
     const draft = normalizeBoardDraft(board);
 
     await runStore('readwrite', store => store.put(draft));
-    protectOfflineBoardId(draft.id);
+    protectOfflineBoardId(draft.serverUrl, draft.id);
     const stats = await getOfflineQueueStats();
     emitOfflineQueueEvent('saved', { board: draft, stats });
     return draft;
@@ -135,7 +177,10 @@ export async function saveOfflineBoardDraft(board) {
  */
 export async function getPendingOfflineBoards() {
     const boards = await runStore('readonly', store => store.getAll());
-    return (boards || []).sort((a, b) => (a.updatedAt || 0) - (b.updatedAt || 0));
+    const currentServerUrl = getCurrentServerUrl();
+    return (boards || [])
+        .filter(board => normalizeApiBase(board.serverUrl) === currentServerUrl)
+        .sort((a, b) => (a.updatedAt || 0) - (b.updatedAt || 0));
 }
 
 /**
@@ -159,7 +204,7 @@ export async function getOfflineQueueStats() {
  */
 export async function hydrateOfflineBoardsIntoMemory() {
     const boards = await getPendingOfflineBoards();
-    resetOfflineBoardProtection(boards.map(board => board.id));
+    resetOfflineBoardProtection(getCurrentServerUrl(), boards.map(board => board.id));
 
     for (const board of boards) {
         setSignContent(board.id, board.mode, board.content, board.extra || {});
@@ -181,14 +226,15 @@ export async function hydrateOfflineBoardsIntoMemory() {
  */
 async function deleteOfflineBoards(ids) {
     if (!ids.length) return;
+    const currentServerUrl = getCurrentServerUrl();
 
     await runStore('readwrite', store => {
-        for (const id of ids) store.delete(id);
+        for (const id of ids) store.delete(makeQueueKey(currentServerUrl, id));
         return ids.length;
     });
 
     for (const id of ids) {
-        unprotectOfflineBoardId(id);
+        unprotectOfflineBoardId(currentServerUrl, id);
     }
 }
 
@@ -204,11 +250,20 @@ function delay(ms) {
  * 清空本机离线队列。这个能力只给 Tab 调试面板使用。
  */
 export async function clearOfflineQueue() {
-    await runStore('readwrite', store => store.clear());
-    clearOfflineBoardProtection();
+    const boards = await getPendingOfflineBoards();
+    const currentServerUrl = getCurrentServerUrl();
+
+    await runStore('readwrite', store => {
+        for (const board of boards) {
+            store.delete(board.queueKey || makeQueueKey(currentServerUrl, board.id));
+        }
+        return boards.length;
+    });
+
+    clearOfflineBoardProtectionByServer(currentServerUrl);
     lastSyncResult = {
         success: true,
-        message: 'Offline queue cleared locally.',
+        message: 'Offline queue cleared locally for current server.',
         time: Date.now()
     };
     const stats = await getOfflineQueueStats();

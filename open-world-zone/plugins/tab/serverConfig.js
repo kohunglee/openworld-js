@@ -4,6 +4,8 @@
  * 管理服务器地址设置，存储到 localStorage
  */
 
+import { normalizeApiBase } from '../signboard_lab/config.js';
+
 const STORAGE_KEY = 'signboard_server_address';
 const DEFAULT_ADDRESS = 'https://openworld.zone/owz-serverapi';
 
@@ -12,29 +14,30 @@ const DEFAULT_ADDRESS = 'https://openworld.zone/owz-serverapi';
  */
 export function getServerAddress() {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored || DEFAULT_ADDRESS;
+    return normalizeApiBase(stored || DEFAULT_ADDRESS);
 }
 
 /**
  * 保存服务器地址
  */
 export function saveServerAddress(address) {
-    localStorage.setItem(STORAGE_KEY, address);
+    localStorage.setItem(STORAGE_KEY, normalizeApiBase(address));
 }
 
 /**
  * 重置为默认地址
  */
 export function resetServerAddress() {
-    localStorage.setItem(STORAGE_KEY, DEFAULT_ADDRESS);
-    return DEFAULT_ADDRESS;
+    const normalized = normalizeApiBase(DEFAULT_ADDRESS);
+    localStorage.setItem(STORAGE_KEY, normalized);
+    return normalized;
 }
 
 /**
  * 获取默认地址
  */
 export function getDefaultAddress() {
-    return DEFAULT_ADDRESS;
+    return normalizeApiBase(DEFAULT_ADDRESS);
 }
 
 function emitServerStatus(status, detail = {}) {
@@ -99,7 +102,7 @@ export function initServerConfig($, onAddressChange) {
 
     // 保存按钮
     saveBtn.addEventListener('click', () => {
-        const address = input.value.trim();
+        const address = normalizeApiBase(input.value);
         if (!address) {
             alert('服务器地址不能为空');
             input.value = getServerAddress();
@@ -117,6 +120,7 @@ export function initServerConfig($, onAddressChange) {
         input.value = defaultAddr;
         renderStatus({ status: 'idle' });
         if (onAddressChange) onAddressChange(defaultAddr);
+        window.location.reload();
     });
 
     retryBtn?.addEventListener('click', () => {
@@ -125,6 +129,6 @@ export function initServerConfig($, onAddressChange) {
         if (typeof window.retrySignboardLazyLoad === 'function') {
             window.retrySignboardLazyLoad();
         }
-        if (!pending) testServerConnection(input.value.trim()); // 没有待加载画板时，重试按钮才单独测一次连接
+        if (!pending) testServerConnection(normalizeApiBase(input.value)); // 没有待加载画板时，重试按钮才单独测一次连接
     });
 }

@@ -121,7 +121,7 @@ export function initOfflineSync($) {
             return;
         }
 
-        const ok = confirm(`要清空 ${stats.pending} 个本地离线画板草稿吗？这里只会清空 IndexedDB，不会删除服务器数据。`);
+        const ok = confirm(`要清空当前服务器下的 ${stats.pending} 个本地离线画板草稿吗？这里只会清空当前 URL 对应的 IndexedDB 队列，不会删除服务器数据。`);
         if (!ok) {
             await render('已取消清空。');
             return;

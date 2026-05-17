@@ -55,12 +55,13 @@ signboard_lab/
 - text 模式只用 `boardId`
 
 **刷新策略**：
-- 保存成功后，signPanel 先写 `offlineQueue.js` 的 IndexedDB 队列，再直接调用 `window.updateSign(boardId, content, mode, extra)`，不等待服务器
+- 保存成功后，signPanel 先写 `offlineQueue.js` 的当前服务器分区 IndexedDB 队列，再直接调用 `window.updateSign(boardId, content, mode, extra)`，不等待服务器
 - HotInfo 的“更新”按钮只请求当前热点对应的 boardId，并在内容变化时调用 `updateSign`
 - 后续若做可见画板低频刷新，优先复用 `POST /api/signs/batch`，不要恢复全局长连接
 
 **离线同步策略**：
 - `offlineQueue.js` 使用 IndexedDB 数据库 `owz_signboard_offline`，对象仓库 `pending_boards`
+- 离线队列按“完整服务器 URL（忽略末尾 `/`）+ boardId”隔离；A 服务器的草稿不会在 B 服务器下显示、统计、同步或清空
 - 只保存“本机当前浏览器编辑过”的画板，不缓存懒加载读到的服务器内容
 - 同一个 boardId 使用 `put()` 覆盖，队列里只保留最后一次编辑
 - Tab 插件的 `offlineSync.js` 提供独立的 `Signboard Offline Sync` 区域，可刷新队列、同步、输出控制台、清空本地队列
@@ -77,7 +78,7 @@ signboard_lab/
 ```
 用户编辑 → signPanel.save()
   → offlineQueue.saveOfflineBoardDraft()
-  → IndexedDB put(id) 覆盖本机最后一次编辑
+  → IndexedDB put(serverUrl::id) 覆盖当前服务器下本机最后一次编辑
   → signPanel 保存成功后本地调用 updateSign()
     → signContentMap 更新
     → texture 缓存清除

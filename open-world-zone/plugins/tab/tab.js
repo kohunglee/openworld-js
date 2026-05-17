@@ -591,7 +591,7 @@ const htmlCode = `
             信息面板服务器已连接。
         </div>
         <div class="tab-note tab-note-mb8">
-            保存后会自动刷新页面。
+            修改地址后会自动刷新页面。
         </div>
         <hr>
     </section>

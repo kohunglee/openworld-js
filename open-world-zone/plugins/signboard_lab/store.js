@@ -115,7 +115,7 @@ async function doBatchFetch() {
         if (data.boards) {
             for (const board of data.boards) {
                 // 本地待同步草稿永远比这次服务器返回更新；未同步成功前，禁止服务器旧数据反向覆盖。
-                if (isOfflineBoardProtected(board.id)) {
+                if (isOfflineBoardProtected(getApiBase(), board.id)) {
                     console.log(`[Store] 跳过服务器覆盖，保留本地待同步草稿: ${board.id}`);
                     continue;
                 }
@@ -127,7 +127,7 @@ async function doBatchFetch() {
             console.log(`[Store] 懒加载 ${data.boards.length} 个信息板`);
         }
         for (const id of ids) {  // 未找到内容
-            if (!signContentMap.has(id) && !isOfflineBoardProtected(id)) {
+            if (!signContentMap.has(id) && !isOfflineBoardProtected(getApiBase(), id)) {
                 setSignContent(id, 'empty');
                 if (typeof window.updateSign === 'function') {  // （调试）把无内容的，设置成 text，并显示 id
                     window.updateSign(id, '', 'text', {});
