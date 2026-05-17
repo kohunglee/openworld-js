@@ -261,6 +261,9 @@ const htmlCode = `
         top: 25px;
         opacity: 0.5;
         right: 50px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
     #someCtrl button {
         width: 160px;
@@ -270,6 +273,10 @@ const htmlCode = `
 
     #btn01 {
         width: 105px;
+    }
+
+    #signboardSyncFloatingBtn {
+        width: 140px;
     }
 
     .info-modal {
@@ -496,6 +503,7 @@ const htmlCode = `
 </style>
 
 <div id="someCtrl">
+    <button id="signboardSyncFloatingBtn" hidden>同步(0)</button>
     <button id="btn01">Panel</button>
 </div>
 
@@ -597,6 +605,18 @@ const htmlCode = `
     </section>
 
     <section>
+        <h3>信息板保存模式</h3>
+        <label class="tab-clickable">
+            <input type="checkbox" id="signboardOfflineModeToggle">
+            启用离线模式
+        </label>
+        <div id="signboardOfflineModeText" class="tab-note tab-note-mb8">
+            默认在线实时保存。开启后，保存只写入本地队列，并需要手动同步。
+        </div>
+        <hr>
+    </section>
+
+    <section id="signboardOfflineSection">
         <h3>信息板离线同步</h3>
         <div class="signboard-offline-box">
             <div class="tab-row tab-row-gap-8 tab-row-wrap">

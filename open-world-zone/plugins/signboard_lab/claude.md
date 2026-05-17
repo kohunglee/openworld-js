@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-在三维世界中编辑信息板/画板内容的插件系统。点击画板 → 弹出 HUD 编辑窗口 → 编辑文字/图片 → 保存到浏览器 IndexedDB 离线队列 → 本地立即刷新画布；HotInfo 可手动刷新当前画板，Tab 面板可一键批量同步离线编辑。
+在三维世界中编辑信息板/画板内容的插件系统。点击画板 → 弹出 HUD 编辑窗口 → 编辑文字/图片 → 默认实时提交到服务器并立即刷新画布；用户手动开启离线模式后，保存才会进入浏览器 IndexedDB 队列；HotInfo 可手动刷新当前画板，Tab 面板与浮动按钮可手动同步离线编辑。
 
 ## 目录结构
 
@@ -55,7 +55,8 @@ signboard_lab/
 - text 模式只用 `boardId`
 
 **刷新策略**：
-- 保存成功后，signPanel 先写 `offlineQueue.js` 的当前服务器分区 IndexedDB 队列，再直接调用 `window.updateSign(boardId, content, mode, extra)`，不等待服务器
+- 默认在线模式下，signPanel 保存直接调用旧服务器 `PATCH /api/signs/:id`，成功后再调用 `window.updateSign(boardId, content, mode, extra)`
+- 用户手动开启离线模式后，signPanel 才会先写 `offlineQueue.js` 的当前服务器分区 IndexedDB 队列，再直接调用 `window.updateSign(boardId, content, mode, extra)`，不等待服务器
 - HotInfo 的“更新”按钮只请求当前热点对应的 boardId，并在内容变化时调用 `updateSign`
 - 后续若做可见画板低频刷新，优先复用 `POST /api/signs/batch`，不要恢复全局长连接
 
@@ -65,6 +66,7 @@ signboard_lab/
 - 只保存“本机当前浏览器编辑过”的画板，不缓存懒加载读到的服务器内容
 - 同一个 boardId 使用 `put()` 覆盖，队列里只保留最后一次编辑
 - Tab 插件的 `offlineSync.js` 提供独立的 `Signboard Offline Sync` 区域，可刷新队列、同步、输出控制台、清空本地队列
+- `tab` 里提供“离线模式”开关；仅在离线模式下，`someCtrl` 左侧显示 `[同步(n)]` 按钮，并默认走旧服务器逐条同步
 - 同步调用 `POST /api/signs/bulk-upsert`，每批最多 50 条；HTTP 207 时只删除成功项，失败项留在 IndexedDB 里继续重试
 - 旧服务器兼容模式调用 `PATCH /api/signs/:id`，按 `500ms` 一条逐个发送；每条成功后立刻从 IndexedDB 删除，失败项保留
 
@@ -77,12 +79,14 @@ signboard_lab/
 
 ```
 用户编辑 → signPanel.save()
-  → offlineQueue.saveOfflineBoardDraft()
-  → IndexedDB put(serverUrl::id) 覆盖当前服务器下本机最后一次编辑
-  → signPanel 保存成功后本地调用 updateSign()
-    → signContentMap 更新
-    → texture 缓存清除
-    → W.plane() 触发重绘
+  → 若在线模式：PATCH /api/signs/:id
+    → 成功后本地调用 updateSign()
+  → 若离线模式：offlineQueue.saveOfflineBoardDraft()
+    → IndexedDB put(serverUrl::id) 覆盖当前服务器下本机最后一次编辑
+    → signPanel 保存成功后本地调用 updateSign()
+  → signContentMap 更新
+  → texture 缓存清除
+  → W.plane() 触发重绘
   → errorTexture_diy hook → 渲染新内容
 
 用户点击 Tab 的 Sync Offline Boards

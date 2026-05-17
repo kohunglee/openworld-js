@@ -160,6 +160,16 @@ function normalizeBoardDraft(board, serverUrl = getCurrentServerUrl()) {
 }
 
 /**
+ * 在线模式下的单条实时保存。
+ * 沿用老服务器 PATCH 接口，语义与历史版本一致：成功才算保存成功。
+ */
+export async function saveBoardToLegacyServer(board) {
+    const draft = normalizeBoardDraft(board);
+    await syncOneBoardToLegacyServer(draft);
+    return draft;
+}
+
+/**
  * 保存本机编辑稿；同一个 id 使用 put 覆盖，所以只保留最后一次编辑。
  */
 export async function saveOfflineBoardDraft(board) {

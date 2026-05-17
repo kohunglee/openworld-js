@@ -5,7 +5,8 @@
  */
 
 import { reportSignboardServerStatus, setSignContent, signContentMap, signIndexMap } from '../store.js';
-import { saveOfflineBoardDraft } from '../offlineQueue.js';
+import { saveBoardToLegacyServer, saveOfflineBoardDraft } from '../offlineQueue.js';
+import { isOfflineSaveModeEnabled } from '../saveMode.js';
 const areaEditorUrl = new URL('../../../assest/areaeditor.js', import.meta.url).href;
 import {
     initDOM, bindEvents, initDrag,
@@ -310,31 +311,46 @@ export default function createSignPanel(ccgxkObj) {
         extra.remark = remark;
         const renderChanged = hasRenderableContentChanged(info, mode, content);
 
-        updateStatus('Saving offline...', 'saving');
+        const offlineModeEnabled = isOfflineSaveModeEnabled();
+        updateStatus(offlineModeEnabled ? 'Saving offline...' : 'Saving online...', 'saving');
         updateSaveButton(true);
 
         try {
-            // 离线模式：保存只写入本机 IndexedDB，真正上云交给 Tab 面板的一键同步。
-            await saveOfflineBoardDraft({
-                id: state.boardId,
-                name: state.boardId,
-                mode,
-                content,
-                extra
-            });
-            reportSignboardServerStatus('idle', { message: 'Saved locally. Waiting for manual sync.' });
+            /**
+             * 离线模式：保存只写本机 IndexedDB，真正上云交给手动同步按钮。
+             * 在线模式：直接走老服务器 PATCH，成功后才算保存完成。
+             */
+            if (offlineModeEnabled) {
+                await saveOfflineBoardDraft({
+                    id: state.boardId,
+                    name: state.boardId,
+                    mode,
+                    content,
+                    extra
+                });
+                reportSignboardServerStatus('idle', { message: 'Saved locally. Waiting for manual sync.' });
+            } else {
+                await saveBoardToLegacyServer({
+                    id: state.boardId,
+                    name: state.boardId,
+                    mode,
+                    content,
+                    extra
+                });
+                reportSignboardServerStatus('online', { message: 'Saved online.' });
+            }
 
             if (renderChanged && typeof window.updateSign === 'function') {
-                window.updateSign(state.boardId, content, mode, extra);  // 本机立即刷新，不等待服务器返回
+                window.updateSign(state.boardId, content, mode, extra);  // 服务端成功或离线入队成功后，本地统一立即刷新
             } else {
                 setSignContent(state.boardId, mode, content, extra); // 备注等非渲染内容也要进入当前内存态
             }
 
-            updateStatus('Saved offline', 'saved');
+            updateStatus(offlineModeEnabled ? 'Saved offline' : 'Saved online', 'saved');
             hide();  // 保存成功后沿用统一收口逻辑，避免漏掉热点/鼠标状态恢复
         } catch (e) {
-            console.error('[signPanel] 离线保存失败:', e);
-            alert('Offline save failed: ' + e.message + '\nYour content is still here.');
+            console.error('[signPanel] 保存失败:', e);
+            alert(`${offlineModeEnabled ? '离线' : '在线'}保存失败: ${e.message}\n当前编辑内容还保留在面板里。`);
             updateStatus('Save failed', 'error');
         } finally {
             updateSaveButton(false);

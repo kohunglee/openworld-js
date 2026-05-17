@@ -46,6 +46,24 @@ function emitServerStatus(status, detail = {}) {
     window.dispatchEvent(new CustomEvent('signboard:server-status', { detail: payload }));
 }
 
+/**
+ * 在即将刷新页面前，先把鼠标和页面交互态切到“加载中”，避免用户误以为没点上。
+ */
+function reloadWithProgressCursor() {
+    document.body.style.setProperty('cursor', 'progress', 'important');
+    document.documentElement.style.setProperty('cursor', 'progress', 'important');
+    for (const el of document.querySelectorAll('*')) {
+        el.style.setProperty('cursor', 'progress', 'important');
+    }
+
+    // 给浏览器一个极短的绘制窗口，确保用户能看到“正在加载”的鼠标状态。
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            window.location.reload();
+        }, 80);
+    });
+}
+
 async function testServerConnection(address) {
     const apiBase = address || getServerAddress();
     emitServerStatus('connecting');
@@ -111,7 +129,7 @@ export function initServerConfig($, onAddressChange) {
         saveServerAddress(address);
         renderStatus({ status: 'idle' });
         if (onAddressChange) onAddressChange(address);
-        window.location.reload();
+        reloadWithProgressCursor();
     });
 
     // 默认按钮
@@ -120,7 +138,7 @@ export function initServerConfig($, onAddressChange) {
         input.value = defaultAddr;
         renderStatus({ status: 'idle' });
         if (onAddressChange) onAddressChange(defaultAddr);
-        window.location.reload();
+        reloadWithProgressCursor();
     });
 
     retryBtn?.addEventListener('click', () => {
