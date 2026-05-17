@@ -6,6 +6,12 @@
 
 import { getApiBase } from './config.js';
 import { setSignContent, signIndexMap } from './store.js';
+import {
+    clearOfflineBoardProtection,
+    protectOfflineBoardId,
+    resetOfflineBoardProtection,
+    unprotectOfflineBoardId
+} from './offlineProtection.js';
 
 const DB_NAME = 'owz_signboard_offline';
 const DB_VERSION = 1;
@@ -118,6 +124,7 @@ export async function saveOfflineBoardDraft(board) {
     const draft = normalizeBoardDraft(board);
 
     await runStore('readwrite', store => store.put(draft));
+    protectOfflineBoardId(draft.id);
     const stats = await getOfflineQueueStats();
     emitOfflineQueueEvent('saved', { board: draft, stats });
     return draft;
@@ -152,6 +159,7 @@ export async function getOfflineQueueStats() {
  */
 export async function hydrateOfflineBoardsIntoMemory() {
     const boards = await getPendingOfflineBoards();
+    resetOfflineBoardProtection(boards.map(board => board.id));
 
     for (const board of boards) {
         setSignContent(board.id, board.mode, board.content, board.extra || {});
@@ -178,6 +186,10 @@ async function deleteOfflineBoards(ids) {
         for (const id of ids) store.delete(id);
         return ids.length;
     });
+
+    for (const id of ids) {
+        unprotectOfflineBoardId(id);
+    }
 }
 
 /**
@@ -193,6 +205,7 @@ function delay(ms) {
  */
 export async function clearOfflineQueue() {
     await runStore('readwrite', store => store.clear());
+    clearOfflineBoardProtection();
     lastSyncResult = {
         success: true,
         message: 'Offline queue cleared locally.',

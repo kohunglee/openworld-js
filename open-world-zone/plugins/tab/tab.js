@@ -586,13 +586,12 @@ const htmlCode = `
             <input type="text" id="serverAddressInput" placeholder="127.0.0.1:8899" class="tab-input-text">
             <button id="serverAddressSave" class="tab-btn-md">保存</button>
             <button id="serverAddressReset" class="tab-btn-md">默认</button>
-            <button id="serverAddressRetry" class="tab-btn-md">重试</button>
         </div>
         <div id="serverStatusText" class="tab-tiny tab-note-mb6 tab-server-status-initial">
             信息面板服务器已连接。
         </div>
         <div class="tab-note tab-note-mb8">
-            修改后请刷新页面。
+            保存后会自动刷新页面。
         </div>
         <hr>
     </section>

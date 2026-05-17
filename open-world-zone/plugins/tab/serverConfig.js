@@ -106,9 +106,9 @@ export function initServerConfig($, onAddressChange) {
             return;
         }
         saveServerAddress(address);
-        alert('已保存：' + address);
         renderStatus({ status: 'idle' });
         if (onAddressChange) onAddressChange(address);
+        window.location.reload();
     });
 
     // 默认按钮
