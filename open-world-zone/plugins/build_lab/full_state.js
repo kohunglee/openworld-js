@@ -62,15 +62,16 @@ export function processFullState(insts, ccgxkObj) {
 
         // 三楼内墙的阵列逻辑
         if(true){
-            D.inwall3h.push(...symoff.offset(D.inXWall3h, 10.1, 2, 'x'));  
-            D.inwall3h.push(...symoff.offset(D.inXWall3h, 15.05, 2, 'x'));
-            const temp = symoff.offset(D.inXWall3h002, 5, 5, 'x');
-            D.inwall3h.push( ...temp, ...D.inXWall3h002 );
+            // D.inwall3h.push(...symoff.offset(D.inXWall3h, 10.1, 2, 'x'));  
+            // D.inwall3h.push(...symoff.offset(D.inXWall3h, 15.05, 2, 'x'));
+            const firsthouse3h = [...D.inXWall3h002, 274, 266] 
+            const temp = symoff.offset(firsthouse3h, 7.49, 4, 'x');
+            D.inwall3h.push( ...temp, ...firsthouse3h );
         }
 
         // 三楼画板的阵列
         if(true) {
-            D.house1H3.push( ...symoff.offset(D.house1H3, 5, 5, 'x') );
+            D.house1H3.push( ...symoff.offset(D.house1H3, 7.49, 4, 'x') );
         }
 
         // 前三层的一些对称

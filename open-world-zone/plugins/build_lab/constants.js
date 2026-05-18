@@ -30,7 +30,10 @@ export const D = {  // 不同物体的索引
     rail3h: expandIndices([[255,258], 265, 285, 286 ]),
     inwall3h: expandIndices([ [266, 284] ]),  // 三楼的内墙
     inXWall3h: [269,270],  // 两个小墙块儿
-    inXWall3h002: [19],  // 第一个屋子的缺口
+
+    inXWall3h002: [19],  // 第一个屋子 002
+
+    
 
     // 画板
     board1h: expandIndices([[289, 326],[377,405]]), // 一楼画板
