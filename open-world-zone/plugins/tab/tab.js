@@ -11,6 +11,7 @@ import { initKeyGuide } from './keyGuide.js';
 import { initWskStatus } from './wskStatus.js';
 import { initArrowTurn } from './arrowTurn.js';
 import { initOfflineSync } from './offlineSync.js';
+import { initDisplayControls } from './displayControls.js';
 import { getCookie, setCookie } from '../../vktool.js';
 import { setVK } from '../../vk.js';
 
@@ -119,30 +120,16 @@ export default function(ccgxkObj) {
     $("goTOP").addEventListener("click", () => teleportTo(42, 54.12, 5.91, -90));
 
     // ========================
-    // FOV 滑杆控制
+    // 显示控制
     // ========================
-    const fovSlider = $("fovSlider");
-    const fovValue = $("fovValue");
-    const DEFAULT_FOV = 60;
-    const FOV_SLIDER_MAX = 120;
-    const sliderValueToFov = value => FOV_SLIDER_MAX + 1 - parseInt(value);
-    const fovToSliderValue = fov => FOV_SLIDER_MAX + 1 - fov;
-
-    function setFov(fov) {
-        fovSlider.value = fovToSliderValue(fov);
-        fovValue.textContent = fov + "°";
-        k.W.camera({ fov });
-    }
-
-    if (fovSlider && fovValue) {
-        fovSlider.addEventListener("input", (e) => {
-            const fov = sliderValueToFov(e.target.value);
-            fovValue.textContent = fov + "°";
-            k.W.camera({ fov });
-        });
-    }
-
-    $("fovReset")?.addEventListener("click", () => setFov(DEFAULT_FOV));
+    initDisplayControls($, ccgxkObj, {
+        // 清晰度切换后立即关闭 Tab，并把鼠标重新锁回画布。
+        // 这样用户单击档位后，无需再手动关面板。
+        onClarityApplied: () => {
+            hideModal();
+            lockPointer();
+        },
+    });
 
     // ========================
     // 角色速度控制
@@ -558,6 +545,12 @@ const htmlCode = `
             <span class="tab-scale-note">1</span>
             <span id="fovValue" class="tab-fov-value">60°</span>
             <button id="fovReset" class="tab-btn-sm">Reset</button>
+        </div>
+        <div class="tab-row tab-row-gap-16 tab-row-wrap">
+            <label class="tab-clickable"><input type="radio" name="clarity" value="0.05">Tiny (0.05)</label>
+            <label class="tab-clickable"><input type="radio" name="clarity" value="0.3">Low (0.3)</label>
+            <label class="tab-clickable"><input type="radio" name="clarity" value="0.5">Mid (0.5)</label>
+            <label class="tab-clickable"><input type="radio" name="clarity" value="1" checked>High (1)</label>
         </div>
         <hr>
     </section>

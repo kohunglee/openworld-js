@@ -5,6 +5,13 @@
  */
 export default function(ccgxkObj) {
     // console.log('导入自己的 常用快捷键事件 插件成功');
+    /**
+     * 统一读取主角物理体。
+     * 这个插件会比 mainVPlayer 的创建更早执行，所以这里必须全程兜底判空，
+     * 避免初始化阶段或极短时序窗口里直接读取 body 导致报错。
+     */
+    const getMainPlayerBody = () => ccgxkObj?.mainVPlayer?.body || null;
+
     const myevent = {
         keyEvent : (e, ccgxkObj) => {
             if(document.getElementById('signPanelModal')&&!document.getElementById('signPanelModal').hidden)return;
@@ -22,7 +29,8 @@ export default function(ccgxkObj) {
             const key = e.key.toLowerCase();
 
             if(key === 'e' || key === ' ') {  // 在冻结物体情况下，按 e 键或空格键，可以解除冻结
-                const mvpBody = ccgxkObj.mainVPlayer.body;
+                const mvpBody = getMainPlayerBody();
+                if (!mvpBody) return;
                 if(mvpBody.mass === 0){
                     mvpBody.mass = 50;  // 重量还原
                 }
@@ -47,15 +55,16 @@ export default function(ccgxkObj) {
         () => {
             // 保证人物不掉地面
             if(true){
-                if(ccgxkObj.mainVPlayer.body.position.y < 0){
-                    ccgxkObj.mainVPlayer.body.position.y = 50;
+                const mvpBody = getMainPlayerBody();
+                if(mvpBody && mvpBody.position.y < 0){
+                    mvpBody.position.y = 50;
                 }
             }
 
             // 防止在 F 冻结模式，碰障碍物后失重移动
             if(true){
-                const mvpBody = ccgxkObj.mainVPlayer.body;
-                if(mvpBody.mass === 0){
+                const mvpBody = getMainPlayerBody();
+                if(mvpBody && mvpBody.mass === 0){
                     mvpBody.velocity.set(0, 0, 0);  // 设置线速度为0
                     mvpBody.angularVelocity.set(0, 0, 0);  // 设置角速度为0
                     mvpBody.force.set(0, 0, 0);  // 清除所有作用力
@@ -70,7 +79,7 @@ export default function(ccgxkObj) {
     if([1, 2].includes(ccgxkObj.mode)){
         document.addEventListener('keydown', (event) => {
             const key = event.key.toLowerCase();
-            const mvpBody = ccgxkObj?.mainVPlayer?.body;
+            const mvpBody = getMainPlayerBody();
 
             if(document.getElementById('signPanelModal')&&!document.getElementById('signPanelModal').hidden)return;
             if(document.getElementById('myHUDModal')&&!document.getElementById('myHUDModal').hidden)return;
