@@ -7,6 +7,7 @@
 import { reportSignboardServerStatus, setSignContent, signContentMap, signIndexMap } from '../store.js';
 import { saveBoardToLegacyServer, saveOfflineBoardDraft } from '../offlineQueue.js';
 import { isOfflineSaveModeEnabled } from '../saveMode.js';
+import { getErrorMessage } from '../errorMessage.js';
 const areaEditorUrl = new URL('../../../assest/areaeditor.js', import.meta.url).href;
 import {
     initDOM, bindEvents, initDrag,
@@ -350,7 +351,9 @@ export default function createSignPanel(ccgxkObj) {
             hide();  // 保存成功后沿用统一收口逻辑，避免漏掉热点/鼠标状态恢复
         } catch (e) {
             console.error('[signPanel] 保存失败:', e);
-            alert(`${offlineModeEnabled ? '离线' : '在线'}保存失败: ${e.message}\n当前编辑内容还保留在面板里。`);
+            const message = getErrorMessage(e);
+            alert(message);
+            reportSignboardServerStatus('offline', { message });
             updateStatus('Save failed', 'error');
         } finally {
             updateSaveButton(false);

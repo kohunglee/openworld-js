@@ -12,6 +12,7 @@ import {
     syncOfflineBoardsLegacy
 } from '../signboard_lab/offlineQueue.js';
 import { isOfflineSaveModeEnabled, setOfflineSaveModeEnabled } from '../signboard_lab/saveMode.js';
+import { getErrorMessage } from '../signboard_lab/errorMessage.js';
 
 /**
  * 把时间戳格式化成容易现场判断的时间。
@@ -159,8 +160,9 @@ export function initOfflineSync($) {
             }
             return result;
         } catch (error) {
-            await render(`旧版同步失败：${error.message}`);
-            if (showAlert) alert(`离线同步失败：${error.message}`);
+            const message = getErrorMessage(error);
+            await render(message);
+            if (showAlert) alert(message);
             return null;
         }
     }
@@ -217,7 +219,7 @@ export function initOfflineSync($) {
             const result = await syncOfflineBoards();
             await render(result.success ? '同步完成。' : '同步完成，但存在失败项。');
         } catch (error) {
-            await render(`同步失败：${error.message}`);
+            await render(getErrorMessage(error));
         }
     });
 

@@ -5,6 +5,7 @@
  */
 
 import { normalizeApiBase } from '../signboard_lab/config.js';
+import { readServerErrorMessage, getErrorMessage } from '../signboard_lab/errorMessage.js';
 
 const STORAGE_KEY = 'signboard_server_address';
 const DEFAULT_ADDRESS = 'https://openworld.zone/owz-serverapi';
@@ -69,10 +70,13 @@ async function testServerConnection(address) {
     emitServerStatus('connecting');
     try {
         const res = await fetch(`${apiBase}/api/signs`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+            const message = await readServerErrorMessage(res);
+            throw new Error(message);
+        }
         emitServerStatus('online');
     } catch (e) {
-        emitServerStatus('offline', { message: e.message });
+        emitServerStatus('offline', { message: getErrorMessage(e) });
     }
 }
 
