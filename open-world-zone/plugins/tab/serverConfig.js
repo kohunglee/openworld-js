@@ -104,11 +104,11 @@ export function initServerConfig($, onAddressChange) {
         const status = detail.status || 'unknown';
         const pending = detail.pending || 0;
         const statusMap = {
-            online: { text: '信息面板已连接', color: '#000' },
-            offline: { text: `信息面板离线，重试已暂停${pending ? `（待处理 ${pending}）` : ''}`, color: '#000' },
-            connecting: { text: '正在重新连接信息面板...', color: '#000' },
-            idle: { text: '信息面板空闲中', color: '#000' },
-            unknown: { text: '正在检查信息面板连接...', color: '#000' }
+            online: { text: 'Signboard service connected', color: '#000' },
+            offline: { text: `Signboard service offline, retry paused${pending ? ` (pending ${pending})` : ''}`, color: '#000' },
+            connecting: { text: 'Reconnecting signboard service...', color: '#000' },
+            idle: { text: 'Signboard service idle', color: '#000' },
+            unknown: { text: 'Checking signboard service...', color: '#000' }
         };
         const info = statusMap[status] || statusMap.unknown;
 
@@ -126,7 +126,7 @@ export function initServerConfig($, onAddressChange) {
     saveBtn.addEventListener('click', () => {
         const address = normalizeApiBase(input.value);
         if (!address) {
-            alert('服务器地址不能为空');
+            alert('Server address cannot be empty');
             input.value = getServerAddress();
             return;
         }

@@ -35,20 +35,20 @@ function formatIdPreview(ids) {
  * 渲染最近一次同步结果，重点显示失败原因，方便判断是不是 401/403/207。
  */
 function formatLastResult(result) {
-    if (!result) return '还没有同步记录。';
-    const modeLabel = result.mode === 'legacy' ? '旧版逐条模式' : '批量模式';
-    if (result.error) return `失败：${result.error}｜成功 ${result.succeeded || 0}，剩余 ${result.remaining || 0}`;
-    return `${modeLabel}｜总数 ${result.total || 0}，成功 ${result.succeeded || 0}，失败 ${result.failed || 0}，剩余 ${result.remaining || 0}`;
+    if (!result) return 'No sync history yet.';
+    const modeLabel = result.mode === 'legacy' ? 'Legacy mode' : 'Batch mode';
+    if (result.error) return `Failed: ${result.error} | Succeeded ${result.succeeded || 0}, Remaining ${result.remaining || 0}`;
+    return `${modeLabel} | Total ${result.total || 0}, Succeeded ${result.succeeded || 0}, Failed ${result.failed || 0}, Remaining ${result.remaining || 0}`;
 }
 
 /**
  * 生成逐条同步完成后的 alert 文案。
  */
 function formatLegacySyncAlert(result) {
-    if (!result) return '离线同步结束，但没有拿到结果。';
-    if (result.total === 0) return '当前没有待同步数据。';
-    if (result.success) return `离线同步完成：共 ${result.total} 条，全部成功。`;
-    return `离线同步完成：总数 ${result.total}，成功 ${result.succeeded || 0}，失败 ${result.failed || 0}，剩余 ${result.remaining || 0}。`;
+    if (!result) return 'Sync finished, but no result was returned.';
+    if (result.total === 0) return 'No pending data to sync.';
+    if (result.success) return `Sync complete: ${result.total} total, all succeeded.`;
+    return `Sync complete: total ${result.total}, succeeded ${result.succeeded || 0}, failed ${result.failed || 0}, remaining ${result.remaining || 0}.`;
 }
 
 /**
@@ -99,7 +99,7 @@ export function initOfflineSync($) {
             floatingButtonRestoreTimer = null;
         }
         floatingSyncBtn.hidden = !isOfflineSaveModeEnabled();
-        floatingSyncBtn.textContent = syncing ? '同步中...' : `同步(${stats?.pending || 0})`;
+        floatingSyncBtn.textContent = syncing ? 'Syncing...' : `Sync (${stats?.pending || 0})`;
         floatingSyncBtn.disabled = syncing;
     }
 
@@ -128,8 +128,8 @@ export function initOfflineSync($) {
         modeToggle.checked = enabled;
         sectionEl.hidden = !enabled;
         modeText.textContent = enabled
-            ? '当前为离线模式。保存只写入本地队列；点击左上角同步按钮逐条提交到旧版服务器。'
-            : '当前为在线模式。保存会实时提交到服务器；离线队列与同步按钮会隐藏。';
+            ? 'Offline mode: saves go to local queue only. Use the top-left Sync button to submit to legacy server one-by-one.'
+            : 'Online mode: saves are sent to server immediately. Offline queue and Sync button are hidden.';
     }
 
     /**
@@ -138,19 +138,19 @@ export function initOfflineSync($) {
     async function runLegacySync(showAlert = false) {
         const beforeStats = await getOfflineQueueStats();
         if (beforeStats.pending === 0) {
-            await render('队列本来就是空的。');
-            if (showAlert) alert('当前没有待同步数据。');
+            await render('Queue is already empty.');
+            if (showAlert) alert('No pending data to sync.');
             return null;
         }
 
         syncBtn.disabled = true;
         legacySyncBtn.disabled = true;
         renderFloatingButton(beforeStats, true);
-        statusEl.textContent = '正在逐条同步到旧版服务器...';
+        statusEl.textContent = 'Syncing to legacy server one-by-one...';
 
         try {
             const result = await syncOfflineBoardsLegacy();
-            await render(result.success ? '旧版同步完成。' : '旧版同步完成，但存在失败项。');
+            await render(result.success ? 'Legacy sync complete.' : 'Legacy sync complete with failures.');
             if (showAlert) {
                 if (result.success) {
                     showFloatingButtonOk();
@@ -177,15 +177,15 @@ export function initOfflineSync($) {
 
             renderModeBlock();
             renderFloatingButton(stats, false);
-            statusEl.textContent = statusText || `待同步：${stats.pending}｜最近本地修改：${formatTime(stats.latestUpdatedAt)}`;
-            idsEl.textContent = `ID：${formatIdPreview(stats.ids)}`;
-            lastEl.textContent = `上次同步：${formatLastResult(result)}`;
+            statusEl.textContent = statusText || `Pending: ${stats.pending} | Last local update: ${formatTime(stats.latestUpdatedAt)}`;
+            idsEl.textContent = `IDs: ${formatIdPreview(stats.ids)}`;
+            lastEl.textContent = `Last sync: ${formatLastResult(result)}`;
             syncBtn.disabled = stats.pending === 0;
             legacySyncBtn.disabled = stats.pending === 0;
         } catch (error) {
             renderModeBlock();
             renderFloatingButton({ pending: 0 }, false);
-            statusEl.textContent = `IndexedDB 错误：${error.message}`;
+            statusEl.textContent = `IndexedDB error: ${error.message}`;
             syncBtn.disabled = true;
             legacySyncBtn.disabled = true;
         }
@@ -207,17 +207,17 @@ export function initOfflineSync($) {
      * 这里先给一个瞬时提示，真正刷新完成后要回到默认统计文案，不能把“正在刷新”永久留在界面上。
      */
     refreshBtn.addEventListener('click', async () => {
-        statusEl.textContent = '正在刷新离线队列...';
+        statusEl.textContent = 'Refreshing offline queue...';
         await render();
     });
 
     syncBtn.addEventListener('click', async () => {
         syncBtn.disabled = true;
-        statusEl.textContent = '正在同步离线画板...';
+        statusEl.textContent = 'Syncing offline boards...';
 
         try {
             const result = await syncOfflineBoards();
-            await render(result.success ? '同步完成。' : '同步完成，但存在失败项。');
+            await render(result.success ? 'Sync complete.' : 'Sync complete with failures.');
         } catch (error) {
             await render(getErrorMessage(error));
         }
@@ -234,24 +234,24 @@ export function initOfflineSync($) {
     dumpBtn?.addEventListener('click', async () => {
         const boards = await getPendingOfflineBoards();
         console.log('[Signboard Offline] pending boards:', boards);
-        await render(`已输出 ${boards.length} 个待同步画板到控制台。`);
+        await render(`Dumped ${boards.length} pending boards to console.`);
     });
 
     clearBtn?.addEventListener('click', async () => {
         const stats = await getOfflineQueueStats();
         if (stats.pending === 0) {
-            await render('队列本来就是空的。');
+            await render('Queue is already empty.');
             return;
         }
 
-        const ok = confirm(`要清空当前服务器下的 ${stats.pending} 个本地离线画板草稿吗？这里只会清空当前 URL 对应的 IndexedDB 队列，不会删除服务器数据。`);
+        const ok = confirm(`Clear ${stats.pending} local offline drafts for current server? This only clears IndexedDB queue for current URL and will not delete server data.`);
         if (!ok) {
-            await render('已取消清空。');
+            await render('Clear canceled.');
             return;
         }
 
         await clearOfflineQueue();
-        await render('本地离线队列已清空。');
+        await render('Local offline queue cleared.');
     });
 
     window.addEventListener('signboard:offline-queue', () => render());

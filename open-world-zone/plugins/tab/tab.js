@@ -487,15 +487,30 @@ const htmlCode = `
         color: #111;
         overflow-wrap: anywhere;
     }
+
+    .tab-version-badge {
+        margin: 8px 0 10px 0;
+        margin-top: 25px;
+        padding: 5px 10px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.04);
+        color: rgba(0, 0, 0, 0.6);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        display: inline-block;
+    }
 </style>
 
 <div id="someCtrl">
-    <button id="signboardSyncFloatingBtn" hidden>同步(0)</button>
+    <button id="signboardSyncFloatingBtn" hidden>Sync (0)</button>
     <button id="btn01">Panel</button>
 </div>
 
 <div class="info-modal zindex-1" id="myinfoModal">
     <div><button id="closeBtn">Close (Tab)</button></div>
+    <div class="tab-version-badge">OWZ V1.0</div>
 
     <section>
         <h3>Quick Actions</h3>
@@ -581,52 +596,52 @@ const htmlCode = `
     </section>
 
     <section>
-        <h3>服务器</h3>
+        <h3>Server</h3>
         <div class="tab-row tab-row-gap-8">
-            <label class="tab-label-nowrap">地址：</label>
+            <label class="tab-label-nowrap">Address:</label>
             <input type="text" id="serverAddressInput" placeholder="127.0.0.1:8899" class="tab-input-text">
-            <button id="serverAddressSave" class="tab-btn-md">保存</button>
-            <button id="serverAddressReset" class="tab-btn-md">默认</button>
+            <button id="serverAddressSave" class="tab-btn-md">Save</button>
+            <button id="serverAddressReset" class="tab-btn-md">Default</button>
         </div>
         <div id="serverStatusText" class="tab-tiny tab-note-mb6 tab-server-status-initial">
-            信息面板服务器已连接。
+            Signboard service connected.
         </div>
         <div class="tab-note tab-note-mb8">
-            修改地址后会自动刷新页面。
+            The page auto-reloads after address changes.
         </div>
         <hr>
     </section>
 
     <section>
-        <h3>信息板保存模式</h3>
+        <h3>Signboard Save Mode</h3>
         <label class="tab-clickable">
             <input type="checkbox" id="signboardOfflineModeToggle">
-            启用离线模式
+            Enable offline mode
         </label>
         <div id="signboardOfflineModeText" class="tab-note tab-note-mb8">
-            默认在线实时保存。开启后，保存只写入本地队列，并需要手动同步。
+            Online mode saves directly to server. Offline mode saves to local queue and needs manual sync.
         </div>
         <hr>
     </section>
 
     <section id="signboardOfflineSection">
-        <h3>信息板离线同步</h3>
+        <h3>Signboard Offline Sync</h3>
         <div class="signboard-offline-box">
             <div class="tab-row tab-row-gap-8 tab-row-wrap">
-                <button id="signboardOfflineSyncNow" class="tab-btn-md">同步离线画板</button>
-                <button id="signboardOfflineSyncLegacy" class="tab-btn-md">同步旧版服务器</button>
-                <button id="signboardOfflineRefresh" class="tab-btn-md">刷新队列</button>
-                <button id="signboardOfflineDump" class="tab-btn-md">输出到控制台</button>
-                <button id="signboardOfflineClear" class="tab-btn-md">清空本地队列</button>
+                <button id="signboardOfflineSyncNow" class="tab-btn-md">Sync Offline Boards</button>
+                <button id="signboardOfflineSyncLegacy" class="tab-btn-md">Sync Legacy Server</button>
+                <button id="signboardOfflineRefresh" class="tab-btn-md">Refresh Queue</button>
+                <button id="signboardOfflineDump" class="tab-btn-md">Dump to Console</button>
+                <button id="signboardOfflineClear" class="tab-btn-md">Clear Local Queue</button>
             </div>
-            <div id="signboardOfflineStatus" class="signboard-offline-line">正在加载 IndexedDB 队列。</div>
-            <div id="signboardOfflineIds" class="signboard-offline-line">ID：-</div>
-            <div id="signboardOfflineLast" class="signboard-offline-line">上次同步：-</div>
+            <div id="signboardOfflineStatus" class="signboard-offline-line">Loading IndexedDB queue...</div>
+            <div id="signboardOfflineIds" class="signboard-offline-line">IDs: -</div>
+            <div id="signboardOfflineLast" class="signboard-offline-line">Last sync: -</div>
             <div class="tab-note tab-note-mb8">
-                保存时会先写入当前浏览器。本按钮会通过 bulk-upsert 提交待同步修改。
+                Saves go to this browser first. This button submits pending changes through bulk-upsert.
             </div>
             <div class="tab-note tab-note-mb8">
-                旧版模式会每 500ms 发送一次 PATCH 请求，用于兼容老服务器。
+                Legacy mode sends one PATCH every 500ms for older servers.
             </div>
         </div>
         <hr>
@@ -673,12 +688,6 @@ const htmlCode = `
 
     <h3>Slot Usage</h3>
     <div id="wskStudio"></div><!-- 万数块临时测试使用 -->
-
-    <section>
-        <h3>Previous Project URL</h3>
-        <a href="https://ow.ccgxk.com/demo/house?logicadd=1" target="_blank">https://ow.ccgxk.com/demo/house?logicadd=1</a>
-        <hr>
-    </section>
 
     <div><button id="closeBtn02">Close (Tab)</button></div>
 </div>

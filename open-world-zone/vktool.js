@@ -5,17 +5,42 @@
  */
 
 
-// ID 转换为 中文 名字
+// ID 转换为 英文 名字
 export const id2name = n => {
-    const dict = "明月星光云风雨花竹柳山海江河松林天地火雷电虹雪霜冰夜晨秋夏春冬清蓝白红紫金玉银珠珍珊彩音乐安平静远志梦心";
-    let h = (n * 2654435761) >>> 0; // Knuth 哈希
-    let name = "";
-    for (let i = 0; i < 3; i++) {
-        h ^= h >>> 13;
-        h = Math.imul(h, 1274126177) >>> 0; // 保证 32 位无符号整数
-        name += dict[h % dict.length];
+    const dict = [
+        "Cloud", "Stone", "River", "Field", "Leaf",
+        "Hill", "Trail", "Path", "Lake", "Wave",
+        "Breeze", "Light", "Glow", "Spark", "Dawn",
+        "Dusk", "Sky", "Star", "Moon", "Sun",
+        "Orbit", "Comet", "Nova", "Pixel", "Echo",
+        "Moss", "Pine", "Cedar", "Fern", "Reed",
+        "Meadow", "Brook", "Harbor", "Island", "Valley",
+        "Summit", "Bridge", "Garden", "Forest", "Shell",
+        "Pebble", "Coral", "Frost", "Snow", "Rain",
+        "Mist", "Drift", "Flame", "Amber", "Marble"
+    ];
+
+    const mix = x => {
+        x = Math.imul(x ^ (x >>> 16), 2246822507) >>> 0;
+        x = Math.imul(x ^ (x >>> 13), 3266489909) >>> 0;
+        x = (x ^ (x >>> 16)) >>> 0;
+        return x;
+    };
+
+    let h1 = mix((n * 2654435761) >>> 0);
+    let h2 = mix((h1 ^ 0x9e3779b9) >>> 0);
+    let h3 = mix((h2 ^ 0x85ebca6b) >>> 0);
+
+    const i1 = h1 % dict.length;
+    let i2 = h2 % dict.length;
+
+    if (i2 === i1) {
+        i2 = (i2 + 1) % dict.length;
     }
-    return name;
+
+    const num = String(h3 % 100).padStart(2, "0");
+
+    return `${dict[i1]}-${dict[i2]}-${num}`;
 };
 
 // 设置 cookie
