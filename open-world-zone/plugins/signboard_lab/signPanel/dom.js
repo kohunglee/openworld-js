@@ -224,7 +224,7 @@ export function setBoardIdDisplay(text) {
 
 /**
  * 聚焦输入框
- * - text 模式：光标定位到最后一个可见字符后，并滚动到该位置
+ * - text 模式：默认从文章开头开始编辑，光标和滚动条都归到最前面
  * - image 模式：强制全选 URL，便于直接粘贴替换
  */
 export function focusInput(mode) {
@@ -241,15 +241,17 @@ export function focusInput(mode) {
         return;
     }
 
-    // 找到最后一个非空白字符的位置
-    const trimmedLen = el.value.trimEnd().length;
-
-    // 先设置光标位置
-    el.setSelectionRange(trimmedLen, trimmedLen);
-
-    // 触发浏览器滚动到光标位置
-    el.blur();
     el.focus();
+    el.setSelectionRange(0, 0);
+    el.scrollTop = 0;
+    el.scrollLeft = 0;
+
+    // 后续可精简标注：旧逻辑曾用 trimEnd + blur/focus 把光标推到末尾；现在默认开头，不再需要那套末尾定位。
+    requestAnimationFrame(() => {
+        if (document.activeElement !== el) return;
+        el.scrollTop = 0;
+        el.scrollLeft = 0;
+    });
 }
 
 /**

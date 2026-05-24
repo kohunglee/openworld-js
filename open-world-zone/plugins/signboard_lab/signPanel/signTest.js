@@ -232,7 +232,8 @@ export default function createSignPanel(ccgxkObj) {
         // 显示面板
         showModal();
 
-        // 面板显示后优先恢复本画板上次文本视图；没有历史时退回默认末尾光标。
+        // 面板显示后优先恢复本画板上次文本视图；没有历史时退回默认开头光标。
+        // 后续可精简标注：如果以后不再需要“同一画板记忆上次位置”，可从 restoreBoardTextView/boardEditViewMemory 这一链路一起删。
         if (!(detectedMode === 'text' && restoreBoardTextView(state.boardId))) {
             focusInput(detectedMode);
         }

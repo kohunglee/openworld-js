@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VK WebSocket 压力测试 - 3 成员 20Hz</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #111936;
+      --line: #27345f;
+      --text: #eef3ff;
+      --muted: #9fb0d8;
+      --ok: #57d18c;
+      --warn: #ffc85e;
+      --bad: #ff6b6b;
+      --btn: #2f64ff;
+      --btn2: #3a425f;
+    }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: radial-gradient(circle at 20% 0%, #1b2f66 0%, var(--bg) 40%);
+      color: var(--text);
+      font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+    }
+    .wrap { max-width: 1080px; margin: 0 auto; }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    input, button {
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #0f1731;
+      color: var(--text);
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+    button { cursor: pointer; }
+    .start { background: var(--btn); }
+    .stop { background: var(--btn2); }
+    .kpi {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .kpi div {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(0,0,0,0.15);
+    }
+    .muted { color: var(--muted); }
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .bad { color: var(--bad); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 8px 6px;
+      text-align: left;
+    }
+    pre {
+      white-space: pre-wrap;
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>VK WebSocket 压力测试（3 成员 / 20Hz / 0.1m·s⁻¹）</h2>
+
+    <div class="card">
+      <div class="row">
+        <label>WS 地址：</label>
+        <input id="wsUrl" style="min-width: 360px;" value="wss://myshwsa.ccgxk.com/ws/" />
+        <label>时长(秒)：</label>
+        <input id="duration" type="number" min="5" value="120" style="width: 90px;" />
+        <button id="startBtn" class="start">开始测试</button>
+        <button id="stopBtn" class="stop">停止测试</button>
+      </div>
+      <div class="muted" style="margin-top:8px;">
+        说明：此页只负责持续发包和连接稳定性观测；服务端 CPU/内存请配合你线上监控看同一时间窗口。
+      </div>
+      <div class="kpi">
+        <div>状态：<span id="runState" class="warn">未运行</span></div>
+        <div>运行时长：<span id="elapsed">0.00s</span></div>
+        <div>总发送数：<span id="sentTotal">0</span></div>
+        <div>发送失败：<span id="sendFail" class="bad">0</span></div>
+        <div>断线次数：<span id="closeCount" class="bad">0</span></div>
+        <div>活跃连接：<span id="openCount">0 / 3</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin: 0 0 6px 0;">成员实时状态</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>成员</th><th>ID</th><th>连接</th><th>x</th><th>y</th><th>z</th><th>序号</th><th>已发送</th><th>上次错误</th>
+          </tr>
+        </thead>
+        <tbody id="memberBody"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3 style="margin: 0 0 6px 0;">结束报告</h3>
+      <pre id="finalReport">尚未开始</pre>
+    </div>
+  </div>
+
+  <script>
+    // ======== 可读常量：与你需求对应 ========
+    const MEMBER_COUNT = 300;            // 3 个成员
+    const SEND_HZ = 60;                // 20Hz
+    const SPEED_X_MPS = 0.1;           // x 方向 0.1 m/s
+    const INTERVAL_MS = 1000 / SEND_HZ;
+
+    // ======== 全局运行态 ========
+    let running = false;
+    let startAt = 0;
+    let timer = null;
+    let raf = null;
+    let stopByDurationTimer = null;
+
+    // ======== 总体统计 ========
+    const stats = {
+      sentTotal: 0,
+      sendFail: 0,
+      closeCount: 0,
+    };
+
+    // ======== 3 个虚拟成员 ========
+    const members = Array.from({ length: MEMBER_COUNT }, (_, i) => {
+      return {
+        name: `Member-${i + 1}`,
+        id: 7000000 + i,
+        socket: null,
+        connected: false,
+        seq: 0,
+        sent: 0,
+        x: i * 0.5,
+        y: 3,
+        z: -56,
+        ry: 0,
+        lastTickAt: 0,
+        lastError: "",
+      };
+    });
+
+    const $ = (id) => document.getElementById(id);
+
+    // ======== UI 刷新：每帧把状态显示出来 ========
+    function render() {
+      const elapsedSec = running ? (Date.now() - startAt) / 1000 : 0;
+      $("elapsed").textContent = elapsedSec.toFixed(2) + "s";
+      $("sentTotal").textContent = String(stats.sentTotal);
+      $("sendFail").textContent = String(stats.sendFail);
+      $("closeCount").textContent = String(stats.closeCount);
+      const openCount = members.filter(m => m.connected).length;
+      $("openCount").textContent = `${openCount} / ${MEMBER_COUNT}`;
+
+      const html = members.map(m => {
+        const connText = m.connected ? "OPEN" : "CLOSED";
+        const connClass = m.connected ? "ok" : "bad";
+        return `
+          <tr>
+            <td>${m.name}</td>
+            <td>${m.id}</td>
+            <td class="${connClass}">${connText}</td>
+            <td>${m.x.toFixed(3)}</td>
+            <td>${m.y.toFixed(3)}</td>
+            <td>${m.z.toFixed(3)}</td>
+            <td>${m.seq}</td>
+            <td>${m.sent}</td>
+            <td class="bad">${m.lastError || "-"}</td>
+          </tr>
+        `;
+      }).join("");
+      $("memberBody").innerHTML = html;
+
+      if (running) raf = requestAnimationFrame(render);
+    }
+
+    // ======== 连接单个成员 ========
+    function connectMember(member, wsUrl) {
+      const ws = new WebSocket(wsUrl);
+      member.socket = ws;
+
+      ws.onopen = () => {
+        member.connected = true;
+        member.lastTickAt = performance.now();
+      };
+
+      ws.onclose = () => {
+        member.connected = false;
+        stats.closeCount += 1;
+      };
+
+      ws.onerror = (err) => {
+        member.lastError = "ws error";
+      };
+
+      // 不消费消息，只保留一个轻量 onmessage，避免浏览器警告
+      ws.onmessage = () => {};
+    }
+
+    // ======== 发送循环：20Hz，按真实 dt 推进 x 坐标 ========
+    function sendTick() {
+      if (!running) return;
+      const now = performance.now();
+
+      for (const m of members) {
+        if (!m.connected || !m.socket || m.socket.readyState !== WebSocket.OPEN) continue;
+
+        const dt = Math.max(0, (now - m.lastTickAt) / 1000);
+        m.lastTickAt = now;
+
+        // 按速度积分，保证 x 增长和真实时间一致
+        m.x += SPEED_X_MPS * dt;
+        m.seq += 1;
+
+        // 这里严格模仿 vk.js 发包模式：
+        // 1) 先把对象 JSON.stringify 成字符串
+        // 2) 再 JSON.stringify 一次后发送（双层字符串）
+        const pos = {
+          m: "",
+          id: m.id,
+          x: m.x.toFixed(2),
+          y: m.y.toFixed(2),
+          z: m.z.toFixed(2),
+          ry: m.ry.toFixed(2),
+          seq: m.seq,
+          t: Date.now(),
+        };
+
+        try {
+          const posStr = JSON.stringify(pos);
+          m.socket.send(JSON.stringify(posStr));
+          m.sent += 1;
+          stats.sentTotal += 1;
+        } catch (e) {
+          stats.sendFail += 1;
+          m.lastError = String(e && e.message ? e.message : e);
+        }
+      }
+
+      timer = setTimeout(sendTick, INTERVAL_MS);
+    }
+
+    // ======== 结束后生成报告 ========
+    function buildFinalReport(reason) {
+      const elapsedMs = Math.max(1, Date.now() - startAt);
+      const elapsedSec = elapsedMs / 1000;
+      const openCount = members.filter(m => m.connected).length;
+      const expectedTotal = Math.floor(elapsedSec * SEND_HZ * MEMBER_COUNT);
+      const lossEstimate = Math.max(0, expectedTotal - stats.sentTotal);
+      const sendRate = stats.sentTotal / elapsedSec;
+
+      const lines = [];
+      lines.push(`结束原因: ${reason}`);
+      lines.push(`运行时长: ${elapsedSec.toFixed(2)}s`);
+      lines.push(`目标发送速率: ${SEND_HZ} Hz x ${MEMBER_COUNT} 成员 = ${(SEND_HZ * MEMBER_COUNT)} msg/s`);
+      lines.push(`实际平均发送速率: ${sendRate.toFixed(2)} msg/s`);
+      lines.push(`预期总发送(估算): ${expectedTotal}`);
+      lines.push(`实际总发送: ${stats.sentTotal}`);
+      lines.push(`估算缺口(用于观察调度抖动): ${lossEstimate}`);
+      lines.push(`发送失败次数: ${stats.sendFail}`);
+      lines.push(`断线次数: ${stats.closeCount}`);
+      lines.push(`结束时活跃连接: ${openCount}/${MEMBER_COUNT}`);
+      lines.push(`--- 成员明细 ---`);
+      for (const m of members) {
+        lines.push(`${m.name} id=${m.id} sent=${m.sent} finalX=${m.x.toFixed(3)} seq=${m.seq} connected=${m.connected}`);
+      }
+      lines.push(`--- 说明 ---`);
+      lines.push(`服务端 CPU/内存请在同一时间窗口查看服务器监控平台。`);
+      lines.push(`本页重点用于验证“持续收包 + 不掉线 + 发送速率是否稳定”。`);
+
+      $("finalReport").textContent = lines.join("\n");
+    }
+
+    // ======== 启动测试 ========
+    function startTest() {
+      if (running) return;
+
+      const wsUrl = $("wsUrl").value.trim();
+      const durationSec = Math.max(5, Number($("duration").value || 120));
+      if (!wsUrl) {
+        alert("请填写 WebSocket 地址");
+        return;
+      }
+
+      // 重置统计
+      running = true;
+      startAt = Date.now();
+      stats.sentTotal = 0;
+      stats.sendFail = 0;
+      stats.closeCount = 0;
+      $("runState").textContent = "运行中";
+      $("runState").className = "ok";
+      $("finalReport").textContent = "测试进行中...";
+
+      // 重置成员状态
+      for (const m of members) {
+        m.connected = false;
+        m.seq = 0;
+        m.sent = 0;
+        m.x = (m.id - 7000000) * 0.5;
+        m.y = 2;
+        m.z = -56;
+        m.ry = 0;
+        m.lastTickAt = performance.now();
+        m.lastError = "";
+        if (m.socket && m.socket.readyState === WebSocket.OPEN) {
+          try { m.socket.close(); } catch {}
+        }
+        m.socket = null;
+      }
+
+      // 建立 3 条连接
+      for (const m of members) connectMember(m, wsUrl);
+
+      // 开启渲染和发送循环
+      render();
+      sendTick();
+
+      // 到时自动停止
+      stopByDurationTimer = setTimeout(() => {
+        stopTest("到达设定时长");
+      }, durationSec * 1000);
+    }
+
+    // ======== 停止测试 ========
+    function stopTest(reason = "手动停止") {
+      if (!running) return;
+      running = false;
+      clearTimeout(timer);
+      clearTimeout(stopByDurationTimer);
+      if (raf) cancelAnimationFrame(raf);
+
+      for (const m of members) {
+        if (m.socket && m.socket.readyState === WebSocket.OPEN) {
+          try { m.socket.close(); } catch {}
+        }
+        m.connected = false;
+      }
+
+      $("runState").textContent = "已停止";
+      $("runState").className = "warn";
+      buildFinalReport(reason);
+      render();
+    }
+
+    // ======== 事件绑定 ========
+    $("startBtn").addEventListener("click", startTest);
+    $("stopBtn").addEventListener("click", () => stopTest("手动停止"));
+
+    // 页面关闭时尽量清理 socket
+    window.addEventListener("beforeunload", () => stopTest("页面关闭"));
+  </script>
+</body>
+</html>
