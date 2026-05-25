@@ -7,6 +7,7 @@ export default async function (ccgxkObj) {
   console.log('导入 mario 插件成功');
 
   const { data } = await import('https://selfcdn.openworld.zone/test/mario/mario.js');
+  // const { data } = await import('http://127.0.0.1:8089/open-world-zone/plugins/girl/girl.js');
 
   const img = new Image();
 
@@ -39,4 +40,5 @@ export default async function (ccgxkObj) {
   };
 
   img.src = 'https://selfcdn.openworld.zone/test/mario/mario.png';
+  // img.src = 'http://127.0.0.1:8089/open-world-zone/plugins/girl/Image_0.png';
 }
