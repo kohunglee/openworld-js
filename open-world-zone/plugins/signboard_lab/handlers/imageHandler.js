@@ -24,7 +24,9 @@ const applyImage = (imgEl, ccgxkObj, index, id) => {
     const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight, canvasH);
     const textureModule = getTextureModule();
     if (textureModule) textureModule.textureMap.set(id, imgEl);
-    ccgxkObj.W.plane({ n: 'T' + index, t: imgEl, w, h, ns: 1 });
+    if(ccgxkObj.W.next['T' + index]){
+        ccgxkObj.W.plane({ n: 'T' + index, t: imgEl, w, h, ns: 1 });
+    }
     ccgxkObj.physicsProps[p_offset + 1] = w;
     ccgxkObj.physicsProps[p_offset + 2] = h;
 };
