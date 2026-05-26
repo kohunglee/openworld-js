@@ -9,11 +9,13 @@
 import mydata from './data.js';
 import { processFullState } from './full_state.js';
 
+const buildOffset = {x: 50, z: 50};
+
 export default function(ccgxkObj) {
     const insts = [...mydata()];  // 导入数据
 
     
-    processFullState(insts, ccgxkObj);  // 处理
+    processFullState(insts, ccgxkObj, buildOffset);  // 处理
     
     for(let i = 0; i < insts.length; i++){  //（临时，方便建造）远程可选取
         // insts[i].dz = 3;
@@ -34,7 +36,7 @@ export default function(ccgxkObj) {
         type: 1,
         texture: marble,
         mixValue: 0.7,  
-        offset: {x:0},
+        offset: buildOffset,
     });
 
     const rootArgs = k.indexToArgs.get(idx);  //+ 设置建造器的操纵 W ID

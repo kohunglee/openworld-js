@@ -4,7 +4,7 @@
 
 import { COLORS, D } from './constants.js';
 
-export function processFullState(insts, ccgxkObj) {
+export function processFullState(insts, ccgxkObj, buildOffset) {
     
     let isok = false;if(ccgxkObj.mode !== 0){isok = true}
     // isok = true;
@@ -128,7 +128,7 @@ export function processFullState(insts, ccgxkObj) {
                 insts[i] = { "del": 1 };
             }
         });
-        ccgxkObj.signTest(arrC, ccgxkObj, {x:0}, 1);
+        ccgxkObj.signTest(arrC, ccgxkObj, buildOffset, 1);
 
         var arrD = [];
         sign_index = 0;
@@ -141,7 +141,7 @@ export function processFullState(insts, ccgxkObj) {
                 insts[i] = { "del": 1 };
             }
         });
-        ccgxkObj.signTest(arrD, ccgxkObj, {x:0}, 1);
+        ccgxkObj.signTest(arrD, ccgxkObj, buildOffset, 1);
 
         var arr = [];
         sign_index = 0;
@@ -154,7 +154,7 @@ export function processFullState(insts, ccgxkObj) {
                 insts[i] = { "del": 1 };
             }
         });
-        ccgxkObj.signTest(arr, ccgxkObj, {x:0}, 1);
+        ccgxkObj.signTest(arr, ccgxkObj, buildOffset, 1);
     }
     return 0;
 }
