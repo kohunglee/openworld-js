@@ -1,0 +1,17 @@
+{
+  "sceneName": "demo-scene",
+  "buildings": [
+    {
+      "id": "b001",
+      "modelName": "build_lab",
+      "position": { "x": 50, "y": 0, "z": -50 },
+      "enabled": true
+    },
+    {
+      "id": "b002",
+      "modelName": "xhall",
+      "position": { "x": 90, "y": 0, "z": 0 },
+      "enabled": true
+    }
+  ]
+}

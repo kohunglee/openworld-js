@@ -47,10 +47,8 @@ import symoffset from './plugins/symoffset/symoffset.js';  // 对称阵列工具
 symoffset(k);
 import signBoard_lab from './plugins/signboard_lab/signTest.js';  // 纹理研究测试工具
 signBoard_lab(k);
-import build_lab from './plugins/build_lab/build_lab.js';  // 建造器使用的容器
-build_lab(k);
-import xhall from './plugins/xhall/build_lab.js';  // 第一个成品建筑
-xhall(k);
+import sceneModelLoader from './plugins/scene_model_loader/scene_model_loader.js';  // 从 temp 场景协议里加载建筑
+await sceneModelLoader(k);
 import somecube from './plugins/somecube/somecube.js';  // 几个实验块儿
 somecube(k);
 import normalevent from './plugins/normalevent/normalevent.js';  // 常用的事件
