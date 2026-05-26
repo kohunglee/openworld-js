@@ -17,6 +17,110 @@ import { setVK } from '../../vk.js';
 
 export default function(ccgxkObj) {
     const $ = id => document.getElementById(id);
+    const FALLBACK_SAFE_POS = { x: 0, y: 100, z: 0, rX: 0, rY: 0, rZ: 0 };
+    let isAutoFixingBadPos = false;
+
+    /**
+     * 坏坐标的定义要统一。
+     * 这里只接受有限数字，自动排除 null / undefined / NaN / Infinity。
+     */
+    function isValidNum(num) {
+        return typeof num === "number" && Number.isFinite(num);
+    }
+
+    /**
+     * 判断一份位置快照是否健康。
+     * 当前只把位置三轴作为硬门槛，旋转缺失时允许回退为 0。
+     */
+    function isValidPose(pose) {
+        return !!pose && isValidNum(pose.x) && isValidNum(pose.y) && isValidNum(pose.z);
+    }
+
+    /**
+     * 读取最近一次可靠位置。
+     * 优先使用 cookieSavePos.js 持续同步的 lastPos，失效时再回到安全点。
+     */
+    function getSafePoseSnapshot() {
+        const lastPos = ccgxkObj?.lastPos;
+        if (isValidPose(lastPos)) {
+            return {
+                x: lastPos.x,
+                y: lastPos.y,
+                z: lastPos.z,
+                rX: isValidNum(lastPos.rX) ? lastPos.rX : 0,
+                rY: isValidNum(lastPos.rY) ? lastPos.rY : 0,
+                rZ: isValidNum(lastPos.rZ) ? lastPos.rZ : 0,
+            };
+        }
+
+        return { ...FALLBACK_SAFE_POS };
+    }
+
+    /**
+     * 取主角物理体时统一做防空。
+     * 插件初始化比主角更早时，这里直接返回 null，避免读属性报错。
+     */
+    function getMainPlayerBody() {
+        return ccgxkObj?.mainVPlayer?.body || null;
+    }
+
+    /**
+     * 当前主角是否已经出现坏坐标。
+     * 这里只盯位置三轴，因为这正是会污染 cookie 的关键数据。
+     */
+    function hasBrokenPlayerPosition() {
+        const body = getMainPlayerBody();
+        const pos = body?.position;
+        if (!pos) return false;
+        return !isValidNum(pos.x) || !isValidNum(pos.y) || !isValidNum(pos.z);
+    }
+
+    /**
+     * 应用恢复后的朝向信息。
+     * 你现在的可稳定恢复信息主要是 turnRight，因此这里尽量把可写的旋转状态一起补回去。
+     */
+    function restorePlayerRotation(pose) {
+        const mvp = ccgxkObj?.mainVPlayer;
+        const body = mvp?.body;
+        if (!body) return;
+
+        body.quaternion.set(0, 0, 0, 1);
+        if (isValidNum(pose.rY)) ccgxkObj.keys.turnRight = pose.rY;
+        if (isValidNum(pose.rX)) mvp.rX = pose.rX;
+        if (isValidNum(pose.rZ)) mvp.rZ = pose.rZ;
+    }
+
+    /**
+     * 复用同一套修复逻辑：
+     * 先把角色拖回安全位置，再清空速度/受力，最后补地面。
+     * 这样手动修复和自动修复不会分叉成两套行为。
+     */
+    function repairBrokenPlayerPosition(reason = "manual") {
+        const body = getMainPlayerBody();
+        if (!body) return false;
+
+        const safePose = getSafePoseSnapshot();
+
+        // 1. 强制重置位置（优先回到最近一次健康位置，兜底才回安全点）
+        body.position.set(safePose.x, safePose.y, safePose.z);
+
+        // 2. 归零速度（非常重要，否则下一帧继续炸）
+        body.velocity.set(0, 0, 0);
+        body.angularVelocity.set(0, 0, 0);
+        body.force.set(0, 0, 0);
+        body.torque.set(0, 0, 0);
+
+        // 3. 尽量恢复朝向
+        restorePlayerRotation(safePose);
+
+        // 4. 重新添加地面
+        const gX = 0, gY = -2.5, gZ = 0;
+        const gW = 2500, gD = 2500, gH = 6;
+        ccgxkObj.addPhy({ name:'ground-phy', X:gX, Y:gY, Z:gZ, width:gW, depth:gD, height:gH });
+
+        console.log(`[tab] fix bad player position by ${reason}`, safePose);
+        return true;
+    }
 
     const template = document.createElement('template');  //+4 将 html 节点添加到文档
     template.innerHTML = htmlCode;
@@ -85,10 +189,10 @@ export default function(ccgxkObj) {
             const isHidden = modal.classList.contains("zindex-1");
             if (isHidden) {
                 showModal();
-                k.keys['viewForward'] = 0;
-                k.keys['viewBackward'] = 0;
-                k.keys['viewLeft'] = 0;
-                k.keys['viewRight'] = 0;
+                ccgxkObj.keys['viewForward'] = 0;
+                ccgxkObj.keys['viewBackward'] = 0;
+                ccgxkObj.keys['viewLeft'] = 0;
+                ccgxkObj.keys['viewRight'] = 0;
                 unlockPointer();
             } else {
                 hideModal();
@@ -102,9 +206,9 @@ export default function(ccgxkObj) {
     // ========================
 
     function teleportTo(x, y, z, turn = null) {
-        const p = k.mainVPlayer.body.position;
+        const p = ccgxkObj.mainVPlayer.body.position;
         p.x = x; p.y = y; p.z = z;
-        if (turn !== null) k.keys.turnRight = turn;
+        if (turn !== null) ccgxkObj.keys.turnRight = turn;
         // 传送后关闭面板并锁定鼠标
         hideModal();
     }
@@ -218,23 +322,24 @@ export default function(ccgxkObj) {
      * 紧急修复地面缺失 bug
      */
     $("fixError").addEventListener("click", () => {
-        // 1. 强制重置位置 (回到安全点)
-        k.mainVPlayer.body.position.set(0, 100, 0); 
-
-        // 2. 归零速度 (非常重要，否则下一帧继续炸)
-        k.mainVPlayer.body.velocity.set(0, 0, 0);
-        k.mainVPlayer.body.angularVelocity.set(0, 0, 0);
-        k.mainVPlayer.body.force.set(0, 0, 0);
-        k.mainVPlayer.body.torque.set(0, 0, 0);
-
-        // 3. 修复旋转
-        k.mainVPlayer.body.quaternion.set(0, 0, 0, 1);
-
-        // 4. 重新添加地面
-        const gX = 0, gY = -2.5, gZ = 0;
-        const gW = 2500, gD = 2500, gH = 6;
-        k.addPhy({ name:'ground-phy', X:gX, Y:gY, Z:gZ, width:gW, depth:gD, height:gH });  // 物理体
+        repairBrokenPlayerPosition("manual-button");
     });
+
+    /**
+     * 自动巡检主角坐标。
+     * 一旦发现位置三轴坏掉，就立刻走同一套紧急修复流程，并避免同一波异常重复触发。
+     */
+    setInterval(() => {
+        if (ccgxkObj?.isMVPInit !== true) return;
+        if (!hasBrokenPlayerPosition()) {
+            isAutoFixingBadPos = false;
+            return;
+        }
+        if (isAutoFixingBadPos) return;
+
+        isAutoFixingBadPos = true;
+        repairBrokenPlayerPosition("auto-bad-position");
+    }, 200);
 }
 
 const htmlCode = `
