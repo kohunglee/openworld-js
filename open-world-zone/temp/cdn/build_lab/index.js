@@ -28,7 +28,7 @@ export default function renderBuildLab(ccgxkObj, runtimeContext = {}) {
     // 先把建筑 id 暂存到运行时上下文，方便后续画板系统继续挂接。
     ccgxkObj.currentBuildingRuntime = {
         id: runtimeContext?.id || '',
-        modelName: runtimeContext?.modelName || 'build_lab',
+        modelUrl: runtimeContext?.modelUrl || '',
     };
 
     // 这一段沿用原模型的渲染准备逻辑，尽量少改旧代码。

@@ -3,13 +3,11 @@
  *
  * 这一版按新的目标重做：
  * 1. `temp/scene-config.json` 只负责“总配置”。
- * 2. `temp/cdn/<modelName>/index.js` 负责“模型整包逻辑”。
+ * 2. `temp/cdn/.../index.js` 负责“模型整包逻辑”。
  * 3. 模型位置只由总配置决定，模型包内部不再偷偷决定摆放位置。
  */
 
 const DEFAULT_SCENE_CONFIG_URL = new URL('../../temp/scene-config.json', import.meta.url);
-const DEFAULT_CDN_BASE_URL = new URL('../../temp/cdn/', import.meta.url);
-
 /**
  * 读取 JSON 配置。
  * 后面切 SaaS 时，这里可以直接换成真实接口返回值。
@@ -45,11 +43,13 @@ function getSceneConfigUrl() {
 }
 
 /**
- * 根据 modelName 拼出 CDN 里的统一入口。
- * 你已经确认入口想固定成 `<modelName>/index.js`。
+ * 解析模型入口 URL。
+ *
+ * 现在总配置里直接写 `modelUrl`，
+ * 所以前端不再帮忙拼 modelName，也不再依赖固定目录规则。
  */
-function getModelEntryUrl(modelName) {
-    return new URL(`./${modelName}/index.js`, DEFAULT_CDN_BASE_URL).href;
+function resolveModelEntryUrl(modelUrl, sceneUrl) {
+    return new URL(modelUrl, sceneUrl).href;
 }
 
 /**
@@ -67,21 +67,21 @@ async function loadSceneConfig() {
  * 加载某个模型入口，并执行它导出的默认渲染函数。
  * 这里传进去的 runtimeContext，就是未来 SaaS 最关心的那层“实例信息”。
  */
-async function renderBuilding(ccgxkObj, building) {
+async function renderBuilding(ccgxkObj, building, sceneUrl) {
     const id = building?.id;
-    const modelName = building?.modelName;
+    const modelUrl = building?.modelUrl;
 
     if (!id) {
         console.error('[scene_model_loader] 跳过一条建筑配置：缺少 id', building);
         return;
     }
-    if (!modelName) {
-        console.error(`[scene_model_loader] 跳过建筑 ${id}：缺少 modelName`);
+    if (!modelUrl) {
+        console.error(`[scene_model_loader] 跳过建筑 ${id}：缺少 modelUrl`);
         return;
     }
 
     try {
-        const entryUrl = getModelEntryUrl(modelName);
+        const entryUrl = resolveModelEntryUrl(modelUrl, sceneUrl);
         const mod = await import(entryUrl);
         const renderModel = mod?.default;
 
@@ -91,7 +91,7 @@ async function renderBuilding(ccgxkObj, building) {
 
         await renderModel(ccgxkObj, {
             id,
-            modelName,
+            modelUrl: entryUrl,
             position: normalizePosition(building.position),
             enabled: building.enabled !== false,
         });
@@ -118,7 +118,7 @@ export default async function sceneModelLoader(ccgxkObj) {
 
         for (const building of buildings) {
             if (building?.enabled === false) continue;
-            await renderBuilding(ccgxkObj, building);
+            await renderBuilding(ccgxkObj, building, sceneUrl);
         }
     } catch (error) {
         console.error('[scene_model_loader] 场景总配置加载失败，本次将只保留空白场景。', error);

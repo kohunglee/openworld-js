@@ -75,7 +75,7 @@ ${cdnBaseUrl}/${modelName}/index.js
   "buildings": [
     {
       "id": "your-own-id",
-      "modelName": "build_lab",
+      "modelUrl": "https://your-cdn.example.com/build_lab/index.js",
       "position": { "x": 0, "y": 0, "z": 0 },
       "enabled": true
     }
@@ -96,9 +96,10 @@ ${cdnBaseUrl}/${modelName}/index.js
   - 这个不是模型编号，而是“场景里的这一个建筑实例”的编号
   - 以后你要给画板、后端编辑、删除、排序等功能挂接，都应该优先认这个 id
 
-- `buildings[].modelName`
-  - 模型名
-  - 前端会拿它去 CDN 路径里拼 `/<modelName>/index.js`
+- `buildings[].modelUrl`
+  - 模型入口 URL
+  - 这里直接写最终可访问的完整地址最省心
+  - 例如：`https://your-cdn.example.com/build_lab/index.js`
 
 - `buildings[].position`
   - 建筑位置
@@ -125,8 +126,7 @@ ${cdnBaseUrl}/${modelName}/index.js
 
 1. 读取 `temp/scene-config.json`
 2. 遍历 `buildings`
-3. 对每条建筑配置，按 `modelName` 动态加载：
-   - `temp/cdn/<modelName>/index.js`
+3. 对每条建筑配置，直接按 `modelUrl` 动态加载对应 `index.js`
 4. 把该条建筑自己的 `id / position / enabled` 传给模型入口函数
 5. 模型入口只负责渲染该建筑
 
@@ -137,11 +137,41 @@ ${cdnBaseUrl}/${modelName}/index.js
 也就是说，先不要让后端去操心模型内部 cube 数据，只需要管：
 
 - 建筑实例 id
-- modelName
+- modelUrl
 - position
 - enabled
 
 这样后端编辑体验会比较简单，前端渲染层也不需要跟着大改。
+
+## CDN 模型包怎么打
+
+当前已经额外接了一条专门给 CDN 模型包用的 Vite 构建命令：
+
+```bash
+npm run build:cdn
+```
+
+执行后会分别产出两个独立、压缩后的文件：
+
+```text
+dist/cdn/build_lab/index.js
+dist/cdn/xhall/index.js
+```
+
+这两个文件的设计目标是：
+
+- 每个模型一个独立 `index.js`
+- 已压缩
+- 不拆共享 chunk
+- 更适合你单独上传到 CDN
+
+也就是说，后面如果你只更新了 `build_lab`，理论上只需要重新打包并上传：
+
+```text
+dist/cdn/build_lab/index.js
+```
+
+不需要动 `xhall` 的线上文件路径规则。
 
 ## 当前的空场景
 
@@ -155,3 +185,13 @@ ${cdnBaseUrl}/${modelName}/index.js
 ```
 
 也就是页面启动后，只保留地面、天空、基础移动和原有插件，不默认摆任何建筑。
+
+## 调试阶段的一个提醒
+
+当前仓库里的示例 `scene-config.json` 使用的是：
+
+```text
+http://127.0.0.1:5173/open-world-zone/temp/cdn/.../index.js
+```
+
+如果你本地 Vite 不是跑在 `127.0.0.1:5173`，记得把 URL 改成你当前实际访问的地址。

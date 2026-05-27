@@ -28,7 +28,7 @@ export default function renderXhall(ccgxkObj, runtimeContext = {}) {
 
     ccgxkObj.currentBuildingRuntime = {
         id: runtimeContext?.id || '',
-        modelName: runtimeContext?.modelName || 'xhall',
+        modelUrl: runtimeContext?.modelUrl || '',
     };
 
     ccgxkObj.dataProc.process({
