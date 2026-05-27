@@ -8,6 +8,7 @@
  */
 
 const DEFAULT_SCENE_CONFIG_URL = new URL('../../temp/scene-config.json', import.meta.url);
+const SCENE_CONFIG_STORAGE_KEY = 'owz_scene_config_url';
 /**
  * 读取 JSON 配置。
  * 后面切 SaaS 时，这里可以直接换成真实接口返回值。
@@ -33,13 +34,20 @@ function normalizePosition(position) {
 }
 
 /**
- * 支持通过 query 参数临时切换总配置文件。
- * 这样本地可以模拟不同 server 的场景，而不需要反复改源码。
+ * 读取本次要使用的总配置地址。
+ * 优先级：
+ * 1. query 参数仍保留给 manage2/Open Preview 这类临时调试入口；
+ * 2. Tab Save 验证通过后写入的世界配置地址；
+ * 3. 本地默认 temp 配置。
  */
 function getSceneConfigUrl() {
     const raw = new URLSearchParams(window.location.search).get('sceneConfig');
-    if (!raw) return DEFAULT_SCENE_CONFIG_URL.href;
-    return new URL(raw, window.location.href).href;
+    if (raw) return new URL(raw, window.location.href).href;
+
+    const stored = localStorage.getItem(SCENE_CONFIG_STORAGE_KEY);
+    if (stored) return new URL(stored, window.location.href).href;
+
+    return DEFAULT_SCENE_CONFIG_URL.href;
 }
 
 /**

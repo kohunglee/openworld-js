@@ -8,6 +8,7 @@ import { normalizeApiBase } from '../signboard_lab/config.js';
 import { readServerErrorMessage, getErrorMessage } from '../signboard_lab/errorMessage.js';
 
 const STORAGE_KEY = 'signboard_server_address';
+const SCENE_CONFIG_STORAGE_KEY = 'owz_scene_config_url';
 const DEFAULT_ADDRESS = 'https://openworld.zone/owz-serverapi';
 
 /**
@@ -26,11 +27,20 @@ export function saveServerAddress(address) {
 }
 
 /**
+ * 保存已验证过的世界总配置地址。
+ * 注意：只有 `/scene-config` 请求成功后才能写入，避免下次打开直接进坏世界。
+ */
+function saveSceneConfigUrl(sceneConfigUrl) {
+    localStorage.setItem(SCENE_CONFIG_STORAGE_KEY, sceneConfigUrl);
+}
+
+/**
  * 重置为默认地址
  */
 export function resetServerAddress() {
     const normalized = normalizeApiBase(DEFAULT_ADDRESS);
     localStorage.setItem(STORAGE_KEY, normalized);
+    localStorage.removeItem(SCENE_CONFIG_STORAGE_KEY);
     return normalized;
 }
 
@@ -45,6 +55,37 @@ function emitServerStatus(status, detail = {}) {
     const payload = { status, time: Date.now(), ...detail };
     window.signboardServerStatus = payload;
     window.dispatchEvent(new CustomEvent('signboard:server-status', { detail: payload }));
+}
+
+/**
+ * 从世界 API 根地址推导场景配置地址。
+ * 前端不解析 slug，也不关心路径叫什么；只要求服务端遵守 `{apiBase}/scene-config` 协议。
+ */
+function getSceneConfigUrlFromApiBase(apiBase) {
+    return `${normalizeApiBase(apiBase)}/scene-config`;
+}
+
+/**
+ * 验证世界 API 是否真的能提供 scene-config。
+ * 第一版 Save 必须先验证成功，再写 localStorage；失败时保持旧服务器不变。
+ */
+async function assertSceneConfigAvailable(apiBase) {
+    const sceneConfigUrl = getSceneConfigUrlFromApiBase(apiBase);
+    const res = await fetch(sceneConfigUrl, { cache: 'no-store' });
+
+    if (!res.ok) {
+        const message = await readServerErrorMessage(res);
+        throw new Error(`Scene config unavailable: ${message}`);
+    }
+
+    const data = await res.json();
+    const hasModels = data && typeof data.models === 'object' && data.models !== null;
+    const hasBuildings = Array.isArray(data?.buildings);
+    if (!hasModels || !hasBuildings) {
+        throw new Error('Scene config format invalid: models/buildings missing.');
+    }
+
+    return sceneConfigUrl;
 }
 
 /**
@@ -105,8 +146,8 @@ export function initServerConfig($, onAddressChange) {
         const pending = detail.pending || 0;
         const statusMap = {
             online: { text: 'Signboard service connected', color: '#000' },
-            offline: { text: `Signboard service offline, retry paused${pending ? ` (pending ${pending})` : ''}`, color: '#000' },
-            connecting: { text: 'Reconnecting signboard service...', color: '#000' },
+            offline: { text: detail.message || `World API unavailable${pending ? ` (pending ${pending})` : ''}`, color: '#000' },
+            connecting: { text: 'Checking world API...', color: '#000' },
             idle: { text: 'Signboard service idle', color: '#000' },
             unknown: { text: 'Checking signboard service...', color: '#000' }
         };
@@ -122,18 +163,32 @@ export function initServerConfig($, onAddressChange) {
     renderStatus();
     window.addEventListener('signboard:server-status', e => renderStatus(e.detail));
 
-    // 保存按钮
-    saveBtn.addEventListener('click', () => {
+    // 保存按钮：先确认世界配置可读，再一次性切换“建筑世界 + 画板服务”。
+    saveBtn.addEventListener('click', async () => {
         const address = normalizeApiBase(input.value);
         if (!address) {
             alert('Server address cannot be empty');
             input.value = getServerAddress();
             return;
         }
-        saveServerAddress(address);
-        renderStatus({ status: 'idle' });
-        if (onAddressChange) onAddressChange(address);
-        reloadWithProgressCursor();
+
+        saveBtn.disabled = true;
+        renderStatus({ status: 'connecting' });
+        try {
+            const sceneConfigUrl = await assertSceneConfigAvailable(address);
+            saveServerAddress(address);
+            saveSceneConfigUrl(sceneConfigUrl);
+            renderStatus({ status: 'idle' });
+            if (onAddressChange) onAddressChange(address);
+            reloadWithProgressCursor();
+        } catch (error) {
+            const message = getErrorMessage(error, 'World API unavailable.');
+            renderStatus({ status: 'offline', message });
+            alert(message);
+            input.value = getServerAddress();
+        } finally {
+            saveBtn.disabled = false;
+        }
     });
 
     // 默认按钮

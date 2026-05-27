@@ -703,8 +703,8 @@ const htmlCode = `
     <section>
         <h3>Server</h3>
         <div class="tab-row tab-row-gap-8">
-            <label class="tab-label-nowrap">Address:</label>
-            <input type="text" id="serverAddressInput" placeholder="127.0.0.1:8899" class="tab-input-text">
+            <label class="tab-label-nowrap">World API:</label>
+            <input type="text" id="serverAddressInput" placeholder="http://127.0.0.1:3000/owzapi/mytest001" class="tab-input-text">
             <button id="serverAddressSave" class="tab-btn-md">Save</button>
             <button id="serverAddressReset" class="tab-btn-md">Default</button>
         </div>
@@ -712,7 +712,7 @@ const htmlCode = `
             Signboard service connected.
         </div>
         <div class="tab-note tab-note-mb8">
-            The page auto-reloads after address changes.
+            Save checks /scene-config first, then reloads the world.
         </div>
         <hr>
     </section>
