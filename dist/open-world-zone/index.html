@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style> body { margin: 0; } </style>
+    <title>Open World Zone</title>
+    <script type="importmap">
+        {
+            "imports": {
+                "@plugins/": "../plugins/"
+            }
+        }
+    </script>
+  <script type="module" crossorigin src="../open-world-zone/assets/open-world-zone.js"></script>
+  <link rel="modulepreload" crossorigin href="../shared/assets/preload-helper.DEhDIiTV.js">
+</head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q5WBQ917LX"></script>
+<script>
+    if(location.hostname=="openworld.zone"){
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Q5WBQ917LX');
+    }
+</script>
+
+<body>
+    <img src="../open-world-zone/assets/texture.CS3Bzy7D.jpeg" id="marble" hidden>
+    <img src="../open-world-zone/assets/paper02.CoF19MRd.jpg" id="paper02" hidden>
+    <canvas id="openworldCanv" style="width:99vw;height:99vh"></canvas>
+
+</body>
