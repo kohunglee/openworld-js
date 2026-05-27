@@ -48,7 +48,7 @@ temp/
 ${cdnBaseUrl}/${modelName}/index.js
 ```
 
-也就是说，后端只要返回 `modelName: "build_lab"`，前端就会去找：
+也就是说，只要你的模型实际放在：
 
 ```text
 .../cdn/build_lab/index.js
@@ -61,7 +61,8 @@ ${cdnBaseUrl}/${modelName}/index.js
 总配置只关心：
 
 - 当前场景里放了哪些建筑
-- 它们各自用哪个模型
+- 顶层统一声明模型 URL 注册表
+- 每个建筑各自引用哪个模型 key
 - 它们各自放在什么位置
 - 是否启用
 
@@ -72,11 +73,14 @@ ${cdnBaseUrl}/${modelName}/index.js
 ```json
 {
   "sceneName": "empty-scene-demo",
+  "models": {
+    "a": "https://your-cdn.example.com/build_lab/index.js"
+  },
   "buildings": [
     {
       "id": "your-own-id",
       "buildingName": "build001",
-      "modelUrl": "https://your-cdn.example.com/build_lab/index.js",
+      "model": "a",
       "position": { "x": 0, "y": 0, "z": 0 },
       "enabled": true
     }
@@ -88,6 +92,12 @@ ${cdnBaseUrl}/${modelName}/index.js
 
 - `sceneName`
   - 当前场景名，仅做说明展示
+
+- `models`
+  - 模型 URL 注册表
+  - 顶层统一声明一次，避免很多建筑重复写同一个 URL
+  - 例如：
+    - `"a": "https://your-cdn.example.com/build_lab/index.js"`
 
 - `buildings`
   - 场景里的建筑数组
@@ -108,10 +118,12 @@ ${cdnBaseUrl}/${modelName}/index.js
     - `board1h-3`
   - 有建筑名的实例，在同一个服务器场景内必须全局唯一
 
-- `buildings[].modelUrl`
-  - 模型入口 URL
-  - 这里直接写最终可访问的完整地址最省心
-  - 例如：`https://your-cdn.example.com/build_lab/index.js`
+- `buildings[].model`
+  - 模型简写 key
+  - 前端会去顶层 `models` 注册表里找到它对应的 URL
+  - 例如：
+    - `model: "a"`
+    - `models.a = "https://your-cdn.example.com/build_lab/index.js"`
 
 - `buildings[].position`
   - 建筑位置
@@ -138,9 +150,10 @@ ${cdnBaseUrl}/${modelName}/index.js
 
 1. 读取 `temp/scene-config.json`
 2. 遍历 `buildings`
-3. 对每条建筑配置，直接按 `modelUrl` 动态加载对应 `index.js`
-4. 把该条建筑自己的 `id / position / enabled` 传给模型入口函数
-5. 模型入口只负责渲染该建筑
+3. 对每条建筑配置，先用 `model` 去顶层 `models` 注册表里查 URL
+4. 再按查到的 URL 动态加载对应 `index.js`
+5. 把该条建筑自己的 `id / position / enabled` 传给模型入口函数
+6. 模型入口只负责渲染该建筑
 
 ## 画板 key 规则
 
@@ -192,7 +205,7 @@ testSign12
 也就是说，先不要让后端去操心模型内部 cube 数据，只需要管：
 
 - 建筑实例 id
-- modelUrl
+- model
 - position
 - enabled
 

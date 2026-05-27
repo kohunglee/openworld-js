@@ -45,10 +45,25 @@ function getSceneConfigUrl() {
 /**
  * 解析模型入口 URL。
  *
- * 现在总配置里直接写 `modelUrl`，
- * 所以前端不再帮忙拼 modelName，也不再依赖固定目录规则。
+ * 当前协议：
+ * 1. `scene-config.json` 顶层先声明 `models` 注册表。
+ * 2. 每个建筑实例只写 `model` 简写 key。
+ * 3. 前端再从注册表里取出最终 URL。
  */
-function resolveModelEntryUrl(modelUrl, sceneUrl) {
+function resolveModelEntryUrl(model, models, sceneUrl) {
+    const modelKey = typeof model === 'string' ? model.trim() : '';
+    if (!modelKey) {
+        throwFatalSceneConfigError('存在建筑缺少 model 字段，项目已终止加载。', { model });
+    }
+
+    const modelUrl = typeof models?.[modelKey] === 'string' ? models[modelKey].trim() : '';
+    if (!modelUrl) {
+        throwFatalSceneConfigError(`模型 key "${modelKey}" 没有在 scene-config 的 models 注册表里声明。`, {
+            modelKey,
+            models,
+        });
+    }
+
     return new URL(modelUrl, sceneUrl).href;
 }
 
@@ -88,7 +103,8 @@ async function loadSceneConfig() {
     const sceneUrl = getSceneConfigUrl();
     const sceneData = await readJson(sceneUrl, 'scene-config');
     const buildings = Array.isArray(sceneData?.buildings) ? sceneData.buildings : [];
-    return { sceneUrl, sceneData, buildings };
+    const models = sceneData && typeof sceneData.models === 'object' ? sceneData.models : {};
+    return { sceneUrl, sceneData, buildings, models };
 }
 
 /**
@@ -96,7 +112,7 @@ async function loadSceneConfig() {
  *
  * 这是服务器内容映射的主键之一，不能容忍重复。
  */
-function validateBuildingNames(buildings, sceneUrl) {
+function validateBuildingNames(buildings, models, sceneUrl) {
     const namedUsed = new Map();
     const unnamedModelUsed = new Map();
 
@@ -105,7 +121,7 @@ function validateBuildingNames(buildings, sceneUrl) {
 
         const id = String(building?.id || '').trim();
         const buildingName = resolveBuildingName(building);
-        const modelUrl = String(building?.modelUrl || '').trim();
+        const model = String(building?.model || '').trim();
 
         if (!id) {
             throwFatalSceneConfigError('scene-config 中存在缺少 id 的建筑配置，项目已终止加载。', {
@@ -113,13 +129,13 @@ function validateBuildingNames(buildings, sceneUrl) {
             });
         }
 
-        if (!modelUrl) {
-            throwFatalSceneConfigError(`建筑 ${id} 缺少 modelUrl，项目已终止加载。`, {
+        if (!model) {
+            throwFatalSceneConfigError(`建筑 ${id} 缺少 model，项目已终止加载。`, {
                 building,
             });
         }
 
-        const resolvedModelUrl = resolveModelEntryUrl(modelUrl, sceneUrl);
+        const resolvedModelUrl = resolveModelEntryUrl(model, models, sceneUrl);
 
         // 有建筑名：全服务器范围内必须唯一，和模型无关。
         if (buildingName) {
@@ -155,22 +171,22 @@ function validateBuildingNames(buildings, sceneUrl) {
  * 加载某个模型入口，并执行它导出的默认渲染函数。
  * 这里传进去的 runtimeContext，就是未来 SaaS 最关心的那层“实例信息”。
  */
-async function renderBuilding(ccgxkObj, building, sceneUrl) {
+async function renderBuilding(ccgxkObj, building, models, sceneUrl) {
     const id = building?.id;
-    const modelUrl = building?.modelUrl;
+    const model = building?.model;
     const buildingName = resolveBuildingName(building);
 
     if (!id) {
         console.error('[scene_model_loader] 跳过一条建筑配置：缺少 id', building);
         return;
     }
-    if (!modelUrl) {
-        console.error(`[scene_model_loader] 跳过建筑 ${id}：缺少 modelUrl`);
+    if (!model) {
+        console.error(`[scene_model_loader] 跳过建筑 ${id}：缺少 model`);
         return;
     }
 
     try {
-        const entryUrl = resolveModelEntryUrl(modelUrl, sceneUrl);
+        const entryUrl = resolveModelEntryUrl(model, models, sceneUrl);
         const mod = await import(entryUrl);
         const renderModel = mod?.default;
 
@@ -198,8 +214,8 @@ async function renderBuilding(ccgxkObj, building, sceneUrl) {
  */
 export default async function sceneModelLoader(ccgxkObj) {
     try {
-        const { sceneUrl, sceneData, buildings } = await loadSceneConfig();
-        validateBuildingNames(buildings, sceneUrl);
+        const { sceneUrl, sceneData, buildings, models } = await loadSceneConfig();
+        validateBuildingNames(buildings, models, sceneUrl);
 
         window.owzSceneConfig = {
             sceneUrl,
@@ -209,7 +225,7 @@ export default async function sceneModelLoader(ccgxkObj) {
 
         for (const building of buildings) {
             if (building?.enabled === false) continue;
-            await renderBuilding(ccgxkObj, building, sceneUrl);
+            await renderBuilding(ccgxkObj, building, models, sceneUrl);
         }
     } catch (error) {
         console.error('[scene_model_loader] 场景总配置加载失败，本次将只保留空白场景。', error);
