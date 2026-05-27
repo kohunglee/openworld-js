@@ -5,6 +5,7 @@
 import { COLORS, D } from './constants.js';
 
 export function processFullState(insts, ccgxkObj, buildOffset) {
+    const buildingName = ccgxkObj.currentBuildingRuntime?.buildingName || '';
     
     let isok = false;if(ccgxkObj.mode !== 0){isok = true}
     // isok = true;
@@ -123,7 +124,8 @@ export function processFullState(insts, ccgxkObj, buildOffset) {
                     insts[i].z = -11.732;
                 }
 
-                insts[i].t = 'house1H3-' + (sign_index++);
+                const rawKey = `house1H3-${sign_index++}`;
+                insts[i].t = buildingName ? `${buildingName}-${rawKey}` : rawKey;
                 arrC.push({ ...insts[i] });
                 insts[i] = { "del": 1 };
             }
@@ -136,7 +138,8 @@ export function processFullState(insts, ccgxkObj, buildOffset) {
             if (insts[i]) {
                 insts[i].dz ??= 3;
                 insts[i].st = 1;
-                insts[i].t = 'board1h-' + (sign_index++);
+                const rawKey = `board1h-${sign_index++}`;
+                insts[i].t = buildingName ? `${buildingName}-${rawKey}` : rawKey;
                 arrD.push({ ...insts[i] });
                 insts[i] = { "del": 1 };
             }
@@ -149,7 +152,8 @@ export function processFullState(insts, ccgxkObj, buildOffset) {
             if (insts[i]) {
                 insts[i].dz ??= 2;
                 insts[i].st = 1;
-                insts[i].t = 'floorSign-' + (sign_index++);
+                const rawKey = `floorSign-${sign_index++}`;
+                insts[i].t = buildingName ? `${buildingName}-${rawKey}` : rawKey;
                 arr.push({ ...insts[i] });
                 insts[i] = { "del": 1 };
             }

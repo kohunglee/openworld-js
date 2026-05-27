@@ -75,6 +75,7 @@ ${cdnBaseUrl}/${modelName}/index.js
   "buildings": [
     {
       "id": "your-own-id",
+      "buildingName": "build001",
       "modelUrl": "https://your-cdn.example.com/build_lab/index.js",
       "position": { "x": 0, "y": 0, "z": 0 },
       "enabled": true
@@ -95,6 +96,17 @@ ${cdnBaseUrl}/${modelName}/index.js
   - 每个建筑自己的唯一编号
   - 这个不是模型编号，而是“场景里的这一个建筑实例”的编号
   - 以后你要给画板、后端编辑、删除、排序等功能挂接，都应该优先认这个 id
+
+- `buildings[].buildingName`
+  - 当前建筑实例的建筑名
+  - 例如：`build001`
+  - 有建筑名时，最终模型内部的画板 key 会拼成：
+    - `build001-testSign12`
+    - `build001-board1h-3`
+  - 没有建筑名时，会兼容老代码，继续使用裸 key：
+    - `testSign12`
+    - `board1h-3`
+  - 有建筑名的实例，在同一个服务器场景内必须全局唯一
 
 - `buildings[].modelUrl`
   - 模型入口 URL
@@ -129,6 +141,49 @@ ${cdnBaseUrl}/${modelName}/index.js
 3. 对每条建筑配置，直接按 `modelUrl` 动态加载对应 `index.js`
 4. 把该条建筑自己的 `id / position / enabled` 传给模型入口函数
 5. 模型入口只负责渲染该建筑
+
+## 画板 key 规则
+
+当前有画板的建筑模型，不再直接使用裸的内部 key，例如：
+
+- `testSign12`
+- `board1h-3`
+- `floorSign-1`
+
+当前规则分两种：
+
+```text
+有 buildingName：<buildingName>-<模型内部原完整key>
+无 buildingName：直接使用 <模型内部原完整key>
+```
+
+例如：
+
+```text
+build001-testSign12
+build001-board1h-3
+build001-floorSign-1
+testSign12
+```
+
+这样同一个服务器里多个建筑实例就不会把画板内容串在一起。
+
+## buildingName 和无名实例的致命约束
+
+`buildingName` 不是普通备注字段，它直接影响服务器里“一个画板 key 对应一个内容”的映射。
+
+所以当前前端规则是：
+
+- 有 `buildingName` 的建筑实例：
+  - `buildingName` 在同一服务器场景内必须全局唯一
+- 没有 `buildingName` 的建筑实例：
+  - 为了兼容老代码，同一个模型在同一服务器里只允许出现一次无名实例
+  - 如果同一个模型被声明了第二次，至少有一个必须带 `buildingName`
+- 如果冲突：
+  - 控制台报错
+  - 页面弹错
+  - 场景加载直接终止
+- 前端绝不会偷偷帮你补后缀
 
 ## 后端 SaaS 以后怎么对接最顺
 

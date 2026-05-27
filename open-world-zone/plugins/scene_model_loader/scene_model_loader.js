@@ -53,6 +53,34 @@ function resolveModelEntryUrl(modelUrl, sceneUrl) {
 }
 
 /**
+ * 解析建筑实例的建筑名。
+ *
+ * 当前规则：
+ * 1. 优先使用 scene-config 里显式声明的 buildingName。
+ * 2. 如果没写，就视为“无名建筑”。
+ */
+function resolveBuildingName(building) {
+    return typeof building?.buildingName === 'string' ? building.buildingName.trim() : '';
+}
+
+/**
+ * 这是一个致命错误处理器。
+ *
+ * buildingName / 无名实例规则一旦冲突，前端不能偷偷补后缀，否则会和服务器里的内容主键冲突。
+ * 所以这里必须：
+ * 1. 控制台报错
+ * 2. 弹窗报错
+ * 3. 直接抛异常终止场景加载
+ */
+function throwFatalSceneConfigError(message, detail = {}) {
+    console.error('[scene_model_loader] 致命配置错误：' + message, detail);
+    if (typeof window !== 'undefined' && typeof window.alert === 'function') {
+        window.alert(message);
+    }
+    throw new Error(message);
+}
+
+/**
  * 读取场景总配置。
  * 约定字段尽量极简，后端 SaaS 对接时也更省心。
  */
@@ -64,12 +92,73 @@ async function loadSceneConfig() {
 }
 
 /**
+ * 在真正加载建筑前，先校验全场景的 buildingName 和无名实例规则。
+ *
+ * 这是服务器内容映射的主键之一，不能容忍重复。
+ */
+function validateBuildingNames(buildings, sceneUrl) {
+    const namedUsed = new Map();
+    const unnamedModelUsed = new Map();
+
+    for (const building of buildings) {
+        if (building?.enabled === false) continue;
+
+        const id = String(building?.id || '').trim();
+        const buildingName = resolveBuildingName(building);
+        const modelUrl = String(building?.modelUrl || '').trim();
+
+        if (!id) {
+            throwFatalSceneConfigError('scene-config 中存在缺少 id 的建筑配置，项目已终止加载。', {
+                building,
+            });
+        }
+
+        if (!modelUrl) {
+            throwFatalSceneConfigError(`建筑 ${id} 缺少 modelUrl，项目已终止加载。`, {
+                building,
+            });
+        }
+
+        const resolvedModelUrl = resolveModelEntryUrl(modelUrl, sceneUrl);
+
+        // 有建筑名：全服务器范围内必须唯一，和模型无关。
+        if (buildingName) {
+            const previous = namedUsed.get(buildingName);
+            if (previous) {
+                throwFatalSceneConfigError(
+                    `检测到重复的 buildingName: "${buildingName}"。`
+                    + ` 它同时出现在建筑 "${previous.id}" 和 "${id}" 中。`
+                    + ' buildingName 在同一个服务器里必须唯一，请先修正服务器配置后再刷新。',
+                    { previous, current: building }
+                );
+            }
+            namedUsed.set(buildingName, building);
+            continue;
+        }
+
+        // 无建筑名：为了兼容老代码，一个模型在同一个服务器里只允许出现一次无名实例。
+        const previousUnnamed = unnamedModelUsed.get(resolvedModelUrl);
+        if (previousUnnamed) {
+            throwFatalSceneConfigError(
+                `模型 "${resolvedModelUrl}" 出现了多个无 buildingName 的建筑实例。`
+                + ` 当前冲突建筑为 "${previousUnnamed.id}" 和 "${id}"。`
+                + ' 为了兼容老画板 key（如 testSign12），同一个模型在同一服务器里只允许一个无名实例；'
+                + ' 如果要再放第二个同模型建筑，必须给其中一个设置 buildingName。',
+                { previous: previousUnnamed, current: building }
+            );
+        }
+        unnamedModelUsed.set(resolvedModelUrl, building);
+    }
+}
+
+/**
  * 加载某个模型入口，并执行它导出的默认渲染函数。
  * 这里传进去的 runtimeContext，就是未来 SaaS 最关心的那层“实例信息”。
  */
 async function renderBuilding(ccgxkObj, building, sceneUrl) {
     const id = building?.id;
     const modelUrl = building?.modelUrl;
+    const buildingName = resolveBuildingName(building);
 
     if (!id) {
         console.error('[scene_model_loader] 跳过一条建筑配置：缺少 id', building);
@@ -92,6 +181,7 @@ async function renderBuilding(ccgxkObj, building, sceneUrl) {
         await renderModel(ccgxkObj, {
             id,
             modelUrl: entryUrl,
+            buildingName,
             position: normalizePosition(building.position),
             enabled: building.enabled !== false,
         });
@@ -109,6 +199,7 @@ async function renderBuilding(ccgxkObj, building, sceneUrl) {
 export default async function sceneModelLoader(ccgxkObj) {
     try {
         const { sceneUrl, sceneData, buildings } = await loadSceneConfig();
+        validateBuildingNames(buildings, sceneUrl);
 
         window.owzSceneConfig = {
             sceneUrl,
@@ -122,5 +213,6 @@ export default async function sceneModelLoader(ccgxkObj) {
         }
     } catch (error) {
         console.error('[scene_model_loader] 场景总配置加载失败，本次将只保留空白场景。', error);
+        throw error;
     }
 }

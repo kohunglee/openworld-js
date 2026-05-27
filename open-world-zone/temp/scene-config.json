@@ -3,12 +3,14 @@
   "buildings": [
     {
       "id": "b001",
+      "buildingName": "",
       "modelUrl": "http://127.0.0.1:8089/open-world-zone/temp/cdn/build_lab/index.js",
       "position": { "x": 50, "y": 0, "z": -50 },
       "enabled": true
     },
     {
       "id": "b002",
+      "buildingName": "xhall001",
       "modelUrl": "http://127.0.0.1:8089/open-world-zone/temp/cdn/xhall/index.js",
       "position": { "x": 90, "y": 0, "z": 0 },
       "enabled": true
@@ -17,6 +19,12 @@
       "id": "b003",
       "modelUrl": "http://127.0.0.1:8089/open-world-zone/temp/cdn/x/index.js",
       "position": { "x": 20, "y": 0, "z": 0 },
+      "enabled": true
+    },
+    {
+      "id": "b004",
+      "modelUrl": "http://127.0.0.1:8089/open-world-zone/temp/cdn/x/index.js",
+      "position": { "x": 20, "y": 0, "z": 50 },
       "enabled": true
     }
   ]

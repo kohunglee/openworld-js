@@ -22,14 +22,15 @@ export default function renderBuildLab(ccgxkObj, runtimeContext = {}) {
         z: runtimeContext?.position?.z || 0,
     };
 
-    // 原模型的主要加工逻辑继续复用，只是把位置改成外部传入。
-    processFullState(insts, ccgxkObj, buildOffset);
-
-    // 先把建筑 id 暂存到运行时上下文，方便后续画板系统继续挂接。
+    // 画板 key 在 processFullState 里就会生成，所以要先把运行时上下文挂上去。
     ccgxkObj.currentBuildingRuntime = {
         id: runtimeContext?.id || '',
         modelUrl: runtimeContext?.modelUrl || '',
+        buildingName: runtimeContext?.buildingName || '',
     };
+
+    // 原模型的主要加工逻辑继续复用，只是把位置改成外部传入。
+    processFullState(insts, ccgxkObj, buildOffset);
 
     // 这一段沿用原模型的渲染准备逻辑，尽量少改旧代码。
     ccgxkObj.visCubeLen = insts.length - 1;
