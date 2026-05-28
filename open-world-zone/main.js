@@ -47,8 +47,6 @@ import symoffset from './plugins/symoffset/symoffset.js';  // 对称阵列工具
 symoffset(k);
 import signBoard_lab from './plugins/signboard_lab/signTest.js';  // 纹理研究测试工具
 signBoard_lab(k);
-import sceneModelLoader from './plugins/scene_model_loader/scene_model_loader.js';  // 从 temp 场景协议里加载建筑
-await sceneModelLoader(k);
 import somecube from './plugins/somecube/somecube.js';  // 几个实验块儿
 somecube(k);
 import normalevent from './plugins/normalevent/normalevent.js';  // 常用的事件
@@ -72,6 +70,10 @@ const lastPos = k?.lastPos || {x:118.48, y:2.93, z:13.25, rX:0, rY:0, rZ:0};
 k.keys.turnRight = lastPos.rY;
 k.mainVPlayer = k.addPhy({ name:'mainPlayer',t:marble,mix:0.3, X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z, size:1, mass:50, colliGroup:1 });
 k.W.cube({ n:'mainPlayer', b:'#FDF9EE' });  // 注意，主角的 n 一定要与物理体的 name 一致
+
+// 自定义建筑延后到地面和主角都就绪后再整体加载，首屏手感会更顺一点。
+import sceneModelLoader from './plugins/scene_model_loader/scene_model_loader.js';  // 从世界协议里加载建筑
+await sceneModelLoader(k);
 
 // 左上角的 FPS 面板调试
 if (true) {
