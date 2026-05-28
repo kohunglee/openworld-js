@@ -1,5 +1,6 @@
 // 初始化
 import { setVK } from './vk.js';
+import { primeRuntimeApiBaseFromSharePath } from './plugins/signboard_lab/config.js';
 const fpsUrl = new URL('./assest/fps.js', import.meta.url).href;
 
 // 确保传统全局版 Cannon 先于 openworld 加载，兼容源码直开和 Vite 生产包。
@@ -18,6 +19,21 @@ async function ensureCannon() {
 await ensureCannon();
 const { default: k } = await import('../src/openworld.js');
 globalThis.k = k;
+
+/**
+ * 如果当前是 `/w/:slug` 分享入口，这里先向 SaaS 后端解析真正的世界 API。
+ * 这样后面的 scene-config / signs 请求都会自动落到对应私服。
+ */
+try {
+    await primeRuntimeApiBaseFromSharePath();
+} catch (error) {
+    console.error('[world-share] 分享世界解析失败：', error);
+    if (typeof window !== 'undefined' && typeof window.alert === 'function') {
+        window.alert(`World share unavailable: ${String(error?.message || error)}`);
+    }
+    throw error;
+}
+
 k.initWorld('openworldCanv', true);
 const mode = new URLSearchParams(location.search).get('mode');
 k.mode = mode === null ? 1 : +mode;  // 为空，就是 1
