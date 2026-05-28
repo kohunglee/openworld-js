@@ -12,7 +12,7 @@ export const THEME = {
 
 // 服务器地址存储 key
 const STORAGE_KEY = 'signboard_server_address';
-const DEFAULT_ADDRESS = 'https://openworld.zone/owz-serverapi';  // 默认地址
+const DEFAULT_ADDRESS = '/owz-serverapi';  // 默认始终跟随当前站点域名
 
 /**
  * 规范化服务器地址。

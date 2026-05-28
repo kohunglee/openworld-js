@@ -2,13 +2,12 @@
  * 场景模型加载器
  *
  * 这一版按新的目标重做：
- * 1. `temp/scene-config.json` 只负责“总配置”。
- * 2. `temp/cdn/.../index.js` 负责“模型整包逻辑”。
+ * 1. 世界总配置永远从“当前已连接的世界 API”推导；
+ * 2. `scene-config` 只是一条子接口，不再单独记住另一份地址；
  * 3. 模型位置只由总配置决定，模型包内部不再偷偷决定摆放位置。
  */
 
-const DEFAULT_SCENE_CONFIG_URL = new URL('../../temp/scene-config.json', import.meta.url);
-const SCENE_CONFIG_STORAGE_KEY = 'owz_scene_config_url';
+import { getApiBase } from '../signboard_lab/config.js';
 /**
  * 读取 JSON 配置。
  * 后面切 SaaS 时，这里可以直接换成真实接口返回值。
@@ -34,20 +33,11 @@ function normalizePosition(position) {
 }
 
 /**
- * 读取本次要使用的总配置地址。
- * 优先级：
- * 1. query 参数仍保留给 manage2/Open Preview 这类临时调试入口；
- * 2. Tab Save 验证通过后写入的世界配置地址；
- * 3. 本地默认 temp 配置。
+ * 场景配置永远跟随当前世界服务器。
+ * 这里不再保存独立 scene-config 地址，也不再允许另一套来源覆盖它。
  */
 function getSceneConfigUrl() {
-    const raw = new URLSearchParams(window.location.search).get('sceneConfig');
-    if (raw) return new URL(raw, window.location.href).href;
-
-    const stored = localStorage.getItem(SCENE_CONFIG_STORAGE_KEY);
-    if (stored) return new URL(stored, window.location.href).href;
-
-    return DEFAULT_SCENE_CONFIG_URL.href;
+    return new URL(`${getApiBase()}/scene-config`, window.location.origin).href;
 }
 
 /**

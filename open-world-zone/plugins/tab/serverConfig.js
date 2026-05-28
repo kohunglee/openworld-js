@@ -8,8 +8,7 @@ import { normalizeApiBase } from '../signboard_lab/config.js';
 import { readServerErrorMessage, getErrorMessage } from '../signboard_lab/errorMessage.js';
 
 const STORAGE_KEY = 'signboard_server_address';
-const SCENE_CONFIG_STORAGE_KEY = 'owz_scene_config_url';
-const DEFAULT_ADDRESS = 'https://openworld.zone/owz-serverapi';
+const DEFAULT_ADDRESS = '/owz-serverapi';
 
 /**
  * 获取当前服务器地址
@@ -27,20 +26,11 @@ export function saveServerAddress(address) {
 }
 
 /**
- * 保存已验证过的世界总配置地址。
- * 注意：只有 `/scene-config` 请求成功后才能写入，避免下次打开直接进坏世界。
- */
-function saveSceneConfigUrl(sceneConfigUrl) {
-    localStorage.setItem(SCENE_CONFIG_STORAGE_KEY, sceneConfigUrl);
-}
-
-/**
  * 重置为默认地址
  */
 export function resetServerAddress() {
     const normalized = normalizeApiBase(DEFAULT_ADDRESS);
     localStorage.setItem(STORAGE_KEY, normalized);
-    localStorage.removeItem(SCENE_CONFIG_STORAGE_KEY);
     return normalized;
 }
 
@@ -175,9 +165,8 @@ export function initServerConfig($, onAddressChange) {
         saveBtn.disabled = true;
         renderStatus({ status: 'connecting' });
         try {
-            const sceneConfigUrl = await assertSceneConfigAvailable(address);
+            await assertSceneConfigAvailable(address);
             saveServerAddress(address);
-            saveSceneConfigUrl(sceneConfigUrl);
             renderStatus({ status: 'idle' });
             if (onAddressChange) onAddressChange(address);
             reloadWithProgressCursor();

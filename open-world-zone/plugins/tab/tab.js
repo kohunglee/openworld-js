@@ -704,7 +704,7 @@ const htmlCode = `
         <h3>Server</h3>
         <div class="tab-row tab-row-gap-8">
             <label class="tab-label-nowrap">World API:</label>
-            <input type="text" id="serverAddressInput" placeholder="http://127.0.0.1:3000/owzapi/mytest001" class="tab-input-text">
+            <input type="text" id="serverAddressInput" placeholder="http://127.0.0.1:3000/owzapi/8/mytest001" class="tab-input-text">
             <button id="serverAddressSave" class="tab-btn-md">Save</button>
             <button id="serverAddressReset" class="tab-btn-md">Default</button>
         </div>
