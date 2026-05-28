@@ -8,6 +8,7 @@
  */
 
 import { getApiBase } from '../signboard_lab/config.js';
+import { loadModelModule, loadSceneConfigText } from './scene_cache.js';
 /**
  * 读取 JSON 配置。
  * 后面切 SaaS 时，这里可以直接换成真实接口返回值。
@@ -66,6 +67,23 @@ function resolveModelEntryUrl(model, models, sceneUrl) {
 }
 
 /**
+ * 并发调度器。
+ * 这里把建筑加载限制在固定并发数，避免一次把浏览器和本地静态服务同时打满。
+ */
+async function runWithConcurrencyLimit(items, limit, worker) {
+    const queue = [...items];
+    const workerCount = Math.max(1, Number(limit) || 1);
+    const runners = Array.from({ length: Math.min(workerCount, queue.length) }, async () => {
+        while (queue.length > 0) {
+            const nextItem = queue.shift();
+            if (!nextItem) return;
+            await worker(nextItem);
+        }
+    });
+    await Promise.all(runners);
+}
+
+/**
  * 解析建筑实例的建筑名。
  *
  * 当前规则：
@@ -98,10 +116,26 @@ function throwFatalSceneConfigError(message, detail = {}) {
  * 约定字段尽量极简，后端 SaaS 对接时也更省心。
  */
 async function loadSceneConfig() {
+    // 性能埋点：总配置读取耗时（含 fetch + json parse）
+    const loadTimerLabel = '[scene_model_loader] loadSceneConfig(total)';
+    console.time(loadTimerLabel);
     const sceneUrl = getSceneConfigUrl();
-    const sceneData = await readJson(sceneUrl, 'scene-config');
+    const sceneConfigPayload = await loadSceneConfigText(sceneUrl);
+    let sceneData;
+
+    try {
+        sceneData = JSON.parse(sceneConfigPayload.text);
+    } catch (error) {
+        console.error('[scene_model_loader] scene-config cache parse failed:', error);
+        sceneData = await readJson(sceneUrl, 'scene-config');
+    }
+
     const buildings = Array.isArray(sceneData?.buildings) ? sceneData.buildings : [];
     const models = sceneData && typeof sceneData.models === 'object' ? sceneData.models : {};
+    console.info(
+        `[scene_model_loader] scene-config source: ${sceneConfigPayload.fromCache ? 'IndexedDB cache' : 'network'}`
+    );
+    console.timeEnd(loadTimerLabel);
     return { sceneUrl, sceneData, buildings, models };
 }
 
@@ -111,6 +145,9 @@ async function loadSceneConfig() {
  * 这是服务器内容映射的主键之一，不能容忍重复。
  */
 function validateBuildingNames(buildings, models, sceneUrl) {
+    // 性能埋点：配置校验耗时（含唯一性检查 + model URL 解析）
+    const validateTimerLabel = '[scene_model_loader] validateBuildingNames(total)';
+    console.time(validateTimerLabel);
     const namedUsed = new Map();
     const unnamedModelUsed = new Map();
 
@@ -163,6 +200,7 @@ function validateBuildingNames(buildings, models, sceneUrl) {
         }
         unnamedModelUsed.set(resolvedModelUrl, building);
     }
+    console.timeEnd(validateTimerLabel);
 }
 
 /**
@@ -173,6 +211,7 @@ async function renderBuilding(ccgxkObj, building, models, sceneUrl) {
     const id = building?.id;
     const model = building?.model;
     const buildingName = resolveBuildingName(building);
+    const buildingTimerLabel = `[scene_model_loader] building(${String(id || 'unknown')}) total`;
 
     if (!id) {
         console.error('[scene_model_loader] 跳过一条建筑配置：缺少 id', building);
@@ -184,14 +223,21 @@ async function renderBuilding(ccgxkObj, building, models, sceneUrl) {
     }
 
     try {
+        // 性能埋点：单建筑总耗时（import + render）
+        console.time(buildingTimerLabel);
         const entryUrl = resolveModelEntryUrl(model, models, sceneUrl);
-        const mod = await import(entryUrl);
+        const importTimerLabel = `[scene_model_loader] building(${id}) import`;
+        console.time(importTimerLabel);
+        const mod = await loadModelModule(entryUrl);
+        console.timeEnd(importTimerLabel);
         const renderModel = mod?.default;
 
         if (typeof renderModel !== 'function') {
             throw new Error('index.js 默认导出不是函数');
         }
 
+        const renderTimerLabel = `[scene_model_loader] building(${id}) renderModel`;
+        console.time(renderTimerLabel);
         await renderModel(ccgxkObj, {
             id,
             modelUrl: entryUrl,
@@ -199,7 +245,13 @@ async function renderBuilding(ccgxkObj, building, models, sceneUrl) {
             position: normalizePosition(building.position),
             enabled: building.enabled !== false,
         });
+        console.timeEnd(renderTimerLabel);
+        console.timeEnd(buildingTimerLabel);
     } catch (error) {
+        // 异常路径也收尾，避免控制台里出现未结束计时器。
+        try {
+            console.timeEnd(buildingTimerLabel);
+        } catch (_) {}
         console.error(`[scene_model_loader] 建筑加载失败，已跳过：${id}`, error);
     }
 }
@@ -211,6 +263,9 @@ async function renderBuilding(ccgxkObj, building, models, sceneUrl) {
  * 3. 模型包内部只管“怎么渲染这个模型”，不再管“放在哪里”。
  */
 export default async function sceneModelLoader(ccgxkObj) {
+    // 性能埋点：整次场景模型加载总耗时
+    const sceneTimerLabel = '[scene_model_loader] sceneModelLoader(total)';
+    console.time(sceneTimerLabel);
     try {
         const { sceneUrl, sceneData, buildings, models } = await loadSceneConfig();
         validateBuildingNames(buildings, models, sceneUrl);
@@ -221,11 +276,15 @@ export default async function sceneModelLoader(ccgxkObj) {
             buildingCount: buildings.length,
         };
 
-        for (const building of buildings) {
-            if (building?.enabled === false) continue;
-            await renderBuilding(ccgxkObj, building, models, sceneUrl);
-        }
+        const enabledBuildings = buildings.filter(building => building?.enabled !== false);
+        await runWithConcurrencyLimit(enabledBuildings, 8, building =>
+            renderBuilding(ccgxkObj, building, models, sceneUrl)
+        );
+        console.timeEnd(sceneTimerLabel);
     } catch (error) {
+        try {
+            console.timeEnd(sceneTimerLabel);
+        } catch (_) {}
         console.error('[scene_model_loader] 场景总配置加载失败，本次将只保留空白场景。', error);
         throw error;
     }

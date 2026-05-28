@@ -12,6 +12,7 @@ import { initWskStatus } from './wskStatus.js';
 import { initArrowTurn } from './arrowTurn.js';
 import { initOfflineSync } from './offlineSync.js';
 import { initDisplayControls } from './displayControls.js';
+import { initSceneCache } from './sceneCache.js';
 import { getCookie, setCookie } from '../../vktool.js';
 import { setVK } from '../../vk.js';
 
@@ -258,6 +259,11 @@ export default function(ccgxkObj) {
     // 信息板离线同步
     // ========================
     initOfflineSync($);
+
+    // ========================
+    // 场景缓存状态
+    // ========================
+    initSceneCache($);
 
     // ========================
     // 模式切换
@@ -747,6 +753,27 @@ const htmlCode = `
             </div>
             <div class="tab-note tab-note-mb8">
                 Legacy mode sends one PATCH every 500ms for older servers.
+            </div>
+        </div>
+        <hr>
+    </section>
+
+    <section>
+        <h3>Scene Cache</h3>
+        <div class="signboard-offline-box">
+            <div class="tab-row tab-row-gap-8 tab-row-wrap">
+                <button id="sceneCacheRefresh" class="tab-btn-md">Refresh Cache Stats</button>
+                <button id="sceneCacheClearSceneConfig" class="tab-btn-md">Clear Scene Config Cache</button>
+                <button id="sceneCacheClearModelModules" class="tab-btn-md">Clear Model Cache</button>
+            </div>
+            <div id="sceneCacheStatus" class="signboard-offline-line">Loading scene cache stats...</div>
+            <div id="sceneCacheSceneConfigStats" class="signboard-offline-line">Scene-config cache: -</div>
+            <div id="sceneCacheModelModuleStats" class="signboard-offline-line">Model module cache: -</div>
+            <div class="tab-note tab-note-mb8">
+                Scene-config and model entry modules are cached in IndexedDB for faster reopen.
+            </div>
+            <div class="tab-note tab-note-mb8">
+                Clear buttons only remove local browser cache. Server files are untouched.
             </div>
         </div>
         <hr>
