@@ -170,6 +170,15 @@ export async function loadSceneConfigText(sceneUrl) {
 }
 
 /**
+ * 快速判断 scene-config 是否已有本地缓存。
+ * 只用于首屏加载时序决策，不会触发网络请求。
+ */
+export async function hasSceneConfigCache(sceneUrl) {
+    const cached = await getCacheRow(SCENE_CONFIG_STORE, sceneUrl);
+    return Boolean(cached?.text);
+}
+
+/**
  * 后台静默刷新 scene-config。
  * 同一个 URL 只允许一个刷新任务，避免并发打爆服务端。
  */

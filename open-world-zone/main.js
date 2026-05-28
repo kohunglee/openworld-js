@@ -1,6 +1,8 @@
 // 初始化
 import { setVK } from './vk.js';
-import { primeRuntimeApiBaseFromSharePath } from './plugins/signboard_lab/config.js';
+import { getApiBase, primeRuntimeApiBaseFromSharePath } from './plugins/signboard_lab/config.js';
+import sceneModelLoader from './plugins/scene_model_loader/scene_model_loader.js';  // 从世界协议里加载建筑
+import { hasSceneConfigCache } from './plugins/scene_model_loader/scene_cache.js';
 const fpsUrl = new URL('./assest/fps.js', import.meta.url).href;
 
 // 确保传统全局版 Cannon 先于 openworld 加载，兼容源码直开和 Vite 生产包。
@@ -77,6 +79,22 @@ mario(k);
 
 
 // a
+let sceneModelLoadedEarly = false;
+let sceneModelTriedEarly = false;
+
+// 有 scene-config 缓存时，提前到这里直接加载建筑，减少二次打开等待。
+try {
+    const sceneConfigUrl = new URL(`${getApiBase()}/scene-config`, window.location.origin).href;
+    const hasCache = await hasSceneConfigCache(sceneConfigUrl);
+    if (hasCache) {
+        sceneModelTriedEarly = true;
+        await sceneModelLoader(k);
+        sceneModelLoadedEarly = true;
+        console.info('[scene_model_loader] early start from cache at // a');
+    }
+} catch (error) {
+    console.warn('[scene_model_loader] early cached load failed, will fallback later:', error);
+}
 
 
 // 添加地面
@@ -104,6 +122,16 @@ if (true) {
 k.centerDot.setCamView(2);  // 设置摄像机视角位置为第 2 类型
 setVK();  // 开启 VK
 
-// 自定义建筑延后到地面和主角都就绪后再整体加载，首屏手感会更顺一点。
-import sceneModelLoader from './plugins/scene_model_loader/scene_model_loader.js';  // 从世界协议里加载建筑
-await sceneModelLoader(k);
+// 自定义建筑加载策略：
+// 1) 有缓存时已在 // a 位置提前执行；
+// 2) 无缓存时这里不阻塞首屏，改为后台补加载；
+// 3) 若提前执行失败，这里按原位回退重试一次。
+if (!sceneModelLoadedEarly) {
+    if (sceneModelTriedEarly) {
+        await sceneModelLoader(k);
+    } else {
+        void sceneModelLoader(k).catch(error => {
+            console.error('[scene_model_loader] deferred load failed:', error);
+        });
+    }
+}
