@@ -170,12 +170,61 @@ export async function loadSceneConfigText(sceneUrl) {
 }
 
 /**
- * 快速判断 scene-config 是否已有本地缓存。
- * 只用于首屏加载时序决策，不会触发网络请求。
+ * 只用本地缓存判断某个模型模块图是否完整。
+ * 这里不会发任何网络请求，专门给首屏门控逻辑使用。
  */
-export async function hasSceneConfigCache(sceneUrl) {
+async function hasCachedModelModuleGraph(entryUrl, visited = new Set()) {
+    if (visited.has(entryUrl)) return true;
+    visited.add(entryUrl);
+
+    const cached = await getCacheRow(MODEL_MODULE_STORE, entryUrl);
+    if (!cached?.text) return false;
+
+    const relativeSpecs = extractRelativeModuleSpecifiers(cached.text);
+    for (const specifier of relativeSpecs) {
+        const childUrl = new URL(specifier, entryUrl).href;
+        const hasChild = await hasCachedModelModuleGraph(childUrl, visited);
+        if (!hasChild) return false;
+    }
+
+    return true;
+}
+
+/**
+ * 判断“当前场景是否已具备完整本地缓存”。
+ * 规则：
+ * 1. scene-config 必须存在；
+ * 2. 当前场景所有启用建筑对应的模型模块图都必须完整存在。
+ */
+export async function hasCompleteSceneModelCache(sceneUrl) {
     const cached = await getCacheRow(SCENE_CONFIG_STORE, sceneUrl);
-    return Boolean(cached?.text);
+    if (!cached?.text) return false;
+
+    let sceneData = null;
+    try {
+        sceneData = JSON.parse(cached.text);
+    } catch {
+        return false;
+    }
+
+    const buildings = Array.isArray(sceneData?.buildings) ? sceneData.buildings : [];
+    const models = sceneData && typeof sceneData.models === 'object' && sceneData.models !== null
+        ? sceneData.models
+        : {};
+
+    for (const building of buildings) {
+        if (building?.enabled === false) continue;
+
+        const modelKey = typeof building?.model === 'string' ? building.model.trim() : '';
+        const modelUrl = typeof models?.[modelKey] === 'string' ? models[modelKey].trim() : '';
+        if (!modelKey || !modelUrl) return false;
+
+        const entryUrl = new URL(modelUrl, sceneUrl).href;
+        const hasModuleGraph = await hasCachedModelModuleGraph(entryUrl);
+        if (!hasModuleGraph) return false;
+    }
+
+    return true;
 }
 
 /**

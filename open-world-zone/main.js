@@ -1,8 +1,7 @@
 // 初始化
 import { setVK } from './vk.js';
-import { getApiBase, primeRuntimeApiBaseFromSharePath } from './plugins/signboard_lab/config.js';
-import sceneModelLoader from './plugins/scene_model_loader/scene_model_loader.js';  // 从世界协议里加载建筑
-import { hasSceneConfigCache } from './plugins/scene_model_loader/scene_cache.js';
+import { primeRuntimeApiBaseFromSharePath } from './plugins/signboard_lab/config.js';
+import { createSceneModelBootGate } from './plugins/scene_model_loader/scene_boot_gate.js';
 const fpsUrl = new URL('./assest/fps.js', import.meta.url).href;
 
 // 确保传统全局版 Cannon 先于 openworld 加载，兼容源码直开和 Vite 生产包。
@@ -77,37 +76,26 @@ mario(k);
 // import signboard from './plugins/signboard/signboard.js';  // 指示牌测试
 // signboard(k);
 
+/**
+ * 首屏静态场景渲染。
+ * 地面和主角都集中在这里，避免首屏门控逻辑散在 main.js 各处。
+ */
+function renderInitialScene() {
+    const gX = 0, gY = -2.5, gZ = 0;
+    const gW = 2500, gD = 2500, gH = 6;
+    k.addPhy({ name:'ground-phy', X:gX, Y:gY, Z:gZ, width:gW, depth:gD, height:gH });  // 物理体
+    k.W.cube({ n:'ground', x:gX, y:gY, z:gZ, w:gW, d:gD, h:gH, t:marble, b: '#ceffa8', mix: 0.6, tile:[50, 50] });  // 渲染体
 
-// a
-let sceneModelLoadedEarly = false;
-let sceneModelTriedEarly = false;
-
-// 有 scene-config 缓存时，提前到这里直接加载建筑，减少二次打开等待。
-try {
-    const sceneConfigUrl = new URL(`${getApiBase()}/scene-config`, window.location.origin).href;
-    const hasCache = await hasSceneConfigCache(sceneConfigUrl);
-    if (hasCache) {
-        sceneModelTriedEarly = true;
-        await sceneModelLoader(k);
-        sceneModelLoadedEarly = true;
-        console.info('[scene_model_loader] early start from cache at // a');
-    }
-} catch (error) {
-    console.warn('[scene_model_loader] early cached load failed, will fallback later:', error);
+    const lastPos = k?.lastPos || {x:118.48, y:2.93, z:13.25, rX:0, rY:0, rZ:0};
+    k.keys.turnRight = lastPos.rY;
+    k.mainVPlayer = k.addPhy({ name:'mainPlayer',t:marble,mix:0.3, X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z, size:1, mass:50, colliGroup:1 });
+    k.W.cube({ n:'mainPlayer', b:'#FDF9EE' });  // 注意，主角的 n 一定要与物理体的 name 一致
 }
 
-
-// 添加地面
-const gX = 0, gY = -2.5, gZ = 0;
-const gW = 2500, gD = 2500, gH = 6;
-k.addPhy({ name:'ground-phy', X:gX, Y:gY, Z:gZ, width:gW, depth:gD, height:gH });  // 物理体
-k.W.cube({ n:'ground', x:gX, y:gY, z:gZ, w:gW, d:gD, h:gH, t:marble, b: '#ceffa8', mix: 0.6, tile:[50, 50] });  // 渲染体
-
-// 添加主角
-const lastPos = k?.lastPos || {x:118.48, y:2.93, z:13.25, rX:0, rY:0, rZ:0};
-k.keys.turnRight = lastPos.rY;
-k.mainVPlayer = k.addPhy({ name:'mainPlayer',t:marble,mix:0.3, X:lastPos.x, Y:lastPos.y + 1, Z:lastPos.z, size:1, mass:50, colliGroup:1 });
-k.W.cube({ n:'mainPlayer', b:'#FDF9EE' });  // 注意，主角的 n 一定要与物理体的 name 一致
+// a
+const sceneBootGate = await createSceneModelBootGate(k, { timeoutMs: 1000 });
+console.info(`[scene_model_loader] boot gate mode: ${sceneBootGate.mode}`);
+renderInitialScene();
 
 // 左上角的 FPS 面板调试
 if (true) {
@@ -122,16 +110,6 @@ if (true) {
 k.centerDot.setCamView(2);  // 设置摄像机视角位置为第 2 类型
 setVK();  // 开启 VK
 
-// 自定义建筑加载策略：
-// 1) 有缓存时已在 // a 位置提前执行；
-// 2) 无缓存时这里不阻塞首屏，改为后台补加载；
-// 3) 若提前执行失败，这里按原位回退重试一次。
-if (!sceneModelLoadedEarly) {
-    if (sceneModelTriedEarly) {
-        await sceneModelLoader(k);
-    } else {
-        void sceneModelLoader(k).catch(error => {
-            console.error('[scene_model_loader] deferred load failed:', error);
-        });
-    }
-}
+void sceneBootGate.backgroundTask.catch(error => {
+    console.error('[scene_model_loader] background boot load failed:', error);
+});
