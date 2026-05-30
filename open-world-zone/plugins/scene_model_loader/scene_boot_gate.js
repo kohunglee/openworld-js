@@ -34,10 +34,12 @@ export async function createSceneModelBootGate(ccgxkObj, options = {}) {
     const timeoutMs = Number(options.timeoutMs) || DEFAULT_TIMEOUT_MS;
     const sceneConfigUrl = getSceneConfigUrl();
     const hasFullCache = await hasCompleteSceneModelCache(sceneConfigUrl);
+    console.info(`[scene_boot_gate] full-cache: ${hasFullCache ? 'yes' : 'no'}`);
     const loadPromise = sceneModelLoader(ccgxkObj);
 
     if (hasFullCache) {
         await loadPromise;
+        console.info('[scene_boot_gate] path: cache-blocking');
         return {
             mode: 'cache-blocking',
             backgroundTask: Promise.resolve(),
@@ -50,12 +52,14 @@ export async function createSceneModelBootGate(ccgxkObj, options = {}) {
     ]);
 
     if (winner === 'loaded') {
+        console.info(`[scene_boot_gate] path: loaded-within-${timeoutMs}ms`);
         return {
             mode: 'network-finished-before-timeout',
             backgroundTask: Promise.resolve(),
         };
     }
 
+    console.info(`[scene_boot_gate] path: timeout-${timeoutMs}ms-then-background`);
     return {
         mode: 'timeout-background',
         backgroundTask: loadPromise,
