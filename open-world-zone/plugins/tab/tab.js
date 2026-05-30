@@ -628,7 +628,7 @@ const htmlCode = `
 <div class="info-modal zindex-1" id="myinfoModal">
     <div><button id="closeBtn">Close (Tab)</button></div>
     <div class="tab-version-badge">OWZ V1.0</div>
-
+    <span><a href="https://OpenWorld.zone" target="_blank"> Open World Zone</a></span>
     <section>
         <h3>Quick Actions</h3>
         <button id="goOPOS">To Origin</button>

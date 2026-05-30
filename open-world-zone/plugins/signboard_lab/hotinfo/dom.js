@@ -24,14 +24,17 @@ export const htmlTemplate = `
         </div>
         <div class="sign-hot-info-view-original" id="signHotInfoViewOriginal" style="display: none;">
             <a>[View Img]</a>
+            <a id="signHotInfoPopImage">[Pop]</a>
             <a id="signHotInfoEditImage">[Edit]</a>
         </div>
         <div class="sign-hot-info-view-original" id="signHotInfoCopyText" style="display: none;">
             <a>[View Txt]</a>
+            <a id="signHotInfoPopText">[Pop]</a>
             <a id="signHotInfoEditText">[Edit]</a>
         </div>
         <div class="sign-hot-info-view-original" id="signHotInfoViewEmpty" style="display: none;">
             <a>[View]</a>
+            <a id="signHotInfoPopEmpty">[Pop]</a>
             <a id="signHotInfoEditEmpty">[Edit]</a>
         </div>
         <div class="sign-hot-info-remark" id="signHotInfoRemark" style="display: none;"></div>
@@ -44,7 +47,7 @@ export const htmlTemplate = `
             <span id="signHotInfoContentModalTitle">Info</span>
             <div class="sign-hot-info-text-modal-actions">
                 <button type="button" id="signHotInfoContentModalEdit" style="display: none;">Edit</button>
-                <button type="button" id="signHotInfoContentModalOpen" style="display: none;">Pop</button>
+                <button type="button" id="signHotInfoContentModalOpen" style="display: none;">POP</button>
                 <button type="button" id="signHotInfoContentModalClose">Close</button>
             </div>
         </div>

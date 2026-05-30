@@ -216,12 +216,12 @@ function buildFrozenImagePageHtml(info) {
 }
 
 /**
- * 基于当前模态框锁定的板子打开 blob 临时页，实现“冻结当前内容”的独立阅读窗口。
+ * 基于指定画板信息直接打开冻结页。
+ * 左上角的 [POP] 和模态框里的 POP 共用这条路径，保证两边内容一致。
  */
-function openFrozenPageForActiveModal() {
-    if (!activeModalState) return;
-    const info = signContentMap.get(activeModalState.boardId);
-    if (!info) return;
+function openFrozenPageForPayload(payload) {
+    if (!payload?.info) return;
+    const info = payload.info;
 
     const html = info.mode === 'image' && info.imgUrl
         ? buildFrozenImagePageHtml(info)
@@ -231,6 +231,20 @@ function openFrozenPageForActiveModal() {
 
     // 新标签页完成加载后即可释放主页面里的 blob 引用；已打开的冻结页内容不会被清空。
     setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+}
+
+/**
+ * 基于当前模态框锁定的板子打开 blob 临时页，实现“冻结当前内容”的独立阅读窗口。
+ */
+function openFrozenPageForActiveModal() {
+    if (!activeModalState) return;
+    const info = signContentMap.get(activeModalState.boardId);
+    if (!info) return;
+    openFrozenPageForPayload({
+        hotIndex: activeModalState.hotIndex,
+        boardId: activeModalState.boardId,
+        info
+    });
 }
 
 /**
@@ -460,6 +474,21 @@ export function initHotInfo(ccgxkObj) {
         e.preventDefault();
         e.stopPropagation();
         openContentModalForBoard(getCurrentHotPayload());
+    });
+
+    /**
+     * 左上角信息栏里的 [POP] 直接打开冻结页。
+     * 这里单独拦截点击，避免冒泡到父容器后又顺手把 View 模态框打开。
+     */
+    const popImageBtn = document.getElementById('signHotInfoPopImage');
+    const popTextBtn = document.getElementById('signHotInfoPopText');
+    const popEmptyBtn = document.getElementById('signHotInfoPopEmpty');
+    [popImageBtn, popTextBtn, popEmptyBtn].forEach((btn) => {
+        btn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openFrozenPageForPayload(getCurrentHotPayload());
+        });
     });
 
     const editImageBtn = document.getElementById('signHotInfoEditImage');
