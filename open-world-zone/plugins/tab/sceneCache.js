@@ -67,14 +67,6 @@ export function initSceneCache($) {
             return;
         }
 
-        const ok = confirm(
-            `Clear all ${stats.sceneConfigCount} cached scene-config item(s)? This only clears local IndexedDB cache.`
-        );
-        if (!ok) {
-            await render('Scene-config clear canceled.');
-            return;
-        }
-
         await clearSceneConfigCache();
         await render('Scene-config cache cleared.');
     });
@@ -86,14 +78,6 @@ export function initSceneCache($) {
             return;
         }
 
-        const ok = confirm(
-            `Clear all ${stats.modelModuleCount} cached model module item(s)? This only clears local IndexedDB cache.`
-        );
-        if (!ok) {
-            await render('Model module clear canceled.');
-            return;
-        }
-
         await clearModelModuleCache();
         await render('Model module cache cleared.');
     });
@@ -101,4 +85,3 @@ export function initSceneCache($) {
     window.addEventListener('owz:scene-model-cache', () => render());
     render();
 }
-
