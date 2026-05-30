@@ -19,6 +19,7 @@ import {
     isHtmlRemarkText,
     normalizeRemarkHtml
 } from './dom.js';
+import { REMARK_FALLBACK_CHANGE_EVENT } from './remarkFallbackPreference.js';
 
 let lastHotIndex = -1;
 let isExpanded = true;      // 左侧热点信息面板是否展开
@@ -514,6 +515,15 @@ export function initHotInfo(ccgxkObj) {
         if (e.key === 'Escape' && contentModal.style.display === 'flex') {
             closeActiveContentModal();
         }
+    });
+
+    /**
+     * Tab 面板切换“备注为空时显示正文”后，当前热点信息要立即重绘。
+     * 这样用户不需要再把准星移开又移回来一次。
+     */
+    window.addEventListener(REMARK_FALLBACK_CHANGE_EVENT, () => {
+        if (!ccgxkObjRef || !isExpanded || !isHotDetecting(ccgxkObjRef)) return;
+        updateHotInfo(ccgxkObjRef.hotPoint, boardsData, isExpanded);
     });
 
     // 初始加载数据

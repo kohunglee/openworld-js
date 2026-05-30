@@ -28,6 +28,8 @@ export const styleCode = `
     padding: 8px 12px;
     min-width: 180px;
     max-width: 300px;
+    max-height: 70vh;
+    overflow-y: auto;
     z-index: 100;
     backdrop-filter: blur(8px);
     background: #ffffffb5;

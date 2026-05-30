@@ -13,6 +13,7 @@ import { initArrowTurn } from './arrowTurn.js';
 import { initOfflineSync } from './offlineSync.js';
 import { initDisplayControls } from './displayControls.js';
 import { initSceneCache } from './sceneCache.js';
+import { initRemarkFallbackToggle } from '../signboard_lab/hotinfo/remarkFallbackPreference.js';
 import { getCookie, setCookie } from '../../vktool.js';
 import { setVK } from '../../vk.js';
 
@@ -292,6 +293,11 @@ export default function(ccgxkObj) {
     // 左右方向键旋转
     // ========================
     initArrowTurn($, ccgxkObj);
+
+    // ========================
+    // 备注为空时显示正文
+    // ========================
+    initRemarkFallbackToggle($);
 
     // ========================
     // WSK/BSK/DSK 槽位状态面板
@@ -719,6 +725,18 @@ const htmlCode = `
         </div>
         <div class="tab-note tab-note-mb8">
             Save checks /scene-config first, then reloads the world.
+        </div>
+        <hr>
+    </section>
+
+    <section>
+        <h3>Signboard Info</h3>
+        <label class="tab-clickable">
+            <input type="checkbox" id="remarkContentFallbackToggle">
+            Empty remark fallback to content
+        </label>
+        <div class="tab-note tab-note-mb8">
+            If remark is empty, show full content in the top-left info box.
         </div>
         <hr>
     </section>

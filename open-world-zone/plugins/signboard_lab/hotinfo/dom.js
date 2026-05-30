@@ -3,6 +3,7 @@
  */
 
 import { signContentMap, signIndexMap, lazyLoadSign } from '../store.js';
+import { isRemarkContentFallbackEnabled } from './remarkFallbackPreference.js';
 
 // HTML 模板
 export const htmlTemplate = `
@@ -124,6 +125,46 @@ function renderTextWithLinks(container, text, options = {}) {
     }
 }
 
+/**
+ * 生成左上角备注区真正要显示的内容。
+ * 优先级固定为：
+ * 1. 有 remark 就始终显示 remark
+ * 2. remark 为空且用户开启回退时，显示 content
+ * 3. 其余情况不显示
+ */
+function getRemarkDisplayPayload(info) {
+    let extra = info?.extra || {};
+    if (typeof extra === 'string') extra = JSON.parse(extra);
+
+    const remark = extra?.remark;
+    if (remark) {
+        return {
+            type: 'remark',
+            value: remark
+        };
+    }
+
+    if (!isRemarkContentFallbackEnabled()) {
+        return null;
+    }
+
+    if (info?.mode === 'text' && info?.t) {
+        return {
+            type: 'text',
+            value: info.t
+        };
+    }
+
+    if (info?.mode === 'image' && info?.imgUrl) {
+        return {
+            type: 'text',
+            value: info.imgUrl
+        };
+    }
+
+    return null;
+}
+
 // 解锁鼠标指针
 export function unlockPointer() {
     const exitLock = document.exitPointerLock ||
@@ -203,16 +244,20 @@ export function updateHotInfo(hotIndex, boardsData, isExpanded) {
         viewOriginalDiv.dataset.imgUrl = '';
     }
 
-    // 更新备注
-    let extra = info.extra || {};
-    if (typeof extra === 'string') extra = JSON.parse(extra);
-    const remark = extra.remark;
-    if (remark) {
-        const isHtml = isHtmlRemarkText(remark);
+    // 更新备注；当备注为空且开关开启时，这里会自动回退显示正文 content。
+    const remarkPayload = getRemarkDisplayPayload(info);
+    if (remarkPayload?.value) {
+        const isHtml = remarkPayload.type === 'remark' && isHtmlRemarkText(remarkPayload.value);
         if (isHtml) {
-            remarkDiv.innerHTML = normalizeRemarkHtml(remark);
+            remarkDiv.innerHTML = normalizeRemarkHtml(remarkPayload.value);
         }
-        else renderTextWithLinks(remarkDiv, remark);  // 纯文本备注也自动把网址转成可点击链接
+        else {
+            renderTextWithLinks(
+                remarkDiv,
+                remarkPayload.value,
+                { shortenDisplay: remarkPayload.type === 'remark' }
+            );
+        }
         remarkDiv.style.display = 'block';
     } else {
         remarkDiv.replaceChildren();
