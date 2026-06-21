@@ -11,10 +11,16 @@ export default function(ccgxkObj) {
      * 避免初始化阶段或极短时序窗口里直接读取 body 导致报错。
      */
     const getMainPlayerBody = () => ccgxkObj?.mainVPlayer?.body || null;
+    const isTypingTarget = target => {
+        if (!target) return false;
+        const tag = target.tagName?.toLowerCase?.() || '';
+        return tag === 'input' || tag === 'textarea' || target.isContentEditable;
+    };
 
     const myevent = {
         keyEvent : (e, ccgxkObj) => {
             if(document.getElementById('signPanelModal')&&!document.getElementById('signPanelModal').hidden)return;
+            if (isTypingTarget(e.target)) return;
 
             // myHUDModal 显示时，小键盘 * 键触发复制按钮
             const myHUDModal = document.getElementById('myHUDModal');
@@ -36,7 +42,7 @@ export default function(ccgxkObj) {
                 }
             }
 
-            if(key === 'v'){  // 切换视角
+            if(key === 'v' && !e.metaKey && !e.ctrlKey){  // 切换视角
                 ccgxkObj.centerDot.setCamView();
             }
 
@@ -80,6 +86,7 @@ export default function(ccgxkObj) {
         document.addEventListener('keydown', (event) => {
             const key = event.key.toLowerCase();
             const mvpBody = getMainPlayerBody();
+            if (isTypingTarget(event.target)) return;
 
             if(document.getElementById('signPanelModal')&&!document.getElementById('signPanelModal').hidden)return;
             if(document.getElementById('myHUDModal')&&!document.getElementById('myHUDModal').hidden)return;

@@ -4,11 +4,11 @@
  * 管理服务器地址设置，存储到 localStorage
  */
 
-import { getApiBase, normalizeApiBase } from '../signboard_lab/config.js';
+import { DEFAULT_API_BASE, getApiBase, normalizeApiBase } from '../signboard_lab/config.js';
 import { readServerErrorMessage, getErrorMessage } from '../signboard_lab/errorMessage.js';
 
 const STORAGE_KEY = 'signboard_server_address';
-const DEFAULT_ADDRESS = '/owz-serverapi';
+const DEFAULT_ADDRESS = DEFAULT_API_BASE;
 
 /**
  * 获取当前服务器地址

@@ -1,6 +1,6 @@
 # signboard_lab 后端最小 API
 
-目标：后端只维护“空间画板 ID -> 可渲染内容”。前端默认读 `localStorage.signboard_server_address`，没有就用 `http://127.0.0.1:8899`。Next.js/SaaS 重写时可把这些做成 `/api/signs/*` Route Handlers，数据库随意，先保证契约稳定。需要 CORS：`GET,POST,PATCH,OPTIONS`，请求头 `Content-Type`。
+目标：后端只维护“空间画板 ID -> 可渲染内容”。前端默认读 `localStorage.signboard_server_address`，没有就用 `https://openworld.zone/owz-serverapi`。Next.js/SaaS 重写时可把这些做成 `/api/signs/*` Route Handlers，数据库随意，先保证契约稳定。需要 CORS：`GET,POST,PATCH,OPTIONS`，请求头 `Content-Type`。
 
 ## 核心数据
 `Board`：

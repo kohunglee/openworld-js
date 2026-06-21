@@ -251,7 +251,7 @@ Access-Control-Max-Age: 86400
 
   
 
-这对当前架构很重要，因为 3D 客户端、管理页、生产 API 很可能不在同一端口。开发时主项目可能在 `8089` 或 Vite 端口，API 在 `8899`；生产时默认配置又可能指向远程 `https://selfdb.ccgxk.com`。
+这对当前架构很重要，因为 3D 客户端、管理页、生产 API 很可能不在同一端口。开发时主项目可能在 `8089` 或 Vite 端口，API 在 `8899`；生产时默认配置会指向远程 `https://openworld.zone/owz-serverapi`。
 
   
 
@@ -1047,7 +1047,7 @@ HTTP API 只是边界，客户端内部也有一套事实上的协议。它们�
 
 const STORAGE_KEY = 'signboard_server_address';
 
-const DEFAULT_ADDRESS = '127.0.0.1:8899';
+const DEFAULT_ADDRESS = 'https://openworld.zone/owz-serverapi';
 
 ```
 
@@ -1059,7 +1059,7 @@ const DEFAULT_ADDRESS = '127.0.0.1:8899';
 
 - 如果 `localStorage` 有 `signboard_server_address`，直接返回这个值。
 
-- 如果没有，返回 `http://127.0.0.1:8899`。
+- 如果没有，返回 `https://openworld.zone/owz-serverapi`。
 
   
 
@@ -1069,19 +1069,19 @@ const DEFAULT_ADDRESS = '127.0.0.1:8899';
 
 ```js
 
-const DEFAULT_ADDRESS = 'https://selfdb.ccgxk.com';
+const DEFAULT_ADDRESS = 'https://openworld.zone/owz-serverapi';
 
 ```
 
   
 
-这形成一个隐藏规则：
+现在默认地址应保持同一个规则：
 
   
 
-- 如果用户没有保存过地址，`signboard_lab/config.js` 会默认本地 `http://127.0.0.1:8899`。
+- 如果用户没有保存过地址，`signboard_lab/config.js` 会默认 `https://openworld.zone/owz-serverapi`。
 
-- 如果用户在侧边栏点了“默认”，会写入 `https://selfdb.ccgxk.com`。
+- 如果用户在侧边栏点了“默认”，也会写入 `https://openworld.zone/owz-serverapi`。
 
 - 如果用户手动输入 `127.0.0.1:8899` 且没有协议，`getApiBase()` 会原样返回，fetch 可能失败。
 

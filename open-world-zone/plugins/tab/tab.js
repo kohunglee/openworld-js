@@ -13,6 +13,9 @@ import { initArrowTurn } from './arrowTurn.js';
 import { initOfflineSync } from './offlineSync.js';
 import { initDisplayControls } from './displayControls.js';
 import { initSceneCache } from './sceneCache.js';
+import { initDevMode } from './devMode.js';
+import { initAddressFavorites } from './addressFavorites.js';
+import { initClearScreen } from './clearScreen.js';
 import { initRemarkFallbackToggle } from '../signboard_lab/hotinfo/remarkFallbackPreference.js';
 import { getCookie, setCookie } from '../../vktool.js';
 import { setVK } from '../../vk.js';
@@ -138,6 +141,16 @@ export default function(ccgxkObj) {
     $("closeBtn02").addEventListener("click", hideModal);
 
     // ========================
+    // 开发模式开关
+    // ========================
+    initDevMode($, ccgxkObj);
+
+    // ========================
+    // 清屏开关
+    // ========================
+    initClearScreen($);
+
+    // ========================
     // VK 开关 + Cookie
     // ========================
     {
@@ -224,6 +237,17 @@ export default function(ccgxkObj) {
     $("goH05").addEventListener("click", () => teleportTo(58, 21.6, 5.43, 90));
     $("goTSG").addEventListener("click", () => teleportTo(92.84, 3, 6.61, -90));
     $("goTOP").addEventListener("click", () => teleportTo(42, 54.12, 5.91, -90));
+
+    // ========================
+    // 服务器分区地址收藏
+    // ========================
+    initAddressFavorites($, ccgxkObj, {
+        // 收藏地点被点击后，直接回到游玩状态，减少用户多点一次关闭按钮。
+        onArrive: () => {
+            hideModal();
+            lockPointer();
+        },
+    });
 
     // ========================
     // 显示控制
@@ -342,15 +366,18 @@ export default function(ccgxkObj) {
      * 一旦发现位置三轴坏掉，就立刻走同一套紧急修复流程，并避免同一波异常重复触发。
      */
     setInterval(() => {
+        if(k?.repairBroken){ console.log('运行中')}
         if (ccgxkObj?.isMVPInit !== true) return;
         if (!hasBrokenPlayerPosition()) {
             isAutoFixingBadPos = false;
             return;
         }
+        if(k?.repairBroken){ console.log('运行中2 '+ hasBrokenPlayerPosition())}
         if (isAutoFixingBadPos) return;
-
+        if(k?.repairBroken){ console.log('运行中3')}
         isAutoFixingBadPos = true;
         repairBrokenPlayerPosition("auto-bad-position");
+        if(k?.repairBroken){ console.log('运行中4')}
     }, 200);
 }
 
@@ -399,6 +426,10 @@ const htmlCode = `
         font-size: 15px;
         opacity: 1;
         pointer-events: auto;
+    }
+
+    .info-modal.tab-dev-mode {
+        background-color: rgba(255, 48, 48, 0.88);
     }
 
     .zindex-1 {  /* 使用这个来控制model，或许可以展示 ads ？  */
@@ -634,6 +665,7 @@ const htmlCode = `
         <button id="goOPOS">To Origin</button>
         <button id="goHall">To Outside</button>
         <button id="fixError">Fix NaN</button>
+        <button id="clearScreenToggle">Clear Screen</button>
         <button id="togglePhonePanel">Mobile Panel</button><br><br>
         floor:
         <button id="goH01">1</button>
@@ -643,6 +675,17 @@ const htmlCode = `
         <button id="goH05">5</button>
         <button id="goTSG">Lib</button>
         <button id="goTOP">Top</button>
+        <hr>
+    </section>
+
+    <section id="addressFavoritesMount"></section>
+
+    <section>
+        <h3>Development</h3>
+        <label class="tab-clickable">
+            <input type="checkbox" id="devModeToggle">
+            Development mode
+        </label>
         <hr>
     </section>
 
