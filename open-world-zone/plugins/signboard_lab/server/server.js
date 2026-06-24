@@ -9,7 +9,7 @@
 
 import http from 'http';
 import { initDatabase, closeDatabase } from './db/index.js';
-import { handleGetSigns, handleSaveSigns, handleUpdateOneBoard, handleGetSignsBatch } from './api/signs.js';
+import { handleGetSigns, handleSaveSigns, handleUpdateOneBoard, handleGetSignsBatch, handleImageProxy } from './api/signs.js';
 
 const PORT = 8899;
 
@@ -36,6 +36,9 @@ function createServer() {
         if (method === 'GET' && pathname === '/api/signs') {
             console.log('📡 GET /api/signs');
             handleGetSigns(req, res);
+        } else if (method === 'GET' && pathname === '/api/signs/image-proxy') {
+            console.log('📡 GET /api/signs/image-proxy');
+            handleImageProxy(req, res, url.searchParams.get('url') || '');
         } else if (method === 'POST' && pathname === '/api/signs/batch') {
             console.log('📡 POST /api/signs/batch');
             handleGetSignsBatch(req, res);
@@ -73,6 +76,7 @@ function main() {
 ║                                          ║
 ║   API 端点:                               ║
 ║     GET/POST  /api/signs                  ║
+║     GET      /api/signs/image-proxy       ║
 ║     POST     /api/signs/batch             ║
 ║     PATCH    /api/signs/<id>              ║
 ║                                          ║

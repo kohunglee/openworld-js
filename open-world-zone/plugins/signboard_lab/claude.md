@@ -39,6 +39,7 @@ signboard_lab/
 10. ✅ FOV 滑杆 - 在 Tab 面板中可调节 FOV（1-120°，默认70°，可还原）
 11. ✅ 服务器离线提示 - 懒加载失败后暂停自动重试，Tab 侧栏显示状态，可手动重试连接
 12. ✅ 离线保存队列 - 本机浏览器编辑过的画板写入 IndexedDB，同一 id 只保留最后一次编辑，Tab 面板支持新旧两种手动同步
+13. ✅ SVG 图片兜底 - 优先把 SVG 转成白底位图贴图；浏览器跨域抓不到时回退服务端代理
 
 ### 关键架构决策
 
@@ -59,6 +60,12 @@ signboard_lab/
 - 用户手动开启离线模式后，signPanel 才会先写 `offlineQueue.js` 的当前服务器分区 IndexedDB 队列，再直接调用 `window.updateSign(boardId, content, mode, extra)`，不等待服务器
 - HotInfo 的“更新”按钮只请求当前热点对应的 boardId，并在内容变化时调用 `updateSign`
 - 后续若做可见画板低频刷新，优先复用 `POST /api/signs/batch`，不要恢复全局长连接
+
+**SVG 图片策略**：
+- 前端检测到 `.svg` 后，不再直接把外链 SVG URL 交给 WebGL
+- 而是优先抓取 SVG 文本，补白底与默认文字色，再转成位图 data URL 贴图
+- 浏览器若因 CORS 读不到外链 SVG，则回退到 `GET /api/signs/image-proxy?url=...` 由服务端代抓
+- 这样可以显著减少“透明 SVG + 深色场景 + WebGL 纹理链路”带来的黑块/黑贴图观感
 
 **离线同步策略**：
 - `offlineQueue.js` 使用 IndexedDB 数据库 `owz_signboard_offline`，对象仓库 `pending_boards`

@@ -4,10 +4,28 @@
  * POST /api/signs          - 批量保存（admin.html 用）
  * POST /api/signs/batch    - 批量获取（懒加载用）
  * PATCH /api/signs/:id     - 单条更新（signPanel 用）
+ * GET  /api/signs/image-proxy?url=... - 代理远程图片/SVG（给前端跨域兜底）
  */
 
 import { getAllBoards, replaceAllBoards, upsertBoard, getBoardsByIds } from '../db/index.js';
 import { sendJson, readBody } from '../helpers.js';
+
+/**
+ * 只允许代理 http/https，避免把这个接口变成任意协议转发器。
+ */
+function normalizeRemoteUrl(rawUrl = '') {
+  const targetUrl = String(rawUrl || '').trim();
+  if (!targetUrl) {
+    throw new Error('url is required');
+  }
+
+  const parsedUrl = new URL(targetUrl);
+  if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+    throw new Error('only http/https is allowed');
+  }
+
+  return parsedUrl.toString();
+}
 
 // ── GET /api/signs ──
 
@@ -60,6 +78,44 @@ export function handleGetSignsBatch(req, res) {
       sendJson(res, { error: e.message }, 500);
     }
   });
+}
+
+// ── GET /api/signs/image-proxy?url=... ──
+
+/**
+ * 服务端代理远程图片，主要给浏览器无法直接读取跨域 SVG 时兜底。
+ * 这里只做透传，不做存储。
+ */
+export async function handleImageProxy(req, res, rawUrl) {
+  try {
+    const targetUrl = normalizeRemoteUrl(rawUrl);
+    const remoteResponse = await fetch(targetUrl, {
+      headers: {
+        'User-Agent': 'open-world-zone-signboard-proxy'
+      }
+    });
+
+    if (!remoteResponse.ok) {
+      sendJson(res, { error: `Remote fetch failed: HTTP ${remoteResponse.status}` }, 502);
+      return;
+    }
+
+    const contentType = remoteResponse.headers.get('content-type') || 'application/octet-stream';
+    const cacheControl = remoteResponse.headers.get('cache-control') || 'public, max-age=300';
+    const bodyBuffer = Buffer.from(await remoteResponse.arrayBuffer());
+
+    res.writeHead(200, {
+      'Content-Type': contentType,
+      'Content-Length': bodyBuffer.length,
+      'Cache-Control': cacheControl,
+      'Access-Control-Allow-Origin': '*',
+      'X-OWZ-Image-Proxy': '1'
+    });
+    res.end(bodyBuffer);
+  } catch (e) {
+    console.error('❌ 图片代理错误:', e);
+    sendJson(res, { error: e.message }, 500);
+  }
 }
 
 // ── POST /api/signs (批量) ──
