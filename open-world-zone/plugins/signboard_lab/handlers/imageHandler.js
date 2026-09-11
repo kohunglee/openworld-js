@@ -7,6 +7,12 @@ import { makeImgId } from '../config.js';
 import { getApiBase } from '../config.js';
 import { getTextureModule } from '../store.js';
 
+// 记录正在异步处理的 SVG，避免 errorTexture_diy 高频触发时重复创建空图或重复抓取。
+const loadingSvgIds = new Set();
+
+// 限制 SVG 位图化的最大边长，防止异常 SVG 尺寸把 canvas 撑爆影响整场景。
+const MAX_RASTER_SIZE = 4096;
+
 // 获取画板物理信息
 const getCanvasInfo = (ccgxkObj, index) => {
     const p_offset = index * 8;
@@ -14,8 +20,27 @@ const getCanvasInfo = (ccgxkObj, index) => {
     return { p_offset, canvasH };
 };
 
+/**
+ * 判断数字是否能安全写回引擎尺寸。
+ * 图片宽高一旦出现 0/NaN/Infinity，就不能继续交给 W.plane。
+ */
+const isPositiveFiniteNumber = value => Number.isFinite(value) && value > 0;
+
+/**
+ * 检查图片是否已经有真实宽高。
+ * 空的隐藏 img 也可能 complete=true，所以必须同时检查 naturalWidth / naturalHeight。
+ */
+const hasUsableImageSize = imgEl => (
+    isPositiveFiniteNumber(imgEl?.naturalWidth) &&
+    isPositiveFiniteNumber(imgEl?.naturalHeight)
+);
+
 // 计算画板应有的宽度（高度）
 const calcAspectScale = (imgW, imgH, canvasH) => {
+    if (!isPositiveFiniteNumber(imgW) || !isPositiveFiniteNumber(imgH) || !isPositiveFiniteNumber(canvasH)) {
+        return null;
+    }
+
     return { w: imgW / imgH * canvasH, h: canvasH };
 };
 
@@ -89,6 +114,9 @@ const rasterizeSvgToCanvas = (svgCode, renderW, renderH) => new Promise((resolve
         try {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                throw new Error('Canvas 2D context 不可用');
+            }
 
             canvas.width = renderW;
             canvas.height = renderH;
@@ -144,10 +172,36 @@ const fetchSvgText = async (imgUrl) => {
     throw lastError || new Error('SVG 抓取失败');
 };
 
+/**
+ * 把 SVG 渲染尺寸收敛到浏览器能稳定处理的范围。
+ * 保持原比例，只在超出上限时按比例缩小位图尺寸。
+ */
+const clampRasterSize = (width, height) => {
+    const safeWidth = isPositiveFiniteNumber(width) ? width : 300;
+    const safeHeight = isPositiveFiniteNumber(height) ? height : 120;
+    const scale = Math.min(1, MAX_RASTER_SIZE / Math.max(safeWidth, safeHeight));
+
+    return {
+        width: Math.max(1, Math.round(safeWidth * scale)),
+        height: Math.max(1, Math.round(safeHeight * scale)),
+    };
+};
+
 // 把图放进画板内
 const applyImage = (imgEl, ccgxkObj, index, id) => {
+    if (!hasUsableImageSize(imgEl)) {
+        console.warn('图片尺寸无效，跳过贴图写入:', id, imgEl?.naturalWidth, imgEl?.naturalHeight);
+        return false;
+    }
+
     const { p_offset, canvasH } = getCanvasInfo(ccgxkObj, index);
-    const { w, h } = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight, canvasH);
+    const scale = calcAspectScale(imgEl.naturalWidth, imgEl.naturalHeight, canvasH);
+    if (!scale || !isPositiveFiniteNumber(scale.w) || !isPositiveFiniteNumber(scale.h)) {
+        console.warn('图片缩放尺寸无效，跳过贴图写入:', id, scale);
+        return false;
+    }
+
+    const { w, h } = scale;
     const textureModule = getTextureModule();
     if (textureModule) textureModule.textureMap.set(id, imgEl);
     if(ccgxkObj.W.next['T' + index]){
@@ -155,6 +209,7 @@ const applyImage = (imgEl, ccgxkObj, index, id) => {
     }
     ccgxkObj.physicsProps[p_offset + 1] = w;
     ccgxkObj.physicsProps[p_offset + 2] = h;
+    return true;
 };
 
 /**
@@ -166,8 +221,9 @@ const handleSvg = async (svgCode, uniqueImgId, ccgxkObj, index, id, imgUrl) => {
     const ratio = ccgxkObj.errExpRatio || 200;
     const { width: svgW, height: svgH } = getSvgSize(svgCode);
     const aspectRatio = svgW > 0 && svgH > 0 ? svgW / svgH : 1;
-    const renderW = Math.round(canvasH * aspectRatio * ratio);
-    const renderH = Math.round(canvasH * ratio);
+    const rawRenderW = Math.round(canvasH * aspectRatio * ratio);
+    const rawRenderH = Math.round(canvasH * ratio);
+    const { width: renderW, height: renderH } = clampRasterSize(rawRenderW, rawRenderH);
     const normalizedSvg = normalizeSvgForTexture(svgCode, renderW, renderH);
     const canvas = await rasterizeSvgToCanvas(normalizedSvg, renderW, renderH);
     const imgEl = document.getElementById(uniqueImgId) || document.createElement('img');
@@ -188,23 +244,30 @@ export function handleImageMode(index, id, imgUrl, ccgxkObj) {
     let imgEl = document.getElementById(uniqueImgId);
     const makeBustUrl = () => `${imgUrl}${imgUrl.includes('?') ? '&' : '?'}try=${1}`;  // 加上这个才显示（原理不太清楚）
     const tryLoadSvg = async () => {
+        if (loadingSvgIds.has(uniqueImgId)) return;
+        loadingSvgIds.add(uniqueImgId);
+
         try {
             const svgText = await fetchSvgText(imgUrl);
             await handleSvg(svgText, uniqueImgId, ccgxkObj, index, id, imgUrl);
         } catch (error) {
             console.error('SVG 处理失败:', imgUrl, error);
+        } finally {
+            loadingSvgIds.delete(uniqueImgId);
         }
     };
 
-    if (imgEl?.complete) return applyImage(imgEl, ccgxkObj, index, id);
-    if (imgEl) return; // 加载中
+    if (imgEl?.complete && hasUsableImageSize(imgEl)) return applyImage(imgEl, ccgxkObj, index, id);
+    if (imgEl && loadingSvgIds.has(uniqueImgId)) return; // SVG 正在异步位图化，不能把空图写回引擎
+    if (imgEl && !imgEl.complete) return; // 加载中
     if (isSvgUrl(imgUrl)) {
-        imgEl = document.createElement('img');
-        imgEl.id = uniqueImgId;
-        imgEl.style.display = 'none';
-        document.body.appendChild(imgEl);
         void tryLoadSvg();
         return;
+    }
+    if (imgEl) {
+        // complete 但没有真实宽高，说明这是旧的坏图/空图；先移除，避免重复 id 和 NaN 尺寸。
+        imgEl.remove();
+        imgEl = null;
     }
 
     // 直接加载图片

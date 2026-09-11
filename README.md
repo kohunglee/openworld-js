@@ -15,3 +15,7 @@ OpenWorld-JS is a JavaScript engine for building interactive 3D worlds directly 
 👉 demo: https://git.ccgxk.com/myWorkSpace/webgl_show/cyber_city/cbcity.html
 
 
+## 最新
+
+今天 2026年09月11日 ，我使用 GPT-6 Astro 搞了一个这个， https://3d.rawlab.win/ ，让我重新拾起对这个项目的信心！
+

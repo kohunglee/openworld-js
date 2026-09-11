@@ -35,6 +35,8 @@ function relocateP001StartHtml() {
 function createMainSiteConfig() {
   return {
     plugins: [relocateP001StartHtml()],
+    // 将本地 Tailwind Browser 构建复制到 dist 根目录，开发与生产都不依赖海外 CDN。
+    publicDir: resolve(__dirname, 'vendor'),
     base: './',
     resolve: {
       alias: {
@@ -59,6 +61,8 @@ function createMainSiteConfig() {
           'open-world-zone': resolve(__dirname, 'open-world-zone/index.html'),
           // 增加示例入口：下次执行一次 build 时会一并产出到 dist/p001-start
           'p001-start': resolve(__dirname, 'example/p001-start/index.html'),
+          // 独立方块小屋入口：保留双层小屋、庭院与互动玩法。
+          'cozy-cabin': resolve(__dirname, 'cozy-cabin/index.html'),
         },
         output: {
           banner: cannonCode,

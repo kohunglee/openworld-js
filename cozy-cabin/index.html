@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="使用 OpenWorld-JS 制作的可进入双层方块小屋与互动庭院。">
+    <title>Cozy Cabin · 方块小屋</title>
+    <script src="../tailwindcss.min.js"></script>
+  </head>
+  <body class="m-0 h-screen overflow-hidden bg-slate-950 text-white selection:bg-amber-300 selection:text-stone-900">
+    <canvas id="openworldCanv" class="block h-screen w-screen" aria-label="可自由行走的双层方块小屋"></canvas>
+
+    <div class="pointer-events-none fixed inset-0 z-10">
+      <header class="absolute left-4 top-4 max-w-[23rem] rounded-2xl border border-white/15 bg-stone-950/70 px-4 py-3 shadow-2xl backdrop-blur-md">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-300">OpenWorld-JS</p>
+        <h1 class="mt-1 text-lg font-black tracking-tight">Cozy Cabin · 方块小屋</h1>
+        <p class="mt-1 text-xs leading-5 text-stone-300">WASD 移动 · 鼠标观察 · 空格跳跃 · Shift 加速 · R 互动</p>
+      </header>
+
+      <div id="crosshair" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">+</div>
+
+      <div id="interactionHint" class="absolute bottom-10 left-1/2 hidden -translate-x-1/2 rounded-full border border-amber-200/40 bg-stone-950/85 px-5 py-2 text-sm font-bold text-amber-100 shadow-2xl backdrop-blur-md"></div>
+      <div id="toast" class="absolute right-4 top-4 hidden max-w-xs rounded-xl border border-emerald-300/30 bg-emerald-950/90 px-4 py-3 text-sm font-semibold text-emerald-50 shadow-2xl"></div>
+    </div>
+
+    <section id="intro" class="fixed inset-0 z-30 grid place-items-center bg-slate-950/80 p-5 backdrop-blur-sm">
+      <div class="w-full max-w-xl rounded-3xl border border-amber-200/20 bg-stone-900/95 p-7 shadow-2xl sm:p-9">
+        <p class="text-xs font-bold uppercase tracking-[0.35em] text-amber-300">A tiny place to wander</p>
+        <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-5xl">欢迎回到小屋</h2>
+        <p class="mt-4 leading-7 text-stone-300">推开门，逛逛客厅与厨房，再沿楼梯去二层看看。庭院里的窗、灯、收音机、壁炉和方块猫都藏着一点回应。</p>
+        <div class="mt-6 grid grid-cols-2 gap-3 text-sm text-stone-200 sm:grid-cols-4">
+          <div class="rounded-xl bg-white/5 p-3"><b class="block text-amber-300">WASD</b>行走</div>
+          <div class="rounded-xl bg-white/5 p-3"><b class="block text-amber-300">鼠标</b>观察</div>
+          <div class="rounded-xl bg-white/5 p-3"><b class="block text-amber-300">空格</b>跳跃</div>
+          <div class="rounded-xl bg-white/5 p-3"><b class="block text-amber-300">R</b>互动</div>
+        </div>
+        <button id="enterButton" type="button" class="mt-7 w-full rounded-xl bg-amber-300 px-5 py-3 font-black text-stone-950 transition hover:bg-amber-200 focus:outline-none focus:ring-4 focus:ring-amber-300/30">进入庭院</button>
+        <p class="mt-3 text-center text-xs text-stone-500">进入后再单击画面即可锁定鼠标；按 Esc 释放鼠标。</p>
+      </div>
+    </section>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

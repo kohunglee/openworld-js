@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenWorld.js 极简演示</title>
+    <!-- 使用 Tailwind 浏览器版保持演示页面无需自定义样式表。 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="m-0 min-h-screen overflow-hidden bg-slate-950 font-sans text-slate-100">
+    <!-- OpenWorld.js 将 WebGL 画面渲染到这个画布。 -->
+    <canvas id="openworldCanv" class="block h-screen w-screen"></canvas>
+
+    <!-- 说明层不拦截鼠标，点击画布后即可进入第一人称视角。 -->
+    <aside class="pointer-events-none fixed left-4 top-4 max-w-xs rounded-xl border border-white/15 bg-slate-950/75 p-4 shadow-2xl backdrop-blur-sm">
+      <p class="m-0 text-xs font-semibold tracking-[0.24em] text-cyan-300">OPENWORLD.JS</p>
+      <h1 class="mt-2 text-lg font-bold">五千方块奇境</h1>
+      <p class="mt-2 text-sm leading-6 text-slate-300">点击画面锁定鼠标；WASD 移动，鼠标环顾，空格跳跃。</p>
+      <p class="mt-2 text-xs leading-5 text-cyan-100/75"><span id="cube-count">5,000</span> 个方块使用一个 WebGL 实例化批次渲染。</p>
+      <p class="mt-1 text-xs leading-5 text-emerald-100/75"><span id="physics-count">5,000</span> 份物理档案已按附近区块动态激活。</p>
+      <p class="mt-1 text-xs leading-5 text-amber-100/75"><span id="fps-value">测量中</span> FPS · 当前绘制 <span id="render-count">0</span> 块。</p>
+    </aside>
+
+    <!-- 世界初始化和方块布置逻辑保持在单独模块，便于直接作为最小起点复用。 -->
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

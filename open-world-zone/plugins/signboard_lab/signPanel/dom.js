@@ -167,16 +167,52 @@ export function updateContentArea(mode) {
 /**
  * 更新图片预览
  */
+const isSvgPreviewUrl = (url = '') => /\.svg(?:$|[?#])/i.test(String(url).trim());
+
+/**
+ * 用安全 DOM API 渲染预览占位。
+ * 这里不用 innerHTML，避免图片 URL 或错误文案意外打断面板结构。
+ */
+const renderPreviewPlaceholder = (preview, text = 'Preview', url = '') => {
+    const span = document.createElement('span');
+    span.className = 'placeholder';
+    span.textContent = text;
+
+    preview.replaceChildren(span);
+
+    if (!url) return;
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noreferrer';
+    link.textContent = 'Open SVG';
+    link.style.marginLeft = '8px';
+    preview.appendChild(link);
+};
+
 export function updateImagePreview(url) {
     const preview = document.getElementById('signImagePreview');
     if (!preview) return;
 
-    if (!url) {
-        preview.innerHTML = '<span class="placeholder">Preview</span>';
+    const cleanUrl = String(url || '').trim();
+    if (!cleanUrl) {
+        renderPreviewPlaceholder(preview);
         return;
     }
 
-    preview.innerHTML = `<img src="${url}" onerror="this.parentElement.innerHTML='<span class=placeholder>Load Err</span>'">`;
+    if (isSvgPreviewUrl(cleanUrl)) {
+        // SVG 真正显示交给画板贴图链路；编辑面板只给轻量入口，避免左键选中时额外解码卡死。
+        renderPreviewPlaceholder(preview, 'SVG preview skipped', cleanUrl);
+        return;
+    }
+
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.onerror = () => renderPreviewPlaceholder(preview, 'Load Err');
+    img.src = cleanUrl;
+    preview.replaceChildren(img);
 }
 
 /**
