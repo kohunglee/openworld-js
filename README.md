@@ -20,9 +20,15 @@ OpenWorld-JS is a JavaScript engine for building interactive 3D worlds directly 
 
 这一次我使用 GPT-6 Astro 做出了一个比较完整的 3D 场景：
 
+https://t001.openworld.zone/
+
+或者
+
 https://3d.rawlab.win/
 
 效果比我之前预期的要好很多，也让我重新拾起了继续做 OpenWorld-JS 的信心。
+
+两者的源码，均放到了 GPT-6-Astra 目录下。
 
 <img width="1891" height="864" alt="image" src="https://github.com/user-attachments/assets/a527a571-faa5-45be-9e5c-97e45eee8491" />
 
@@ -40,9 +46,11 @@ https://3d.rawlab.win/
 使用babylon.js给我一个第一人称的带屋里效果的FPS游戏小3D场景。里面是10w个方体(长宽高随意)，简单贴图的组成的一个漂亮的5层建筑。我可以进入，里面有相应的生成场景、楼梯等等，，反正就是一个办公楼。要逼真一点。。。代码尽量使用现成的库。你只需要将大量的Token放到三维位置上即可。就像GTA罪恶都市一样的感觉。
 ```
 
-生成结果：
+生成过程：
 
 <img width="987" height="853" alt="fdb4fb60ff106b63abc836f65a4e3f16" src="https://github.com/user-attachments/assets/37a89883-4742-4367-a931-1502341b08f7" />
+
+生成结果： https://t001.openworld.zone/office/
 
 这次实验让我发现，大模型现在已经可以承担相当多的程序化 3D 建模工作。
 
@@ -489,15 +497,11 @@ ZIP 文件路径
 
 </details>
 
+结果 url ： https://t001.openworld.zone/
+
 ### 目前我的判断
 
 这次实验对我比较重要。
-
-OpenWorld-JS 原来已经有角色、物理、第一人称、第三人称、动画、纹理、插件和大量我自己调整过的参数。以前真正麻烦的地方，是制作世界本身需要很多时间。
-
-现在大模型开始能够直接承担这一部分工作。
-
-它可以一次写出几万个甚至十万个实例的位置，可以制作建筑、房间、家具、楼梯、书柜、设备和装饰，也可以按照指定预算控制实例和碰撞体数量。
 
 这让我重新看到这个项目继续做下去的可能性。
 
