@@ -14,24 +14,63 @@ OpenWorld-JS is a JavaScript engine for building interactive 3D worlds directly 
 
 👉 demo: https://git.ccgxk.com/myWorkSpace/webgl_show/cyber_city/cbcity.html
 
+## 最新进展：GPT-6 Astro 让我重新对这个项目有了信心
 
-## 最新
+2026 年 9 月 11 日，我重新尝试了一次这个项目。
 
-今天 2026年09月11日 ，我使用 GPT-6 Astro 搞了一个这个， https://3d.rawlab.win/ ，让我重新拾起对这个项目的信心！
+这一次我使用 GPT-6 Astro 做出了一个比较完整的 3D 场景：
+
+https://3d.rawlab.win/
+
+效果比我之前预期的要好很多，也让我重新拾起了继续做 OpenWorld-JS 的信心。
 
 <img width="1891" height="864" alt="image" src="https://github.com/user-attachments/assets/a527a571-faa5-45be-9e5c-97e45eee8491" />
 
 <img width="1890" height="861" alt="image" src="https://github.com/user-attachments/assets/eff9a104-5289-4c1b-aa7b-0b8f401a6a68" />
 
-五层办公楼的提示词很简单：
+### 第一次实验：五层办公楼
+
+这个场景其实没有使用很复杂的提示词。
+
+我的想法很简单：让模型不要把大量 Token 花在解释、架构设计或者重新造轮子上，而是尽量把能力用在 3D 场景本身，尤其是空间布局和大量物体的位置上。
+
+使用的提示词如下：
 
 ```txt
 使用babylon.js给我一个第一人称的带屋里效果的FPS游戏小3D场景。里面是10w个方体(长宽高随意)，简单贴图的组成的一个漂亮的5层建筑。我可以进入，里面有相应的生成场景、楼梯等等，，反正就是一个办公楼。要逼真一点。。。代码尽量使用现成的库。你只需要将大量的Token放到三维位置上即可。就像GTA罪恶都市一样的感觉。
 ```
 
+生成结果：
+
 <img width="987" height="853" alt="fdb4fb60ff106b63abc836f65a4e3f16" src="https://github.com/user-attachments/assets/37a89883-4742-4367-a931-1502341b08f7" />
 
-而，那个好几个小建筑 。提示词总结下来是这样的：
+这次实验让我发现，大模型现在已经可以承担相当多的程序化 3D 建模工作。
+
+尤其是当任务被限制得足够明确以后，它可以把大量代码直接用于建筑结构、家具、楼梯、室内空间和物体摆放。
+
+### 第二次实验：直接使用 OpenWorld-JS
+
+之后，我没有继续使用 Babylon.js。
+
+我让 GPT-6 Astro 直接进入我原来的 OpenWorld-JS 项目，在已经存在的角色控制、物理、相机、纹理和渲染机制上继续工作。
+
+这次我的要求也更加严格。
+
+主要原则是：
+
+1. 不修改已经成熟的角色、相机和移动系统。
+2. 不重新研究整个 OpenWorld-JS。
+3. 不引入新的 3D 引擎。
+4. 尽可能把 Token 用在建筑和室内建模上。
+5. 使用大量实例方块，同时控制 Draw Call 和物理碰撞数量。
+6. 保留原项目已经调整很久的操作手感。
+
+最后整理出的完整提示词如下。
+
+<details>
+<summary><strong>点击展开完整 GPT-6 Astro 提示词</strong></summary>
+
+<br>
 
 ```txt
 你现在要修改这个仓库：
@@ -447,3 +486,23 @@ Q、E、F 保持原来的行为。
 本地如何启动
 ZIP 文件路径
 ```
+
+</details>
+
+### 目前我的判断
+
+这次实验对我比较重要。
+
+OpenWorld-JS 原来已经有角色、物理、第一人称、第三人称、动画、纹理、插件和大量我自己调整过的参数。以前真正麻烦的地方，是制作世界本身需要很多时间。
+
+现在大模型开始能够直接承担这一部分工作。
+
+它可以一次写出几万个甚至十万个实例的位置，可以制作建筑、房间、家具、楼梯、书柜、设备和装饰，也可以按照指定预算控制实例和碰撞体数量。
+
+这让我重新看到这个项目继续做下去的可能性。
+
+以后 OpenWorld-JS 也许不需要我亲手摆放世界里的每一块东西。
+
+我只需要维护引擎、规则和世界运行方式。
+
+至于这个世界里面到底有什么，可以逐渐交给 AI 来建。
