@@ -26,6 +26,8 @@ https://t001.openworld.zone/
 
 https://3d.rawlab.win/
 
+https://3d.rawlab.win/  (好几个建筑)
+
 效果比我之前预期的要好很多，也让我重新拾起了继续做 OpenWorld-JS 的信心。
 
 两者的源码，均放到了 GPT-6-Astra 目录下。
